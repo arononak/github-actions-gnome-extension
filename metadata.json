@@ -1,0 +1,18 @@
+{
+  "uuid": "github-actions@arononak.github.io",
+  "name": "Github Actions",
+  "description": "Tool to Show Github Actions status on Gnome Desktop",
+  "version": 1,
+  "shell-version": [
+    "40",
+    "41",
+    "42",
+    "43",
+    "44"
+  ],
+  "url": "https://github.com/arononak/github-actions-gnome-extension",
+  "original-authors": [
+    "arononak@gmail.com"
+  ],
+  "settings-schema": "org.gnome.shell.extensions.github-actions"
+}
