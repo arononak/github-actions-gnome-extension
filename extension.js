@@ -113,6 +113,7 @@ function initRefreshModule(settings, label) {
 }
 
 function disposeRefreshModule() {
+    clearInterval(interval);
     interval = null;
 }
 
