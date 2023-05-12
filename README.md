@@ -15,7 +15,6 @@ Ubuntu
 sudo apt update
 sudo apt install gh
 ```
-Other
 [https://github.com/cli/cli/blob/trunk/docs/install_linux.md](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)
 
 ### Login
