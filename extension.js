@@ -27,35 +27,44 @@ const GETTEXT_DOMAIN = 'github-actions-extension';
 const Me = ExtensionUtils.getCurrentExtension();
 const _ = ExtensionUtils.gettext;
 
+let interval;
+
 function isEmpty(str) {
     return (!str || str.length === 0);
 }
 
-function _isLogged() {
-    try {
-        let [, stdout, stderr, status] = GLib.spawn_command_line_sync('gh auth token');
+async function isLogged() {
+    return new Promise((resolve, reject) => {
+        try {
+            let [, stdout, stderr, status] = GLib.spawn_command_line_sync('gh auth token');
 
-        if (status !== 0) {
-            if (stderr instanceof Uint8Array) {
-                stderr = ByteArray.toString(stderr);
+            if (status !== 0) {
+                if (stderr instanceof Uint8Array) {
+                    stderr = ByteArray.toString(stderr);
+                }
+
+                logError(stderr);
+                resolve(false);
+            }
+            if (stdout instanceof Uint8Array) {
+                stdout = ByteArray.toString(stdout);
             }
 
-            logError(stderr);
-            return false;
+            resolve(true);
+        } catch (e) {
+            logError(e);
+            resolve(false);
         }
-        if (stdout instanceof Uint8Array) {
-            stdout = ByteArray.toString(stdout);
-        }
-
-        return true;
-    } catch (e) {
-        logError(e);
-        return false;
-    }
+    });
 }
 
-async function _fetchStatus(owner, repo) {
-    return new Promise(resolve => {
+async function fetchStatus(owner, repo) {
+    const logged = await isLogged();
+    if (!logged) {
+        return null;
+    }
+
+    return new Promise((resolve, reject) => {
         try {
             let proc = Gio.Subprocess.new(
                 ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', '/repos/' + owner + '/' + repo + '/actions/runs'],
@@ -69,7 +78,6 @@ async function _fetchStatus(owner, repo) {
                     const response = JSON.parse(stdout);
                     const id = response["workflow_runs"][0]["status"].toString();
 
-                    log(id);
                     resolve(id);
                 } else {
                     throw new Error(stderr);
@@ -82,6 +90,33 @@ async function _fetchStatus(owner, repo) {
     });
 }
 
+async function refresh(settings, label) {
+    try {
+        const owner = settings.get_string('owner');
+        const repo = settings.get_string('repo');
+
+        if (!isEmpty(owner) && !isEmpty(repo)) {
+            let status = await fetchStatus(owner, repo);
+            if (status != null) {
+                label.text = status.toString();
+            }
+        }
+    } catch (error) {
+        logError(error);
+    }
+}
+
+/// Module
+function initRefreshModule(settings, label) {
+    refresh(settings, label);
+    interval = setInterval(() => refresh(settings, label), 5000);
+}
+
+function disposeRefreshModule() {
+    interval = null;
+}
+
+/// Button
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
         _init() {
@@ -102,20 +137,6 @@ const Indicator = GObject.registerClass(
         }
     });
 
-function initRefreshModule(settings, label) {
-    setInterval(async () => {
-        const owner = settings.get_string('owner');
-        const repo = settings.get_string('repo');
-
-        if (!isEmpty(owner) && !isEmpty(repo)) {
-            let status = await _fetchStatus(owner, repo);
-            if (status != null) {
-                label.text = status.toString();
-            }
-        }
-    }, 5000);
-}
-
 class Extension {
     constructor(uuid) {
         this._uuid = uuid;
@@ -135,6 +156,8 @@ class Extension {
         this._indicator.destroy();
         this._indicator = null;
         this.settings = null;
+
+        disposeRefreshModule();
     }
 }
 
