@@ -27,3 +27,6 @@ and configure owner and repository in extension settings.
 
 ### Feedback
 if you have any feedback, please contact me at arononak@gmail.com
+
+### Disclaimer
+This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
