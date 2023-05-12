@@ -4,6 +4,10 @@
 
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 
+### Preview
+
+![alt text](https://github.com/arononak/github-actions-gnome-extension/blob/38f27aab218844171646982d2bf9d0f11b66ef2d/preview.png)
+
 ### Installation
 
 Ubuntu
