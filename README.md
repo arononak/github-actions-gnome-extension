@@ -1,4 +1,4 @@
-[<img src="[https://github.com/arononak/github-actions-gnome-extension/raw/main/get_it.png](https://github.com/arononak/github-actions-gnome-extension/blob/cd4c31dcd9a22d0fbc2333a223cedb5cfd0b6fae/get-it.png)" height="100" align="right">]([https://extensions.gnome.org/extension/517/caffeine/](https://extensions.gnome.org/extension/5973/github-actions/))
+[<img src="https://github.com/arononak/github-actions-gnome-extension/blob/12c985b40d027f1f455199bb3c134bf209008de5/get-it.png" height="100" align="right">](https://extensions.gnome.org/extension/5973/github-actions/)
 
 # Github Actions Gnome Extension
 
