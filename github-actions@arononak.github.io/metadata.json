@@ -2,7 +2,7 @@
   "uuid": "github-actions@arononak.github.io",
   "name": "Github Actions",
   "description": "Tool to Show Github Actions status on Gnome Desktop",
-  "version": 1,
+  "version": 3,
   "shell-version": [
     "40",
     "41",

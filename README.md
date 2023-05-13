@@ -30,3 +30,10 @@ if you have any feedback, please contact me at arononak@gmail.com
 
 ### Disclaimer
 This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
+
+### Build gnome-extensions pack
+
+```bash
+cd github-actions@arononak.github.io
+gnome-extensions pack --extra-source=github.svg
+```
