@@ -6,7 +6,7 @@
 
 ### Preview
 
-![alt text](https://github.com/arononak/github-actions-gnome-extension/blob/0edafce1ff593b4097fa14115012bf419c1fcc43/preview.png)
+![alt text](https://github.com/arononak/github-actions-gnome-extension/blob/a4fdd9b5259eb1631181fc06dd5407b7ee7d2844/preview.png)
 
 ### Installation
 
