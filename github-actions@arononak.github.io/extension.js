@@ -27,11 +27,6 @@ const GETTEXT_DOMAIN = 'github-actions-extension';
 const Me = ExtensionUtils.getCurrentExtension();
 const _ = ExtensionUtils.gettext;
 
-let interval;
-
-let ownerAndRepoLabel = new St.Label({ text: '...' });
-let infoLabel = new St.Label({ text: '...' });
-
 function isEmpty(str) {
     return (!str || str.length === 0);
 }
@@ -93,7 +88,7 @@ async function fetchStatus(owner, repo) {
     });
 }
 
-async function refresh(settings, indicator) {
+async function refresh(settings, indicator, ownerAndRepoLabel, infoLabel) {
     try {
         const owner = settings.get_string('owner');
         const repo = settings.get_string('repo');
@@ -121,17 +116,6 @@ async function refresh(settings, indicator) {
     }
 }
 
-/// Module
-function initRefreshModule(settings, indicator) {
-    refresh(settings, indicator);
-    interval = setInterval(() => refresh(settings, indicator), 5000);
-}
-
-function disposeRefreshModule() {
-    clearInterval(interval);
-    interval = null;
-}
-
 /// Helper
 function _createTextMenuItem(actor) {
     let item = new PopupMenu.PopupBaseMenuItem({ reactive: true });
@@ -142,8 +126,10 @@ function _createTextMenuItem(actor) {
 /// Button
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
-        _init() {
-            super._init(0.0, 'Github Action button', false);
+        constructor(ownerAndRepoLabel, infoLabel) {
+            super();
+            this.ownerAndRepoLabel = ownerAndRepoLabel;
+            this.infoLabel = infoLabel;
 
             let icon = new St.Icon({ style_class: 'system-status-icon' });
             icon.gicon = Gio.icon_new_for_string(`${Me.path}/github.svg`);
@@ -154,14 +140,18 @@ const Indicator = GObject.registerClass(
             topBox.add_child(this.label);
             this.add_child(topBox);
 
-            this.menu.addMenuItem(_createTextMenuItem(ownerAndRepoLabel));
+            this.menu.addMenuItem(_createTextMenuItem(this.ownerAndRepoLabel));
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            this.menu.addMenuItem(_createTextMenuItem(infoLabel));
+            this.menu.addMenuItem(_createTextMenuItem(this.infoLabel));
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             let settingsItem = new PopupMenu.PopupImageMenuItem(_('Settings'), 'system-settings-symbolic');
             settingsItem.connect('activate', () => ExtensionUtils.openPrefs());
             this.menu.addMenuItem(settingsItem);
+        }
+
+        _init() {
+            super._init(0.0, 'Github Action button', false);
         }
     });
 
@@ -173,19 +163,27 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
-        this._indicator = new Indicator();
-        this.settings.bind('show-icon', this._indicator, 'visible', Gio.SettingsBindFlags.DEFAULT);
-        Main.panel.addToStatusArea(this._uuid, this._indicator);
 
-        initRefreshModule(this.settings, this._indicator);
+        this.ownerAndRepoLabel = new St.Label({ text: '...' });
+        this.infoLabel = new St.Label({ text: '...' });
+        this.indicator = new Indicator(this.ownerAndRepoLabel, this.infoLabel);
+
+        this.settings.bind('show-icon', this.indicator, 'visible', Gio.SettingsBindFlags.DEFAULT);
+        Main.panel.addToStatusArea(this._uuid, this.indicator);
+
+        refresh(this.settings, this.indicator, this.ownerAndRepoLabel, this.infoLabel);
+        this.interval = setInterval(() => refresh(settings, indicator, ownerAndRepoLabel, infoLabel), 5000);
     }
 
     disable() {
-        this._indicator.destroy();
-        this._indicator = null;
+        this.indicator.destroy();
+        this.indicator = null;
+        this.ownerAndRepoLabel = null;
+        this.infoLabel = null;
         this.settings = null;
 
-        disposeRefreshModule();
+        clearInterval(interval);
+        interval = null;
     }
 }
 

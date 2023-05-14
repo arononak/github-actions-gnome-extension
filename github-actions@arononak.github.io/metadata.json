@@ -2,7 +2,7 @@
   "uuid": "github-actions@arononak.github.io",
   "name": "Github Actions",
   "description": "Tool to Show Github Actions status on Gnome Desktop.\n\nThis extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.",
-  "version": 4,
+  "version": 5,
   "shell-version": [
     "40",
     "41",
