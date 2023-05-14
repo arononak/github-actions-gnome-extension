@@ -29,6 +29,9 @@ const _ = ExtensionUtils.gettext;
 
 let interval;
 
+let ownerAndRepoLabel = new St.Label({ text: '...' });
+let infoLabel = new St.Label({ text: '...' });
+
 function isEmpty(str) {
     return (!str || str.length === 0);
 }
@@ -76,9 +79,9 @@ async function fetchStatus(owner, repo) {
 
                 if (proc.get_successful()) {
                     const response = JSON.parse(stdout);
-                    const id = response["workflow_runs"][0]["status"].toString();
+                    const run = response["workflow_runs"][0];
 
-                    resolve(id);
+                    resolve(run);
                 } else {
                     throw new Error(stderr);
                 }
@@ -90,15 +93,27 @@ async function fetchStatus(owner, repo) {
     });
 }
 
-async function refresh(settings, label) {
+async function refresh(settings, indicator) {
     try {
         const owner = settings.get_string('owner');
         const repo = settings.get_string('repo');
 
         if (!isEmpty(owner) && !isEmpty(repo)) {
-            let status = await fetchStatus(owner, repo);
-            if (status != null) {
-                label.text = status.toString();
+            let run = await fetchStatus(owner, repo);
+            if (run != null) {
+
+                const status = run["status"].toString().toUpperCase();
+                const displayTitle = run["display_title"].toString();
+                const runNumber = run["run_number"].toString();
+                const updatedAt = run["updated_at"].toString();
+                const ownerAndRepo = run["repository"]["full_name"].toString();
+
+                const date = new Date(updatedAt);
+
+                indicator.label.text = status;
+
+                ownerAndRepoLabel.text = ownerAndRepo;
+                infoLabel.text = date.toUTCString() + "\n\n" + status + " #" + runNumber + "\n\n" + displayTitle;
             }
         }
     } catch (error) {
@@ -107,14 +122,21 @@ async function refresh(settings, label) {
 }
 
 /// Module
-function initRefreshModule(settings, label) {
-    refresh(settings, label);
-    interval = setInterval(() => refresh(settings, label), 5000);
+function initRefreshModule(settings, indicator) {
+    refresh(settings, indicator);
+    interval = setInterval(() => refresh(settings, indicator), 5000);
 }
 
 function disposeRefreshModule() {
     clearInterval(interval);
     interval = null;
+}
+
+/// Helper
+function _createTextMenuItem(actor) {
+    let item = new PopupMenu.PopupBaseMenuItem({ reactive: true });
+    item.actor.add_actor(actor);
+    return item;
 }
 
 /// Button
@@ -132,9 +154,14 @@ const Indicator = GObject.registerClass(
             topBox.add_child(this.label);
             this.add_child(topBox);
 
-            let item = new PopupMenu.PopupMenuItem(_('Settings'));
-            item.connect('activate', () => ExtensionUtils.openPrefs());
-            this.menu.addMenuItem(item);
+            this.menu.addMenuItem(_createTextMenuItem(ownerAndRepoLabel));
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+            this.menu.addMenuItem(_createTextMenuItem(infoLabel));
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+            let settingsItem = new PopupMenu.PopupImageMenuItem(_('Settings'), 'system-settings-symbolic');
+            settingsItem.connect('activate', () => ExtensionUtils.openPrefs());
+            this.menu.addMenuItem(settingsItem);
         }
     });
 
@@ -150,7 +177,7 @@ class Extension {
         this.settings.bind('show-icon', this._indicator, 'visible', Gio.SettingsBindFlags.DEFAULT);
         Main.panel.addToStatusArea(this._uuid, this._indicator);
 
-        initRefreshModule(this.settings, this._indicator.label);
+        initRefreshModule(this.settings, this._indicator);
     }
 
     disable() {
