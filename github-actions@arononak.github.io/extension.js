@@ -31,6 +31,14 @@ function isEmpty(str) {
     return (!str || str.length === 0);
 }
 
+function openUrl(url) {
+    try {
+        GLib.spawn_command_line_async('open ' + url);
+    } catch (e) {
+        logError(e);
+    }
+}
+
 async function isLogged() {
     return new Promise((resolve, reject) => {
         try {
@@ -88,7 +96,7 @@ async function fetchStatus(owner, repo) {
     });
 }
 
-async function refresh(settings, indicator, ownerAndRepoLabel, infoLabel) {
+async function refresh(settings, indicator) {
     try {
         const owner = settings.get_string('owner');
         const repo = settings.get_string('repo');
@@ -96,31 +104,27 @@ async function refresh(settings, indicator, ownerAndRepoLabel, infoLabel) {
         if (!isEmpty(owner) && !isEmpty(repo)) {
             let run = await fetchStatus(owner, repo);
             if (run != null) {
-
                 const status = run["status"].toString().toUpperCase();
                 const displayTitle = run["display_title"].toString();
                 const runNumber = run["run_number"].toString();
                 const updatedAt = run["updated_at"].toString();
                 const ownerAndRepo = run["repository"]["full_name"].toString();
 
+                const workflowUrl = run["html_url"].toString();
+                const repositoryUrl = run["repository"]["html_url"].toString();
+
                 const date = new Date(updatedAt);
 
                 indicator.label.text = status;
-
-                ownerAndRepoLabel.text = ownerAndRepo;
-                infoLabel.text = date.toUTCString() + "\n\n" + status + " #" + runNumber + "\n\n" + displayTitle;
+                indicator.workflowUrl = workflowUrl;
+                indicator.repositoryUrl = repositoryUrl;
+                indicator.ownerAndRepoLabel.text = ownerAndRepo;
+                indicator.infoLabel.text = date.toUTCString() + "\n\n" + status + " #" + runNumber + "\n\n" + displayTitle;
             }
         }
     } catch (error) {
         logError(error);
     }
-}
-
-/// Helper
-function _createTextMenuItem(actor) {
-    let item = new PopupMenu.PopupBaseMenuItem({ reactive: true });
-    item.actor.add_actor(actor);
-    return item;
 }
 
 /// Button
@@ -131,23 +135,36 @@ const Indicator = GObject.registerClass(
             this.ownerAndRepoLabel = ownerAndRepoLabel;
             this.infoLabel = infoLabel;
 
-            let icon = new St.Icon({ style_class: 'system-status-icon' });
-            icon.gicon = Gio.icon_new_for_string(`${Me.path}/github.svg`);
+            this.workflowUrl = "";
+            this.repositoryUrl = "";
+
+            this.icon = new St.Icon({ style_class: 'system-status-icon' });
+            this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github.svg`);
             this.label = new St.Label({ style_class: 'github-actions-label', text: '...', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
 
-            let topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-            topBox.add_child(icon);
-            topBox.add_child(this.label);
-            this.add_child(topBox);
+            this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+            this.topBox.add_child(this.icon);
+            this.topBox.add_child(this.label);
+            this.add_child(this.topBox);
 
-            this.menu.addMenuItem(_createTextMenuItem(this.ownerAndRepoLabel));
+            /// Owner and Repo
+            this.ownerAndRepoItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
+            this.ownerAndRepoItem.actor.add_actor(this.ownerAndRepoLabel);
+            this.ownerAndRepoItem.connect('activate', () => openUrl(this.repositoryUrl));
+            this.menu.addMenuItem(this.ownerAndRepoItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            this.menu.addMenuItem(_createTextMenuItem(this.infoLabel));
+            
+            /// Info
+            this.infoLabelItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
+            this.infoLabelItem.actor.add_actor(this.infoLabel);
+            this.infoLabelItem.connect('activate', () => openUrl(this.workflowUrl));
+            this.menu.addMenuItem(this.infoLabelItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-            let settingsItem = new PopupMenu.PopupImageMenuItem(_('Settings'), 'system-settings-symbolic');
-            settingsItem.connect('activate', () => ExtensionUtils.openPrefs());
-            this.menu.addMenuItem(settingsItem);
+            /// Settings
+            this.settingsItem = new PopupMenu.PopupImageMenuItem(_('Settings'), 'system-settings-symbolic');
+            this.settingsItem.connect('activate', () => ExtensionUtils.openPrefs());
+            this.menu.addMenuItem(this.settingsItem);
         }
 
         _init() {
@@ -171,12 +188,13 @@ class Extension {
         this.settings.bind('show-icon', this.indicator, 'visible', Gio.SettingsBindFlags.DEFAULT);
         Main.panel.addToStatusArea(this._uuid, this.indicator);
 
-        refresh(this.settings, this.indicator, this.ownerAndRepoLabel, this.infoLabel);
-        this.interval = setInterval(() => refresh(settings, indicator, ownerAndRepoLabel, infoLabel), 5000);
+        refresh(this.settings, this.indicator);
+        this.interval = setInterval(() => refresh(this.settings, this.indicator), 5000);
     }
 
     disable() {
         this.indicator.destroy();
+        this.indicator.menu = null;
         this.indicator = null;
         this.ownerAndRepoLabel = null;
         this.infoLabel = null;
