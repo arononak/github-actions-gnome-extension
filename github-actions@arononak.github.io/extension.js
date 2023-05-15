@@ -182,8 +182,8 @@ class Extension {
         this.infoLabel = null;
         this.settings = null;
 
-        clearInterval(interval);
-        interval = null;
+        clearInterval(this.interval);
+        this.interval = null;
     }
 }
 
