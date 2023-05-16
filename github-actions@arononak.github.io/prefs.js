@@ -5,48 +5,61 @@ const { Adw, Gio, Gtk } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-function init() {
-}
+function init() { }
 
 function fillPreferencesWindow(window) {
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
     const page = new Adw.PreferencesPage();
     const group = new Adw.PreferencesGroup();
-    page.add(group);
-
-    const row = new Adw.ActionRow({ title: 'Show icon' });
-    group.add(row);
-
-    const toggle = new Gtk.Switch({ active: settings.get_boolean('show-icon'), valign: Gtk.Align.CENTER });
-
-    settings.bind('show-icon', toggle, 'active', Gio.SettingsBindFlags.DEFAULT);
 
     const ownerRow = new Adw.ActionRow();
     const ownerEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
-    group.add(ownerRow);
-    ownerRow.add_prefix(new Gtk.Label({ label: 'owner' }));
+    ownerRow.add_prefix(new Gtk.Label({ label: 'Owner' }));
     ownerRow.add_suffix(ownerEntry);
     ownerRow.activatable_widget = ownerEntry;
+    ownerEntry.connect('changed', (widget) => {
+        if (ownerEntry.get_buffer().text) {
+            settings.set_string('owner', ownerEntry.get_buffer().text);
+        }
+    });
 
     const repoRow = new Adw.ActionRow();
     const repoEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('repo') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
-    group.add(repoRow);
-    repoRow.add_prefix(new Gtk.Label({ label: 'repo' }));
+    repoRow.add_prefix(new Gtk.Label({ label: 'Repo' }));
     repoRow.add_suffix(repoEntry);
     repoRow.activatable_widget = repoEntry;
-
-    const group2 = new Adw.PreferencesGroup();
-    page.add(group2);
-    const button = new Gtk.Button({ label: 'Enter' });
-    group2.add(button);
-    button.connect('clicked', () => {
-        settings.set_string('owner', ownerEntry.get_buffer().text);
-        settings.set_string('repo', repoEntry.get_buffer().text);
-        window.destroy();
+    repoEntry.connect('changed', (widget) => {
+        if (repoEntry.get_buffer().text) {
+            settings.set_string('repo', repoEntry.get_buffer().text);
+        }
     });
 
-    row.add_suffix(toggle);
-    row.activatable_widget = toggle;
+    const spinButton = new Gtk.SpinButton({
+        climb_rate: 1,
+        digits: 0,
+    });
+    spinButton.adjustment = new Gtk.Adjustment({
+        value: settings.get_int('refresh-time'),
+        lower: 1,
+        upper: 60,
+        step_increment: 1,
+        page_increment: 10,
+        page_size: 0,
+    });
+    spinButton.wrap = true;
+    spinButton.width_chars = 2;
+    const refreshRow = new Adw.ActionRow();
+    refreshRow.add_prefix(new Gtk.Label({ label: 'Refresh time' }));
+    refreshRow.add_suffix(spinButton);
+    refreshRow.activatable_widget = spinButton;
+    settings.bind('refresh-time', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
+
+    page.add(group);
+    group.add(ownerRow);
+    group.add(repoRow);
+    group.add(refreshRow);
+    group.add(new Gtk.Label({ label: ' '})); /// Separator
+    group.add(new Gtk.Label({ label: 'Changing the time requires restarting the extension', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
     window.add(page);
 }
