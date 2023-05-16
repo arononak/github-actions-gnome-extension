@@ -140,7 +140,7 @@ const Indicator = GObject.registerClass(
 
             this.icon = new St.Icon({ style_class: 'system-status-icon' });
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github.svg`);
-            this.label = new St.Label({ style_class: 'github-actions-label', text: '...', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
+            this.label = new St.Label({ style_class: 'github-actions-label', text: 'Loading', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
 
             this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
             this.topBox.add_child(this.icon);
@@ -181,15 +181,15 @@ class Extension {
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
-        this.ownerAndRepoLabel = new St.Label({ text: '...' });
-        this.infoLabel = new St.Label({ text: '...' });
+        this.ownerAndRepoLabel = new St.Label({ text: 'Loading' });
+        this.infoLabel = new St.Label({ text: 'Loading' });
         this.indicator = new Indicator(this.ownerAndRepoLabel, this.infoLabel);
 
-        this.settings.bind('show-icon', this.indicator, 'visible', Gio.SettingsBindFlags.DEFAULT);
         Main.panel.addToStatusArea(this._uuid, this.indicator);
 
+        const refreshTime = this.settings.get_int('refresh-time') * 1000;
         refresh(this.settings, this.indicator);
-        this.interval = setInterval(() => refresh(this.settings, this.indicator), 5000);
+        this.interval = setInterval(() => refresh(this.settings, this.indicator), refreshTime);
     }
 
     disable() {
