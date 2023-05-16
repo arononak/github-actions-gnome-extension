@@ -33,7 +33,7 @@ function isEmpty(str) {
 
 function openUrl(url) {
     try {
-        GLib.spawn_command_line_async('open ' + url);
+        GLib.spawn_command_line_async('xdg-open ' + url);
     } catch (e) {
         logError(e);
     }
