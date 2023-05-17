@@ -10,5 +10,8 @@
     <key name="refresh-time" type="i">
       <default>5</default>
     </key>
+    <key name="package-size-in-bytes" type="i">
+      <default>0</default>
+    </key>
   </schema>
 </schemalist>

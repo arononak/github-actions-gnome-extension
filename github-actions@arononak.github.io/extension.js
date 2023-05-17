@@ -51,6 +51,7 @@ async function isLogged() {
 
                 logError(stderr);
                 resolve(false);
+                return;
             }
             if (stdout instanceof Uint8Array) {
                 stdout = ByteArray.toString(stdout);
@@ -84,7 +85,11 @@ async function fetchStatus(owner, repo) {
                     const response = JSON.parse(stdout);
                     const run = response["workflow_runs"][0];
 
+                    const size = stdout.length;
+                    run['_size_'] = size; /// Welcome in JS World :D
+
                     resolve(run);
+                    return;
                 } else {
                     throw new Error(stderr);
                 }
@@ -115,11 +120,16 @@ async function refresh(settings, indicator) {
 
                 const date = new Date(updatedAt);
 
+                const sizeInBytes = run['_size_'];
+                settings.set_int('package-size-in-bytes', sizeInBytes);
+                const refreshTime = settings.get_int('refresh-time');
+
                 indicator.label.text = status;
                 indicator.workflowUrl = workflowUrl;
                 indicator.repositoryUrl = repositoryUrl;
                 indicator.ownerAndRepoLabel.text = ownerAndRepo;
-                indicator.infoLabel.text = date.toUTCString() + "\n\n" + status + " #" + runNumber + "\n\n" + displayTitle;
+                indicator.infoLabel.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
+                indicator.packageSizeLabel.text = parseInt(sizeInBytes / 1024, 10) + " KB / " + refreshTime + "s"
             }
         }
     } catch (error) {
@@ -130,10 +140,11 @@ async function refresh(settings, indicator) {
 /// Button
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
-        constructor(ownerAndRepoLabel, infoLabel) {
+        constructor(ownerAndRepoLabel, infoLabel, packageSizeLabel) {
             super();
             this.ownerAndRepoLabel = ownerAndRepoLabel;
             this.infoLabel = infoLabel;
+            this.packageSizeLabel = packageSizeLabel;
 
             this.workflowUrl = "";
             this.repositoryUrl = "";
@@ -153,12 +164,18 @@ const Indicator = GObject.registerClass(
             this.ownerAndRepoItem.connect('activate', () => openUrl(this.repositoryUrl));
             this.menu.addMenuItem(this.ownerAndRepoItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            
+
             /// Info
             this.infoLabelItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
             this.infoLabelItem.actor.add_actor(this.infoLabel);
             this.infoLabelItem.connect('activate', () => openUrl(this.workflowUrl));
             this.menu.addMenuItem(this.infoLabelItem);
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+            /// Download package size
+            this.packageSizeItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
+            this.packageSizeItem.actor.add_actor(this.packageSizeLabel);
+            this.menu.addMenuItem(this.packageSizeItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Settings
@@ -183,7 +200,8 @@ class Extension {
 
         this.ownerAndRepoLabel = new St.Label({ text: 'Loading' });
         this.infoLabel = new St.Label({ text: 'Loading' });
-        this.indicator = new Indicator(this.ownerAndRepoLabel, this.infoLabel);
+        this.packageSizeLabel = new St.Label({ text: 'Loading' });
+        this.indicator = new Indicator(this.ownerAndRepoLabel, this.infoLabel, this.packageSizeLabel);
 
         Main.panel.addToStatusArea(this._uuid, this.indicator);
 
@@ -198,6 +216,7 @@ class Extension {
         this.indicator = null;
         this.ownerAndRepoLabel = null;
         this.infoLabel = null;
+        this.packageSizeLabel = null;
         this.settings = null;
 
         clearInterval(this.interval);

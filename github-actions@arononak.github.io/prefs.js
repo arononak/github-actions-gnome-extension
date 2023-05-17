@@ -50,16 +50,20 @@ function fillPreferencesWindow(window) {
     spinButton.wrap = true;
     spinButton.width_chars = 2;
     const refreshRow = new Adw.ActionRow();
-    refreshRow.add_prefix(new Gtk.Label({ label: 'Refresh time' }));
+    refreshRow.add_prefix(new Gtk.Label({ label: 'Refresh time in s.' }));
     refreshRow.add_suffix(spinButton);
     refreshRow.activatable_widget = spinButton;
     settings.bind('refresh-time', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
-    page.add(group);
     group.add(ownerRow);
     group.add(repoRow);
     group.add(refreshRow);
     group.add(new Gtk.Label({ label: ' '})); /// Separator
     group.add(new Gtk.Label({ label: 'Changing the time requires restarting the extension', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    group.add(new Gtk.Label({ label: ' '})); /// Separator
+    group.add(new Gtk.Label({ label: 'Data package size ' + parseInt(settings.get_int('package-size-in-bytes') / 1024, 10) + " KB", halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+
+    page.add(group);
+
     window.add(page);
 }
