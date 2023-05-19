@@ -27,6 +27,8 @@ const GETTEXT_DOMAIN = 'github-actions-extension';
 const Me = ExtensionUtils.getCurrentExtension();
 const _ = ExtensionUtils.gettext;
 
+const loadingText = "Loading";
+
 function isEmpty(str) {
     return (!str || str.length === 0);
 }
@@ -46,10 +48,9 @@ async function isLogged() {
 
             if (status !== 0) {
                 if (stderr instanceof Uint8Array) {
-                    stderr = ByteArray.toString(stderr);
+                    stderr = ByteArray.toString(stderr); /// no auth token
                 }
 
-                logError(stderr);
                 resolve(false);
                 return;
             }
@@ -67,12 +68,14 @@ async function isLogged() {
 
 async function fetchStatus(owner, repo) {
     const logged = await isLogged();
-    if (!logged) {
-        return null;
-    }
 
     return new Promise((resolve, reject) => {
         try {
+            if (!logged) {
+                resolve({ 'status': 'not logged' });
+                return;
+            }
+
             let proc = Gio.Subprocess.new(
                 ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', '/repos/' + owner + '/' + repo + '/actions/runs'],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
@@ -108,7 +111,12 @@ async function refresh(settings, indicator) {
 
         if (!isEmpty(owner) && !isEmpty(repo)) {
             let run = await fetchStatus(owner, repo);
-            if (run != null) {
+
+            if (run == null) {
+                indicator.clear();
+            } else if (run['status'] == 'not logged') {
+                indicator.setNotLoggedState();
+            } else {
                 const status = run["status"].toString().toUpperCase();
                 const displayTitle = run["display_title"].toString();
                 const runNumber = run["run_number"].toString();
@@ -151,7 +159,7 @@ const Indicator = GObject.registerClass(
 
             this.icon = new St.Icon({ style_class: 'system-status-icon' });
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github.svg`);
-            this.label = new St.Label({ style_class: 'github-actions-label', text: 'Loading', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
+            this.label = new St.Label({ style_class: 'github-actions-label', text: loadingText, y_align: Clutter.ActorAlign.CENTER, y_expand: true });
 
             this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
             this.topBox.add_child(this.icon);
@@ -184,6 +192,24 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(this.settingsItem);
         }
 
+        clear() {
+            this.label.text = null;
+            this.workflowUrl = null;
+            this.repositoryUrl = null;
+            this.ownerAndRepoLabel.text = null;
+            this.infoLabel.text = null;
+            this.packageSizeLabel.text = null;
+        }
+
+        setNotLoggedState() {
+            this.label.text = "Not logged in";
+            this.workflowUrl = null;
+            this.repositoryUrl = null;
+            this.ownerAndRepoLabel.text = '...';
+            this.infoLabel.text = '...';
+            this.packageSizeLabel.text = '...';
+        }
+
         _init() {
             super._init(0.0, 'Github Action button', false);
         }
@@ -198,9 +224,9 @@ class Extension {
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
-        this.ownerAndRepoLabel = new St.Label({ text: 'Loading' });
-        this.infoLabel = new St.Label({ text: 'Loading' });
-        this.packageSizeLabel = new St.Label({ text: 'Loading' });
+        this.ownerAndRepoLabel = new St.Label({ text: loadingText });
+        this.infoLabel = new St.Label({ text: loadingText });
+        this.packageSizeLabel = new St.Label({ text: loadingText });
         this.indicator = new Indicator(this.ownerAndRepoLabel, this.infoLabel, this.packageSizeLabel);
 
         Main.panel.addToStatusArea(this._uuid, this.indicator);
