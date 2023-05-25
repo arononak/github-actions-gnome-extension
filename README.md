@@ -38,8 +38,8 @@ gnome-extensions pack --extra-source=github.svg --extra-source=utils.js
 ### Feedback
 if you have any feedback, please contact me at arononak@gmail.com
 
-### Disclaimer
-This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
-
 ### Thanks
 [@arononak](https://github.com/arononak) for the good work !
+
+### Disclaimer
+This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
