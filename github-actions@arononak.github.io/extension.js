@@ -25,6 +25,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 
 const GETTEXT_DOMAIN = 'github-actions-extension';
 const Me = ExtensionUtils.getCurrentExtension();
+const utils = Me.imports.utils;
 const _ = ExtensionUtils.gettext;
 
 const loadingText = "Loading";
@@ -129,7 +130,7 @@ async function refresh(settings, indicator) {
                 const date = new Date(updatedAt);
 
                 const sizeInBytes = run['_size_'];
-                settings.set_int('package-size-in-bytes', sizeInBytes);
+                utils.prefsUpdatePackageSize(settings, sizeInBytes);
                 const refreshTime = settings.get_int('refresh-time');
 
                 indicator.label.text = status;
@@ -137,7 +138,7 @@ async function refresh(settings, indicator) {
                 indicator.repositoryUrl = repositoryUrl;
                 indicator.ownerAndRepoLabel.text = ownerAndRepo;
                 indicator.infoLabel.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
-                indicator.packageSizeLabel.text = parseInt(sizeInBytes / 1024, 10) + " KB / " + refreshTime + "s"
+                indicator.packageSizeLabel.text = utils.prefsDataConsumptionPerHour(settings);
             }
         }
     } catch (error) {

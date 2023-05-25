@@ -4,6 +4,7 @@ const { Adw, Gio, Gtk } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const utils = Me.imports.utils;
 
 function init() { }
 
@@ -40,7 +41,7 @@ function fillPreferencesWindow(window) {
         digits: 0,
     });
     spinButton.adjustment = new Gtk.Adjustment({
-        value: settings.get_int('refresh-time'),
+        value: utils.prefsRefreshTime(settings),
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -61,7 +62,7 @@ function fillPreferencesWindow(window) {
     group.add(new Gtk.Label({ label: ' '})); /// Separator
     group.add(new Gtk.Label({ label: 'Changing the time requires restarting the extension', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
     group.add(new Gtk.Label({ label: ' '})); /// Separator
-    group.add(new Gtk.Label({ label: 'Data package size ' + parseInt(settings.get_int('package-size-in-bytes') / 1024, 10) + " KB", halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    group.add(new Gtk.Label({ label: 'Data package size ' + utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
     page.add(group);
 
