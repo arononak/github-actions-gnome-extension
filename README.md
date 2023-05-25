@@ -32,7 +32,7 @@ and configure owner and repository in extension settings.
 
 ```bash
 cd github-actions@arononak.github.io
-gnome-extensions pack --extra-source=github.svg
+gnome-extensions pack --extra-source=github.svg --extra-source=utils.js
 ```
 
 ### Feedback
