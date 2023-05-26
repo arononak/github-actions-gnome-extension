@@ -160,7 +160,7 @@ async function refresh(settings, indicator) {
                 indicator.repositoryUrl = repositoryUrl;
                 indicator.ownerAndRepoLabel.text = ownerAndRepo;
                 indicator.infoLabel.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
-                indicator.packageSizeLabel.text = utils.prefsDataConsumptionPerHour(settings);
+                indicator.packageSizeLabel.text = "Data usage: " + utils.prefsDataConsumptionPerHour(settings);
             }
         }
     } catch (error) {
