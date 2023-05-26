@@ -147,7 +147,6 @@ async function refresh(settings, indicator) {
                 const currentState = status + ' ' + conclusion;
 
                 /// Notification
-                log('previousState: ' + previousState + ' currentState: ' + currentState);
                 if (!isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
                     if (currentState === 'COMPLETED SUCCESS') {
                         showFinishNotification(true);
