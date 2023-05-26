@@ -20,6 +20,7 @@ const { Clutter, GObject, St, Gio, GLib, Adw, Gtk } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Main = imports.ui.main;
+const MessageTray = imports.ui.messageTray;
 const ByteArray = imports.byteArray;
 const ExtensionUtils = imports.misc.extensionUtils;
 
@@ -40,6 +41,14 @@ function openUrl(url) {
     } catch (e) {
         logError(e);
     }
+}
+
+function showFinishNotification(success) {
+    const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
+    Main.messageTray.add(source);
+
+    const notification = new MessageTray.Notification(source, 'Github Actions', success === true ? 'Building was successful' : 'Build failed :/');
+    source.showNotification(notification);
 }
 
 async function isLogged() {
@@ -67,13 +76,13 @@ async function isLogged() {
     });
 }
 
-async function fetchStatus(owner, repo) {
+async function fetchWorkflowRun(owner, repo) {
     const logged = await isLogged();
 
     return new Promise((resolve, reject) => {
         try {
             if (!logged) {
-                resolve({ 'status': 'not logged' });
+                resolve({ 'conclusion': 'not logged' });
                 return;
             }
 
@@ -111,14 +120,15 @@ async function refresh(settings, indicator) {
         const repo = settings.get_string('repo');
 
         if (!isEmpty(owner) && !isEmpty(repo)) {
-            let run = await fetchStatus(owner, repo);
+            let run = await fetchWorkflowRun(owner, repo);
 
             if (run == null) {
                 indicator.clear();
-            } else if (run['status'] == 'not logged') {
+            } else if (run['conclusion'] == 'not logged') {
                 indicator.setNotLoggedState();
             } else {
                 const status = run["status"].toString().toUpperCase();
+                const conclusion = run["conclusion"] == null ? '' : run["conclusion"].toString().toUpperCase();
                 const displayTitle = run["display_title"].toString();
                 const runNumber = run["run_number"].toString();
                 const updatedAt = run["updated_at"].toString();
@@ -131,9 +141,22 @@ async function refresh(settings, indicator) {
 
                 const sizeInBytes = run['_size_'];
                 utils.prefsUpdatePackageSize(settings, sizeInBytes);
-                const refreshTime = settings.get_int('refresh-time');
 
-                indicator.label.text = status;
+
+                const previousState = indicator.label.text;
+                const currentState = status + ' ' + conclusion;
+
+                /// Notification
+                log('previousState: ' + previousState + ' currentState: ' + currentState);
+                if (!isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
+                    if (currentState === 'COMPLETED SUCCESS') {
+                        showFinishNotification(true);
+                    } else if (currentState === 'COMPLETED FAILURE') {
+                        showFinishNotification(false);
+                    }
+                }
+
+                indicator.label.text = currentState;;
                 indicator.workflowUrl = workflowUrl;
                 indicator.repositoryUrl = repositoryUrl;
                 indicator.ownerAndRepoLabel.text = ownerAndRepo;
@@ -189,7 +212,9 @@ const Indicator = GObject.registerClass(
 
             /// Settings
             this.settingsItem = new PopupMenu.PopupImageMenuItem(_('Settings'), 'system-settings-symbolic');
-            this.settingsItem.connect('activate', () => ExtensionUtils.openPrefs());
+            this.settingsItem.connect('activate', () => {
+                ExtensionUtils.openPrefs();
+            });
             this.menu.addMenuItem(this.settingsItem);
         }
 
