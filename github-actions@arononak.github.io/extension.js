@@ -43,11 +43,13 @@ function openUrl(url) {
     }
 }
 
-function showFinishNotification(success) {
+function showFinishNotification(ownerAndRepo, success) {
     const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
     Main.messageTray.add(source);
 
-    const notification = new MessageTray.Notification(source, 'Github Actions', success === true ? 'Building was successful' : 'Build failed :/');
+    const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
+
+    const notification = new MessageTray.Notification(source, 'Github Actions', description);
     source.showNotification(notification);
 }
 
@@ -149,9 +151,9 @@ async function refresh(settings, indicator) {
                 /// Notification
                 if (!isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
                     if (currentState === 'COMPLETED SUCCESS') {
-                        showFinishNotification(true);
+                        showFinishNotification(ownerAndRepo, true);
                     } else if (currentState === 'COMPLETED FAILURE') {
-                        showFinishNotification(false);
+                        showFinishNotification(ownerAndRepo, false);
                     }
                 }
 
