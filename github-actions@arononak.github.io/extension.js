@@ -173,11 +173,12 @@ async function refresh(settings, indicator) {
 /// Button
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
-        constructor(ownerAndRepoLabel, infoLabel, packageSizeLabel) {
+        constructor(ownerAndRepoLabel, infoLabel, packageSizeLabel, refreshCallback) {
             super();
             this.ownerAndRepoLabel = ownerAndRepoLabel;
             this.infoLabel = infoLabel;
             this.packageSizeLabel = packageSizeLabel;
+            this.refreshCallback = refreshCallback;
 
             this.workflowUrl = "";
             this.repositoryUrl = "";
@@ -209,6 +210,14 @@ const Indicator = GObject.registerClass(
             this.packageSizeItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
             this.packageSizeItem.actor.add_actor(this.packageSizeLabel);
             this.menu.addMenuItem(this.packageSizeItem);
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+            /// Refresh
+            this.refreshItem = new PopupMenu.PopupImageMenuItem(_('Refresh'), 'view-refresh-symbolic');
+            this.refreshItem.connect('activate', () => {
+                this.refreshCallback();
+            });
+            this.menu.addMenuItem(this.refreshItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Settings
@@ -254,7 +263,7 @@ class Extension {
         this.ownerAndRepoLabel = new St.Label({ text: loadingText });
         this.infoLabel = new St.Label({ text: loadingText });
         this.packageSizeLabel = new St.Label({ text: loadingText });
-        this.indicator = new Indicator(this.ownerAndRepoLabel, this.infoLabel, this.packageSizeLabel);
+        this.indicator = new Indicator(this.ownerAndRepoLabel, this.infoLabel, this.packageSizeLabel, () => refresh(this.settings, this.indicator));
 
         Main.panel.addToStatusArea(this._uuid, this.indicator);
 
