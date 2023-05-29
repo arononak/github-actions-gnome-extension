@@ -12,7 +12,7 @@ jobs:
       - name: Set up GNOME Build Dependencies
         run: |
           sudo apt update
-          sudo apt install -y gnome-shell-dev
+          sudo apt install gnome-shell-extensions
       - name: Build GNOME Extension
         run: |
           make build
