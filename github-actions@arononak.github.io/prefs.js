@@ -4,7 +4,8 @@ const { Adw, Gio, Gtk } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const utils = Me.imports.utils;
+const utils = Me.imports.utils;     // utils.js
+const version = Me.imports.version; // version.js
 
 function init() { }
 
@@ -63,6 +64,8 @@ function fillPreferencesWindow(window) {
     group.add(new Gtk.Label({ label: 'Changing the time requires restarting the extension', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
     group.add(new Gtk.Label({ label: ' '})); /// Separator
     group.add(new Gtk.Label({ label: 'Data package size ' + utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    group.add(new Gtk.Label({ label: ' '})); /// Separator
+    group.add(new Gtk.Label({ label: 'Version: ' + version.VERSION, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
     page.add(group);
 

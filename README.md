@@ -32,8 +32,7 @@ and configure owner and repository in extension settings.
 ### Build gnome-extensions pack
 
 ```bash
-cd github-actions@arononak.github.io
-gnome-extensions pack --extra-source=github.svg --extra-source=utils.js
+cd github-actions@arononak.github.io && make build
 ```
 
 ### Feedback
