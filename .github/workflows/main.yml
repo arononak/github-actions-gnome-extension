@@ -15,12 +15,10 @@ jobs:
           sudo apt-get install -y gnome-shell-extensions
       - name: Build GNOME Extension
         run: |
-          pwd
           cd github-actions@arononak.github.io
-          ls
           make build
       - name: Upload Extension
         uses: actions/upload-artifact@v2
         with:
-          name: gnome-extension
-          path: github-actions@arononak.github.io/
+          name: github-actions@arononak.github.io.shell-extension.zip
+          path: github-actions@arononak.github.io/github-actions@arononak.github.io.shell-extension.zip
