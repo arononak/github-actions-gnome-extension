@@ -11,10 +11,12 @@ jobs:
         uses: actions/checkout@v2
       - name: Set up GNOME Build Dependencies
         run: |
-          sudo apt update
           sudo apt install gnome-shell-extensions
       - name: Build GNOME Extension
         run: |
+          pwd
+          cd github-actions@arononak.github.io
+          ls
           make build
       - name: Upload Extension
         uses: actions/upload-artifact@v2
