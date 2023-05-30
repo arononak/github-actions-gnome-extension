@@ -1,6 +1,6 @@
 'use strict';
 
-const { Adw, Gio, Gtk } = imports.gi;
+const { Adw, Gio, Gtk, GLib } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
@@ -57,17 +57,42 @@ function fillPreferencesWindow(window) {
     refreshRow.activatable_widget = spinButton;
     settings.bind('refresh-time', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
+    const tipRow = new Adw.ActionRow();
+    tipRow.add_prefix(new Gtk.Label({ label: 'Changing the time requires restarting the extension', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+
     group.add(ownerRow);
     group.add(repoRow);
     group.add(refreshRow);
-    group.add(new Gtk.Label({ label: ' '})); /// Separator
-    group.add(new Gtk.Label({ label: 'Changing the time requires restarting the extension', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
-    group.add(new Gtk.Label({ label: ' '})); /// Separator
-    group.add(new Gtk.Label({ label: 'Data package size ' + utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
-    group.add(new Gtk.Label({ label: ' '})); /// Separator
-    group.add(new Gtk.Label({ label: 'Version: ' + version.VERSION, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    group.add(tipRow);
 
     page.add(group);
+
+    const dataRow = new Adw.ActionRow({ title: 'Data package size ' });
+    dataRow.add_suffix(new Gtk.Label({ label: utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+
+    const versionRow = new Adw.ActionRow();
+    versionRow.add_prefix(new Gtk.Label({ label: 'Version: ', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    versionRow.add_suffix(new Gtk.Label({ label: version.VERSION, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+
+    const githubButton = new Gtk.Button({ label: 'Give me a star!' });
+    const starRow = new Adw.ActionRow();
+    starRow.add_prefix(new Gtk.Label({ label: 'You love this extension ?', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    starRow.add_suffix(githubButton);
+
+    githubButton.connect('clicked', () => {
+        try {
+            GLib.spawn_command_line_async('xdg-open ' + 'https://github.com/arononak/github-actions-gnome-extension');
+        } catch (e) {
+            logError(e);
+        }
+    });
+
+    const infoGroup = new Adw.PreferencesGroup();
+
+    infoGroup.add(dataRow);
+    infoGroup.add(versionRow);
+    infoGroup.add(starRow);
+    page.add(infoGroup);
 
     window.add(page);
 }
