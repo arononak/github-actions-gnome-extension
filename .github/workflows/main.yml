@@ -1,7 +1,7 @@
 name: Build GNOME Extension
 on:
   release:
-    types: [released]
+    types: [created]
 jobs:
   build:
     runs-on: ubuntu-latest
