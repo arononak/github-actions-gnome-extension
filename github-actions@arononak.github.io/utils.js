@@ -36,3 +36,15 @@ function bytesToString(size) {
 
     return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'KB', 'MB'][i];
 }
+
+function isEmpty(str) {
+    return (!str || str.length === 0);
+}
+
+function openUrl(url) {
+    try {
+        GLib.spawn_command_line_async('xdg-open ' + url);
+    } catch (e) {
+        logError(e);
+    }
+}

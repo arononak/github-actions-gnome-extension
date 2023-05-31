@@ -79,13 +79,7 @@ function fillPreferencesWindow(window) {
     starRow.add_prefix(new Gtk.Label({ label: 'You love this extension ?', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
     starRow.add_suffix(githubButton);
 
-    githubButton.connect('clicked', () => {
-        try {
-            GLib.spawn_command_line_async('xdg-open ' + 'https://github.com/arononak/github-actions-gnome-extension');
-        } catch (e) {
-            logError(e);
-        }
-    });
+    githubButton.connect('clicked', () => utils.openUrl('https://github.com/arononak/github-actions-gnome-extension'));
 
     const infoGroup = new Adw.PreferencesGroup();
 

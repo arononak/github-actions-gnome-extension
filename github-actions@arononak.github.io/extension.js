@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-const { Clutter, GObject, St, Gio, GLib, Adw, Gtk } = imports.gi;
+const { Clutter, GObject, St, Gio, GLib, Adw, Gtk, Soup, GdkPixbuf } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Main = imports.ui.main;
@@ -30,18 +30,6 @@ const utils = Me.imports.utils;
 const _ = ExtensionUtils.gettext;
 
 const loadingText = "Loading";
-
-function isEmpty(str) {
-    return (!str || str.length === 0);
-}
-
-function openUrl(url) {
-    try {
-        GLib.spawn_command_line_async('xdg-open ' + url);
-    } catch (e) {
-        logError(e);
-    }
-}
 
 function showFinishNotification(ownerAndRepo, success) {
     const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
@@ -74,6 +62,39 @@ async function isLogged() {
         } catch (e) {
             logError(e);
             resolve(false);
+        }
+    });
+}
+
+async function fetchUser() {
+    const logged = await isLogged();
+
+    return new Promise((resolve, reject) => {
+        try {
+            if (!logged) {
+                resolve({ 'name': 'not logged', 'email': 'not logged' });
+                return;
+            }
+
+            let proc = Gio.Subprocess.new(
+                ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', '/user'],
+                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
+            );
+
+            proc.communicate_utf8_async(null, null, (proc, res) => {
+                let [, stdout, stderr] = proc.communicate_utf8_finish(res);
+
+                if (proc.get_successful()) {
+                    const response = JSON.parse(stdout);
+                    resolve(response);
+                    return;
+                } else {
+                    throw new Error(stderr);
+                }
+            });
+        } catch (e) {
+            logError(e);
+            resolve(null);
         }
     });
 }
@@ -121,8 +142,9 @@ async function refresh(settings, indicator) {
         const owner = settings.get_string('owner');
         const repo = settings.get_string('repo');
 
-        if (!isEmpty(owner) && !isEmpty(repo)) {
+        if (!utils.isEmpty(owner) && !utils.isEmpty(repo)) {
             let run = await fetchWorkflowRun(owner, repo);
+            let user = await fetchUser();
 
             if (run == null) {
                 indicator.clear();
@@ -149,7 +171,7 @@ async function refresh(settings, indicator) {
                 const currentState = status + ' ' + conclusion;
 
                 /// Notification
-                if (!isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
+                if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
                     if (currentState === 'COMPLETED SUCCESS') {
                         showFinishNotification(ownerAndRepo, true);
                     } else if (currentState === 'COMPLETED FAILURE') {
@@ -160,6 +182,7 @@ async function refresh(settings, indicator) {
                 indicator.label.text = currentState;;
                 indicator.workflowUrl = workflowUrl;
                 indicator.repositoryUrl = repositoryUrl;
+                indicator.usernameAndEmailLabel.text = user['name'] + ' (' + user['email'] + ')';
                 indicator.ownerAndRepoLabel.text = ownerAndRepo;
                 indicator.infoLabel.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
                 indicator.packageSizeLabel.text = "Data usage: " + utils.prefsDataConsumptionPerHour(settings);
@@ -173,12 +196,13 @@ async function refresh(settings, indicator) {
 /// Button
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
-        constructor(ownerAndRepoLabel, infoLabel, packageSizeLabel, refreshCallback) {
+        constructor(usernameAndEmailLabel, ownerAndRepoLabel, infoLabel, packageSizeLabel, refreshCallback) {
             super();
             this.ownerAndRepoLabel = ownerAndRepoLabel;
             this.infoLabel = infoLabel;
             this.packageSizeLabel = packageSizeLabel;
             this.refreshCallback = refreshCallback;
+            this.usernameAndEmailLabel = usernameAndEmailLabel;
 
             this.workflowUrl = "";
             this.repositoryUrl = "";
@@ -192,17 +216,23 @@ const Indicator = GObject.registerClass(
             this.topBox.add_child(this.label);
             this.add_child(this.topBox);
 
+            /// Username + email
+            this.userItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
+            this.userItem.actor.add_actor(usernameAndEmailLabel);
+            this.menu.addMenuItem(this.userItem);
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
             /// Owner and Repo
             this.ownerAndRepoItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
             this.ownerAndRepoItem.actor.add_actor(this.ownerAndRepoLabel);
-            this.ownerAndRepoItem.connect('activate', () => openUrl(this.repositoryUrl));
+            this.ownerAndRepoItem.connect('activate', () => utils.openUrl(this.repositoryUrl));
             this.menu.addMenuItem(this.ownerAndRepoItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Info
             this.infoLabelItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
             this.infoLabelItem.actor.add_actor(this.infoLabel);
-            this.infoLabelItem.connect('activate', () => openUrl(this.workflowUrl));
+            this.infoLabelItem.connect('activate', () => utils.openUrl(this.workflowUrl));
             this.menu.addMenuItem(this.infoLabelItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
@@ -260,10 +290,11 @@ class Extension {
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
+        this.usernameAndEmailLabel = new St.Label({ text: loadingText });
         this.ownerAndRepoLabel = new St.Label({ text: loadingText });
         this.infoLabel = new St.Label({ text: loadingText });
         this.packageSizeLabel = new St.Label({ text: loadingText });
-        this.indicator = new Indicator(this.ownerAndRepoLabel, this.infoLabel, this.packageSizeLabel, () => refresh(this.settings, this.indicator));
+        this.indicator = new Indicator(this.usernameAndEmailLabel, this.ownerAndRepoLabel, this.infoLabel, this.packageSizeLabel, () => refresh(this.settings, this.indicator));
 
         Main.panel.addToStatusArea(this._uuid, this.indicator);
 
