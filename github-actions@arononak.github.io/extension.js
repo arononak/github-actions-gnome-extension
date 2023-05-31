@@ -182,10 +182,10 @@ async function refresh(settings, indicator) {
                 indicator.label.text = currentState;;
                 indicator.workflowUrl = workflowUrl;
                 indicator.repositoryUrl = repositoryUrl;
-                indicator.usernameAndEmailLabel.text = user['name'] + ' (' + user['email'] + ')';
-                indicator.ownerAndRepoLabel.text = ownerAndRepo;
-                indicator.infoLabel.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
-                indicator.packageSizeLabel.text = "Data usage: " + utils.prefsDataConsumptionPerHour(settings);
+                indicator.userItem.label.text = user['name'] + ' - ' + user['email'];
+                indicator.ownerAndRepoItem.label.text = ownerAndRepo;
+                indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
+                indicator.packageSizeItem.label.text = utils.prefsDataConsumptionPerHour(settings);
             }
         }
     } catch (error) {
@@ -196,13 +196,9 @@ async function refresh(settings, indicator) {
 /// Button
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
-        constructor(usernameAndEmailLabel, ownerAndRepoLabel, infoLabel, packageSizeLabel, refreshCallback) {
+        constructor(refreshCallback) {
             super();
-            this.ownerAndRepoLabel = ownerAndRepoLabel;
-            this.infoLabel = infoLabel;
-            this.packageSizeLabel = packageSizeLabel;
             this.refreshCallback = refreshCallback;
-            this.usernameAndEmailLabel = usernameAndEmailLabel;
 
             this.workflowUrl = "";
             this.repositoryUrl = "";
@@ -217,44 +213,38 @@ const Indicator = GObject.registerClass(
             this.add_child(this.topBox);
 
             /// Username + email
-            this.userItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
-            this.userItem.actor.add_actor(usernameAndEmailLabel);
+            this.userItem = new PopupMenu.PopupImageMenuItem(loadingText, 'avatar-default-symbolic');
+            this.userItem.connect('activate', () => {});
             this.menu.addMenuItem(this.userItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Owner and Repo
-            this.ownerAndRepoItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
-            this.ownerAndRepoItem.actor.add_actor(this.ownerAndRepoLabel);
+            this.ownerAndRepoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'system-file-manager-symbolic');
             this.ownerAndRepoItem.connect('activate', () => utils.openUrl(this.repositoryUrl));
             this.menu.addMenuItem(this.ownerAndRepoItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Info
-            this.infoLabelItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
-            this.infoLabelItem.actor.add_actor(this.infoLabel);
-            this.infoLabelItem.connect('activate', () => utils.openUrl(this.workflowUrl));
-            this.menu.addMenuItem(this.infoLabelItem);
+            this.infoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic');
+            this.infoItem.connect('activate', () => utils.openUrl(this.workflowUrl));
+            this.menu.addMenuItem(this.infoItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-            /// Download package size
-            this.packageSizeItem = new PopupMenu.PopupBaseMenuItem({ reactive: true });
-            this.packageSizeItem.actor.add_actor(this.packageSizeLabel);
+            /// Package Size
+            this.packageSizeItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-wireless-symbolic');
+            this.packageSizeItem.connect('activate', () => this.refreshCallback());
             this.menu.addMenuItem(this.packageSizeItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Refresh
             this.refreshItem = new PopupMenu.PopupImageMenuItem(_('Refresh'), 'view-refresh-symbolic');
-            this.refreshItem.connect('activate', () => {
-                this.refreshCallback();
-            });
+            this.refreshItem.connect('activate', () => this.refreshCallback());
             this.menu.addMenuItem(this.refreshItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Settings
             this.settingsItem = new PopupMenu.PopupImageMenuItem(_('Settings'), 'system-settings-symbolic');
-            this.settingsItem.connect('activate', () => {
-                ExtensionUtils.openPrefs();
-            });
+            this.settingsItem.connect('activate', () => ExtensionUtils.openPrefs());
             this.menu.addMenuItem(this.settingsItem);
         }
 
@@ -262,9 +252,6 @@ const Indicator = GObject.registerClass(
             this.label.text = null;
             this.workflowUrl = null;
             this.repositoryUrl = null;
-            this.ownerAndRepoLabel.text = null;
-            this.infoLabel.text = null;
-            this.packageSizeLabel.text = null;
         }
 
         setNotLoggedState() {
@@ -289,12 +276,7 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
-
-        this.usernameAndEmailLabel = new St.Label({ text: loadingText });
-        this.ownerAndRepoLabel = new St.Label({ text: loadingText });
-        this.infoLabel = new St.Label({ text: loadingText });
-        this.packageSizeLabel = new St.Label({ text: loadingText });
-        this.indicator = new Indicator(this.usernameAndEmailLabel, this.ownerAndRepoLabel, this.infoLabel, this.packageSizeLabel, () => refresh(this.settings, this.indicator));
+        this.indicator = new Indicator(() => refresh(this.settings, this.indicator));
 
         Main.panel.addToStatusArea(this._uuid, this.indicator);
 
@@ -307,9 +289,6 @@ class Extension {
         this.indicator.destroy();
         this.indicator.menu = null;
         this.indicator = null;
-        this.ownerAndRepoLabel = null;
-        this.infoLabel = null;
-        this.packageSizeLabel = null;
         this.settings = null;
 
         clearInterval(this.interval);

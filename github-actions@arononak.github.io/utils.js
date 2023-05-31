@@ -2,6 +2,7 @@
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
+const { Clutter, GObject, St, Gio, GLib, Adw, Gtk, Soup, GdkPixbuf } = imports.gi;
 
 /// Package size
 var prefsPackageSize = function(settings) {
