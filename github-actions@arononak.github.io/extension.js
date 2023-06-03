@@ -66,6 +66,32 @@ async function isLogged() {
     });
 }
 
+async function fetchUserActionsMinutes(username) {
+    return new Promise((resolve, reject) => {
+        try {
+            let proc = Gio.Subprocess.new(
+                ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', '/users/' + username + '/settings/billing/actions'],
+                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
+            );
+
+            proc.communicate_utf8_async(null, null, (proc, res) => {
+                let [, stdout, stderr] = proc.communicate_utf8_finish(res);
+
+                if (proc.get_successful()) {
+                    const response = JSON.parse(stdout);
+                    resolve(response);
+                    return;
+                } else {
+                    throw new Error(stderr);
+                }
+            });
+        } catch (e) {
+            logError(e);
+            resolve(null);
+        }
+    });
+}
+
 async function fetchUser() {
     const logged = await isLogged();
 
@@ -143,8 +169,17 @@ async function refresh(settings, indicator) {
         const repo = settings.get_string('repo');
 
         if (!utils.isEmpty(owner) && !utils.isEmpty(repo)) {
-            let run = await fetchWorkflowRun(owner, repo);
-            let user = await fetchUser();
+            const user = await fetchUser();
+
+            const userLogin = user['login']
+            const userEmail = user['email'];
+            const userName = user['name'];
+
+            const userActionsMinutes = await fetchUserActionsMinutes(userLogin);
+
+            const parsedMinutes = 'Usage minutes: ' + userActionsMinutes['total_minutes_used'] + ' of ' + userActionsMinutes['included_minutes'] + '\t(' + userActionsMinutes['total_paid_minutes_used'] + ' paid}';
+
+            const run = await fetchWorkflowRun(owner, repo);
 
             if (run == null) {
                 indicator.clear();
@@ -179,10 +214,11 @@ async function refresh(settings, indicator) {
                     }
                 }
 
-                indicator.label.text = currentState;;
+                indicator.label.text = currentState;
                 indicator.workflowUrl = workflowUrl;
                 indicator.repositoryUrl = repositoryUrl;
-                indicator.userItem.label.text = user['name'] + ' - ' + user['email'];
+                indicator.userItem.label.text = userName + ' - ' + userEmail;
+                indicator.minutesItem.label.text = parsedMinutes;
                 indicator.ownerAndRepoItem.label.text = ownerAndRepo;
                 indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
                 indicator.packageSizeItem.label.text = utils.prefsDataConsumptionPerHour(settings);
@@ -214,15 +250,19 @@ const Indicator = GObject.registerClass(
 
             /// Username + email
             this.userItem = new PopupMenu.PopupImageMenuItem(loadingText, 'avatar-default-symbolic');
-            this.userItem.connect('activate', () => {});
+            this.userItem.connect('activate', () => { });
             this.menu.addMenuItem(this.userItem);
+
+            /// Actions minutes
+            this.minutesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'alarm-symbolic');
+            this.minutesItem.connect('activate', () => { });
+            this.menu.addMenuItem(this.minutesItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Owner and Repo
             this.ownerAndRepoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'system-file-manager-symbolic');
             this.ownerAndRepoItem.connect('activate', () => utils.openUrl(this.repositoryUrl));
             this.menu.addMenuItem(this.ownerAndRepoItem);
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Info
             this.infoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic');
@@ -240,7 +280,6 @@ const Indicator = GObject.registerClass(
             this.refreshItem = new PopupMenu.PopupImageMenuItem(_('Refresh'), 'view-refresh-symbolic');
             this.refreshItem.connect('activate', () => this.refreshCallback());
             this.menu.addMenuItem(this.refreshItem);
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Settings
             this.settingsItem = new PopupMenu.PopupImageMenuItem(_('Settings'), 'system-settings-symbolic');
