@@ -16,17 +16,17 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-const { Clutter, GObject, St, Gio, GLib, Adw, Gtk, Soup, GdkPixbuf } = imports.gi;
+const { Clutter, GObject, St, Gio, GLib, Adw, Gtk } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Main = imports.ui.main;
 const MessageTray = imports.ui.messageTray;
-const ByteArray = imports.byteArray;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const GETTEXT_DOMAIN = 'github-actions-extension';
 const Me = ExtensionUtils.getCurrentExtension();
 const utils = Me.imports.utils;
+const dataRepository = Me.imports.data_repository;
 const _ = ExtensionUtils.gettext;
 
 const loadingText = "Loading";
@@ -41,149 +41,37 @@ function showFinishNotification(ownerAndRepo, success) {
     source.showNotification(notification);
 }
 
-async function isLogged() {
-    return new Promise((resolve, reject) => {
-        try {
-            let [, stdout, stderr, status] = GLib.spawn_command_line_sync('gh auth token');
-
-            if (status !== 0) {
-                if (stderr instanceof Uint8Array) {
-                    stderr = ByteArray.toString(stderr); /// no auth token
-                }
-
-                resolve(false);
-                return;
-            }
-            if (stdout instanceof Uint8Array) {
-                stdout = ByteArray.toString(stdout);
-            }
-
-            resolve(true);
-        } catch (e) {
-            logError(e);
-            resolve(false);
-        }
-    });
-}
-
-async function fetchUserActionsMinutes(username) {
-    return new Promise((resolve, reject) => {
-        try {
-            let proc = Gio.Subprocess.new(
-                ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', '/users/' + username + '/settings/billing/actions'],
-                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
-            );
-
-            proc.communicate_utf8_async(null, null, (proc, res) => {
-                let [, stdout, stderr] = proc.communicate_utf8_finish(res);
-
-                if (proc.get_successful()) {
-                    const response = JSON.parse(stdout);
-                    resolve(response);
-                    return;
-                } else {
-                    throw new Error(stderr);
-                }
-            });
-        } catch (e) {
-            logError(e);
-            resolve(null);
-        }
-    });
-}
-
-async function fetchUser() {
-    const logged = await isLogged();
-
-    return new Promise((resolve, reject) => {
-        try {
-            if (!logged) {
-                resolve({ 'name': 'not logged', 'email': 'not logged' });
-                return;
-            }
-
-            let proc = Gio.Subprocess.new(
-                ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', '/user'],
-                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
-            );
-
-            proc.communicate_utf8_async(null, null, (proc, res) => {
-                let [, stdout, stderr] = proc.communicate_utf8_finish(res);
-
-                if (proc.get_successful()) {
-                    const response = JSON.parse(stdout);
-                    resolve(response);
-                    return;
-                } else {
-                    throw new Error(stderr);
-                }
-            });
-        } catch (e) {
-            logError(e);
-            resolve(null);
-        }
-    });
-}
-
-async function fetchWorkflowRun(owner, repo) {
-    const logged = await isLogged();
-
-    return new Promise((resolve, reject) => {
-        try {
-            if (!logged) {
-                resolve({ 'conclusion': 'not logged' });
-                return;
-            }
-
-            let proc = Gio.Subprocess.new(
-                ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', '/repos/' + owner + '/' + repo + '/actions/runs'],
-                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
-            );
-
-            proc.communicate_utf8_async(null, null, (proc, res) => {
-                let [, stdout, stderr] = proc.communicate_utf8_finish(res);
-
-                if (proc.get_successful()) {
-                    const response = JSON.parse(stdout);
-                    const run = response["workflow_runs"][0];
-
-                    const size = stdout.length;
-                    run['_size_'] = size; /// Welcome in JS World :D
-
-                    resolve(run);
-                    return;
-                } else {
-                    throw new Error(stderr);
-                }
-            });
-        } catch (e) {
-            logError(e);
-            resolve(null);
-        }
-    });
-}
-
 async function refresh(settings, indicator) {
     try {
         const owner = settings.get_string('owner');
         const repo = settings.get_string('repo');
 
         if (!utils.isEmpty(owner) && !utils.isEmpty(repo)) {
-            const user = await fetchUser();
+            const user = await dataRepository.fetchUser();
+            let userLogin;
+            let userEmail;
+            let userName;
+            if (user != null) {
+                userLogin = user['login']
+                userEmail = user['email'];
+                userName = user['name'];
+            }
 
-            const userLogin = user['login']
-            const userEmail = user['email'];
-            const userName = user['name'];
+            const minutes = await dataRepository.fetchUserActionsMinutes(userLogin);
+            let parsedMinutes;
+            if (minutes != null) {
+                parsedMinutes = 'Usage minutes: ' + minutes['total_minutes_used'] + ' of ' + minutes['included_minutes'] + ', ' + minutes['total_paid_minutes_used'] + ' paid';
+            }
 
-            const userActionsMinutes = await fetchUserActionsMinutes(userLogin);
-
-            const parsedMinutes = 'Usage minutes: ' + userActionsMinutes['total_minutes_used'] + ' of ' + userActionsMinutes['included_minutes'] + '\t(' + userActionsMinutes['total_paid_minutes_used'] + ' paid}';
-
-            const run = await fetchWorkflowRun(owner, repo);
+            let run;
+            let size;
+            const runs = await dataRepository.fetchWorkflowRuns(owner, repo);
+            if (runs != null) {
+                run = runs['workflow_runs'][0];
+                size = runs['_size_'];
+            }
 
             if (run == null) {
-                indicator.clear();
-            } else if (run['conclusion'] == 'not logged') {
                 indicator.setNotLoggedState();
             } else {
                 const status = run["status"].toString().toUpperCase();
@@ -201,7 +89,6 @@ async function refresh(settings, indicator) {
                 const sizeInBytes = run['_size_'];
                 utils.prefsUpdatePackageSize(settings, sizeInBytes);
 
-
                 const previousState = indicator.label.text;
                 const currentState = status + ' ' + conclusion;
 
@@ -217,8 +104,8 @@ async function refresh(settings, indicator) {
                 indicator.label.text = currentState;
                 indicator.workflowUrl = workflowUrl;
                 indicator.repositoryUrl = repositoryUrl;
-                indicator.userItem.label.text = userName + ' - ' + userEmail;
-                indicator.minutesItem.label.text = parsedMinutes;
+                indicator.userItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
+                indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
                 indicator.ownerAndRepoItem.label.text = ownerAndRepo;
                 indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
                 indicator.packageSizeItem.label.text = utils.prefsDataConsumptionPerHour(settings);
@@ -297,9 +184,13 @@ const Indicator = GObject.registerClass(
             this.label.text = "Not logged in";
             this.workflowUrl = null;
             this.repositoryUrl = null;
-            this.ownerAndRepoLabel.text = '...';
-            this.infoLabel.text = '...';
-            this.packageSizeLabel.text = '...';
+
+            this.userItem.label.text = '...';
+            this.minutesItem.label.text = '...';
+            
+            this.ownerAndRepoItem.label.text = '...';
+            this.infoItem.label.text = '...';
+            this.packageSizeItem.label.text = '...';
         }
 
         _init() {
