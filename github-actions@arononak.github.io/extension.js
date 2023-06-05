@@ -16,7 +16,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-const { Clutter, GObject, St, Gio, GLib, Adw, Gtk } = imports.gi;
+const { Clutter, GObject, St, Gio, GLib } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const Main = imports.ui.main;
