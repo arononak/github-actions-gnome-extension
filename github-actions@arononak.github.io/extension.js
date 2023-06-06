@@ -57,10 +57,22 @@ async function refresh(settings, indicator) {
                 userName = user['name'];
             }
 
-            const minutes = await dataRepository.fetchUserActionsMinutes(userLogin);
+            const minutes = await dataRepository.fetchUserBillingActionsMinutes(userLogin);
             let parsedMinutes;
             if (minutes != null) {
                 parsedMinutes = 'Usage minutes: ' + minutes['total_minutes_used'] + ' of ' + minutes['included_minutes'] + ', ' + minutes['total_paid_minutes_used'] + ' paid';
+            }
+
+            const packages = await dataRepository.fetchUserBillingPackages(userLogin);
+            let parsedPackages;
+            if (packages != null) {
+                parsedPackages = 'Data transfer out: ' + packages['total_gigabytes_bandwidth_used'] + ' GB of ' + packages['included_gigabytes_bandwidth'] + ' GB, ' + packages['total_paid_gigabytes_bandwidth_used'] + ' GB paid';
+            }
+
+            const sharedStorage = await dataRepository.fetchUserBillingSharedStorage(userLogin);
+            let parsedSharedStorage;
+            if (sharedStorage != null) {
+                parsedSharedStorage = 'Storage for month: ' + sharedStorage['estimated_storage_for_month'] + ' GB, ' + sharedStorage['estimated_paid_storage_for_month'] + ' GB paid';
             }
 
             let run;
@@ -106,6 +118,8 @@ async function refresh(settings, indicator) {
                 indicator.repositoryUrl = repositoryUrl;
                 indicator.userItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
                 indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
+                indicator.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
+                indicator.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
                 indicator.ownerAndRepoItem.label.text = ownerAndRepo;
                 indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
                 indicator.packageSizeItem.label.text = utils.prefsDataConsumptionPerHour(settings);
@@ -139,11 +153,22 @@ const Indicator = GObject.registerClass(
             this.userItem = new PopupMenu.PopupImageMenuItem(loadingText, 'avatar-default-symbolic');
             this.userItem.connect('activate', () => { });
             this.menu.addMenuItem(this.userItem);
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Actions minutes
             this.minutesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'alarm-symbolic');
             this.minutesItem.connect('activate', () => { });
             this.menu.addMenuItem(this.minutesItem);
+
+            /// Packages
+            this.packagesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic');
+            this.packagesItem.connect('activate', () => { });
+            this.menu.addMenuItem(this.packagesItem);
+
+            /// Shared Storage
+            this.sharedStorageItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-server-symbolic');
+            this.sharedStorageItem.connect('activate', () => { });
+            this.menu.addMenuItem(this.sharedStorageItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Owner and Repo
@@ -187,7 +212,7 @@ const Indicator = GObject.registerClass(
 
             this.userItem.label.text = '...';
             this.minutesItem.label.text = '...';
-            
+
             this.ownerAndRepoItem.label.text = '...';
             this.infoItem.label.text = '...';
             this.packageSizeItem.label.text = '...';

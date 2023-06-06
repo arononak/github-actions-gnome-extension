@@ -30,8 +30,16 @@ async function isLogged() {
     });
 }
 
-var fetchUserActionsMinutes = async function (username) {
+var fetchUserBillingActionsMinutes = async function (username) {
     return executeGithubCliCommand('/users/' + username + '/settings/billing/actions');
+}
+
+var fetchUserBillingPackages = async function (username) {
+    return executeGithubCliCommand('/users/' + username + '/settings/billing/packages');
+}
+
+var fetchUserBillingSharedStorage = async function (username) {
+    return executeGithubCliCommand('/users/' + username + '/settings/billing/shared-storage');
 }
 
 var fetchUser = async function () {
