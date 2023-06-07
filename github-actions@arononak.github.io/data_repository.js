@@ -5,6 +5,36 @@ const Me = ExtensionUtils.getCurrentExtension();
 const { GLib, Gio } = imports.gi;
 const ByteArray = imports.byteArray;
 
+/// User
+var fetchUser = async function () {
+    return executeGithubCliCommand('/user');
+}
+
+/// User billing
+var fetchUserBillingActionsMinutes = async function (username) {
+    return executeGithubCliCommand('/users/' + username + '/settings/billing/actions');
+}
+
+var fetchUserBillingPackages = async function (username) {
+    return executeGithubCliCommand('/users/' + username + '/settings/billing/packages');
+}
+
+var fetchUserBillingSharedStorage = async function (username) {
+    return executeGithubCliCommand('/users/' + username + '/settings/billing/shared-storage');
+}
+
+/// Workflows
+var fetchWorkflows = async function (owner, repo) {
+    return executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/workflows');
+}
+
+/// Workflows runs
+var fetchWorkflowRuns = async function (owner, repo) {
+    return executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/runs');
+}
+
+
+/////////////////////////////////////////
 async function isLogged() {
     return new Promise((resolve, reject) => {
         try {
@@ -30,26 +60,6 @@ async function isLogged() {
     });
 }
 
-var fetchUserBillingActionsMinutes = async function (username) {
-    return executeGithubCliCommand('/users/' + username + '/settings/billing/actions');
-}
-
-var fetchUserBillingPackages = async function (username) {
-    return executeGithubCliCommand('/users/' + username + '/settings/billing/packages');
-}
-
-var fetchUserBillingSharedStorage = async function (username) {
-    return executeGithubCliCommand('/users/' + username + '/settings/billing/shared-storage');
-}
-
-var fetchUser = async function () {
-    return executeGithubCliCommand('/user');
-}
-
-var fetchWorkflowRuns = async function (owner, repo) {
-    return executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/runs');
-}
-
 async function executeGithubCliCommand(command) {
     const logged = await isLogged();
 
@@ -71,7 +81,7 @@ async function executeGithubCliCommand(command) {
                 if (proc.get_successful()) {
                     const response = JSON.parse(stdout);
                     response['_size_'] = stdout.length; /// Welcome in JS World :D
-                    
+
                     resolve(response);
                     return;
                 } else {

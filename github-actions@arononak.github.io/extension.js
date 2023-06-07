@@ -78,52 +78,54 @@ async function refresh(settings, indicator) {
             let run;
             let size;
             const runs = await dataRepository.fetchWorkflowRuns(owner, repo);
-            if (runs != null) {
-                run = runs['workflow_runs'][0];
-                size = runs['_size_'];
-            }
-
-            if (run == null) {
+            if (runs == null) {
                 indicator.setNotLoggedState();
-            } else {
-                const status = run["status"].toString().toUpperCase();
-                const conclusion = run["conclusion"] == null ? '' : run["conclusion"].toString().toUpperCase();
-                const displayTitle = run["display_title"].toString();
-                const runNumber = run["run_number"].toString();
-                const updatedAt = run["updated_at"].toString();
-                const ownerAndRepo = run["repository"]["full_name"].toString();
-
-                const workflowUrl = run["html_url"].toString();
-                const repositoryUrl = run["repository"]["html_url"].toString();
-
-                const date = new Date(updatedAt);
-
-                const sizeInBytes = run['_size_'];
-                utils.prefsUpdatePackageSize(settings, sizeInBytes);
-
-                const previousState = indicator.label.text;
-                const currentState = status + ' ' + conclusion;
-
-                /// Notification
-                if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
-                    if (currentState === 'COMPLETED SUCCESS') {
-                        showFinishNotification(ownerAndRepo, true);
-                    } else if (currentState === 'COMPLETED FAILURE') {
-                        showFinishNotification(ownerAndRepo, false);
-                    }
-                }
-
-                indicator.label.text = currentState;
-                indicator.workflowUrl = workflowUrl;
-                indicator.repositoryUrl = repositoryUrl;
-                indicator.userItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
-                indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
-                indicator.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
-                indicator.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
-                indicator.ownerAndRepoItem.label.text = ownerAndRepo;
-                indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
-                indicator.packageSizeItem.label.text = utils.prefsDataConsumptionPerHour(settings);
+                return;
             }
+
+            run = runs['workflow_runs'][0];
+            size = runs['_size_'];
+
+            const workflows = await dataRepository.fetchWorkflows(owner, repo);
+            indicator.setWorkflows(workflows['workflows']);
+
+            const status = run["status"].toString().toUpperCase();
+            const conclusion = run["conclusion"] == null ? '' : run["conclusion"].toString().toUpperCase();
+            const displayTitle = run["display_title"].toString();
+            const runNumber = run["run_number"].toString();
+            const updatedAt = run["updated_at"].toString();
+            const ownerAndRepo = run["repository"]["full_name"].toString();
+
+            const workflowUrl = run["html_url"].toString();
+            const repositoryUrl = run["repository"]["html_url"].toString();
+
+            const date = new Date(updatedAt);
+
+            const sizeInBytes = runs['_size_'];
+            utils.prefsUpdatePackageSize(settings, sizeInBytes);
+
+            const previousState = indicator.label.text;
+            const currentState = status + ' ' + conclusion;
+
+            /// Notification
+            if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
+                if (currentState === 'COMPLETED SUCCESS') {
+                    showFinishNotification(ownerAndRepo, true);
+                } else if (currentState === 'COMPLETED FAILURE') {
+                    showFinishNotification(ownerAndRepo, false);
+                }
+            }
+
+            indicator.label.text = currentState;
+            indicator.workflowUrl = workflowUrl;
+            indicator.repositoryUrl = repositoryUrl;
+            indicator.userItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
+            indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
+            indicator.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
+            indicator.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
+            indicator.ownerAndRepoItem.label.text = ownerAndRepo;
+            indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
+            indicator.packageSizeItem.label.text = utils.prefsDataConsumptionPerHour(settings);
         }
     } catch (error) {
         logError(error);
@@ -143,7 +145,6 @@ const Indicator = GObject.registerClass(
             this.icon = new St.Icon({ style_class: 'system-status-icon' });
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github.svg`);
             this.label = new St.Label({ style_class: 'github-actions-label', text: loadingText, y_align: Clutter.ActorAlign.CENTER, y_expand: true });
-
             this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
             this.topBox.add_child(this.icon);
             this.topBox.add_child(this.label);
@@ -155,17 +156,17 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(this.userItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-            /// Actions minutes
+            /// Billing Actions minutes
             this.minutesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'alarm-symbolic');
             this.minutesItem.connect('activate', () => { });
             this.menu.addMenuItem(this.minutesItem);
 
-            /// Packages
+            /// Billing Packages
             this.packagesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic');
             this.packagesItem.connect('activate', () => { });
             this.menu.addMenuItem(this.packagesItem);
 
-            /// Shared Storage
+            /// Billing Shared Storage
             this.sharedStorageItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-server-symbolic');
             this.sharedStorageItem.connect('activate', () => { });
             this.menu.addMenuItem(this.sharedStorageItem);
@@ -175,6 +176,11 @@ const Indicator = GObject.registerClass(
             this.ownerAndRepoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'system-file-manager-symbolic');
             this.ownerAndRepoItem.connect('activate', () => utils.openUrl(this.repositoryUrl));
             this.menu.addMenuItem(this.ownerAndRepoItem);
+
+            /// Workflows
+            this.workflowItem = new PopupMenu.PopupSubMenuMenuItem('Workflows');
+            this.menu.addMenuItem(this.workflowItem);
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Info
             this.infoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic');
@@ -197,6 +203,14 @@ const Indicator = GObject.registerClass(
             this.settingsItem = new PopupMenu.PopupImageMenuItem(_('Settings'), 'system-settings-symbolic');
             this.settingsItem.connect('activate', () => ExtensionUtils.openPrefs());
             this.menu.addMenuItem(this.settingsItem);
+        }
+
+        setWorkflows(workflows) {
+            this.workflowItem.menu.removeAll();
+
+            workflows.forEach((element) => {
+                this.workflowItem.menu.addAction(element['name'], () => utils.openUrl(element['html_url']));
+            });
         }
 
         clear() {
