@@ -12,12 +12,9 @@ function init() { }
 function fillPreferencesWindow(window) {
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
-    const page = new Adw.PreferencesPage();
-    const group = new Adw.PreferencesGroup();
-
-    const ownerRow = new Adw.ActionRow();
     const ownerEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
-    ownerRow.add_prefix(new Gtk.Label({ label: 'Owner' }));
+    ownerEntry.set_halign(Gtk.Align.END);
+    const ownerRow = new Adw.ActionRow({ title: 'Owner' });
     ownerRow.add_suffix(ownerEntry);
     ownerRow.activatable_widget = ownerEntry;
     ownerEntry.connect('changed', (widget) => {
@@ -26,9 +23,9 @@ function fillPreferencesWindow(window) {
         }
     });
 
-    const repoRow = new Adw.ActionRow();
     const repoEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('repo') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
-    repoRow.add_prefix(new Gtk.Label({ label: 'Repo' }));
+    repoEntry.set_halign(Gtk.Align.END);
+    const repoRow = new Adw.ActionRow({ title: 'Repo' });
     repoRow.add_suffix(repoEntry);
     repoRow.activatable_widget = repoEntry;
     repoEntry.connect('changed', (widget) => {
@@ -37,10 +34,11 @@ function fillPreferencesWindow(window) {
         }
     });
 
-    const spinButton = new Gtk.SpinButton({
-        climb_rate: 1,
-        digits: 0,
-    });
+    const spinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
+    spinButton.wrap = true;
+    spinButton.width_chars = 2;
+    spinButton.margin_top = 8;
+    spinButton.margin_bottom = 8;
     spinButton.adjustment = new Gtk.Adjustment({
         value: utils.prefsRefreshTime(settings),
         lower: 1,
@@ -49,8 +47,7 @@ function fillPreferencesWindow(window) {
         page_increment: 10,
         page_size: 0,
     });
-    spinButton.wrap = true;
-    spinButton.width_chars = 2;
+
     const refreshRow = new Adw.ActionRow();
     refreshRow.add_prefix(new Gtk.Label({ label: 'Refresh time in s.' }));
     refreshRow.add_suffix(spinButton);
@@ -60,12 +57,11 @@ function fillPreferencesWindow(window) {
     const tipRow = new Adw.ActionRow();
     tipRow.add_prefix(new Gtk.Label({ label: 'Changing the time requires restarting the extension', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
+    const group = new Adw.PreferencesGroup();
     group.add(ownerRow);
     group.add(repoRow);
     group.add(refreshRow);
     group.add(tipRow);
-
-    page.add(group);
 
     const dataRow = new Adw.ActionRow({ title: 'Data package size ' });
     dataRow.add_suffix(new Gtk.Label({ label: utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
@@ -75,17 +71,19 @@ function fillPreferencesWindow(window) {
     versionRow.add_suffix(new Gtk.Label({ label: version.VERSION, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
     const githubButton = new Gtk.Button({ label: 'Give me a star!' });
-    const starRow = new Adw.ActionRow();
-    starRow.add_prefix(new Gtk.Label({ label: 'You love this extension ?', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    githubButton.connect('clicked', () => utils.openUrl('https://github.com/arononak/github-actions-gnome-extension'));
+    githubButton.margin_top = 8;
+    githubButton.margin_bottom = 8;
+    const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
     starRow.add_suffix(githubButton);
 
-    githubButton.connect('clicked', () => utils.openUrl('https://github.com/arononak/github-actions-gnome-extension'));
-
     const infoGroup = new Adw.PreferencesGroup();
-
     infoGroup.add(dataRow);
     infoGroup.add(versionRow);
     infoGroup.add(starRow);
+
+    const page = new Adw.PreferencesPage();
+    page.add(group);
     page.add(infoGroup);
 
     window.add(page);
