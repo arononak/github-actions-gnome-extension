@@ -10,6 +10,7 @@ const version = Me.imports.version; // version.js
 function init() { }
 
 function fillPreferencesWindow(window) {
+    window.set_default_size(500, 650);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
     const ownerEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
@@ -57,12 +58,6 @@ function fillPreferencesWindow(window) {
     const tipRow = new Adw.ActionRow();
     tipRow.add_prefix(new Gtk.Label({ label: 'Changing the time requires restarting the extension', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
-    const group = new Adw.PreferencesGroup();
-    group.add(ownerRow);
-    group.add(repoRow);
-    group.add(refreshRow);
-    group.add(tipRow);
-
     const dataRow = new Adw.ActionRow({ title: 'Data package size ' });
     dataRow.add_suffix(new Gtk.Label({ label: utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
@@ -77,14 +72,23 @@ function fillPreferencesWindow(window) {
     const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
     starRow.add_suffix(githubButton);
 
-    const infoGroup = new Adw.PreferencesGroup();
-    infoGroup.add(dataRow);
-    infoGroup.add(versionRow);
-    infoGroup.add(starRow);
+    const generalGroup = new Adw.PreferencesGroup({ title: 'General' });
+    generalGroup.add(ownerRow);
+    generalGroup.add(repoRow);
+
+    const refreshStatusGroup = new Adw.PreferencesGroup({ title: 'Refresh status' });
+    refreshStatusGroup.add(dataRow);
+    refreshStatusGroup.add(refreshRow);
+    refreshStatusGroup.add(tipRow);
+
+    const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
+    otherGroup.add(starRow);
+    otherGroup.add(versionRow);
 
     const page = new Adw.PreferencesPage();
-    page.add(group);
-    page.add(infoGroup);
+    page.add(generalGroup);
+    page.add(refreshStatusGroup);
+    page.add(otherGroup);
 
     window.add(page);
 }
