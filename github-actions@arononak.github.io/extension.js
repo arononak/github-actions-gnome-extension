@@ -51,10 +51,14 @@ async function refresh(settings, indicator) {
             let userLogin;
             let userEmail;
             let userName;
+            let createdAt;
+            let userUrl;
             if (user != null) {
                 userLogin = user['login']
                 userEmail = user['email'];
                 userName = user['name'];
+                createdAt = new Date(user['created_at']);
+                userUrl = user['html_url'];
             }
 
             const minutes = await dataRepository.fetchUserBillingActionsMinutes(userLogin);
@@ -117,9 +121,13 @@ async function refresh(settings, indicator) {
             }
 
             indicator.label.text = currentState;
+            
             indicator.workflowUrl = workflowUrl;
             indicator.repositoryUrl = repositoryUrl;
+            indicator.userUrl = userUrl;
+
             indicator.userItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
+            indicator.joinedItem.label.text = 'Joined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
             indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
             indicator.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
             indicator.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
@@ -141,6 +149,7 @@ const Indicator = GObject.registerClass(
 
             this.workflowUrl = "";
             this.repositoryUrl = "";
+            this.userUrl = "";
 
             this.icon = new St.Icon({ style_class: 'system-status-icon' });
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github.svg`);
@@ -152,8 +161,13 @@ const Indicator = GObject.registerClass(
 
             /// Username + email
             this.userItem = new PopupMenu.PopupImageMenuItem(loadingText, 'avatar-default-symbolic');
-            this.userItem.connect('activate', () => { });
+            this.userItem.connect('activate', () => utils.openUrl(this.userUrl));
             this.menu.addMenuItem(this.userItem);
+
+            /// Created at
+            this.joinedItem = new PopupMenu.PopupImageMenuItem(loadingText, 'mail-forward-symbolic');
+            this.joinedItem.connect('activate', () => { });
+            this.menu.addMenuItem(this.joinedItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Billing Actions minutes
