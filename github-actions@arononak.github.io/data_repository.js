@@ -10,6 +10,11 @@ var fetchUser = async function () {
     return executeGithubCliCommand('/user');
 }
 
+/// User starred
+var fetchUserStarred = async function (username) {
+    return executeGithubCliCommand('/users/' + username + '/starred');
+}
+
 /// User billing
 var fetchUserBillingActionsMinutes = async function (username) {
     return executeGithubCliCommand('/users/' + username + '/settings/billing/actions');

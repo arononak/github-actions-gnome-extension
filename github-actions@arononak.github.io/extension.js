@@ -41,7 +41,27 @@ function showFinishNotification(ownerAndRepo, success) {
     source.showNotification(notification);
 }
 
-async function refresh(settings, indicator) {
+/// ~1 hour
+async function coldRefresh(settings, indicator) {
+    try {
+        const owner = settings.get_string('owner');
+        const repo = settings.get_string('repo');
+        if (utils.isEmpty(owner) || utils.isEmpty(repo)) return;
+
+        const user = await dataRepository.fetchUser();
+        if (user == null) return;
+
+        const login = user['login'];
+        const starredList = await dataRepository.fetchUserStarred(login);
+
+        indicator.setUserStarred(starredList);
+    } catch (error) {
+        logError(error);
+    }
+}
+
+/// 5-60sec
+async function hotRefresh(settings, indicator) {
     try {
         const owner = settings.get_string('owner');
         const repo = settings.get_string('repo');
@@ -121,7 +141,7 @@ async function refresh(settings, indicator) {
             }
 
             indicator.label.text = currentState;
-            
+
             indicator.workflowUrl = workflowUrl;
             indicator.repositoryUrl = repositoryUrl;
             indicator.userUrl = userUrl;
@@ -168,6 +188,14 @@ const Indicator = GObject.registerClass(
             this.joinedItem = new PopupMenu.PopupImageMenuItem(loadingText, 'mail-forward-symbolic');
             this.joinedItem.connect('activate', () => { });
             this.menu.addMenuItem(this.joinedItem);
+
+            /// Starred
+            this.starredScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.starredMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.starredScrollView.add_actor(this.starredMenuBox);
+            this.starredMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.starredMenuItem.menu.box.add_actor(this.starredScrollView);
+            this.menu.addMenuItem(this.starredMenuItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Billing Actions minutes
@@ -192,9 +220,12 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(this.ownerAndRepoItem);
 
             /// Workflows
-            this.workflowItem = new PopupMenu.PopupSubMenuMenuItem('Workflows');
-            this.menu.addMenuItem(this.workflowItem);
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+            this.workflowScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.workflowMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.workflowScrollView.add_actor(this.workflowMenuBox);
+            this.workflowMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.workflowMenuItem.menu.box.add_actor(this.workflowScrollView);
+            this.menu.addMenuItem(this.workflowMenuItem);
 
             /// Info
             this.infoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic');
@@ -220,10 +251,24 @@ const Indicator = GObject.registerClass(
         }
 
         setWorkflows(workflows) {
-            this.workflowItem.menu.removeAll();
+            this.workflowMenuBox.remove_all_children();
+            this.workflowMenuItem.label.text = 'Workflows: ' + workflows.length;
 
             workflows.forEach((element) => {
-                this.workflowItem.menu.addAction(element['name'], () => utils.openUrl(element['html_url']));
+                const item = new PopupMenu.PopupImageMenuItem(element['name'], 'view-wrapped-symbolic');
+                item.connect('activate', () => utils.openUrl(element['html_url']));
+                this.workflowMenuBox.add_actor(item);
+            });
+        }
+
+        setUserStarred(starred) {
+            this.starredMenuBox.remove_all_children();
+            this.starredMenuItem.label.text = 'Starred: ' + starred.length;
+
+            starred.forEach((element) => {
+                const item = new PopupMenu.PopupImageMenuItem(element['full_name'], 'starred-symbolic');
+                item.connect('activate', () => utils.openUrl(element['html_url']));
+                this.starredMenuBox.add_actor(item);
             });
         }
 
@@ -259,13 +304,13 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
-        this.indicator = new Indicator(() => refresh(this.settings, this.indicator));
+        this.indicator = new Indicator(() => this.refresh());
+
+        this.hotRefreshInterval = setInterval(() => hotRefresh(this.settings, this.indicator), this.settings.get_int('refresh-time') * 1000);
+        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), 1 * 60 * 1000);
+        this.refresh();
 
         Main.panel.addToStatusArea(this._uuid, this.indicator);
-
-        const refreshTime = this.settings.get_int('refresh-time') * 1000;
-        refresh(this.settings, this.indicator);
-        this.interval = setInterval(() => refresh(this.settings, this.indicator), refreshTime);
     }
 
     disable() {
@@ -274,8 +319,16 @@ class Extension {
         this.indicator = null;
         this.settings = null;
 
-        clearInterval(this.interval);
-        this.interval = null;
+        clearInterval(this.hotRefreshInterval);
+        this.hotRefreshInterval = null;
+
+        clearInterval(this.coldRefreshInterval);
+        this.coldRefreshInterval = null;
+    }
+
+    refresh() {
+        coldRefresh(this.settings, this.indicator);
+        hotRefresh(this.settings, this.indicator);
     }
 }
 
