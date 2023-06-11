@@ -1,8 +1,0 @@
-{
-  "devDependencies": {
-    "eslint": "^8.10.0"
-  },
-  "dependencies": {
-    "@microsoft/eslint-formatter-sarif": "^2.1.7"
-  }
-}
