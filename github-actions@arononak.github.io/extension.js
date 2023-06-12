@@ -41,7 +41,7 @@ function showFinishNotification(ownerAndRepo, success) {
     source.showNotification(notification);
 }
 
-/// ~1 hour
+/// ~5 minutes
 async function coldRefresh(settings, indicator) {
     try {
         const owner = settings.get_string('owner');
@@ -316,7 +316,7 @@ class Extension {
         this.indicator = new Indicator(() => this.refresh());
 
         this.hotRefreshInterval = setInterval(() => hotRefresh(this.settings, this.indicator), this.settings.get_int('refresh-time') * 1000);
-        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), 1 * 60 * 1000);
+        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), 5 * 60 * 1000);
         this.refresh();
 
         Main.panel.addToStatusArea(this._uuid, this.indicator);
