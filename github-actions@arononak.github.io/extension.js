@@ -99,7 +99,7 @@ async function hotRefresh(settings, indicator) {
                 parsedSharedStorage = 'Storage for month: ' + sharedStorage['estimated_storage_for_month'] + ' GB, ' + sharedStorage['estimated_paid_storage_for_month'] + ' GB paid';
             }
 
-            let run;
+            let latestRun;
             let size;
             const runs = await dataRepository.fetchWorkflowRuns(owner, repo);
             if (runs == null) {
@@ -107,21 +107,23 @@ async function hotRefresh(settings, indicator) {
                 return;
             }
 
-            run = runs['workflow_runs'][0];
+            latestRun = runs['workflow_runs'][0];
             size = runs['_size_'];
 
             const workflows = await dataRepository.fetchWorkflows(owner, repo);
+
+            indicator.setRuns(runs['workflow_runs']);
             indicator.setWorkflows(workflows['workflows']);
 
-            const status = run["status"].toString().toUpperCase();
-            const conclusion = run["conclusion"] == null ? '' : run["conclusion"].toString().toUpperCase();
-            const displayTitle = run["display_title"].toString();
-            const runNumber = run["run_number"].toString();
-            const updatedAt = run["updated_at"].toString();
-            const ownerAndRepo = run["repository"]["full_name"].toString();
+            const status = latestRun["status"].toString().toUpperCase();
+            const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString().toUpperCase();
+            const displayTitle = latestRun["display_title"].toString();
+            const runNumber = latestRun["run_number"].toString();
+            const updatedAt = latestRun["updated_at"].toString();
+            const ownerAndRepo = latestRun["repository"]["full_name"].toString();
 
-            const workflowUrl = run["html_url"].toString();
-            const repositoryUrl = run["repository"]["html_url"].toString();
+            const workflowUrl = latestRun["html_url"].toString();
+            const repositoryUrl = latestRun["repository"]["html_url"].toString();
 
             const date = new Date(updatedAt);
 
@@ -229,12 +231,20 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(this.ownerAndRepoItem);
 
             /// Workflows
-            this.workflowScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
-            this.workflowMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
-            this.workflowScrollView.add_actor(this.workflowMenuBox);
-            this.workflowMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
-            this.workflowMenuItem.menu.box.add_actor(this.workflowScrollView);
-            this.menu.addMenuItem(this.workflowMenuItem);
+            this.workflowsScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.workflowsMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.workflowsScrollView.add_actor(this.workflowsMenuBox);
+            this.workflowsMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.workflowsMenuItem.menu.box.add_actor(this.workflowsScrollView);
+            this.menu.addMenuItem(this.workflowsMenuItem);
+
+            /// Runs
+            this.runsScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.runsMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.runsScrollView.add_actor(this.runsMenuBox);
+            this.runsMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.runsMenuItem.menu.box.add_actor(this.runsScrollView);
+            this.menu.addMenuItem(this.runsMenuItem);
 
             /// Info
             this.infoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic');
@@ -265,13 +275,25 @@ const Indicator = GObject.registerClass(
         }
 
         setWorkflows(workflows) {
-            this.workflowMenuBox.remove_all_children();
-            this.workflowMenuItem.label.text = 'Workflows: ' + workflows.length;
+            this.workflowsMenuBox.remove_all_children();
+            this.workflowsMenuItem.label.text = 'Workflows: ' + workflows.length;
 
             workflows.forEach((element) => {
                 const item = new PopupMenu.PopupImageMenuItem(element['name'], 'view-wrapped-symbolic');
                 item.connect('activate', () => utils.openUrl(element['html_url']));
-                this.workflowMenuBox.add_actor(item);
+                this.workflowsMenuBox.add_actor(item);
+            });
+        }
+
+        setRuns(runs) {
+            this.runsMenuBox.remove_all_children();
+            this.runsMenuItem.label.text = 'Runs: ' + runs.length;
+
+            runs.forEach((element) => {
+                const iconName = element['conclusion'] == 'success' ? 'emblem-default' : 'emblem-unreadable';
+                const item = new PopupMenu.PopupImageMenuItem(element['display_title'], iconName);
+                item.connect('activate', () => utils.openUrl(element['html_url']));
+                this.runsMenuBox.add_actor(item);
             });
         }
 
