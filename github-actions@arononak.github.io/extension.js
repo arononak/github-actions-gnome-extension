@@ -208,17 +208,17 @@ const Indicator = GObject.registerClass(
 
             /// Billing Actions minutes
             this.minutesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'alarm-symbolic');
-            this.minutesItem.connect('activate', () => utils.openUrl(element['html_url']));
+            this.minutesItem.connect('activate', () => {});
             this.billingMenuBox.add_actor(this.minutesItem);
 
             /// Billing Packages
             this.packagesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic');
-            this.packagesItem.connect('activate', () => utils.openUrl(element['html_url']));
+            this.packagesItem.connect('activate', () => {});
             this.billingMenuBox.add_actor(this.packagesItem);
 
             /// Billing Shared Storage
             this.sharedStorageItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-server-symbolic');
-            this.sharedStorageItem.connect('activate', () => utils.openUrl(element['html_url']));
+            this.sharedStorageItem.connect('activate', () => {});
             this.billingMenuBox.add_actor(this.sharedStorageItem);
 
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
