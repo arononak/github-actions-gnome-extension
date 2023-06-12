@@ -22,5 +22,5 @@ jobs:
       - name: Upload Extension
         uses: actions/upload-artifact@v2
         with:
-          name: ext.zip
-          path: github-actions@arononak.github.io/ext
+          name: github-actions@arononak.github.io.shell-extension.zip
+          path: github-actions@arononak.github.io/ext/
