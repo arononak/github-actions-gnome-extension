@@ -208,17 +208,17 @@ const Indicator = GObject.registerClass(
 
             /// Billing Actions minutes
             this.minutesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'alarm-symbolic');
-            this.minutesItem.connect('activate', () => {});
+            this.minutesItem.connect('activate', () => { });
             this.billingMenuBox.add_actor(this.minutesItem);
 
             /// Billing Packages
             this.packagesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic');
-            this.packagesItem.connect('activate', () => {});
+            this.packagesItem.connect('activate', () => { });
             this.billingMenuBox.add_actor(this.packagesItem);
 
             /// Billing Shared Storage
             this.sharedStorageItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-server-symbolic');
-            this.sharedStorageItem.connect('activate', () => {});
+            this.sharedStorageItem.connect('activate', () => { });
             this.billingMenuBox.add_actor(this.sharedStorageItem);
 
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
@@ -247,6 +247,11 @@ const Indicator = GObject.registerClass(
             this.packageSizeItem.connect('activate', () => this.refreshCallback());
             this.menu.addMenuItem(this.packageSizeItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+
+            /// Bored
+            this.boredItem = new PopupMenu.PopupImageMenuItem(_('Bored ?'), 'face-monkey-symbolic');
+            this.boredItem.connect('activate', () => utils.openUrl('https://api.github.com/octocat'));
+            this.menu.addMenuItem(this.boredItem);
 
             /// Refresh
             this.refreshItem = new PopupMenu.PopupImageMenuItem(_('Refresh'), 'view-refresh-symbolic');
