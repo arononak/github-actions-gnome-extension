@@ -196,22 +196,31 @@ const Indicator = GObject.registerClass(
             this.starredMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
             this.starredMenuItem.menu.box.add_actor(this.starredScrollView);
             this.menu.addMenuItem(this.starredMenuItem);
+
+            /// Billing
+            this.billingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.billingMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.billingScrollView.add_actor(this.billingMenuBox);
+            this.billingMenuItem = new PopupMenu.PopupSubMenuMenuItem('Billing');
+            this.billingMenuItem.menu.box.add_actor(this.billingScrollView);
+            this.menu.addMenuItem(this.billingMenuItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Billing Actions minutes
             this.minutesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'alarm-symbolic');
-            this.minutesItem.connect('activate', () => { });
-            this.menu.addMenuItem(this.minutesItem);
+            this.minutesItem.connect('activate', () => utils.openUrl(element['html_url']));
+            this.billingMenuBox.add_actor(this.minutesItem);
 
             /// Billing Packages
             this.packagesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic');
-            this.packagesItem.connect('activate', () => { });
-            this.menu.addMenuItem(this.packagesItem);
+            this.packagesItem.connect('activate', () => utils.openUrl(element['html_url']));
+            this.billingMenuBox.add_actor(this.packagesItem);
 
             /// Billing Shared Storage
             this.sharedStorageItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-server-symbolic');
-            this.sharedStorageItem.connect('activate', () => { });
-            this.menu.addMenuItem(this.sharedStorageItem);
+            this.sharedStorageItem.connect('activate', () => utils.openUrl(element['html_url']));
+            this.billingMenuBox.add_actor(this.sharedStorageItem);
+
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Owner and Repo
