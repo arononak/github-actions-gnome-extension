@@ -16,10 +16,11 @@ jobs:
         run: |
           cd github-actions@arononak.github.io
           make build
-          unzip github-actions@arononak.github.io.shell-extension.zip
+          mkdir ext
+          unzip github-actions@arononak.github.io.shell-extension.zip -d ./ext
           rm github-actions@arononak.github.io.shell-extension.zip
       - name: Upload Extension
         uses: actions/upload-artifact@v2
         with:
-          name: github-actions@arononak.github.io.shell-extension.zip
+          name: ./ext
           path: github-actions@arononak.github.io/
