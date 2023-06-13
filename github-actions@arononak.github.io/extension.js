@@ -258,20 +258,40 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(this.packageSizeItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-            /// Bored
-            this.boredItem = new PopupMenu.PopupImageMenuItem(_('Bored ?'), 'face-monkey-symbolic');
-            this.boredItem.connect('activate', () => utils.openUrl('https://api.github.com/octocat'));
-            this.menu.addMenuItem(this.boredItem);
+            this.bottomButtonBox = new St.BoxLayout({
+                style_class: 'github-actions-button-box',
+                x_align: Clutter.ActorAlign.CENTER,
+                y_align: Clutter.ActorAlign.CENTER,
+                clip_to_allocation: true,
+                reactive: true,
+                x_expand: true,
+                pack_start: false,
+                vertical: false
+            });
+            this.bottomItem = new PopupMenu.PopupBaseMenuItem({ reactive: false });
+            this.bottomItem.actor.add_actor(this.bottomButtonBox);
+            this.menu.addMenuItem(this.bottomItem);
 
             /// Refresh
-            this.refreshItem = new PopupMenu.PopupImageMenuItem(_('Refresh'), 'view-refresh-symbolic');
-            this.refreshItem.connect('activate', () => this.refreshCallback());
-            this.menu.addMenuItem(this.refreshItem);
+            this.refreshButton = this.createRoundButton('view-refresh-symbolic');
+            this.refreshButton.connect('clicked', (self) => this.refreshCallback());
+            this.bottomButtonBox.add_actor(this.refreshButton);
+
+            /// Bored
+            this.boredButton = this.createRoundButton('face-monkey-symbolic');
+            this.boredButton.connect('clicked', (self) => utils.openUrl('https://api.github.com/octocat'));
+            this.bottomButtonBox.add_actor(this.boredButton);
 
             /// Settings
-            this.settingsItem = new PopupMenu.PopupImageMenuItem(_('Settings'), 'system-settings-symbolic');
-            this.settingsItem.connect('activate', () => ExtensionUtils.openPrefs());
-            this.menu.addMenuItem(this.settingsItem);
+            this.settingsItem = this.createRoundButton('system-settings-symbolic');
+            this.settingsItem.connect('clicked', (self) => ExtensionUtils.openPrefs());
+            this.bottomButtonBox.add_actor(this.settingsItem);
+        }
+
+        createRoundButton(iconName) {
+            const button = new St.Button({ style_class: 'button github-actions-button-action' });
+            button.child = new St.Icon({ icon_name: iconName });
+            return button;
         }
 
         setWorkflows(workflows) {

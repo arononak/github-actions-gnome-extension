@@ -1,0 +1,24 @@
+.github-actions-button-action {
+    -st-icon-style: symbolic;
+    border-radius: 32px;
+    margin: 0px;
+    min-height: 22px;
+    min-width: 22px;
+    padding: 10px;
+    font-size: 100%;
+    border: 1px solid transparent;
+}
+
+.github-actions-button-action:hover,
+.github-actions-button-action:focus {
+    border-color: #777;
+}
+
+.github-actions-button-action>StIcon {
+    icon-size: 24px;
+}
+
+.github-actions-button-box {
+    padding: 0px;
+    spacing: 22px;
+}
