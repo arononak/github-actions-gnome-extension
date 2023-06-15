@@ -361,7 +361,7 @@ const Indicator = GObject.registerClass(
 
         setUserFollowing(following) {
             this.followingMenuBox.remove_all_children();
-            this.followingMenuItem.label.text = 'Followers: ' + following.length;
+            this.followingMenuItem.label.text = 'Following: ' + following.length;
 
             following.forEach((element) => {
                 const item = new PopupMenu.PopupImageMenuItem(element['login'], 'system-users-symbolic');
