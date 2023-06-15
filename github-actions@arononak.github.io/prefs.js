@@ -55,9 +55,6 @@ function fillPreferencesWindow(window) {
     refreshRow.activatable_widget = spinButton;
     settings.bind('refresh-time', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
-    const tipRow = new Adw.ActionRow();
-    tipRow.add_prefix(new Gtk.Label({ label: 'Changing the time requires restarting the extension', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
-
     const dataRow = new Adw.ActionRow({ title: 'Data package size ' });
     dataRow.add_suffix(new Gtk.Label({ label: utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
@@ -79,7 +76,6 @@ function fillPreferencesWindow(window) {
     const refreshStatusGroup = new Adw.PreferencesGroup({ title: 'Refresh status' });
     refreshStatusGroup.add(dataRow);
     refreshStatusGroup.add(refreshRow);
-    refreshStatusGroup.add(tipRow);
 
     const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
     otherGroup.add(starRow);

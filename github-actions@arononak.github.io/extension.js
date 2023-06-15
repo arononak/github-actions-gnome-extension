@@ -402,21 +402,31 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
+        this.settings.connect('changed::refresh-time', (settings, key) => {
+            this.stopRefreshing();
+            this.startRefreshing();
+        });
+
         this.indicator = new Indicator(() => this.refresh());
-
-        this.hotRefreshInterval = setInterval(() => hotRefresh(this.settings, this.indicator), this.settings.get_int('refresh-time') * 1000);
-        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), 5 * 60 * 1000);
-        this.refresh();
-
         Main.panel.addToStatusArea(this._uuid, this.indicator);
+        this.startRefreshing();
     }
 
     disable() {
+        this.stopRefreshing();
         this.indicator.destroy();
         this.indicator.menu = null;
         this.indicator = null;
         this.settings = null;
+    }
 
+    startRefreshing() {
+        this.refresh();
+        this.hotRefreshInterval = setInterval(() => hotRefresh(this.settings, this.indicator), this.settings.get_int('refresh-time') * 1000);
+        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), 5 * 60 * 1000);
+    }
+
+    stopRefreshing() {
         clearInterval(this.hotRefreshInterval);
         this.hotRefreshInterval = null;
 
