@@ -53,8 +53,12 @@ async function coldRefresh(settings, indicator) {
 
         const login = user['login'];
         const starredList = await dataRepository.fetchUserStarred(login);
-
         indicator.setUserStarred(starredList);
+
+        const followers = await dataRepository.fetchUserFollowers();
+        indicator.setUserFollowers(followers);
+        const following = await dataRepository.fetchUserFollowing();
+        indicator.setUserFollowing(following);
     } catch (error) {
         logError(error);
     }
@@ -199,6 +203,22 @@ const Indicator = GObject.registerClass(
             this.starredMenuItem.menu.box.add_actor(this.starredScrollView);
             this.menu.addMenuItem(this.starredMenuItem);
 
+            /// Followers
+            this.followersScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.followersMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.followersScrollView.add_actor(this.followersMenuBox);
+            this.followersMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.followersMenuItem.menu.box.add_actor(this.followersScrollView);
+            this.menu.addMenuItem(this.followersMenuItem);
+
+            /// Following
+            this.followingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.followingMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.followingScrollView.add_actor(this.followingMenuBox);
+            this.followingMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.followingMenuItem.menu.box.add_actor(this.followingScrollView);
+            this.menu.addMenuItem(this.followingMenuItem);
+
             /// Billing
             this.billingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.billingMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
@@ -325,6 +345,28 @@ const Indicator = GObject.registerClass(
                 const item = new PopupMenu.PopupImageMenuItem(element['full_name'], 'starred-symbolic');
                 item.connect('activate', () => utils.openUrl(element['html_url']));
                 this.starredMenuBox.add_actor(item);
+            });
+        }
+
+        setUserFollowers(followers) {
+            this.followersMenuBox.remove_all_children();
+            this.followersMenuItem.label.text = 'Followers: ' + followers.length;
+
+            followers.forEach((element) => {
+                const item = new PopupMenu.PopupImageMenuItem(element['login'], 'system-users-symbolic');
+                item.connect('activate', () => utils.openUrl(element['html_url']));
+                this.followersMenuBox.add_actor(item);
+            });
+        }
+
+        setUserFollowing(following) {
+            this.followingMenuBox.remove_all_children();
+            this.followingMenuItem.label.text = 'Followers: ' + following.length;
+
+            following.forEach((element) => {
+                const item = new PopupMenu.PopupImageMenuItem(element['login'], 'system-users-symbolic');
+                item.connect('activate', () => utils.openUrl(element['html_url']));
+                this.followingMenuBox.add_actor(item);
             });
         }
 

@@ -15,6 +15,16 @@ var fetchUserStarred = async function (username) {
     return executeGithubCliCommand('/users/' + username + '/starred');
 }
 
+/// User followers
+var fetchUserFollowers = async function () {
+    return executeGithubCliCommand('/user/followers');
+}
+
+/// User following
+var fetchUserFollowing = async function () {
+    return executeGithubCliCommand('/user/following');
+}
+
 /// User billing
 var fetchUserBillingActionsMinutes = async function (username) {
     return executeGithubCliCommand('/users/' + username + '/settings/billing/actions');
