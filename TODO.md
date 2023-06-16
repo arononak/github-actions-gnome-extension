@@ -2,14 +2,14 @@
 
 ## 🚀 Version 1 - one-way communication
 
-- [ ] Refactor to 3 layers, return 1 json package
-- [ ] 2FA enablee / disabled - if disabled show turn on button
+- [ ] Refactor to 3 layers, return single json package
+- [ ] 2FA enabled / disabled - if disabled show turn on button
 - [ ] PopupList - custom icon + label
 - [ ] Remove workflow run icon
 - [ ] Menu refactor - factory pattern
-- [ ] Organizations billings
+- [ ] Organization billings
 - [ ] User avatar
-- [ ] Notifications sound
+- [ ] Notification sound
 - [ ] More notifications
 - [ ] Error handling
 - [ ] Bottom horizontal icons center margins
