@@ -403,7 +403,13 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
+
         this.settings.connect('changed::refresh-time', (settings, key) => {
+            this.stopRefreshing();
+            this.startRefreshing();
+        });
+
+        this.settings.connect('changed::full-refresh-time', (settings, key) => {
             this.stopRefreshing();
             this.startRefreshing();
         });
