@@ -196,30 +196,6 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(this.joinedItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-            /// Starred
-            this.starredScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
-            this.starredMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
-            this.starredScrollView.add_actor(this.starredMenuBox);
-            this.starredMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
-            this.starredMenuItem.menu.box.add_actor(this.starredScrollView);
-            this.menu.addMenuItem(this.starredMenuItem);
-
-            /// Followers
-            this.followersScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
-            this.followersMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
-            this.followersScrollView.add_actor(this.followersMenuBox);
-            this.followersMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
-            this.followersMenuItem.menu.box.add_actor(this.followersScrollView);
-            this.menu.addMenuItem(this.followersMenuItem);
-
-            /// Following
-            this.followingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
-            this.followingMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
-            this.followingScrollView.add_actor(this.followingMenuBox);
-            this.followingMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
-            this.followingMenuItem.menu.box.add_actor(this.followingScrollView);
-            this.menu.addMenuItem(this.followingMenuItem);
-
             /// Billing
             this.billingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.billingMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
@@ -244,6 +220,29 @@ const Indicator = GObject.registerClass(
             this.sharedStorageItem.connect('activate', () => { });
             this.billingMenuBox.add_actor(this.sharedStorageItem);
 
+            /// Starred
+            this.starredScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.starredMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.starredScrollView.add_actor(this.starredMenuBox);
+            this.starredMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.starredMenuItem.menu.box.add_actor(this.starredScrollView);
+            this.menu.addMenuItem(this.starredMenuItem);
+
+            /// Followers
+            this.followersScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.followersMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.followersScrollView.add_actor(this.followersMenuBox);
+            this.followersMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.followersMenuItem.menu.box.add_actor(this.followersScrollView);
+            this.menu.addMenuItem(this.followersMenuItem);
+
+            /// Following
+            this.followingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.followingMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.followingScrollView.add_actor(this.followingMenuBox);
+            this.followingMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.followingMenuItem.menu.box.add_actor(this.followingScrollView);
+            this.menu.addMenuItem(this.followingMenuItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Owner and Repo
