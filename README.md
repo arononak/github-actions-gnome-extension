@@ -7,13 +7,13 @@
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
 
-### Preview 🏞
+### 🏞 Preview
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview.png?raw=true)
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview2.png?raw=true)
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview3.png?raw=true)
 
-### Installation 🔨
+### 🔨 Installation
 
 Ubuntu
 ```bash
@@ -22,7 +22,7 @@ sudo apt install gh
 ```
 [https://github.com/cli/cli/blob/trunk/docs/install_linux.md](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)
 
-### Login 🔒
+### 🔒 Login
 
 ```bash
 gh auth login
@@ -36,7 +36,7 @@ and configure owner and repository in extension settings.
 cd github-actions@arononak.github.io && make build
 ```
 
-### [TODO list](TODO.md) ✅️
+### [✅️ TODO list](TODO.md)
 
 If you have any feedback, please contact me at arononak@gmail.com
 
