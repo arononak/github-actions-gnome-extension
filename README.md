@@ -36,14 +36,12 @@ and configure owner and repository in extension settings.
 cd github-actions@arononak.github.io && make build
 ```
 
-### TODO
-[TODO.md](TODO.md)
+### [TODO list](TODO.md)
 
-### Feedback
-if you have any feedback, please contact me at arononak@gmail.com
+If you have any feedback, please contact me at arononak@gmail.com
 
-### Thanks
-[@arononak](https://github.com/arononak) for the good work !
+### Copyright 2023 Aron Onak
 
-### Disclaimer
+The GitHub logo is a trademark of Microsoft.
+
 This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
