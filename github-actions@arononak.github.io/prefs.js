@@ -35,12 +35,12 @@ function fillPreferencesWindow(window) {
         }
     });
 
-    const spinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
-    spinButton.wrap = true;
-    spinButton.width_chars = 2;
-    spinButton.margin_top = 8;
-    spinButton.margin_bottom = 8;
-    spinButton.adjustment = new Gtk.Adjustment({
+    const refreshStatusSpinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
+    refreshStatusSpinButton.wrap = true;
+    refreshStatusSpinButton.width_chars = 2;
+    refreshStatusSpinButton.margin_top = 8;
+    refreshStatusSpinButton.margin_bottom = 8;
+    refreshStatusSpinButton.adjustment = new Gtk.Adjustment({
         value: utils.prefsRefreshTime(settings),
         lower: 1,
         upper: 60,
@@ -48,12 +48,30 @@ function fillPreferencesWindow(window) {
         page_increment: 10,
         page_size: 0,
     });
+    const refreshStatusRow = new Adw.ActionRow();
+    refreshStatusRow.add_prefix(new Gtk.Label({ label: 'Refresh status time in s.' }));
+    refreshStatusRow.add_suffix(refreshStatusSpinButton);
+    refreshStatusRow.activatable_widget = refreshStatusSpinButton;
+    settings.bind('refresh-time', refreshStatusSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
-    const refreshRow = new Adw.ActionRow();
-    refreshRow.add_prefix(new Gtk.Label({ label: 'Refresh time in s.' }));
-    refreshRow.add_suffix(spinButton);
-    refreshRow.activatable_widget = spinButton;
-    settings.bind('refresh-time', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
+    const fullRefreshSpinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
+    fullRefreshSpinButton.wrap = true;
+    fullRefreshSpinButton.width_chars = 2;
+    fullRefreshSpinButton.margin_top = 8;
+    fullRefreshSpinButton.margin_bottom = 8;
+    fullRefreshSpinButton.adjustment = new Gtk.Adjustment({
+        value: utils.prefsRefreshTime(settings),
+        lower: 1,
+        upper: 60,
+        step_increment: 1,
+        page_increment: 10,
+        page_size: 0,
+    });
+    const fullRefreshRow = new Adw.ActionRow();
+    fullRefreshRow.add_prefix(new Gtk.Label({ label: 'Full refresh time in m.' }));
+    fullRefreshRow.add_suffix(fullRefreshSpinButton);
+    fullRefreshRow.activatable_widget = fullRefreshSpinButton;
+    settings.bind('full-refresh-time', fullRefreshSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
     const dataRow = new Adw.ActionRow({ title: 'Data package size ' });
     dataRow.add_suffix(new Gtk.Label({ label: utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
@@ -75,7 +93,8 @@ function fillPreferencesWindow(window) {
 
     const refreshStatusGroup = new Adw.PreferencesGroup({ title: 'Refresh status' });
     refreshStatusGroup.add(dataRow);
-    refreshStatusGroup.add(refreshRow);
+    refreshStatusGroup.add(refreshStatusRow);
+    refreshStatusGroup.add(fullRefreshRow);
 
     const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
     otherGroup.add(starRow);

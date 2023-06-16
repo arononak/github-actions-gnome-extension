@@ -194,6 +194,7 @@ const Indicator = GObject.registerClass(
             this.joinedItem = new PopupMenu.PopupImageMenuItem(loadingText, 'mail-forward-symbolic');
             this.joinedItem.connect('activate', () => { });
             this.menu.addMenuItem(this.joinedItem);
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Starred
             this.starredScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
@@ -250,6 +251,11 @@ const Indicator = GObject.registerClass(
             this.ownerAndRepoItem.connect('activate', () => utils.openUrl(this.repositoryUrl));
             this.menu.addMenuItem(this.ownerAndRepoItem);
 
+            /// Info
+            this.infoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic');
+            this.infoItem.connect('activate', () => utils.openUrl(this.workflowUrl));
+            this.menu.addMenuItem(this.infoItem);
+
             /// Workflows
             this.workflowsScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.workflowsMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
@@ -266,10 +272,6 @@ const Indicator = GObject.registerClass(
             this.runsMenuItem.menu.box.add_actor(this.runsScrollView);
             this.menu.addMenuItem(this.runsMenuItem);
 
-            /// Info
-            this.infoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic');
-            this.infoItem.connect('activate', () => utils.openUrl(this.workflowUrl));
-            this.menu.addMenuItem(this.infoItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Package Size
@@ -422,8 +424,12 @@ class Extension {
 
     startRefreshing() {
         this.refresh();
-        this.hotRefreshInterval = setInterval(() => hotRefresh(this.settings, this.indicator), this.settings.get_int('refresh-time') * 1000);
-        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), 5 * 60 * 1000);
+
+        const statusRefreshTimeInSeconds = this.settings.get_int('refresh-time');
+        const fullStatusRefreshTimeInMinutes = this.settings.get_int('full-refresh-time');
+
+        this.hotRefreshInterval = setInterval(() => hotRefresh(this.settings, this.indicator), statusRefreshTimeInSeconds * 1000);
+        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), fullStatusRefreshTimeInMinutes * 60 * 1000);
     }
 
     stopRefreshing() {
