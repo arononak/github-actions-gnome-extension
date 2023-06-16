@@ -11,6 +11,7 @@
 - [ ] Notifications sound
 - [ ] More notifications
 - [ ] Error handling
+- [ ] Bottom horizontal icons center margins
 
 ## 🌟 Version 2 - Interactions with GitHub
 
