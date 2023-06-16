@@ -36,6 +36,9 @@ and configure owner and repository in extension settings.
 cd github-actions@arononak.github.io && make build
 ```
 
+### TODO
+[TODO.md](TODO.md)
+
 ### Feedback
 if you have any feedback, please contact me at arononak@gmail.com
 
