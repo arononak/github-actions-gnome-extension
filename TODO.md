@@ -14,6 +14,7 @@
 - [ ] Error handling
 - [ ] Bottom horizontal icons center margins
 - [ ] Lint
+- [ ] Account more information expandable
 
 ## 🌟 Version 2 - Interactions with GitHub
 
