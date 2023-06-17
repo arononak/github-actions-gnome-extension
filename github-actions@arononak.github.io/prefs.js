@@ -10,7 +10,7 @@ const version = Me.imports.version; // version.js
 function init() { }
 
 function fillPreferencesWindow(window) {
-    window.set_default_size(500, 700);
+    window.set_default_size(550, 600);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
     const ownerEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
@@ -49,13 +49,10 @@ function fillPreferencesWindow(window) {
         page_size: 0,
     });
     const refreshStatusRow = new Adw.ActionRow();
-    refreshStatusRow.add_prefix(new Gtk.Label({ label: 'Refresh status time in s.' }));
+    refreshStatusRow.add_prefix(new Gtk.Label({ label: 'Status in seconds (Refresh size: ' + utils.prefsPackageSize(settings) + ')' }));
     refreshStatusRow.add_suffix(refreshStatusSpinButton);
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
     settings.bind('refresh-time', refreshStatusSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
-
-    const dataRow = new Adw.ActionRow({ title: 'Data package size ' });
-    dataRow.add_suffix(new Gtk.Label({ label: utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
     const fullRefreshSpinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
     fullRefreshSpinButton.wrap = true;
@@ -71,13 +68,10 @@ function fillPreferencesWindow(window) {
         page_size: 0,
     });
     const fullRefreshRow = new Adw.ActionRow();
-    fullRefreshRow.add_prefix(new Gtk.Label({ label: 'Full refresh time in m.' }));
+    fullRefreshRow.add_prefix(new Gtk.Label({ label: 'Full update in minutes (Refresh size: ' + utils.prefsColdPackageSize(settings) + ')' }));
     fullRefreshRow.add_suffix(fullRefreshSpinButton);
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;
     settings.bind('full-refresh-time', fullRefreshSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
-
-    const fullDataRow = new Adw.ActionRow({ title: 'Full data package size ' });
-    fullDataRow.add_suffix(new Gtk.Label({ label: utils.prefsColdPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
     const versionRow = new Adw.ActionRow();
     versionRow.add_prefix(new Gtk.Label({ label: 'Version: ', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
@@ -90,14 +84,12 @@ function fillPreferencesWindow(window) {
     const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
     starRow.add_suffix(githubButton);
 
-    const generalGroup = new Adw.PreferencesGroup({ title: 'General' });
+    const generalGroup = new Adw.PreferencesGroup({ title: 'Watched repository' });
     generalGroup.add(ownerRow);
     generalGroup.add(repoRow);
 
-    const refreshStatusGroup = new Adw.PreferencesGroup({ title: 'Refresh status' });
-    refreshStatusGroup.add(dataRow);
+    const refreshStatusGroup = new Adw.PreferencesGroup({ title: 'Refresh settings' });
     refreshStatusGroup.add(refreshStatusRow);
-    refreshStatusGroup.add(fullDataRow);
     refreshStatusGroup.add(fullRefreshRow);
 
     const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
