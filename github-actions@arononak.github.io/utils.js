@@ -13,6 +13,14 @@ var prefsUpdatePackageSize = function(settings, sizeInBytes) {
     settings.set_int('package-size-in-bytes', sizeInBytes);
 }
 
+var prefsColdPackageSize = function(settings) {
+    return bytesToString(settings.get_int('cold-package-size-in-bytes'));
+}
+
+var prefsUpdateColdPackageSize = function(settings, sizeInBytes) {
+    settings.set_int('cold-package-size-in-bytes', sizeInBytes);
+}
+
 /// Refresh time
 var prefsRefreshTime = function(settings) {
     return settings.get_int('refresh-time');
@@ -22,12 +30,29 @@ var prefsUpdateRefreshTime = function(settings, refreshTime) {
     settings.set_int('refresh-time', refreshTime);
 }
 
+var prefsRefreshFullUpdateTime = function(settings) {
+    return settings.get_int('full-refresh-time');
+}
+
+var prefsUpdateFullRefreshTime = function(settings, refreshTime) {
+    settings.set_int('full-refresh-time', refreshTime);
+}
+
 /// Data consumption
 var prefsDataConsumptionPerHour = function(settings) {
     const packageSizeInBytes = settings.get_int('package-size-in-bytes');
     const refreshTime = prefsRefreshTime(settings);
 
     const _dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60 * 60);
+
+    return bytesToString(_dataConsumptionPerHour) + '/h';
+}
+
+var prefsFullDataConsumptionPerHour = function(settings) {
+    const packageSizeInBytes = settings.get_int('cold-package-size-in-bytes');
+    const refreshTime = prefsRefreshFullUpdateTime(settings);
+
+    const _dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60);
 
     return bytesToString(_dataConsumptionPerHour) + '/h';
 }

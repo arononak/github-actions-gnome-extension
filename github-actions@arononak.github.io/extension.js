@@ -41,7 +41,7 @@ function showFinishNotification(ownerAndRepo, success) {
     source.showNotification(notification);
 }
 
-/// ~5 minutes
+/// 1-60 minutes
 async function coldRefresh(settings, indicator) {
     try {
         const owner = settings.get_string('owner');
@@ -50,15 +50,55 @@ async function coldRefresh(settings, indicator) {
 
         const user = await dataRepository.fetchUser();
         if (user == null) return;
-
         const login = user['login'];
-        const starredList = await dataRepository.fetchUserStarred(login);
-        indicator.setUserStarred(starredList);
 
+        const starredList = await dataRepository.fetchUserStarred(login);
         const followers = await dataRepository.fetchUserFollowers();
-        indicator.setUserFollowers(followers);
         const following = await dataRepository.fetchUserFollowing();
+        const workflows = await dataRepository.fetchWorkflows(owner, repo);
+        const minutes = await dataRepository.fetchUserBillingActionsMinutes(login);
+        const packages = await dataRepository.fetchUserBillingPackages(login);
+        const sharedStorage = await dataRepository.fetchUserBillingSharedStorage(login);
+
+        const sizeInBytes = user['_size_'] + starredList['_size_'] + followers['_size_'] + following['_size_'] + workflows['_size_'] + minutes['_size_'] + packages['_size_'] + sharedStorage['_size_'];
+        utils.prefsUpdateColdPackageSize(settings, sizeInBytes);
+
+        let userEmail;
+        let userName;
+        let createdAt;
+        let userUrl;
+        if (user != null) {
+            userEmail = user['email'];
+            userName = user['name'];
+            createdAt = new Date(user['created_at']);
+            userUrl = user['html_url'];
+        }
+
+        let parsedMinutes;
+        if (minutes != null) {
+            parsedMinutes = 'Usage minutes: ' + minutes['total_minutes_used'] + ' of ' + minutes['included_minutes'] + ', ' + minutes['total_paid_minutes_used'] + ' paid';
+        }
+
+        let parsedPackages;
+        if (packages != null) {
+            parsedPackages = 'Data transfer out: ' + packages['total_gigabytes_bandwidth_used'] + ' GB of ' + packages['included_gigabytes_bandwidth'] + ' GB, ' + packages['total_paid_gigabytes_bandwidth_used'] + ' GB paid';
+        }
+
+        let parsedSharedStorage;
+        if (sharedStorage != null) {
+            parsedSharedStorage = 'Storage for month: ' + sharedStorage['estimated_storage_for_month'] + ' GB, ' + sharedStorage['estimated_paid_storage_for_month'] + ' GB paid';
+        }
+
+        indicator.setUserStarred(starredList);
+        indicator.setUserFollowers(followers);
         indicator.setUserFollowing(following);
+        indicator.setWorkflows(workflows['workflows']);
+        indicator.userUrl = userUrl;
+        indicator.userItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
+        indicator.joinedItem.label.text = 'Joined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
+        indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
+        indicator.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
+        indicator.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
     } catch (error) {
         logError(error);
     }
@@ -69,98 +109,46 @@ async function hotRefresh(settings, indicator) {
     try {
         const owner = settings.get_string('owner');
         const repo = settings.get_string('repo');
+        if (utils.isEmpty(owner) || utils.isEmpty(repo)) return;
 
-        if (!utils.isEmpty(owner) && !utils.isEmpty(repo)) {
-            const user = await dataRepository.fetchUser();
-            let userLogin;
-            let userEmail;
-            let userName;
-            let createdAt;
-            let userUrl;
-            if (user != null) {
-                userLogin = user['login']
-                userEmail = user['email'];
-                userName = user['name'];
-                createdAt = new Date(user['created_at']);
-                userUrl = user['html_url'];
-            }
-
-            const minutes = await dataRepository.fetchUserBillingActionsMinutes(userLogin);
-            let parsedMinutes;
-            if (minutes != null) {
-                parsedMinutes = 'Usage minutes: ' + minutes['total_minutes_used'] + ' of ' + minutes['included_minutes'] + ', ' + minutes['total_paid_minutes_used'] + ' paid';
-            }
-
-            const packages = await dataRepository.fetchUserBillingPackages(userLogin);
-            let parsedPackages;
-            if (packages != null) {
-                parsedPackages = 'Data transfer out: ' + packages['total_gigabytes_bandwidth_used'] + ' GB of ' + packages['included_gigabytes_bandwidth'] + ' GB, ' + packages['total_paid_gigabytes_bandwidth_used'] + ' GB paid';
-            }
-
-            const sharedStorage = await dataRepository.fetchUserBillingSharedStorage(userLogin);
-            let parsedSharedStorage;
-            if (sharedStorage != null) {
-                parsedSharedStorage = 'Storage for month: ' + sharedStorage['estimated_storage_for_month'] + ' GB, ' + sharedStorage['estimated_paid_storage_for_month'] + ' GB paid';
-            }
-
-            let latestRun;
-            let size;
-            const runs = await dataRepository.fetchWorkflowRuns(owner, repo);
-            if (runs == null) {
-                indicator.setNotLoggedState();
-                return;
-            }
-
-            latestRun = runs['workflow_runs'][0];
-            size = runs['_size_'];
-
-            const workflows = await dataRepository.fetchWorkflows(owner, repo);
-
-            indicator.setRuns(runs['workflow_runs']);
-            indicator.setWorkflows(workflows['workflows']);
-
-            const status = latestRun["status"].toString().toUpperCase();
-            const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString().toUpperCase();
-            const displayTitle = latestRun["display_title"].toString();
-            const runNumber = latestRun["run_number"].toString();
-            const updatedAt = latestRun["updated_at"].toString();
-            const ownerAndRepo = latestRun["repository"]["full_name"].toString();
-
-            const workflowUrl = latestRun["html_url"].toString();
-            const repositoryUrl = latestRun["repository"]["html_url"].toString();
-
-            const date = new Date(updatedAt);
-
-            const sizeInBytes = runs['_size_'];
-            utils.prefsUpdatePackageSize(settings, sizeInBytes);
-
-            const previousState = indicator.label.text;
-            const currentState = status + ' ' + conclusion;
-
-            /// Notification
-            if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
-                if (currentState === 'COMPLETED SUCCESS') {
-                    showFinishNotification(ownerAndRepo, true);
-                } else if (currentState === 'COMPLETED FAILURE') {
-                    showFinishNotification(ownerAndRepo, false);
-                }
-            }
-
-            indicator.label.text = currentState;
-
-            indicator.workflowUrl = workflowUrl;
-            indicator.repositoryUrl = repositoryUrl;
-            indicator.userUrl = userUrl;
-
-            indicator.userItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
-            indicator.joinedItem.label.text = 'Joined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
-            indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
-            indicator.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
-            indicator.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
-            indicator.ownerAndRepoItem.label.text = ownerAndRepo;
-            indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
-            indicator.packageSizeItem.label.text = utils.prefsDataConsumptionPerHour(settings);
+        const runs = await dataRepository.fetchWorkflowRuns(owner, repo);
+        if (runs == null) {
+            indicator.setNotLoggedState();
+            return;
         }
+
+        utils.prefsUpdatePackageSize(settings, runs['_size_']);
+
+        const latestRun = runs['workflow_runs'][0];
+        const status = latestRun["status"].toString().toUpperCase();
+        const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString().toUpperCase();
+        const displayTitle = latestRun["display_title"].toString();
+        const runNumber = latestRun["run_number"].toString();
+        const updatedAt = latestRun["updated_at"].toString();
+        const ownerAndRepo = latestRun["repository"]["full_name"].toString();
+        const workflowUrl = latestRun["html_url"].toString();
+        const repositoryUrl = latestRun["repository"]["html_url"].toString();
+        const date = new Date(updatedAt);
+        const previousState = indicator.label.text;
+        const currentState = status + ' ' + conclusion;
+
+        /// Notification
+        if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
+            if (currentState === 'COMPLETED SUCCESS') {
+                showFinishNotification(ownerAndRepo, true);
+            } else if (currentState === 'COMPLETED FAILURE') {
+                showFinishNotification(ownerAndRepo, false);
+            }
+        }
+
+        indicator.label.text = currentState;
+        indicator.workflowUrl = workflowUrl;
+        indicator.repositoryUrl = repositoryUrl;
+        indicator.ownerAndRepoItem.label.text = ownerAndRepo;
+        indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
+        indicator.packageSizeItem.label.text = 'Status refresh: ' + utils.prefsDataConsumptionPerHour(settings);
+        indicator.fullPackageSizeItem.label.text = 'Full refresh: ' + utils.prefsFullDataConsumptionPerHour(settings);
+        indicator.setRuns(runs['workflow_runs']);
     } catch (error) {
         logError(error);
     }
@@ -276,8 +264,9 @@ const Indicator = GObject.registerClass(
 
             /// Package Size
             this.packageSizeItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-wireless-symbolic');
-            this.packageSizeItem.connect('activate', () => this.refreshCallback());
             this.menu.addMenuItem(this.packageSizeItem);
+            this.fullPackageSizeItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-wireless-symbolic');
+            this.menu.addMenuItem(this.fullPackageSizeItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             this.bottomButtonBox = new St.BoxLayout({
@@ -389,6 +378,7 @@ const Indicator = GObject.registerClass(
             this.ownerAndRepoItem.label.text = '...';
             this.infoItem.label.text = '...';
             this.packageSizeItem.label.text = '...';
+            this.fullPackageSizeItem.label.text = '...';
         }
 
         _init() {
@@ -404,7 +394,13 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
+
         this.settings.connect('changed::refresh-time', (settings, key) => {
+            this.stopRefreshing();
+            this.startRefreshing();
+        });
+
+        this.settings.connect('changed::full-refresh-time', (settings, key) => {
             this.stopRefreshing();
             this.startRefreshing();
         });
