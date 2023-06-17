@@ -10,7 +10,7 @@ const version = Me.imports.version; // version.js
 function init() { }
 
 function fillPreferencesWindow(window) {
-    window.set_default_size(500, 650);
+    window.set_default_size(500, 700);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
     const ownerEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
@@ -54,6 +54,9 @@ function fillPreferencesWindow(window) {
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
     settings.bind('refresh-time', refreshStatusSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
+    const dataRow = new Adw.ActionRow({ title: 'Data package size ' });
+    dataRow.add_suffix(new Gtk.Label({ label: utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+
     const fullRefreshSpinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
     fullRefreshSpinButton.wrap = true;
     fullRefreshSpinButton.width_chars = 2;
@@ -73,8 +76,8 @@ function fillPreferencesWindow(window) {
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;
     settings.bind('full-refresh-time', fullRefreshSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
-    const dataRow = new Adw.ActionRow({ title: 'Data package size ' });
-    dataRow.add_suffix(new Gtk.Label({ label: utils.prefsPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    const fullDataRow = new Adw.ActionRow({ title: 'Full data package size ' });
+    fullDataRow.add_suffix(new Gtk.Label({ label: utils.prefsColdPackageSize(settings), halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
     const versionRow = new Adw.ActionRow();
     versionRow.add_prefix(new Gtk.Label({ label: 'Version: ', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
@@ -94,6 +97,7 @@ function fillPreferencesWindow(window) {
     const refreshStatusGroup = new Adw.PreferencesGroup({ title: 'Refresh status' });
     refreshStatusGroup.add(dataRow);
     refreshStatusGroup.add(refreshStatusRow);
+    refreshStatusGroup.add(fullDataRow);
     refreshStatusGroup.add(fullRefreshRow);
 
     const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
