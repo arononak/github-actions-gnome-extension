@@ -40,7 +40,7 @@ cd github-actions@arononak.github.io && make build
 
 If you have any feedback, please contact me at arononak@gmail.com
 
-### Copyright 2023 Aron Onak 📝
+### 📝 Copyright 2023 Aron Onak
 
 The GitHub logo is a trademark of Microsoft.
 
