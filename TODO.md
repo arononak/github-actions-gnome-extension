@@ -13,6 +13,7 @@
 - [ ] More notifications
 - [ ] Error handling
 - [ ] Bottom horizontal icons center margins
+- [ ] Lint
 
 ## 🌟 Version 2 - Interactions with GitHub
 
