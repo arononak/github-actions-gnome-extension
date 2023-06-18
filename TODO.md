@@ -4,7 +4,7 @@
 
 - [ ] Refactor to 3 layers, return single json package
 - [ ] 2FA enabled / disabled - if disabled show turn on button
-- [ ] PopupList - custom icon + label
+- [x] PopupList - custom icon + label
 - [ ] Remove workflow run icon
 - [ ] Menu refactor - factory pattern
 - [ ] Organization billings
