@@ -185,52 +185,69 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Billing
-            this.billingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.billingMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.billingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.billingScrollView.add_actor(this.billingMenuBox);
-            this.billingMenuItem = new PopupMenu.PopupSubMenuMenuItem('Billing');
+            this.billingMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
             this.billingMenuItem.menu.box.add_actor(this.billingScrollView);
+            this.billingIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.billingIconContainer.add_child(new St.Icon({ icon_name: 'utilities-system-monitor-symbolic', style_class: 'popup-menu-icon' }));
+            this.billingMenuItem.insert_child_at_index(this.billingIconContainer, 0);
+            this.billingLabel = new St.Label({ text: 'Billing' });
+            this.billingMenuItem.insert_child_at_index(this.billingLabel, 1);
             this.menu.addMenuItem(this.billingMenuItem);
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-            /// Billing Actions minutes
+            /// Minutes
             this.minutesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'alarm-symbolic');
             this.minutesItem.connect('activate', () => { });
             this.billingMenuBox.add_actor(this.minutesItem);
-
-            /// Billing Packages
+            /// Packages
             this.packagesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic');
             this.packagesItem.connect('activate', () => { });
             this.billingMenuBox.add_actor(this.packagesItem);
-
-            /// Billing Shared Storage
+            /// Shared Storage
             this.sharedStorageItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-server-symbolic');
             this.sharedStorageItem.connect('activate', () => { });
             this.billingMenuBox.add_actor(this.sharedStorageItem);
 
             /// Starred
-            this.starredScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.starredMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.starredScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.starredScrollView.add_actor(this.starredMenuBox);
-            this.starredMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.starredMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
             this.starredMenuItem.menu.box.add_actor(this.starredScrollView);
+            this.starredIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.starredIconContainer.add_child(new St.Icon({ icon_name: 'non-starred-symbolic', style_class: 'popup-menu-icon' }));
+            this.starredMenuItem.insert_child_at_index(this.starredIconContainer, 0);
+            this.starredLabel = new St.Label({ text: loadingText });
+            this.starredMenuItem.insert_child_at_index(this.starredLabel, 1);
             this.menu.addMenuItem(this.starredMenuItem);
 
             /// Followers
-            this.followersScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.followersMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.followersScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.followersScrollView.add_actor(this.followersMenuBox);
-            this.followersMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.followersMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
             this.followersMenuItem.menu.box.add_actor(this.followersScrollView);
+            this.followersIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.followersIconContainer.add_child(new St.Icon({ icon_name: 'system-users-symbolic', style_class: 'popup-menu-icon' }));
+            this.followersMenuItem.insert_child_at_index(this.followersIconContainer, 0);
+            this.followersLabel = new St.Label({ text: loadingText });
+            this.followersMenuItem.insert_child_at_index(this.followersLabel, 1);
             this.menu.addMenuItem(this.followersMenuItem);
 
             /// Following
-            this.followingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.followingMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.followingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.followingScrollView.add_actor(this.followingMenuBox);
-            this.followingMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.followingMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
             this.followingMenuItem.menu.box.add_actor(this.followingScrollView);
+            this.followingIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.followingIconContainer.add_child(new St.Icon({ icon_name: 'system-users-symbolic', style_class: 'popup-menu-icon' }));
+            this.followingMenuItem.insert_child_at_index(this.followingIconContainer, 0);
+            this.followingLabel = new St.Label({ text: loadingText });
+            this.followingMenuItem.insert_child_at_index(this.followingLabel, 1);
             this.menu.addMenuItem(this.followingMenuItem);
+
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Owner and Repo
@@ -244,24 +261,34 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(this.infoItem);
 
             /// Workflows
-            this.workflowsScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.workflowsMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.workflowsScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.workflowsScrollView.add_actor(this.workflowsMenuBox);
-            this.workflowsMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.workflowsMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
             this.workflowsMenuItem.menu.box.add_actor(this.workflowsScrollView);
+            this.workflowsIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.workflowsIconContainer.add_child(new St.Icon({ icon_name: 'mail-send-receive-symbolic', style_class: 'popup-menu-icon' }));
+            this.workflowsMenuItem.insert_child_at_index(this.workflowsIconContainer, 0);
+            this.workflowsLabel = new St.Label({ text: loadingText });
+            this.workflowsMenuItem.insert_child_at_index(this.workflowsLabel, 1);
             this.menu.addMenuItem(this.workflowsMenuItem);
 
             /// Runs
-            this.runsScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.runsMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.runsScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.runsScrollView.add_actor(this.runsMenuBox);
-            this.runsMenuItem = new PopupMenu.PopupSubMenuMenuItem(loadingText);
+            this.runsMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
             this.runsMenuItem.menu.box.add_actor(this.runsScrollView);
+            this.runsIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.runsIconContainer.add_child(new St.Icon({ icon_name: 'media-playback-start-symbolic', style_class: 'popup-menu-icon' }));
+            this.runsMenuItem.insert_child_at_index(this.runsIconContainer, 0);
+            this.runsLabel = new St.Label({ text: loadingText });
+            this.runsMenuItem.insert_child_at_index(this.runsLabel, 1);
             this.menu.addMenuItem(this.runsMenuItem);
 
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-            /// Package Size
+            /// Package Sizes
             this.packageSizeItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-wireless-symbolic');
             this.menu.addMenuItem(this.packageSizeItem);
             this.fullPackageSizeItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-wireless-symbolic');
@@ -281,17 +308,14 @@ const Indicator = GObject.registerClass(
             this.bottomItem = new PopupMenu.PopupBaseMenuItem({ reactive: false });
             this.bottomItem.actor.add_actor(this.bottomButtonBox);
             this.menu.addMenuItem(this.bottomItem);
-
             /// Refresh
             this.refreshButton = this.createRoundButton('view-refresh-symbolic');
             this.refreshButton.connect('clicked', (self) => this.refreshCallback());
             this.bottomButtonBox.add_actor(this.refreshButton);
-
             /// Bored
             this.boredButton = this.createRoundButton('face-monkey-symbolic');
             this.boredButton.connect('clicked', (self) => utils.openUrl('https://api.github.com/octocat'));
             this.bottomButtonBox.add_actor(this.boredButton);
-
             /// Settings
             this.settingsItem = this.createRoundButton('system-settings-symbolic');
             this.settingsItem.connect('clicked', (self) => ExtensionUtils.openPrefs());
@@ -306,10 +330,10 @@ const Indicator = GObject.registerClass(
 
         setWorkflows(workflows) {
             this.workflowsMenuBox.remove_all_children();
-            this.workflowsMenuItem.label.text = 'Workflows: ' + workflows.length;
+            this.workflowsLabel.text = 'Workflows: ' + workflows.length;
 
             workflows.forEach((element) => {
-                const item = new PopupMenu.PopupImageMenuItem(element['name'], 'view-wrapped-symbolic');
+                const item = new PopupMenu.PopupImageMenuItem(element['name'], 'mail-send-receive-symbolic');
                 item.connect('activate', () => utils.openUrl(element['html_url']));
                 this.workflowsMenuBox.add_actor(item);
             });
@@ -317,7 +341,7 @@ const Indicator = GObject.registerClass(
 
         setRuns(runs) {
             this.runsMenuBox.remove_all_children();
-            this.runsMenuItem.label.text = 'Runs: ' + runs.length;
+            this.runsLabel.text = 'Runs: ' + runs.length;
 
             runs.forEach((element) => {
                 const iconName = element['conclusion'] == 'success' ? 'emblem-default' : 'emblem-unreadable';
@@ -329,7 +353,7 @@ const Indicator = GObject.registerClass(
 
         setUserStarred(starred) {
             this.starredMenuBox.remove_all_children();
-            this.starredMenuItem.label.text = 'Starred: ' + starred.length;
+            this.starredLabel.text = 'Starred: ' + starred.length;
 
             starred.forEach((element) => {
                 const item = new PopupMenu.PopupImageMenuItem(element['full_name'], 'starred-symbolic');
@@ -340,7 +364,7 @@ const Indicator = GObject.registerClass(
 
         setUserFollowers(followers) {
             this.followersMenuBox.remove_all_children();
-            this.followersMenuItem.label.text = 'Followers: ' + followers.length;
+            this.followersLabel.text = 'Followers: ' + followers.length;
 
             followers.forEach((element) => {
                 const item = new PopupMenu.PopupImageMenuItem(element['login'], 'system-users-symbolic');
@@ -351,7 +375,7 @@ const Indicator = GObject.registerClass(
 
         setUserFollowing(following) {
             this.followingMenuBox.remove_all_children();
-            this.followingMenuItem.label.text = 'Following: ' + following.length;
+            this.followingLabel.text = 'Following: ' + following.length;
 
             following.forEach((element) => {
                 const item = new PopupMenu.PopupImageMenuItem(element['login'], 'system-users-symbolic');
