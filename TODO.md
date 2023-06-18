@@ -15,6 +15,7 @@
 - [ ] Bottom horizontal icons center margins
 - [ ] Lint
 - [ ] Account more information expandable
+- [ ] Artifacts list
 
 ## 🌟 Version 2 - Interactions with GitHub
 
