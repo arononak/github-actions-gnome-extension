@@ -56,11 +56,12 @@ async function coldRefresh(settings, indicator) {
         const followers = await dataRepository.fetchUserFollowers();
         const following = await dataRepository.fetchUserFollowing();
         const workflows = await dataRepository.fetchWorkflows(owner, repo);
+        const artifacts = await dataRepository.fetchArtifacts(owner, repo);
         const minutes = await dataRepository.fetchUserBillingActionsMinutes(login);
         const packages = await dataRepository.fetchUserBillingPackages(login);
         const sharedStorage = await dataRepository.fetchUserBillingSharedStorage(login);
 
-        const sizeInBytes = user['_size_'] + starredList['_size_'] + followers['_size_'] + following['_size_'] + workflows['_size_'] + minutes['_size_'] + packages['_size_'] + sharedStorage['_size_'];
+        const sizeInBytes = user['_size_'] + starredList['_size_'] + followers['_size_'] + following['_size_'] + workflows['_size_'] + minutes['_size_'] + packages['_size_'] + sharedStorage['_size_'] + artifacts['_size_'];
         utils.prefsUpdateColdPackageSize(settings, sizeInBytes);
 
         let userEmail;
@@ -93,6 +94,7 @@ async function coldRefresh(settings, indicator) {
         indicator.setUserFollowers(followers);
         indicator.setUserFollowing(following);
         indicator.setWorkflows(workflows['workflows']);
+        indicator.setArtifacts(artifacts['artifacts']);
         indicator.userUrl = userUrl;
         indicator.userItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
         indicator.joinedItem.label.text = 'Joined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
@@ -286,6 +288,19 @@ const Indicator = GObject.registerClass(
             this.runsMenuItem.insert_child_at_index(this.runsLabel, 1);
             this.menu.addMenuItem(this.runsMenuItem);
 
+            /// Artifacts
+            this.artifactsMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.artifactsScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.artifactsScrollView.add_actor(this.artifactsMenuBox);
+            this.artifactsMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
+            this.artifactsMenuItem.menu.box.add_actor(this.artifactsScrollView);
+            this.artifactsIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.artifactsIconContainer.add_child(new St.Icon({ icon_name: 'insert-object-symbolic', style_class: 'popup-menu-icon' }));
+            this.artifactsMenuItem.insert_child_at_index(this.artifactsIconContainer, 0);
+            this.artifactsLabel = new St.Label({ text: loadingText });
+            this.artifactsMenuItem.insert_child_at_index(this.artifactsLabel, 1);
+            this.menu.addMenuItem(this.artifactsMenuItem);
+
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Package Sizes
@@ -336,6 +351,20 @@ const Indicator = GObject.registerClass(
                 const item = new PopupMenu.PopupImageMenuItem(element['name'], 'mail-send-receive-symbolic');
                 item.connect('activate', () => utils.openUrl(element['html_url']));
                 this.workflowsMenuBox.add_actor(item);
+            });
+        }
+
+        setArtifacts(artifacts) {
+            const items = artifacts.filter(element => element['expired']);
+
+            this.artifactsMenuBox.remove_all_children();
+            this.artifactsLabel.text = 'Artifacts: ' + items.length;
+
+            items.forEach((element) => {
+                const date = (new Date(element['created_at'])).toLocaleFormat('%d %b %Y');
+                const name = element['name'] +  ' - ' + date + ' - (' + utils.bytesToString(element['size_in_bytes']) + ')';
+                const item = new PopupMenu.PopupImageMenuItem(name, 'insert-object-symbolic');
+                this.artifactsMenuBox.add_actor(item);
             });
         }
 
