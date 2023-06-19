@@ -16,11 +16,13 @@
 - [ ] Bottom horizontal icons center margins
 - [ ] Lint
 - [ ] Account more information expandable
-- [ ] Artifacts list
+- [x] Artifacts list
+- [ ] Artifacts downloading
 
 ## 🌟 Version 2 - Interactions with GitHub
 
 - [ ] Create repository
+- [ ] EN / PL - translations
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 
