@@ -29,7 +29,7 @@ gh auth login
 ```
 And configure owner and repository in extension settings.
 
-## 🔒 After logging in
+## 🔓 After logging in
 
 Check the permissions with the command:
 ```bash
