@@ -48,6 +48,11 @@ var fetchWorkflowRuns = async function (owner, repo) {
     return executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/runs');
 }
 
+/// Artifacts
+var fetchArtifacts = async function (owner, repo) {
+    return executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/artifacts');
+}
+
 
 /////////////////////////////////////////
 async function isLogged() {
