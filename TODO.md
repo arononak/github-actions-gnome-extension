@@ -15,7 +15,7 @@
 - [ ] Error handling
 - [ ] Bottom horizontal icons center margins
 - [ ] Lint
-- [ ] Account more information expandable
+- [x] Account more information expandable
 - [x] Artifacts list
 - [ ] Artifacts downloading
 
