@@ -96,7 +96,7 @@ async function coldRefresh(settings, indicator) {
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.userUrl = userUrl;
-        indicator.userItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
+        indicator.userLabel.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
         indicator.joinedItem.label.text = 'Joined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
         indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
         indicator.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
@@ -146,7 +146,7 @@ async function hotRefresh(settings, indicator) {
         indicator.label.text = currentState;
         indicator.workflowUrl = workflowUrl;
         indicator.repositoryUrl = repositoryUrl;
-        indicator.ownerAndRepoItem.label.text = ownerAndRepo;
+        indicator.repositoryLabel.text = ownerAndRepo;
         indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
         indicator.packageSizeItem.label.text = 'Status refresh: ' + utils.prefsDataConsumptionPerHour(settings);
         indicator.fullPackageSizeItem.label.text = 'Full refresh: ' + utils.prefsFullDataConsumptionPerHour(settings);
@@ -175,41 +175,34 @@ const Indicator = GObject.registerClass(
             this.topBox.add_child(this.label);
             this.add_child(this.topBox);
 
-            /// Username + email
-            this.userItem = new PopupMenu.PopupImageMenuItem(loadingText, 'avatar-default-symbolic');
-            this.userItem.connect('activate', () => utils.openUrl(this.userUrl));
-            this.menu.addMenuItem(this.userItem);
-
+            /// User
+            this.userMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.userScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.userScrollView.add_actor(this.userMenuBox);
+            this.userMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
+            this.userMenuItem.menu.box.add_actor(this.userScrollView);
+            this.userIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.userIconContainer.add_child(new St.Icon({ icon_name: 'avatar-default-symbolic', style_class: 'popup-menu-icon' }));
+            this.userMenuItem.insert_child_at_index(this.userIconContainer, 0);
+            this.userLabel = new St.Label({ text: loadingText });
+            this.userMenuItem.insert_child_at_index(this.userLabel, 1);
+            this.menu.addMenuItem(this.userMenuItem);
             /// Created at
             this.joinedItem = new PopupMenu.PopupImageMenuItem(loadingText, 'mail-forward-symbolic');
-            this.joinedItem.connect('activate', () => { });
-            this.menu.addMenuItem(this.joinedItem);
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-            /// Billing
-            this.billingMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
-            this.billingScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
-            this.billingScrollView.add_actor(this.billingMenuBox);
-            this.billingMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
-            this.billingMenuItem.menu.box.add_actor(this.billingScrollView);
-            this.billingIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
-            this.billingIconContainer.add_child(new St.Icon({ icon_name: 'utilities-system-monitor-symbolic', style_class: 'popup-menu-icon' }));
-            this.billingMenuItem.insert_child_at_index(this.billingIconContainer, 0);
-            this.billingLabel = new St.Label({ text: 'Billing' });
-            this.billingMenuItem.insert_child_at_index(this.billingLabel, 1);
-            this.menu.addMenuItem(this.billingMenuItem);
+            this.joinedItem.connect('activate', () => utils.openUrl(this.userUrl));
+            this.userMenuBox.add_actor(this.joinedItem);
             /// Minutes
             this.minutesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'alarm-symbolic');
             this.minutesItem.connect('activate', () => { });
-            this.billingMenuBox.add_actor(this.minutesItem);
+            this.userMenuBox.add_actor(this.minutesItem);
             /// Packages
             this.packagesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic');
             this.packagesItem.connect('activate', () => { });
-            this.billingMenuBox.add_actor(this.packagesItem);
+            this.userMenuBox.add_actor(this.packagesItem);
             /// Shared Storage
             this.sharedStorageItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-server-symbolic');
             this.sharedStorageItem.connect('activate', () => { });
-            this.billingMenuBox.add_actor(this.sharedStorageItem);
+            this.userMenuBox.add_actor(this.sharedStorageItem);
 
             /// Starred
             this.starredMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
@@ -249,18 +242,28 @@ const Indicator = GObject.registerClass(
             this.followingLabel = new St.Label({ text: loadingText });
             this.followingMenuItem.insert_child_at_index(this.followingLabel, 1);
             this.menu.addMenuItem(this.followingMenuItem);
-
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-            /// Owner and Repo
-            this.ownerAndRepoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'system-file-manager-symbolic');
-            this.ownerAndRepoItem.connect('activate', () => utils.openUrl(this.repositoryUrl));
-            this.menu.addMenuItem(this.ownerAndRepoItem);
-
+            /// Repository
+            this.repositoryMenuBox = new St.BoxLayout({ vertical: true, style_class: 'system-file-manager-symbolic' });
+            this.repositoryScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.repositoryScrollView.add_actor(this.repositoryMenuBox);
+            this.repositoryMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
+            this.repositoryMenuItem.menu.box.add_actor(this.repositoryScrollView);
+            this.repositoryIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.repositoryIconContainer.add_child(new St.Icon({ icon_name: 'system-users-symbolic', style_class: 'popup-menu-icon' }));
+            this.repositoryMenuItem.insert_child_at_index(this.repositoryIconContainer, 0);
+            this.repositoryLabel = new St.Label({ text: loadingText });
+            this.repositoryMenuItem.insert_child_at_index(this.repositoryLabel, 1);
+            this.menu.addMenuItem(this.repositoryMenuItem);
             /// Info
             this.infoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic');
             this.infoItem.connect('activate', () => utils.openUrl(this.workflowUrl));
-            this.menu.addMenuItem(this.infoItem);
+            this.repositoryMenuBox.add_actor(this.infoItem);
+            /// Open Repository
+            this.openRepositoryItem = new PopupMenu.PopupImageMenuItem('Open', 'applications-internet-symbolic');
+            this.openRepositoryItem.connect('activate', () => utils.openUrl(this.repositoryUrl));
+            this.repositoryMenuBox.add_actor(this.openRepositoryItem);
 
             /// Workflows
             this.workflowsMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
@@ -300,7 +303,6 @@ const Indicator = GObject.registerClass(
             this.artifactsLabel = new St.Label({ text: loadingText });
             this.artifactsMenuItem.insert_child_at_index(this.artifactsLabel, 1);
             this.menu.addMenuItem(this.artifactsMenuItem);
-
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Package Sizes
@@ -362,7 +364,7 @@ const Indicator = GObject.registerClass(
 
             items.forEach((element) => {
                 const date = (new Date(element['created_at'])).toLocaleFormat('%d %b %Y');
-                const name = element['name'] +  ' - ' + date + ' - (' + utils.bytesToString(element['size_in_bytes']) + ')';
+                const name = element['name'] + ' - ' + date + ' - (' + utils.bytesToString(element['size_in_bytes']) + ')';
                 const item = new PopupMenu.PopupImageMenuItem(name, 'insert-object-symbolic');
                 this.artifactsMenuBox.add_actor(item);
             });
