@@ -191,13 +191,13 @@ const Indicator = GObject.registerClass(
             this.joinedItem = this.createPopupImageMenuItem(loadingText, 'mail-forward-symbolic', () => utils.openUrl(this.userUrl));
             this.userMenuBox.add_actor(this.joinedItem);
             /// Minutes
-            this.minutesItem = this.createPopupImageMenuItem(loadingText, 'alarm-symbolic', () => {});
+            this.minutesItem = this.createPopupImageMenuItem(loadingText, 'alarm-symbolic', () => { });
             this.userMenuBox.add_actor(this.minutesItem);
             /// Packages
-            this.packagesItem = this.createPopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic', () => {});
+            this.packagesItem = this.createPopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic', () => { });
             this.userMenuBox.add_actor(this.packagesItem);
             /// Shared Storage
-            this.sharedStorageItem = this.createPopupImageMenuItem(loadingText, 'network-server-symbolic', () => {});
+            this.sharedStorageItem = this.createPopupImageMenuItem(loadingText, 'network-server-symbolic', () => { });
             this.userMenuBox.add_actor(this.sharedStorageItem);
 
             /// Starred
@@ -247,17 +247,17 @@ const Indicator = GObject.registerClass(
             this.repositoryMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
             this.repositoryMenuItem.menu.box.add_actor(this.repositoryScrollView);
             this.repositoryIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
-            this.repositoryIconContainer.add_child(new St.Icon({ icon_name: 'system-users-symbolic', style_class: 'popup-menu-icon' }));
+            this.repositoryIconContainer.add_child(new St.Icon({ icon_name: 'system-file-manager-symbolic', style_class: 'popup-menu-icon' }));
             this.repositoryMenuItem.insert_child_at_index(this.repositoryIconContainer, 0);
             this.repositoryLabel = new St.Label({ text: loadingText });
             this.repositoryMenuItem.insert_child_at_index(this.repositoryLabel, 1);
             this.menu.addMenuItem(this.repositoryMenuItem);
-            /// Info
-            this.infoItem = this.createPopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
-            this.repositoryMenuBox.add_actor(this.infoItem);
             /// Open Repository
             this.openRepositoryItem = this.createPopupImageMenuItem('Open', 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
             this.repositoryMenuBox.add_actor(this.openRepositoryItem);
+            /// Info
+            this.infoItem = this.createPopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
+            this.repositoryMenuBox.add_actor(this.infoItem);
 
             /// Workflows
             this.workflowsMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
@@ -300,9 +300,9 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Package Sizes
-            this.packageSizeItem = this.createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => {});
+            this.packageSizeItem = this.createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => { });
             this.menu.addMenuItem(this.packageSizeItem);
-            this.fullPackageSizeItem = this.createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => {});
+            this.fullPackageSizeItem = this.createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => { });
             this.menu.addMenuItem(this.fullPackageSizeItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
