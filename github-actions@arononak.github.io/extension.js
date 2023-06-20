@@ -188,20 +188,16 @@ const Indicator = GObject.registerClass(
             this.userMenuItem.insert_child_at_index(this.userLabel, 1);
             this.menu.addMenuItem(this.userMenuItem);
             /// Created at
-            this.joinedItem = new PopupMenu.PopupImageMenuItem(loadingText, 'mail-forward-symbolic');
-            this.joinedItem.connect('activate', () => utils.openUrl(this.userUrl));
+            this.joinedItem = this.createPopupImageMenuItem(loadingText, 'mail-forward-symbolic', () => utils.openUrl(this.userUrl));
             this.userMenuBox.add_actor(this.joinedItem);
             /// Minutes
-            this.minutesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'alarm-symbolic');
-            this.minutesItem.connect('activate', () => { });
+            this.minutesItem = this.createPopupImageMenuItem(loadingText, 'alarm-symbolic', () => {});
             this.userMenuBox.add_actor(this.minutesItem);
             /// Packages
-            this.packagesItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic');
-            this.packagesItem.connect('activate', () => { });
+            this.packagesItem = this.createPopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic', () => {});
             this.userMenuBox.add_actor(this.packagesItem);
             /// Shared Storage
-            this.sharedStorageItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-server-symbolic');
-            this.sharedStorageItem.connect('activate', () => { });
+            this.sharedStorageItem = this.createPopupImageMenuItem(loadingText, 'network-server-symbolic', () => {});
             this.userMenuBox.add_actor(this.sharedStorageItem);
 
             /// Starred
@@ -257,12 +253,10 @@ const Indicator = GObject.registerClass(
             this.repositoryMenuItem.insert_child_at_index(this.repositoryLabel, 1);
             this.menu.addMenuItem(this.repositoryMenuItem);
             /// Info
-            this.infoItem = new PopupMenu.PopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic');
-            this.infoItem.connect('activate', () => utils.openUrl(this.workflowUrl));
+            this.infoItem = this.createPopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
             this.repositoryMenuBox.add_actor(this.infoItem);
             /// Open Repository
-            this.openRepositoryItem = new PopupMenu.PopupImageMenuItem('Open', 'applications-internet-symbolic');
-            this.openRepositoryItem.connect('activate', () => utils.openUrl(this.repositoryUrl));
+            this.openRepositoryItem = this.createPopupImageMenuItem('Open', 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
             this.repositoryMenuBox.add_actor(this.openRepositoryItem);
 
             /// Workflows
@@ -306,9 +300,9 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Package Sizes
-            this.packageSizeItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-wireless-symbolic');
+            this.packageSizeItem = this.createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => {});
             this.menu.addMenuItem(this.packageSizeItem);
-            this.fullPackageSizeItem = new PopupMenu.PopupImageMenuItem(loadingText, 'network-wireless-symbolic');
+            this.fullPackageSizeItem = this.createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => {});
             this.menu.addMenuItem(this.fullPackageSizeItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
@@ -337,6 +331,12 @@ const Indicator = GObject.registerClass(
             this.settingsItem = this.createRoundButton('system-settings-symbolic');
             this.settingsItem.connect('clicked', (self) => ExtensionUtils.openPrefs());
             this.bottomButtonBox.add_actor(this.settingsItem);
+        }
+
+        createPopupImageMenuItem(text, iconName, callback) {
+            const item = new PopupMenu.PopupImageMenuItem(text, iconName);
+            item.connect('activate', () => callback());
+            return item;
         }
 
         createRoundButton(iconName) {
