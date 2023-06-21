@@ -24,7 +24,8 @@
 
 - [ ] Create repository
 - [ ] EN / PL - translations
-- [ ] 2 modes - SIMPLE / EXTENDED
+- [ ] 2modes - SIMPLE / EXTENDED
+- [ ] Adjust to Github Enterprice
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 
