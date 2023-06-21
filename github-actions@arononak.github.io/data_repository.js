@@ -4,54 +4,35 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const repository = Me.imports.local_cli_data_repository;
 
-var isLogged = async function () {
-    return repository.isLogged();
-}
+var isLogged = async () =>
+    repository.isLogged();
 
-/// User
-var fetchUser = async function () {
-    return repository.executeGithubCliCommand('/user');
-}
+var fetchUser = async () =>
+    repository.executeGithubCliCommand('/user');
 
-/// User starred
-var fetchUserStarred = async function (username) {
-    return repository.executeGithubCliCommand('/users/' + username + '/starred');
-}
+var fetchUserStarred = async (username) =>
+    repository.executeGithubCliCommand('/users/' + username + '/starred');
 
-/// User followers
-var fetchUserFollowers = async function () {
-    return repository.executeGithubCliCommand('/user/followers');
-}
+var fetchUserFollowers = async () =>
+    repository.executeGithubCliCommand('/user/followers');
 
-/// User following
-var fetchUserFollowing = async function () {
-    return repository.executeGithubCliCommand('/user/following');
-}
+var fetchUserFollowing = async () =>
+    repository.executeGithubCliCommand('/user/following')
 
-/// User billing
-var fetchUserBillingActionsMinutes = async function (username) {
-    return repository.executeGithubCliCommand('/users/' + username + '/settings/billing/actions');
-}
+var fetchUserBillingActionsMinutes = async (username) =>
+    repository.executeGithubCliCommand('/users/' + username + '/settings/billing/actions');
 
-var fetchUserBillingPackages = async function (username) {
-    return repository.executeGithubCliCommand('/users/' + username + '/settings/billing/packages');
-}
+var fetchUserBillingPackages = async (username) =>
+    repository.executeGithubCliCommand('/users/' + username + '/settings/billing/packages')
 
-var fetchUserBillingSharedStorage = async function (username) {
-    return repository.executeGithubCliCommand('/users/' + username + '/settings/billing/shared-storage');
-}
+var fetchUserBillingSharedStorage = async (username) =>
+    repository.executeGithubCliCommand('/users/' + username + '/settings/billing/shared-storage');
 
-/// Workflows
-var fetchWorkflows = async function (owner, repo) {
-    return repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/workflows');
-}
+var fetchWorkflows = async (owner, repo) =>
+    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/workflows');
 
-/// Workflows runs
-var fetchWorkflowRuns = async function (owner, repo) {
-    return repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/runs');
-}
+var fetchWorkflowRuns = async (owner, repo) =>
+    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/runs');
 
-/// Artifacts
-var fetchArtifacts = async function (owner, repo) {
-    return repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/artifacts');
-}
+var fetchArtifacts = async (owner, repo) =>
+    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/artifacts');

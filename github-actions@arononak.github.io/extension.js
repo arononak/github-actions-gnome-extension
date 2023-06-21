@@ -34,9 +34,7 @@ const loadingText = "Loading";
 function showFinishNotification(ownerAndRepo, success) {
     const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
     Main.messageTray.add(source);
-
     const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
-
     const notification = new MessageTray.Notification(source, 'Github Actions', description);
     source.showNotification(notification);
 }
@@ -52,61 +50,39 @@ async function coldRefresh(settings, indicator) {
         if (user == null) return;
         const login = user['login'];
 
+        const minutes = await dataRepository.fetchUserBillingActionsMinutes(login);
+        const packages = await dataRepository.fetchUserBillingPackages(login);
+        const sharedStorage = await dataRepository.fetchUserBillingSharedStorage(login);
         const starredList = await dataRepository.fetchUserStarred(login);
         const followers = await dataRepository.fetchUserFollowers();
         const following = await dataRepository.fetchUserFollowing();
         const workflows = await dataRepository.fetchWorkflows(owner, repo);
         const artifacts = await dataRepository.fetchArtifacts(owner, repo);
-        const minutes = await dataRepository.fetchUserBillingActionsMinutes(login);
-        const packages = await dataRepository.fetchUserBillingPackages(login);
-        const sharedStorage = await dataRepository.fetchUserBillingSharedStorage(login);
 
-        const sizeInBytes = user['_size_'] + starredList['_size_'] + followers['_size_'] + following['_size_'] + workflows['_size_'] + minutes['_size_'] + packages['_size_'] + sharedStorage['_size_'] + artifacts['_size_'];
+        const allDataObjects = [
+            user,
+
+            minutes,
+            packages,
+            sharedStorage,
+            starredList,
+            followers,
+            following,
+            workflows,
+            artifacts
+        ];
+
+        const sizeInBytes = allDataObjects.reduce((sum, object) => sum + object._size_, 0);
+
         utils.prefsUpdateColdPackageSize(settings, sizeInBytes);
 
-        let userEmail;
-        let userName;
-        let createdAt;
-        let userUrl;
-        let twoFactorEnabled;
-        if (user != null) {
-            userEmail = user['email'];
-            userName = user['name'];
-            createdAt = new Date(user['created_at']);
-            userUrl = user['html_url'];
-            twoFactorEnabled = user['two_factor_authentication'];
-        }
-
-        let parsedMinutes;
-        if (minutes != null) {
-            parsedMinutes = 'Usage minutes: ' + minutes['total_minutes_used'] + ' of ' + minutes['included_minutes'] + ', ' + minutes['total_paid_minutes_used'] + ' paid';
-        }
-
-        let parsedPackages;
-        if (packages != null) {
-            parsedPackages = 'Data transfer out: ' + packages['total_gigabytes_bandwidth_used'] + ' GB of ' + packages['included_gigabytes_bandwidth'] + ' GB, ' + packages['total_paid_gigabytes_bandwidth_used'] + ' GB paid';
-        }
-
-        let parsedSharedStorage;
-        if (sharedStorage != null) {
-            parsedSharedStorage = 'Storage for month: ' + sharedStorage['estimated_storage_for_month'] + ' GB, ' + sharedStorage['estimated_paid_storage_for_month'] + ' GB paid';
-        }
-
+        indicator.setUser(user);
+        indicator.setUserBilling(minutes, packages, sharedStorage);
         indicator.setUserStarred(starredList);
         indicator.setUserFollowers(followers);
         indicator.setUserFollowing(following);
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
-
-        indicator.userUrl = userUrl;
-        indicator.userLabel.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
-        indicator.joinedItem.label.text = 'Joined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
-        indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
-        indicator.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
-        indicator.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
-
-        indicator.twoFactorEnabled = twoFactorEnabled;
-        indicator.twoFactorItem.label.text = '2 Factor: ' + (twoFactorEnabled == true ? 'Enabled' : 'Disabled');
     } catch (error) {
         logError(error);
     }
@@ -127,18 +103,12 @@ async function hotRefresh(settings, indicator) {
 
         utils.prefsUpdatePackageSize(settings, runs['_size_']);
 
-        const latestRun = runs['workflow_runs'][0];
-        const status = latestRun["status"].toString().toUpperCase();
-        const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString().toUpperCase();
-        const displayTitle = latestRun["display_title"].toString();
-        const runNumber = latestRun["run_number"].toString();
-        const updatedAt = latestRun["updated_at"].toString();
-        const ownerAndRepo = latestRun["repository"]["full_name"].toString();
-        const workflowUrl = latestRun["html_url"].toString();
-        const repositoryUrl = latestRun["repository"]["html_url"].toString();
-        const date = new Date(updatedAt);
         const previousState = indicator.label.text;
-        const currentState = status + ' ' + conclusion;
+        indicator.setLatestRun(runs['workflow_runs'][0]);
+        const currentState = indicator.label.text;
+
+        indicator.setRuns(runs['workflow_runs']);
+        indicator.refreshTransfer(settings);
 
         /// Notification
         if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
@@ -148,15 +118,6 @@ async function hotRefresh(settings, indicator) {
                 showFinishNotification(ownerAndRepo, false);
             }
         }
-
-        indicator.label.text = currentState;
-        indicator.workflowUrl = workflowUrl;
-        indicator.repositoryUrl = repositoryUrl;
-        indicator.repositoryLabel.text = ownerAndRepo;
-        indicator.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
-        indicator.packageSizeItem.label.text = 'Status refresh: ' + utils.prefsDataConsumptionPerHour(settings);
-        indicator.fullPackageSizeItem.label.text = 'Full refresh: ' + utils.prefsFullDataConsumptionPerHour(settings);
-        indicator.setRuns(runs['workflow_runs']);
     } catch (error) {
         logError(error);
     }
@@ -165,6 +126,10 @@ async function hotRefresh(settings, indicator) {
 /// Button
 const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
+        _init() {
+            super._init(0.0, 'Github Action button', false);
+        }
+
         constructor(refreshCallback) {
             super();
 
@@ -356,6 +321,68 @@ const Indicator = GObject.registerClass(
             return button;
         }
 
+        setLatestRun(latestRun) {
+            const status = latestRun["status"].toString().toUpperCase();
+            const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString().toUpperCase();
+            const displayTitle = latestRun["display_title"].toString();
+            const runNumber = latestRun["run_number"].toString();
+            const updatedAt = latestRun["updated_at"].toString();
+            const ownerAndRepo = latestRun["repository"]["full_name"].toString();
+            const workflowUrl = latestRun["html_url"].toString();
+            const repositoryUrl = latestRun["repository"]["html_url"].toString();
+            const date = new Date(updatedAt);
+            const currentState = status + ' ' + conclusion;
+
+            this.label.text = currentState;
+            this.workflowUrl = workflowUrl;
+            this.repositoryUrl = repositoryUrl;
+            this.repositoryLabel.text = ownerAndRepo;
+            this.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
+        }
+
+        setUser(user) {
+            let userEmail;
+            let userName;
+            let createdAt;
+            let userUrl;
+            let twoFactorEnabled;
+            if (user != null) {
+                userEmail = user['email'];
+                userName = user['name'];
+                createdAt = new Date(user['created_at']);
+                userUrl = user['html_url'];
+                twoFactorEnabled = user['two_factor_authentication'];
+            }
+
+            this.userUrl = userUrl;
+            this.userLabel.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
+            this.joinedItem.label.text = 'Joined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
+
+            this.twoFactorEnabled = twoFactorEnabled;
+            this.twoFactorItem.label.text = '2FA: ' + (twoFactorEnabled == true ? 'Enabled' : 'Disabled');
+        }
+
+        setUserBilling(minutes, packages, sharedStorage) {
+            let parsedMinutes;
+            if (minutes != null) {
+                parsedMinutes = 'Usage minutes: ' + minutes['total_minutes_used'] + ' of ' + minutes['included_minutes'] + ', ' + minutes['total_paid_minutes_used'] + ' paid';
+            }
+
+            let parsedPackages;
+            if (packages != null) {
+                parsedPackages = 'Data transfer out: ' + packages['total_gigabytes_bandwidth_used'] + ' GB of ' + packages['included_gigabytes_bandwidth'] + ' GB, ' + packages['total_paid_gigabytes_bandwidth_used'] + ' GB paid';
+            }
+
+            let parsedSharedStorage;
+            if (sharedStorage != null) {
+                parsedSharedStorage = 'Storage for month: ' + sharedStorage['estimated_storage_for_month'] + ' GB, ' + sharedStorage['estimated_paid_storage_for_month'] + ' GB paid';
+            }
+
+            this.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
+            this.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
+            this.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
+        }
+
         setWorkflows(workflows) {
             this.workflowsMenuBox.remove_all_children();
             this.workflowsLabel.text = 'Workflows: ' + workflows.length;
@@ -426,6 +453,11 @@ const Indicator = GObject.registerClass(
             });
         }
 
+        refreshTransfer(settings) {
+            this.packageSizeItem.label.text = 'Status refresh: ' + utils.prefsDataConsumptionPerHour(settings);
+            this.fullPackageSizeItem.label.text = 'Full refresh: ' + utils.prefsFullDataConsumptionPerHour(settings);
+        }
+
         clear() {
             this.label.text = null;
             this.workflowUrl = null;
@@ -444,10 +476,6 @@ const Indicator = GObject.registerClass(
             this.infoItem.label.text = '...';
             this.packageSizeItem.label.text = '...';
             this.fullPackageSizeItem.label.text = '...';
-        }
-
-        _init() {
-            super._init(0.0, 'Github Action button', false);
         }
     });
 
