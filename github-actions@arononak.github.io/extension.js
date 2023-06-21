@@ -68,11 +68,13 @@ async function coldRefresh(settings, indicator) {
         let userName;
         let createdAt;
         let userUrl;
+        let twoFactorEnabled;
         if (user != null) {
             userEmail = user['email'];
             userName = user['name'];
             createdAt = new Date(user['created_at']);
             userUrl = user['html_url'];
+            twoFactorEnabled = user['two_factor_authentication'];
         }
 
         let parsedMinutes;
@@ -95,12 +97,16 @@ async function coldRefresh(settings, indicator) {
         indicator.setUserFollowing(following);
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
+
         indicator.userUrl = userUrl;
         indicator.userLabel.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
         indicator.joinedItem.label.text = 'Joined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
         indicator.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
         indicator.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
         indicator.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
+
+        indicator.twoFactorEnabled = twoFactorEnabled;
+        indicator.twoFactorItem.label.text = '2 Factor: ' + (twoFactorEnabled == true ? 'Enabled' : 'Disabled');
     } catch (error) {
         logError(error);
     }
@@ -161,11 +167,12 @@ const Indicator = GObject.registerClass(
     class Indicator extends PanelMenu.Button {
         constructor(refreshCallback) {
             super();
-            this.refreshCallback = refreshCallback;
 
+            this.refreshCallback = refreshCallback;
             this.workflowUrl = "";
             this.repositoryUrl = "";
             this.userUrl = "";
+            this.twoFactorEnabled = false;
 
             this.icon = new St.Icon({ style_class: 'system-status-icon' });
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github.svg`);
@@ -190,6 +197,10 @@ const Indicator = GObject.registerClass(
             /// Created at
             this.joinedItem = this.createPopupImageMenuItem(loadingText, 'mail-forward-symbolic', () => utils.openUrl(this.userUrl));
             this.userMenuBox.add_actor(this.joinedItem);
+            /// 2 FA
+            this.twoFactorCallback = () => this.twoFactorEnabled == false ? utils.openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
+            this.twoFactorItem = this.createPopupImageMenuItem(loadingText, 'security-medium-symbolic', this.twoFactorCallback);
+            this.userMenuBox.add_actor(this.twoFactorItem);
             /// Minutes
             this.minutesItem = this.createPopupImageMenuItem(loadingText, 'alarm-symbolic', () => { });
             this.userMenuBox.add_actor(this.minutesItem);
