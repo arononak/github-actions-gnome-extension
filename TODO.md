@@ -23,6 +23,7 @@
 
 - [ ] Create repository
 - [ ] EN / PL - translations
+- [ ] 2 modes - SIMPLE / EXTENDED
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 
