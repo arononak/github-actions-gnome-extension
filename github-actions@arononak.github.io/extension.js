@@ -135,11 +135,15 @@ const ExpandedMenuItem = GObject.registerClass(
             this.scrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
             this.scrollView.add_actor(this.menuBox);
             this.menu.box.add_actor(this.scrollView);
-            this.iconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
-            this.iconContainer.add_child(new St.Icon({ icon_name: iconName, style_class: 'popup-menu-icon' }));
-            this.insert_child_at_index(this.iconContainer, 0);
+
             this.label = new St.Label({ text: text });
-            this.insert_child_at_index(this.label, 1);
+            this.insert_child_at_index(this.label, 0);
+
+            this.iconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.insert_child_at_index(this.iconContainer, 0);
+
+            this.icon = new St.Icon({ icon_name: iconName, style_class: 'popup-menu-icon' });
+            this.iconContainer.add_child(this.icon);
         }
     }
 );
@@ -168,17 +172,13 @@ const Indicator = GObject.registerClass(
             this.topBox.add_child(this.label);
             this.add_child(this.topBox);
 
-            this.initPopup();
+            this.initPopupMenu();
         }
 
-        initPopup() {
+        initPopupMenu() {
             /// User
-            this.userMenuItem = new ExpandedMenuItem('avatar-default-symbolic', loadingText);
+            this.userMenuItem = new ExpandedMenuItem(null, loadingText);
             this.menu.addMenuItem(this.userMenuItem);
-
-            /// Created at
-            this.joinedItem = this.createPopupImageMenuItem(loadingText, 'mail-forward-symbolic', () => utils.openUrl(this.userUrl));
-            this.userMenuItem.menuBox.add_actor(this.joinedItem);
 
             /// 2 FA
             this.twoFactorCallback = () => this.twoFactorEnabled == false ? utils.openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
@@ -264,17 +264,17 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(this.bottomItem);
 
             /// Refresh
-            this.refreshButton = this.createRoundButton('view-refresh-symbolic');
+            this.refreshButton = this.createRoundButton({ iconName: 'view-refresh-symbolic' });
             this.refreshButton.connect('clicked', (self) => this.refreshCallback());
             this.bottomButtonBox.add_actor(this.refreshButton);
 
             /// Bored
-            this.boredButton = this.createRoundButton('face-monkey-symbolic');
+            this.boredButton = this.createRoundButton({ iconName: 'face-monkey-symbolic' });
             this.boredButton.connect('clicked', (self) => utils.openUrl('https://api.github.com/octocat'));
             this.bottomButtonBox.add_actor(this.boredButton);
 
             /// Settings
-            this.settingsItem = this.createRoundButton('system-settings-symbolic');
+            this.settingsItem = this.createRoundButton({ iconName: 'system-settings-symbolic' });
             this.settingsItem.connect('clicked', (self) => ExtensionUtils.openPrefs());
             this.bottomButtonBox.add_actor(this.settingsItem);
         }
@@ -285,9 +285,14 @@ const Indicator = GObject.registerClass(
             return item;
         }
 
-        createRoundButton(iconName) {
+        createRoundButton({ icon, iconName }) {
             const button = new St.Button({ style_class: 'button github-actions-button-action' });
-            button.child = new St.Icon({ icon_name: iconName });
+            if (icon != null) {
+                button.child = icon;
+            }
+            if (iconName != null) {
+                button.child = new St.Icon({ icon_name: iconName });
+            }
             return button;
         }
 
@@ -315,20 +320,27 @@ const Indicator = GObject.registerClass(
             let userName;
             let createdAt;
             let userUrl;
+            let avatarUrl;
             let twoFactorEnabled;
             if (user != null) {
                 userEmail = user['email'];
                 userName = user['name'];
                 createdAt = new Date(user['created_at']);
                 userUrl = user['html_url'];
+                avatarUrl = user['avatar_url'];
                 twoFactorEnabled = user['two_factor_authentication'];
             }
 
             this.userUrl = userUrl;
-            this.userMenuItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' - ' + userEmail;
-            this.joinedItem.label.text = 'Joined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
+            this.userMenuItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' (' + userEmail + ')'
+                + '\n\nJoined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
+
             this.twoFactorEnabled = twoFactorEnabled;
             this.twoFactorItem.label.text = '2FA: ' + (twoFactorEnabled == true ? 'Enabled' : 'Disabled');
+
+            this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl));
+            this.userMenuItem.icon.icon_size = 54;
+            this.userMenuItem.label.style = 'margin-left: 4px';
         }
 
         setUserBilling(minutes, packages, sharedStorage) {
