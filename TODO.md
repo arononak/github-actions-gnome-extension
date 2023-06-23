@@ -17,7 +17,7 @@
 - [x] Account more information expandable
 - [x] Artifacts list
 - [ ] Artifacts downloading
-- [ ] Repository followers
+- [x] Repository followers - stargazers
 
 ## 🌟 Version 2 - Interactions with GitHub
 - [ ] Create repository
