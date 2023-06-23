@@ -8,7 +8,7 @@
 - [x] PopupList - custom icon + label
 - [x] Menu refactor - factory pattern
 - [ ] Organization billings
-- [ ] User avatar
+- [x] User avatar
 - [ ] Notification sound
 - [ ] More notifications
 - [ ] Error handling
