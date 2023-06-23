@@ -6,7 +6,7 @@
 - [x] Refactor to 3 layers, return single json package
 - [x] 2FA enabled / disabled - if disabled show turn on button
 - [x] PopupList - custom icon + label
-- [ ] Menu refactor - factory pattern
+- [x] Menu refactor - factory pattern
 - [ ] Organization billings
 - [ ] User avatar
 - [ ] Notification sound
@@ -21,11 +21,12 @@
 
 ## 🌟 Version 2 - Interactions with GitHub
 - [ ] Create repository
-- [ ] EN / PL - translations
 - [ ] 2modes - SIMPLE / EXTENDED
 - [ ] Adjust to Github Enterprice
 - [ ] Remove workflow run icon
 - [ ] Pagination, more than 30
+- [ ] Releases list
+- [ ] EN / PL - translations
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 
