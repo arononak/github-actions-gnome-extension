@@ -58,6 +58,7 @@ async function coldRefresh(settings, indicator) {
         const following = await dataRepository.fetchUserFollowing();
         const workflows = await dataRepository.fetchWorkflows(owner, repo);
         const artifacts = await dataRepository.fetchArtifacts(owner, repo);
+        const stargazers = await dataRepository.fetchStargazers(owner, repo);
 
         const allDataObjects = [
             user,
@@ -69,7 +70,8 @@ async function coldRefresh(settings, indicator) {
             followers,
             following,
             workflows,
-            artifacts
+            artifacts,
+            stargazers
         ];
 
         const sizeInBytes = allDataObjects.reduce((sum, object) => sum + object._size_, 0);
@@ -83,6 +85,7 @@ async function coldRefresh(settings, indicator) {
         indicator.setUserFollowing(following);
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
+        indicator.setStargazers(stargazers);
     } catch (error) {
         logError(error);
     }
@@ -234,6 +237,19 @@ const Indicator = GObject.registerClass(
             /// Info
             this.infoItem = this.createPopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
             this.repositoryMenuBox.add_actor(this.infoItem);
+
+            /// Stargazers
+            this.stargazersMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
+            this.stargazersScrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
+            this.stargazersScrollView.add_actor(this.stargazersMenuBox);
+            this.stargazersMenuItem = new PopupMenu.PopupSubMenuMenuItem('');
+            this.stargazersMenuItem.menu.box.add_actor(this.stargazersScrollView);
+            this.stargazersIconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+            this.stargazersIconContainer.add_child(new St.Icon({ icon_name: 'starred-symbolic', style_class: 'popup-menu-icon' }));
+            this.stargazersMenuItem.insert_child_at_index(this.stargazersIconContainer, 0);
+            this.stargazersLabel = new St.Label({ text: loadingText });
+            this.stargazersMenuItem.insert_child_at_index(this.stargazersLabel, 1);
+            this.menu.addMenuItem(this.stargazersMenuItem);
 
             /// Workflows
             this.workflowsMenuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
@@ -405,6 +421,17 @@ const Indicator = GObject.registerClass(
                 const name = element['name'] + ' - ' + date + ' - (' + utils.bytesToString(element['size_in_bytes']) + ')';
                 const item = new PopupMenu.PopupImageMenuItem(name, 'insert-object-symbolic');
                 this.artifactsMenuBox.add_actor(item);
+            });
+        }
+
+        setStargazers(stargazers) {
+            this.stargazersMenuBox.remove_all_children();
+            this.stargazersLabel.text = 'Stargazers: ' + stargazers.length;
+
+            stargazers.forEach((element) => {
+                const item = new PopupMenu.PopupImageMenuItem(element['login'], 'starred-symbolic');
+                item.connect('activate', () => utils.openUrl(element['html_url']));
+                this.stargazersMenuBox.add_actor(item);
             });
         }
 

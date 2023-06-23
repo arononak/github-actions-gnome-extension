@@ -36,3 +36,6 @@ var fetchWorkflowRuns = async (owner, repo) =>
 
 var fetchArtifacts = async (owner, repo) =>
     repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/artifacts');
+
+var fetchStargazers = async (owner, repo) =>
+    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/stargazers');
