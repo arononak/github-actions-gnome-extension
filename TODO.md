@@ -25,6 +25,7 @@
 - [ ] 2modes - SIMPLE / EXTENDED
 - [ ] Adjust to Github Enterprice
 - [ ] Remove workflow run icon
+- [ ] Pagination, more than 30
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 
