@@ -26,6 +26,7 @@
 - [ ] Remove workflow run icon
 - [ ] Pagination, more than 30
 - [ ] Releases list
+- [ ] QuickSettings status icon - tint
 - [ ] EN / PL - translations
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
