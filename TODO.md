@@ -6,7 +6,6 @@
 - [x] Refactor to 3 layers, return single json package
 - [x] 2FA enabled / disabled - if disabled show turn on button
 - [x] PopupList - custom icon + label
-- [ ] Remove workflow run icon
 - [ ] Menu refactor - factory pattern
 - [ ] Organization billings
 - [ ] User avatar
@@ -21,11 +20,11 @@
 - [ ] Repository followers
 
 ## 🌟 Version 2 - Interactions with GitHub
-
 - [ ] Create repository
 - [ ] EN / PL - translations
 - [ ] 2modes - SIMPLE / EXTENDED
 - [ ] Adjust to Github Enterprice
+- [ ] Remove workflow run icon
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 
