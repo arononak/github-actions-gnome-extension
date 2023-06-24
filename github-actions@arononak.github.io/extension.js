@@ -29,7 +29,8 @@ const utils = Me.imports.utils;
 const dataRepository = Me.imports.data_repository;
 const _ = ExtensionUtils.gettext;
 
-const loadingText = "Loading";
+const loadingText = 'Loading';
+const notLoggedInText = 'Not logged in';
 
 function showFinishNotification(ownerAndRepo, success) {
     const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
@@ -42,6 +43,8 @@ function showFinishNotification(ownerAndRepo, success) {
 /// 1-60 minutes
 async function coldRefresh(settings, indicator) {
     try {
+        if (indicator.isLogged == false) return;
+
         const owner = settings.get_string('owner');
         const repo = settings.get_string('repo');
         if (utils.isEmpty(owner) || utils.isEmpty(repo)) return;
@@ -74,7 +77,7 @@ async function coldRefresh(settings, indicator) {
             stargazers
         ];
 
-        const sizeInBytes = allDataObjects.reduce((sum, object) => sum + object._size_, 0);
+        const sizeInBytes = allDataObjects.filter(e => e != null).reduce((sum, object) => sum + object._size_, 0);
 
         utils.prefsUpdateColdPackageSize(settings, sizeInBytes);
 
@@ -94,15 +97,14 @@ async function coldRefresh(settings, indicator) {
 /// 5-60sec
 async function hotRefresh(settings, indicator) {
     try {
+        if (indicator.isLogged == false) return;
+
         const owner = settings.get_string('owner');
         const repo = settings.get_string('repo');
         if (utils.isEmpty(owner) || utils.isEmpty(repo)) return;
 
         const runs = await dataRepository.fetchWorkflowRuns(owner, repo);
-        if (runs == null) {
-            indicator.setNotLoggedState();
-            return;
-        }
+        if (runs == null) return;
 
         utils.prefsUpdatePackageSize(settings, runs['_size_']);
 
@@ -114,7 +116,9 @@ async function hotRefresh(settings, indicator) {
         indicator.refreshTransfer(settings);
 
         /// Notification
-        if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== currentState) {
+        if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== notLoggedInText && previousState !== currentState) {
+            const ownerAndRepo = indicator.repositoryMenuItem.label.text;
+
             if (currentState === 'COMPLETED SUCCESS') {
                 showFinishNotification(ownerAndRepo, true);
             } else if (currentState === 'COMPLETED FAILURE') {
@@ -124,6 +128,23 @@ async function hotRefresh(settings, indicator) {
     } catch (error) {
         logError(error);
     }
+}
+
+function createPopupImageMenuItem(text, iconName, callback) {
+    const item = new PopupMenu.PopupImageMenuItem(text, iconName);
+    item.connect('activate', () => callback());
+    return item;
+}
+
+function createRoundButton({ icon, iconName }) {
+    const button = new St.Button({ style_class: 'button github-actions-button-action' });
+    if (icon != null) {
+        button.child = icon;
+    }
+    if (iconName != null) {
+        button.child = new St.Icon({ icon_name: iconName });
+    }
+    return button;
 }
 
 const ExpandedMenuItem = GObject.registerClass(
@@ -156,14 +177,13 @@ const Indicator = GObject.registerClass(
 
         constructor(refreshCallback) {
             super();
-
             this.refreshCallback = refreshCallback;
-            this.workflowUrl = "";
-            this.repositoryUrl = "";
-            this.userUrl = "";
-            this.twoFactorEnabled = false;
+            this.initState();
+            this.initStatusButton();
+            this.initPopupMenu(this.isLogged);
+        }
 
-            /// Status
+        initStatusButton() {
             this.icon = new St.Icon({ style_class: 'system-status-icon' });
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github.svg`);
             this.label = new St.Label({ style_class: 'github-actions-label', text: loadingText, y_align: Clutter.ActorAlign.CENTER, y_expand: true });
@@ -171,30 +191,64 @@ const Indicator = GObject.registerClass(
             this.topBox.add_child(this.icon);
             this.topBox.add_child(this.label);
             this.add_child(this.topBox);
-
-            this.initPopupMenu();
         }
 
-        initPopupMenu() {
+        initPopupMenu(isLogged) {
+            if (isLogged == true) {
+                this.initLoggedMenu();
+            }
+
+            /// Bottom menu
+            this.bottomButtonBox = new St.BoxLayout({
+                style_class: 'github-actions-button-box',
+                x_align: Clutter.ActorAlign.CENTER,
+                y_align: Clutter.ActorAlign.CENTER,
+                clip_to_allocation: true,
+                reactive: true,
+                x_expand: true,
+                pack_start: false,
+                vertical: false
+            });
+            this.bottomItem = new PopupMenu.PopupBaseMenuItem({ reactive: false });
+            this.bottomItem.actor.add_actor(this.bottomButtonBox);
+            this.menu.addMenuItem(this.bottomItem);
+
+            /// Refresh
+            this.refreshButton = createRoundButton({ iconName: 'view-refresh-symbolic' });
+            this.refreshButton.connect('clicked', (self) => this.refreshCallback());
+            this.bottomButtonBox.add_actor(this.refreshButton);
+
+            /// Bored
+            this.boredButton = createRoundButton({ iconName: 'face-monkey-symbolic' });
+            this.boredButton.connect('clicked', (self) => utils.openUrl('https://api.github.com/octocat'));
+            this.bottomButtonBox.add_actor(this.boredButton);
+
+            /// Settings
+            this.settingsItem = createRoundButton({ iconName: 'system-settings-symbolic' });
+            this.settingsItem.connect('clicked', (self) => ExtensionUtils.openPrefs());
+            this.bottomButtonBox.add_actor(this.settingsItem);
+        }
+
+        initLoggedMenu() {
             /// User
             this.userMenuItem = new ExpandedMenuItem(null, loadingText);
             this.menu.addMenuItem(this.userMenuItem);
 
             /// 2 FA
             this.twoFactorCallback = () => this.twoFactorEnabled == false ? utils.openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
-            this.twoFactorItem = this.createPopupImageMenuItem(loadingText, 'security-medium-symbolic', this.twoFactorCallback);
+            this.twoFactorItem = createPopupImageMenuItem(loadingText, 'security-medium-symbolic', this.twoFactorCallback);
             this.userMenuItem.menuBox.add_actor(this.twoFactorItem);
 
             /// Minutes
-            this.minutesItem = this.createPopupImageMenuItem(loadingText, 'alarm-symbolic', () => { });
+            this.minutesItem = createPopupImageMenuItem(loadingText, 'alarm-symbolic', () => { });
             this.userMenuItem.menuBox.add_actor(this.minutesItem);
 
             /// Packages
-            this.packagesItem = this.createPopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic', () => { });
+            this.packagesItem = createPopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic', () => { });
             this.userMenuItem.menuBox.add_actor(this.packagesItem);
 
             /// Shared Storage
-            this.sharedStorageItem = this.createPopupImageMenuItem(loadingText, 'network-server-symbolic', () => { });
+            this.sharedStorageItem = createPopupImageMenuItem(loadingText, 'network-server-symbolic', () => { });
             this.userMenuItem.menuBox.add_actor(this.sharedStorageItem);
 
             /// Starred
@@ -215,11 +269,11 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(this.repositoryMenuItem);
 
             /// Repository Open
-            this.openRepositoryItem = this.createPopupImageMenuItem('Open', 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
+            this.openRepositoryItem = createPopupImageMenuItem('Open', 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
             this.repositoryMenuItem.menuBox.add_actor(this.openRepositoryItem);
 
             /// Repository Last commit
-            this.infoItem = this.createPopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
+            this.infoItem = createPopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
             this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
 
             /// Stargazers
@@ -240,62 +294,41 @@ const Indicator = GObject.registerClass(
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
             /// Status package Sizes
-            this.packageSizeItem = this.createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => { });
+            this.packageSizeItem = createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => { });
             this.menu.addMenuItem(this.packageSizeItem);
 
             /// Cold package size
-            this.fullPackageSizeItem = this.createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => { });
+            this.fullPackageSizeItem = createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => { });
             this.menu.addMenuItem(this.fullPackageSizeItem);
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-            /// Bottom menu
-            this.bottomButtonBox = new St.BoxLayout({
-                style_class: 'github-actions-button-box',
-                x_align: Clutter.ActorAlign.CENTER,
-                y_align: Clutter.ActorAlign.CENTER,
-                clip_to_allocation: true,
-                reactive: true,
-                x_expand: true,
-                pack_start: false,
-                vertical: false
-            });
-            this.bottomItem = new PopupMenu.PopupBaseMenuItem({ reactive: false });
-            this.bottomItem.actor.add_actor(this.bottomButtonBox);
-            this.menu.addMenuItem(this.bottomItem);
-
-            /// Refresh
-            this.refreshButton = this.createRoundButton({ iconName: 'view-refresh-symbolic' });
-            this.refreshButton.connect('clicked', (self) => this.refreshCallback());
-            this.bottomButtonBox.add_actor(this.refreshButton);
-
-            /// Bored
-            this.boredButton = this.createRoundButton({ iconName: 'face-monkey-symbolic' });
-            this.boredButton.connect('clicked', (self) => utils.openUrl('https://api.github.com/octocat'));
-            this.bottomButtonBox.add_actor(this.boredButton);
-
-            /// Settings
-            this.settingsItem = this.createRoundButton({ iconName: 'system-settings-symbolic' });
-            this.settingsItem.connect('clicked', (self) => ExtensionUtils.openPrefs());
-            this.bottomButtonBox.add_actor(this.settingsItem);
         }
 
-        createPopupImageMenuItem(text, iconName, callback) {
-            const item = new PopupMenu.PopupImageMenuItem(text, iconName);
-            item.connect('activate', () => callback());
-            return item;
+        refreshTransfer(settings) {
+            this.packageSizeItem.label.text = 'Status refresh: ' + utils.prefsDataConsumptionPerHour(settings);
+            this.fullPackageSizeItem.label.text = 'Full refresh: ' + utils.prefsFullDataConsumptionPerHour(settings);
         }
 
-        createRoundButton({ icon, iconName }) {
-            const button = new St.Button({ style_class: 'button github-actions-button-action' });
-            if (icon != null) {
-                button.child = icon;
+        refreshAuthState(isLogged) {
+            if (this.isLogged == false) {
+                this.label.text = notLoggedInText;
             }
-            if (iconName != null) {
-                button.child = new St.Icon({ icon_name: iconName });
-            }
-            return button;
+
+            if (this.isLogged == isLogged) return;
+            this.isLogged = isLogged;
+
+            this.menu.removeAll();
+            this.initPopupMenu(this.isLogged);
         }
 
+        initState() {
+            this.workflowUrl = "";
+            this.repositoryUrl = "";
+            this.userUrl = "";
+            this.twoFactorEnabled = false;
+            this.isLogged = false;
+        }
+
+        /// Setters
         setLatestRun(latestRun) {
             const status = latestRun["status"].toString().toUpperCase();
             const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString().toUpperCase();
@@ -444,31 +477,6 @@ const Indicator = GObject.registerClass(
                 this.followingMenuItem.menuBox.add_actor(item);
             });
         }
-
-        refreshTransfer(settings) {
-            this.packageSizeItem.label.text = 'Status refresh: ' + utils.prefsDataConsumptionPerHour(settings);
-            this.fullPackageSizeItem.label.text = 'Full refresh: ' + utils.prefsFullDataConsumptionPerHour(settings);
-        }
-
-        clear() {
-            this.label.text = null;
-            this.workflowUrl = null;
-            this.repositoryUrl = null;
-        }
-
-        setNotLoggedState() {
-            this.label.text = "Not logged in";
-            this.workflowUrl = null;
-            this.repositoryUrl = null;
-
-            this.userItem.label.text = '...';
-            this.minutesItem.label.text = '...';
-
-            this.ownerAndRepoItem.label.text = '...';
-            this.infoItem.label.text = '...';
-            this.packageSizeItem.label.text = '...';
-            this.fullPackageSizeItem.label.text = '...';
-        }
     });
 
 class Extension {
@@ -503,8 +511,8 @@ class Extension {
         this.settings = null;
     }
 
-    startRefreshing() {
-        this.refresh();
+    async startRefreshing() {
+        await this.refresh();
 
         const statusRefreshTimeInSeconds = this.settings.get_int('refresh-time');
         const fullStatusRefreshTimeInMinutes = this.settings.get_int('full-refresh-time');
@@ -521,7 +529,10 @@ class Extension {
         this.coldRefreshInterval = null;
     }
 
-    refresh() {
+    async refresh() {
+        const isLogged = await dataRepository.isLogged();
+        this.indicator.refreshAuthState(isLogged);
+
         coldRefresh(this.settings, this.indicator);
         hotRefresh(this.settings, this.indicator);
     }
