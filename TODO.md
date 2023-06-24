@@ -10,7 +10,7 @@
 - [ ] Organization billings
 - [x] User avatar
 - [ ] Notification sound
-- [ ] Error handling
+- [x] Error handling
 - [ ] Bottom horizontal icons center margins
 - [x] Account more information expandable
 - [x] Artifacts list
