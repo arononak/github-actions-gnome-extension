@@ -29,6 +29,7 @@
 - [ ] Lint
 - [ ] More notifications
 - [ ] Logout / login buttons
+- [ ] Memory allocations - check memory leaks
 - [ ] EN / PL - translations
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
