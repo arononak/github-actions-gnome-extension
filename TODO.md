@@ -28,6 +28,7 @@
 - [ ] GitHub icon tint, status + octocat button
 - [ ] Lint
 - [ ] More notifications
+- [ ] Logout / login buttons
 - [ ] EN / PL - translations
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
