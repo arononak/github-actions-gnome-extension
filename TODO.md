@@ -27,6 +27,7 @@
 - [ ] Pagination, more than 30
 - [ ] Releases list
 - [ ] QuickSettings status icon - tint
+- [ ] GitHub icon tint, status + octocat button
 - [ ] EN / PL - translations
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
