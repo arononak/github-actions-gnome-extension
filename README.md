@@ -25,7 +25,7 @@ sudo apt install gh
 ## 🔒 Login
 
 ```bash
-gh auth login
+gh auth login --scopes user,repo,workflow
 ```
 And configure owner and repository in extension settings.
 
