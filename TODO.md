@@ -10,10 +10,8 @@
 - [ ] Organization billings
 - [x] User avatar
 - [ ] Notification sound
-- [ ] More notifications
 - [ ] Error handling
 - [ ] Bottom horizontal icons center margins
-- [ ] Lint
 - [x] Account more information expandable
 - [x] Artifacts list
 - [ ] Artifacts downloading
@@ -28,6 +26,8 @@
 - [ ] Releases list
 - [ ] QuickSettings status icon - tint
 - [ ] GitHub icon tint, status + octocat button
+- [ ] Lint
+- [ ] More notifications
 - [ ] EN / PL - translations
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
