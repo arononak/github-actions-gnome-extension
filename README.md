@@ -41,6 +41,11 @@ If any is missing, you can add it with the command:
 gh auth refresh --scopes user,repo,workflow
 ```
 
+## ▶️ Start a gnome session in a window
+```bash
+cd github-actions@arononak.github.io && make build
+```
+
 ## 🛠️ Build gnome-extensions pack
 
 ```bash
