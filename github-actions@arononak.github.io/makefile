@@ -1,3 +1,7 @@
+run:
+	env MUTTER_DEBUG_DUMMY_MODE_SPECS=1600x1200 \
+	dbus-run-session -- gnome-shell --nested --wayland
+
 build:
 	chmod +x create_version_file.sh
 	./create_version_file.sh
