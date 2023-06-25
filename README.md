@@ -43,7 +43,7 @@ gh auth refresh --scopes user,repo,workflow
 
 ## ▶️ Start a gnome session in a window
 ```bash
-cd github-actions@arononak.github.io && make build
+cd github-actions@arononak.github.io && make run
 ```
 
 ## 🛠️ Build gnome-extensions pack
