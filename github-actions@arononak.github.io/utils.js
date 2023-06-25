@@ -74,3 +74,11 @@ function openUrl(url) {
         logError(e);
     }
 }
+
+function exec(command) {
+    try {
+        GLib.spawn_command_line_async(command);
+    } catch (e) {
+        logError(e);
+    }
+}

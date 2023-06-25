@@ -38,6 +38,11 @@ function showFinishNotification(ownerAndRepo, success) {
     const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
     const notification = new MessageTray.Notification(source, 'Github Actions', description);
     source.showNotification(notification);
+    
+    utils.exec(success === true
+        ? 'paplay /usr/share/sounds/freedesktop/stereo/complete.oga'
+        : 'paplay /usr/share/sounds/freedesktop/stereo/dialog-warning.oga'
+    );
 }
 
 /// 1-60 minutes

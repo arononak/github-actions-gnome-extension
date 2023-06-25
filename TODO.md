@@ -9,7 +9,7 @@
 - [x] Menu refactor - factory pattern
 - [ ] Organization billings
 - [x] User avatar
-- [ ] Notification sound
+- [x] Notification sound
 - [x] Error handling
 - [ ] Bottom horizontal icons center margins
 - [x] Account more information expandable
