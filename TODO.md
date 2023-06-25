@@ -2,7 +2,7 @@
 
 ## 🚀 Version 1 - one-way communication
 
-- [ ] Hotfix ColdRefresh not working
+- [x] Hotfix ColdRefresh not working
 - [x] Refactor to 3 layers, return single json package
 - [x] 2FA enabled / disabled - if disabled show turn on button
 - [x] PopupList - custom icon + label
