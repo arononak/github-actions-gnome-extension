@@ -30,6 +30,7 @@
 - [ ] Lint
 - [ ] More notifications
 - [ ] Logout / login buttons
+- [ ] Missing scopes - information in the extension
 - [ ] Memory allocations - check memory leaks
 - [ ] EN / PL - translations
 
