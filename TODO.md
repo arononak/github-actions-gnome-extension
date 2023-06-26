@@ -11,7 +11,7 @@
 - [x] User avatar
 - [x] Notification sound
 - [x] Error handling
-- [ ] Bottom horizontal icons center margins
+- [x] Bottom horizontal icons center margins
 - [x] Account more information expandable
 - [x] Artifacts list
 - [ ] Artifacts downloading

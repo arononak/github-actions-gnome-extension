@@ -215,6 +215,7 @@ const Indicator = GObject.registerClass(
                 vertical: false
             });
             this.bottomItem = new PopupMenu.PopupBaseMenuItem({ reactive: false });
+            this.bottomItem.remove_all_children(); // Remove left margin from non visible PopupMenuItem icon
             this.bottomItem.actor.add_actor(this.bottomButtonBox);
             this.menu.addMenuItem(this.bottomItem);
 
