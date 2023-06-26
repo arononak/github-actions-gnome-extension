@@ -26,7 +26,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const GETTEXT_DOMAIN = 'github-actions-extension';
 const Me = ExtensionUtils.getCurrentExtension();
 const utils = Me.imports.utils;
-const dataRepository = Me.imports.data_repository;
+const repository = Me.imports.data_repository;
 const _ = ExtensionUtils.gettext;
 
 const loadingText = 'Loading';
@@ -38,7 +38,7 @@ function showFinishNotification(ownerAndRepo, success) {
     const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
     const notification = new MessageTray.Notification(source, 'Github Actions', description);
     source.showNotification(notification);
-    
+
     utils.exec(success === true
         ? 'paplay /usr/share/sounds/freedesktop/stereo/complete.oga'
         : 'paplay /usr/share/sounds/freedesktop/stereo/dialog-warning.oga'
@@ -54,19 +54,19 @@ async function coldRefresh(settings, indicator) {
         const repo = settings.get_string('repo');
         if (utils.isEmpty(owner) || utils.isEmpty(repo)) return;
 
-        const user = await dataRepository.fetchUser();
+        const user = await repository.fetchUser();
         if (user == null) return;
         const login = user['login'];
 
-        const minutes = await dataRepository.fetchUserBillingActionsMinutes(login);
-        const packages = await dataRepository.fetchUserBillingPackages(login);
-        const sharedStorage = await dataRepository.fetchUserBillingSharedStorage(login);
-        const starredList = await dataRepository.fetchUserStarred(login);
-        const followers = await dataRepository.fetchUserFollowers();
-        const following = await dataRepository.fetchUserFollowing();
-        const workflows = await dataRepository.fetchWorkflows(owner, repo);
-        const artifacts = await dataRepository.fetchArtifacts(owner, repo);
-        const stargazers = await dataRepository.fetchStargazers(owner, repo);
+        const minutes = await repository.fetchUserBillingActionsMinutes(login);
+        const packages = await repository.fetchUserBillingPackages(login);
+        const sharedStorage = await repository.fetchUserBillingSharedStorage(login);
+        const starredList = await repository.fetchUserStarred(login);
+        const followers = await repository.fetchUserFollowers();
+        const following = await repository.fetchUserFollowing();
+        const workflows = await repository.fetchWorkflows(owner, repo);
+        const artifacts = await repository.fetchArtifacts(owner, repo);
+        const stargazers = await repository.fetchStargazers(owner, repo);
 
         const allDataObjects = [
             user,
@@ -108,7 +108,7 @@ async function hotRefresh(settings, indicator) {
         const repo = settings.get_string('repo');
         if (utils.isEmpty(owner) || utils.isEmpty(repo)) return;
 
-        const runs = await dataRepository.fetchWorkflowRuns(owner, repo);
+        const runs = await repository.fetchWorkflowRuns(owner, repo);
         if (runs == null) return;
 
         utils.prefsUpdatePackageSize(settings, runs['_size_']);
@@ -415,14 +415,14 @@ const Indicator = GObject.registerClass(
         }
 
         setArtifacts(artifacts) {
-            const items = artifacts.filter(element => element['expired']);
-
             this.artifactsMenuItem.menuBox.remove_all_children();
-            this.artifactsMenuItem.label.text = 'Artifacts: ' + items.length;
+            this.artifactsMenuItem.label.text = 'Artifacts: ' + artifacts.length;
 
-            items.forEach((element) => {
+            artifacts.forEach((element) => {
                 const date = (new Date(element['created_at'])).toLocaleFormat('%d %b %Y');
-                const name = element['name'] + ' - ' + date + ' - (' + utils.bytesToString(element['size_in_bytes']) + ')';
+                const size = utils.bytesToString(element['size_in_bytes']);
+                const name = date + ' - ' + element['name'] + ' - (' + size + ')' + (element['expired'] == true ? ' - expired' : '');
+
                 const item = new PopupMenu.PopupImageMenuItem(name, 'insert-object-symbolic');
                 this.artifactsMenuItem.menuBox.add_actor(item);
             });
@@ -536,7 +536,7 @@ class Extension {
     }
 
     async refresh() {
-        const isLogged = await dataRepository.isLogged();
+        const isLogged = await repository.isLogged();
         this.indicator.refreshAuthState(isLogged);
 
         coldRefresh(this.settings, this.indicator);
