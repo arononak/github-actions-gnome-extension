@@ -26,6 +26,7 @@
 - [ ] Releases list
 - [ ] QuickSettings status icon - tint
 - [ ] GitHub icon tint, status + octocat button
+- [ ] Notification octocat icon
 - [ ] Lint
 - [ ] More notifications
 - [ ] Logout / login buttons
