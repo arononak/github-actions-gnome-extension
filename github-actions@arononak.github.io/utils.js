@@ -3,6 +3,7 @@
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const { GLib } = imports.gi;
+const Util = imports.misc.util;
 
 /// Package size
 var prefsPackageSize = function(settings) {
@@ -68,17 +69,5 @@ function isEmpty(str) {
 }
 
 function openUrl(url) {
-    try {
-        GLib.spawn_command_line_async('xdg-open ' + url);
-    } catch (e) {
-        logError(e);
-    }
-}
-
-function exec(command) {
-    try {
-        GLib.spawn_command_line_async(command);
-    } catch (e) {
-        logError(e);
-    }
+    Util.spawnCommandLine('xdg-open ' + url);
 }

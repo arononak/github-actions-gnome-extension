@@ -38,10 +38,14 @@ function showNotification(message, success) {
     const notification = new MessageTray.Notification(source, 'Github Actions', message);
     source.showNotification(notification);
 
-    utils.exec(success === true
-        ? 'paplay /usr/share/sounds/freedesktop/stereo/complete.oga'
-        : 'paplay /usr/share/sounds/freedesktop/stereo/dialog-warning.oga'
+    const file = Gio.File.new_for_path(
+        success === true
+            ? '/usr/share/sounds/freedesktop/stereo/complete.oga'
+            : '/usr/share/sounds/freedesktop/stereo/dialog-warning.oga'
     );
+
+    const player = global.display.get_sound_player();
+    player.play_from_file(file, '', null);
 }
 
 function showFinishNotification(ownerAndRepo, success) {
