@@ -32,17 +32,21 @@ const _ = ExtensionUtils.gettext;
 const loadingText = 'Loading';
 const notLoggedInText = 'Not logged in';
 
-function showFinishNotification(ownerAndRepo, success) {
+function showNotification(message, success) {
     const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
     Main.messageTray.add(source);
-    const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
-    const notification = new MessageTray.Notification(source, 'Github Actions', description);
+    const notification = new MessageTray.Notification(source, 'Github Actions', message);
     source.showNotification(notification);
 
     utils.exec(success === true
         ? 'paplay /usr/share/sounds/freedesktop/stereo/complete.oga'
         : 'paplay /usr/share/sounds/freedesktop/stereo/dialog-warning.oga'
     );
+}
+
+function showFinishNotification(ownerAndRepo, success) {
+    const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
+    showNotification(description, success);
 }
 
 /// 1-60 minutes
@@ -421,9 +425,21 @@ const Indicator = GObject.registerClass(
             artifacts.forEach((element) => {
                 const date = (new Date(element['created_at'])).toLocaleFormat('%d %b %Y');
                 const size = utils.bytesToString(element['size_in_bytes']);
-                const name = date + ' - ' + element['name'] + ' - (' + size + ')' + (element['expired'] == true ? ' - expired' : '');
+                const filename = element['name'];
+                const downloadUrl = element['archive_download_url'];
 
-                const item = new PopupMenu.PopupImageMenuItem(name, 'insert-object-symbolic');
+                const labelName = date + ' - ' + filename + ' - (' + size + ')' + (element['expired'] == true ? ' - expired' : '');
+
+                const item = new PopupMenu.PopupImageMenuItem(labelName, 'insert-object-symbolic');
+                item.connect('activate', () => {
+                    repository.downloadArtifact(downloadUrl, filename).then(success => {
+                        if (success === true) {
+                            showNotification('The artifact: ' + filename + ' has been downloaded, check your home directory', true);
+                        } else {
+                            showNotification('Something went wrong :/', false);
+                        }
+                    });
+                });
                 this.artifactsMenuItem.menuBox.add_actor(item);
             });
         }

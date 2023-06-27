@@ -14,7 +14,7 @@
 - [x] Bottom horizontal icons center margins
 - [x] Account more information expandable
 - [x] Artifacts list
-- [ ] Artifacts downloading
+- [x] Artifacts downloading
 - [x] Repository followers - stargazers
 
 ## 🌟 Version 2 - Interactions with GitHub

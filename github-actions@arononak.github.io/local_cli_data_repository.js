@@ -18,11 +18,44 @@ async function isLogged() {
                 resolve(false);
                 return;
             }
+
             if (stdout instanceof Uint8Array) {
                 stdout = ByteArray.toString(stdout);
             }
 
             resolve(true);
+        } catch (e) {
+            logError(e);
+            resolve(false);
+        }
+    });
+}
+
+async function downloadArtifact(downloadUrl, filename) {
+    const logged = await isLogged();
+
+    return new Promise((resolve, reject) => {
+        try {
+            if (!logged) {
+                resolve(false);
+                return;
+            }
+
+            const proc = Gio.Subprocess.new(
+                ['sh', '-c', 'exec gh api ' + downloadUrl + ' > ' + filename],
+                Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
+            );
+
+            proc.communicate_utf8_async(null, null, (proc, res) => {
+                const [, stdout, stderr] = proc.communicate_utf8_finish(res);
+
+                if (proc.get_successful()) {
+                    resolve(true);
+                    return;
+                } else {
+                    throw new Error(stderr);
+                }
+            });
         } catch (e) {
             logError(e);
             resolve(false);
@@ -40,13 +73,13 @@ async function executeGithubCliCommand(command) {
                 return;
             }
 
-            let proc = Gio.Subprocess.new(
+            const proc = Gio.Subprocess.new(
                 ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', command],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             );
 
             proc.communicate_utf8_async(null, null, (proc, res) => {
-                let [, stdout, stderr] = proc.communicate_utf8_finish(res);
+                const [, stdout, stderr] = proc.communicate_utf8_finish(res);
 
                 if (proc.get_successful()) {
                     const response = JSON.parse(stdout);
