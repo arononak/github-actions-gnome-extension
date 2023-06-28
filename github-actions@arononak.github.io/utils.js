@@ -58,6 +58,21 @@ var prefsFullDataConsumptionPerHour = function(settings) {
     return bytesToString(_dataConsumptionPerHour) + '/h';
 }
 
+/// Full data consumption
+var fullDataConsumptionPerHour = function(settings) {
+    const hotRefreshSize = settings.get_int('package-size-in-bytes');
+    const hotRefreshTime = prefsRefreshTime(settings);
+    const hotConsumption = ((hotRefreshSize / hotRefreshTime) * 60 * 60);
+
+    const coldRefreshSize = settings.get_int('cold-package-size-in-bytes');
+    const coldRefreshTime = prefsRefreshFullUpdateTime(settings);
+    const coldConsumption = ((coldRefreshSize / coldRefreshTime) * 60);
+
+    return bytesToString(hotConsumption + coldConsumption) + '/h';
+}
+
+////////////////////////////////////////
+
 function bytesToString(size) {
     var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
 

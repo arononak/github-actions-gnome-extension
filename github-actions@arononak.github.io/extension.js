@@ -126,7 +126,7 @@ async function hotRefresh(settings, indicator) {
         const currentState = indicator.label.text;
 
         indicator.setRuns(runs['workflow_runs']);
-        indicator.refreshTransfer(settings);
+        indicator.refreshTransfer(settings, indicator.isLogged);
 
         /// Notification
         if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== notLoggedInText && previousState !== currentState) {
@@ -207,40 +207,70 @@ const Indicator = GObject.registerClass(
         }
 
         initPopupMenu(isLogged) {
-            if (isLogged == true) {
-                this.initLoggedMenu();
-            }
+            this.box = new St.BoxLayout({
+                style_class: 'github-actions-top-box',
+                vertical: false,
+                x_expand: true,
+                x_align: Clutter.ActorAlign.FILL,
+                y_align: Clutter.ActorAlign.CENTER,
+            });
 
-            /// Bottom menu
-            this.bottomButtonBox = new St.BoxLayout({
+            this.leftBox = new St.BoxLayout({
+                style_class: 'github-actions-top-box',
+                vertical: false,
+                x_expand: true,
+                x_align: Clutter.ActorAlign.FILL,
+                y_align: Clutter.ActorAlign.CENTER,
+            });
+
+            this.rightBox = new St.BoxLayout({
                 style_class: 'github-actions-button-box',
-                x_align: Clutter.ActorAlign.CENTER,
+                x_align: Clutter.ActorAlign.END,
                 y_align: Clutter.ActorAlign.CENTER,
                 clip_to_allocation: true,
                 reactive: true,
-                x_expand: true,
                 pack_start: false,
                 vertical: false
             });
+
+            this.box.add(this.leftBox);
+            this.box.add(this.rightBox);
+
+            /// Network transfer
+            this.networkContainer = new St.BoxLayout();
+            this.networkButton = new St.Button({ style_class: 'button github-actions-button-action' });
+            this.networkIcon = new St.Icon({ icon_name: 'network-wireless-symbolic', icon_size: 20 });
+            this.networkLabel = new St.Label();
+            this.networkLabel.style = 'margin-left: 8px; margin-top: 2px;';
+            this.networkContainer.add(this.networkIcon);
+            this.networkContainer.add(this.networkLabel);
+            this.networkButton.set_child(this.networkContainer);
+            this.leftBox.add(this.networkButton);
+
             this.bottomItem = new PopupMenu.PopupBaseMenuItem({ reactive: false });
             this.bottomItem.remove_all_children(); // Remove left margin from non visible PopupMenuItem icon
-            this.bottomItem.actor.add_actor(this.bottomButtonBox);
+            this.bottomItem.actor.add_actor(this.box);
             this.menu.addMenuItem(this.bottomItem);
 
             /// Refresh
             this.refreshButton = createRoundButton({ iconName: 'view-refresh-symbolic' });
             this.refreshButton.connect('clicked', (self) => this.refreshCallback());
-            this.bottomButtonBox.add_actor(this.refreshButton);
+            this.rightBox.add_actor(this.refreshButton);
 
             /// Bored
             this.boredButton = createRoundButton({ iconName: 'face-monkey-symbolic' });
             this.boredButton.connect('clicked', (self) => utils.openUrl('https://api.github.com/octocat'));
-            this.bottomButtonBox.add_actor(this.boredButton);
+            this.rightBox.add_actor(this.boredButton);
 
             /// Settings
             this.settingsItem = createRoundButton({ iconName: 'system-settings-symbolic' });
             this.settingsItem.connect('clicked', (self) => ExtensionUtils.openPrefs());
-            this.bottomButtonBox.add_actor(this.settingsItem);
+            this.rightBox.add_actor(this.settingsItem);
+
+            if (isLogged == true) {
+                this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+                this.initLoggedMenu();
+            }
         }
 
         initLoggedMenu() {
@@ -305,21 +335,12 @@ const Indicator = GObject.registerClass(
             /// Artifacts
             this.artifactsMenuItem = new ExpandedMenuItem('insert-object-symbolic', loadingText);
             this.menu.addMenuItem(this.artifactsMenuItem);
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-
-            /// Status package Sizes
-            this.packageSizeItem = createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => { });
-            this.menu.addMenuItem(this.packageSizeItem);
-
-            /// Cold package size
-            this.fullPackageSizeItem = createPopupImageMenuItem(loadingText, 'network-wireless-symbolic', () => { });
-            this.menu.addMenuItem(this.fullPackageSizeItem);
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
         }
 
-        refreshTransfer(settings) {
-            this.packageSizeItem.label.text = 'Status refresh: ' + utils.prefsDataConsumptionPerHour(settings);
-            this.fullPackageSizeItem.label.text = 'Full refresh: ' + utils.prefsFullDataConsumptionPerHour(settings);
+        refreshTransfer(settings, isLogged) {
+            if (isLogged == true) {
+                this.networkLabel.text = utils.fullDataConsumptionPerHour(settings);
+            }
         }
 
         refreshAuthState(isLogged) {
