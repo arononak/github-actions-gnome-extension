@@ -17,14 +17,16 @@
 - [x] Repository followers - stargazers
 
 ## 🌟 Version 2 - Interactions with GitHub
+- [ ] New PopupMenu
+- [ ] Logout / login buttons - circles in the top
 - [ ] Pagination, more than 30
+- [ ] Pagination, status=1
 - [ ] 2modes - SIMPLE / EXTENDED
 - [ ] Create repository, repository list
 - [ ] Remove workflow run icon
 - [ ] Releases list
 - [ ] GitHub icon tint, status + octocat button
 - [ ] Notification octocat icon
-- [ ] Logout / login buttons - circles in the top
 - [ ] Missing scopes - information in the extension
 - [ ] QuickSettings status icon - tint
 - [ ] Lint
