@@ -1,16 +1,24 @@
+.github-actions-top-box {
+    padding: 0px;
+    spacing: 8px;
+    /* background-color: blue; */
+    flex: 1;
+}
+
 .github-actions-button-box {
     padding: 0px;
     spacing: 8px;
+    /* background-color: red; */
     flex: 1;
 }
 
 .github-actions-button-action {
     -st-icon-style: symbolic;
-    border-radius: 32px;
+    border-radius: 20px;
     margin: 0px;
-    min-height: 24px;
-    min-width: 24px;
-    padding: 12px;
+    min-height: 20px;
+    min-width: 20px;
+    padding: 10px;
     font-size: 100%;
     border: 1px solid transparent;
 }
