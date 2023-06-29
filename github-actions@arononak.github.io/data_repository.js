@@ -43,3 +43,6 @@ var fetchArtifacts = async (owner, repo, pagination) =>
 
 var fetchStargazers = async (owner, repo, pagination) =>
     repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/stargazers', pagination);
+
+var fetchReleases = async (owner, repo, pagination) =>
+    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/releases', pagination);

@@ -78,6 +78,7 @@ async function coldRefresh(settings, indicator) {
         const artifacts = await repository.fetchArtifacts(owner, repo, pagination);
         const stargazers = await repository.fetchStargazers(owner, repo, pagination);
         const runs = await repository.fetchWorkflowRuns(owner, repo, pagination);
+        const releases = await repository.fetchReleases(owner, repo, pagination);
 
         const allDataObjects = [
             user,
@@ -91,7 +92,8 @@ async function coldRefresh(settings, indicator) {
             workflows,
             artifacts,
             stargazers,
-            runs
+            runs,
+            releases
         ];
 
         const sizeInBytes = allDataObjects.filter(e => e != null).reduce((sum, object) => sum + object._size_, 0);
@@ -107,6 +109,7 @@ async function coldRefresh(settings, indicator) {
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
         indicator.setRuns(runs['workflow_runs']);
+        indicator.setReleases(releases);
     } catch (error) {
         logError(error);
     }
@@ -339,6 +342,10 @@ const Indicator = GObject.registerClass(
             /// Artifacts
             this.artifactsMenuItem = new ExpandedMenuItem('insert-object-symbolic', loadingText);
             this.menu.addMenuItem(this.artifactsMenuItem);
+
+            /// Releases
+            this.releasesMenuItem = new ExpandedMenuItem('folder-download-symbolic', loadingText);
+            this.menu.addMenuItem(this.releasesMenuItem);
         }
 
         refreshTransfer(settings, isLogged) {
@@ -526,6 +533,17 @@ const Indicator = GObject.registerClass(
                 const item = new PopupMenu.PopupImageMenuItem(element['login'], 'system-users-symbolic');
                 item.connect('activate', () => utils.openUrl(element['html_url']));
                 this.followingMenuItem.menuBox.add_actor(item);
+            });
+        }
+
+        setReleases(releases) {
+            this.releasesMenuItem.menuBox.remove_all_children();
+            this.releasesMenuItem.label.text = 'Releases: ' + releases.length;
+
+            releases.forEach((element) => {
+                const item = new PopupMenu.PopupImageMenuItem(element['name'], 'folder-download-symbolic');
+                item.connect('activate', () => utils.openUrl(element['html_url']));
+                this.releasesMenuItem.menuBox.add_actor(item);
             });
         }
     });
