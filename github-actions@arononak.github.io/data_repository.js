@@ -10,15 +10,6 @@ var isLogged = async () =>
 var fetchUser = async () =>
     repository.executeGithubCliCommand('/user');
 
-var fetchUserStarred = async (username) =>
-    repository.executeGithubCliCommand('/users/' + username + '/starred');
-
-var fetchUserFollowers = async () =>
-    repository.executeGithubCliCommand('/user/followers');
-
-var fetchUserFollowing = async () =>
-    repository.executeGithubCliCommand('/user/following')
-
 var fetchUserBillingActionsMinutes = async (username) =>
     repository.executeGithubCliCommand('/users/' + username + '/settings/billing/actions');
 
@@ -28,17 +19,27 @@ var fetchUserBillingPackages = async (username) =>
 var fetchUserBillingSharedStorage = async (username) =>
     repository.executeGithubCliCommand('/users/' + username + '/settings/billing/shared-storage');
 
-var fetchWorkflows = async (owner, repo) =>
-    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/workflows');
-
-var fetchWorkflowRuns = async (owner, repo) =>
-    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/runs');
-
-var fetchArtifacts = async (owner, repo) =>
-    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/artifacts');
-
 var downloadArtifact = async (downloadUrl, filename) =>
     repository.downloadArtifact(downloadUrl, filename);
 
-var fetchStargazers = async (owner, repo) =>
-    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/stargazers');
+/// Pagoinated lists
+var fetchUserStarred = async (username, pagination) =>
+    repository.executeGithubCliCommand('/users/' + username + '/starred', pagination);
+
+var fetchUserFollowers = async (pagination) =>
+    repository.executeGithubCliCommand('/user/followers', pagination);
+
+var fetchUserFollowing = async (pagination) =>
+    repository.executeGithubCliCommand('/user/following', pagination)
+
+var fetchWorkflows = async (owner, repo, pagination) =>
+    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/workflows', pagination);
+
+var fetchWorkflowRuns = async (owner, repo, pagination) =>
+    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/runs', pagination);
+
+var fetchArtifacts = async (owner, repo, pagination) =>
+    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/actions/artifacts', pagination);
+
+var fetchStargazers = async (owner, repo, pagination) =>
+    repository.executeGithubCliCommand('/repos/' + owner + '/' + repo + '/stargazers', pagination);

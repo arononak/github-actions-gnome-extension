@@ -1,14 +1,12 @@
 .github-actions-top-box {
     padding: 0px;
     spacing: 8px;
-    /* background-color: blue; */
     flex: 1;
 }
 
 .github-actions-button-box {
     padding: 0px;
     spacing: 8px;
-    /* background-color: red; */
     flex: 1;
 }
 

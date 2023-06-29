@@ -19,5 +19,8 @@
     <key name="cold-package-size-in-bytes" type="i">
       <default>0</default>
     </key>
+    <key name="pagination" type="i">
+      <default>100</default>
+    </key>
   </schema>
 </schemalist>

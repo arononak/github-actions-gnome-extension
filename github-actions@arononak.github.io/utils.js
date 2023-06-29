@@ -4,61 +4,38 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const { GLib } = imports.gi;
 
-/// Package size
-var prefsPackageSize = function(settings) {
-    return bytesToString(settings.get_int('package-size-in-bytes'));
-}
+var prefsPackageSize = (settings) => bytesToString(settings.get_int('package-size-in-bytes'));
+var prefsUpdatePackageSize = (settings, sizeInBytes) => settings.set_int('package-size-in-bytes', sizeInBytes);
 
-var prefsUpdatePackageSize = function(settings, sizeInBytes) {
-    settings.set_int('package-size-in-bytes', sizeInBytes);
-}
+var prefsColdPackageSize = (settings) => bytesToString(settings.get_int('cold-package-size-in-bytes'));
+var prefsUpdateColdPackageSize = (settings, sizeInBytes) => settings.set_int('cold-package-size-in-bytes', sizeInBytes);
 
-var prefsColdPackageSize = function(settings) {
-    return bytesToString(settings.get_int('cold-package-size-in-bytes'));
-}
+var prefsRefreshTime = (settings) => settings.get_int('refresh-time');
+var prefsUpdateRefreshTime = (settings, refreshTime) => settings.set_int('refresh-time', refreshTime);
 
-var prefsUpdateColdPackageSize = function(settings, sizeInBytes) {
-    settings.set_int('cold-package-size-in-bytes', sizeInBytes);
-}
+var prefsRefreshFullUpdateTime = (settings) => settings.get_int('full-refresh-time');
+var prefsUpdateFullRefreshTime = (settings, refreshTime) => settings.set_int('full-refresh-time', refreshTime);
 
-/// Refresh time
-var prefsRefreshTime = function(settings) {
-    return settings.get_int('refresh-time');
-}
+var prefsPagination = (settings) => settings.get_int('pagination');
+var prefsUpdatePagination = (settings, pagination) => settings.set_int('pagination', pagination);
 
-var prefsUpdateRefreshTime = function(settings, refreshTime) {
-    settings.set_int('refresh-time', refreshTime);
-}
-
-var prefsRefreshFullUpdateTime = function(settings) {
-    return settings.get_int('full-refresh-time');
-}
-
-var prefsUpdateFullRefreshTime = function(settings, refreshTime) {
-    settings.set_int('full-refresh-time', refreshTime);
-}
-
-/// Data consumption
-var prefsDataConsumptionPerHour = function(settings) {
+var prefsDataConsumptionPerHour = function (settings) {
     const packageSizeInBytes = settings.get_int('package-size-in-bytes');
     const refreshTime = prefsRefreshTime(settings);
+    const dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60 * 60);
 
-    const _dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60 * 60);
-
-    return bytesToString(_dataConsumptionPerHour) + '/h';
+    return bytesToString(dataConsumptionPerHour) + '/h';
 }
 
-var prefsFullDataConsumptionPerHour = function(settings) {
+var prefsFullDataConsumptionPerHour = function (settings) {
     const packageSizeInBytes = settings.get_int('cold-package-size-in-bytes');
     const refreshTime = prefsRefreshFullUpdateTime(settings);
+    const dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60);
 
-    const _dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60);
-
-    return bytesToString(_dataConsumptionPerHour) + '/h';
+    return bytesToString(dataConsumptionPerHour) + '/h';
 }
 
-/// Full data consumption
-var fullDataConsumptionPerHour = function(settings) {
+var fullDataConsumptionPerHour = function (settings) {
     const hotRefreshSize = settings.get_int('package-size-in-bytes');
     const hotRefreshTime = prefsRefreshTime(settings);
     const hotConsumption = ((hotRefreshSize / hotRefreshTime) * 60 * 60);
@@ -70,11 +47,8 @@ var fullDataConsumptionPerHour = function(settings) {
     return bytesToString(hotConsumption + coldConsumption) + '/h';
 }
 
-////////////////////////////////////////
-
 function bytesToString(size) {
     var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
-
     return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'KB', 'MB'][i];
 }
 

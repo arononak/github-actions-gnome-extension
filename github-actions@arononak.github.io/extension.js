@@ -66,15 +66,18 @@ async function coldRefresh(settings, indicator) {
         if (user == null) return;
         const login = user['login'];
 
+        const pagination = utils.prefsPagination(settings);
+
         const minutes = await repository.fetchUserBillingActionsMinutes(login);
         const packages = await repository.fetchUserBillingPackages(login);
         const sharedStorage = await repository.fetchUserBillingSharedStorage(login);
-        const starredList = await repository.fetchUserStarred(login);
-        const followers = await repository.fetchUserFollowers();
-        const following = await repository.fetchUserFollowing();
-        const workflows = await repository.fetchWorkflows(owner, repo);
-        const artifacts = await repository.fetchArtifacts(owner, repo);
-        const stargazers = await repository.fetchStargazers(owner, repo);
+        const starredList = await repository.fetchUserStarred(login, pagination);
+        const followers = await repository.fetchUserFollowers(pagination);
+        const following = await repository.fetchUserFollowing(pagination);
+        const workflows = await repository.fetchWorkflows(owner, repo, pagination);
+        const artifacts = await repository.fetchArtifacts(owner, repo, pagination);
+        const stargazers = await repository.fetchStargazers(owner, repo, pagination);
+        const runs = await repository.fetchWorkflowRuns(owner, repo, pagination);
 
         const allDataObjects = [
             user,
@@ -87,7 +90,8 @@ async function coldRefresh(settings, indicator) {
             following,
             workflows,
             artifacts,
-            stargazers
+            stargazers,
+            runs
         ];
 
         const sizeInBytes = allDataObjects.filter(e => e != null).reduce((sum, object) => sum + object._size_, 0);
@@ -102,12 +106,13 @@ async function coldRefresh(settings, indicator) {
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
+        indicator.setRuns(runs['workflow_runs']);
     } catch (error) {
         logError(error);
     }
 }
 
-/// 5-60sec
+/// 1-60sec
 async function hotRefresh(settings, indicator) {
     try {
         if (indicator.isLogged == false) return;
@@ -116,16 +121,15 @@ async function hotRefresh(settings, indicator) {
         const repo = settings.get_string('repo');
         if (utils.isEmpty(owner) || utils.isEmpty(repo)) return;
 
-        const runs = await repository.fetchWorkflowRuns(owner, repo);
-        if (runs == null) return;
+        const run = await repository.fetchWorkflowRuns(owner, repo, 1);
+        if (run == null) return;
 
-        utils.prefsUpdatePackageSize(settings, runs['_size_']);
+        utils.prefsUpdatePackageSize(settings, run['_size_']);
 
         const previousState = indicator.label.text;
-        indicator.setLatestRun(runs['workflow_runs'][0]);
+        indicator.setLatestRun(run['workflow_runs'][0]);
         const currentState = indicator.label.text;
 
-        indicator.setRuns(runs['workflow_runs']);
         indicator.refreshTransfer(settings, indicator.isLogged);
 
         /// Notification

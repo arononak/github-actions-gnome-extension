@@ -63,7 +63,7 @@ async function downloadArtifact(downloadUrl, filename) {
     });
 }
 
-async function executeGithubCliCommand(command) {
+async function executeGithubCliCommand(command, pagination = 100) {
     const logged = await isLogged();
 
     return new Promise((resolve, reject) => {
@@ -74,7 +74,7 @@ async function executeGithubCliCommand(command) {
             }
 
             const proc = Gio.Subprocess.new(
-                ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', command],
+                ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', command + '?per_page=' + pagination],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             );
 

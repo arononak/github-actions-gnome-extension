@@ -10,7 +10,7 @@ const version = Me.imports.version; // version.js
 function init() { }
 
 function fillPreferencesWindow(window) {
-    window.set_default_size(550, 600);
+    window.set_default_size(550, 650);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
     const ownerEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
@@ -49,7 +49,7 @@ function fillPreferencesWindow(window) {
         page_size: 0,
     });
     const refreshStatusRow = new Adw.ActionRow();
-    refreshStatusRow.add_prefix(new Gtk.Label({ label: 'Status in seconds (Refresh size: ' + utils.prefsPackageSize(settings) + ')' }));
+    refreshStatusRow.add_prefix(new Gtk.Label({ label: 'Status in seconds (Package size: ' + utils.prefsPackageSize(settings) + ')' }));
     refreshStatusRow.add_suffix(refreshStatusSpinButton);
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
     settings.bind('refresh-time', refreshStatusSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -68,10 +68,29 @@ function fillPreferencesWindow(window) {
         page_size: 0,
     });
     const fullRefreshRow = new Adw.ActionRow();
-    fullRefreshRow.add_prefix(new Gtk.Label({ label: 'Full update in minutes (Refresh size: ' + utils.prefsColdPackageSize(settings) + ')' }));
+    fullRefreshRow.add_prefix(new Gtk.Label({ label: 'Full in minutes (Package size: ' + utils.prefsColdPackageSize(settings) + ')' }));
     fullRefreshRow.add_suffix(fullRefreshSpinButton);
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;
     settings.bind('full-refresh-time', fullRefreshSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
+
+    const paginationSpinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
+    paginationSpinButton.wrap = true;
+    paginationSpinButton.width_chars = 2;
+    paginationSpinButton.margin_top = 8;
+    paginationSpinButton.margin_bottom = 8;
+    paginationSpinButton.adjustment = new Gtk.Adjustment({
+        value: utils.prefsPagination(settings),
+        lower: 1,
+        upper: 100,
+        step_increment: 1,
+        page_increment: 10,
+        page_size: 0,
+    });
+    const paginationRow = new Adw.ActionRow();
+    paginationRow.add_prefix(new Gtk.Label({ label: 'Pagination: ' }));
+    paginationRow.add_suffix(paginationSpinButton);
+    paginationRow.activatable_widget = paginationSpinButton;
+    settings.bind('pagination', paginationSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
     const versionRow = new Adw.ActionRow();
     versionRow.add_prefix(new Gtk.Label({ label: 'Version: ', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
@@ -91,6 +110,7 @@ function fillPreferencesWindow(window) {
     const refreshStatusGroup = new Adw.PreferencesGroup({ title: 'Refresh settings' });
     refreshStatusGroup.add(refreshStatusRow);
     refreshStatusGroup.add(fullRefreshRow);
+    refreshStatusGroup.add(paginationRow);
 
     const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
     otherGroup.add(starRow);
