@@ -57,6 +57,13 @@ function isEmpty(str) {
 }
 
 function openUrl(url) {
-    const Util = imports.misc.util;
-    Util.spawnCommandLine('xdg-open ' + url);
+    imports.misc.util.trySpawnCommandLine('xdg-open ' + url);
+}
+
+function openUrlPrefs(url) {
+    try {
+        GLib.spawn_command_line_async('xdg-open ' + url);
+    } catch (e) {
+        logError(e);
+    }
 }
