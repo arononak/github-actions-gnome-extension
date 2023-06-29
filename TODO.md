@@ -19,8 +19,8 @@
 ## 🌟 Version 2 - Interactions with GitHub
 - [x] New PopupMenu
 - [ ] Logout / login buttons - circles in the top
-- [ ] Pagination, more than 30
-- [ ] Pagination, status=1
+- [x] Pagination, more than 30
+- [x] Pagination, status=1
 - [ ] 2modes - SIMPLE / EXTENDED
 - [ ] Create repository, repository list
 - [ ] Remove workflow run icon
