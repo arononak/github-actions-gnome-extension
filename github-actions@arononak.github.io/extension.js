@@ -496,7 +496,17 @@ const Indicator = GObject.registerClass(
             this.runsMenuItem.label.text = 'Runs: ' + runs.length;
 
             runs.forEach((element) => {
-                const iconName = element['conclusion'] == 'success' ? 'emblem-default' : 'emblem-unreadable';
+                const conclusion = element['conclusion'];
+
+                let iconName;
+                if (conclusion == 'success') {
+                    iconName = 'emblem-default'
+                } else if (conclusion == 'failure') {
+                    iconName = 'emblem-unreadable';
+                } else {
+                    iconName = 'emblem-synchronizing';
+                }
+
                 const item = new PopupMenu.PopupImageMenuItem(element['display_title'], iconName);
                 item.connect('activate', () => utils.openUrl(element['html_url']));
                 this.runsMenuItem.menuBox.add_actor(item);
