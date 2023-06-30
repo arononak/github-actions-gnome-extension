@@ -24,6 +24,7 @@
 - [ ] 2modes - SIMPLE / EXTENDED
 - [ ] Create repository, repository list
 - [ ] Remove workflow run icon
+- [ ] extension.js - divide to smaller files
 - [x] Releases list
 - [ ] GitHub icon tint, status + octocat button
 - [ ] Notification octocat icon
