@@ -402,7 +402,7 @@ const Indicator = GObject.registerClass(
 
             if (currentState == 'COMPLETED SUCCESS') {
                 this.setStatusIconMode('success');
-            } else if (conclusion == 'COMPLETED FAILURE') {
+            } else if (currentState == 'COMPLETED FAILURE' || currentState == 'COMPLETED CANCELLED') {
                 this.setStatusIconMode('error');
             } else {
                 this.setStatusIconMode(['in_progress']);
