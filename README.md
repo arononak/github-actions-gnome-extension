@@ -9,11 +9,11 @@
 
 ## 🏞 Badges
 
-![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_error.png?raw=true)
+![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_success.png?raw=true)
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_in_progress.png?raw=true)
 
-![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_success.png?raw=true)
+![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_error.png?raw=true)
 
 ## 🏞 Preview
 
