@@ -24,7 +24,7 @@
 - [ ] 2modes - SIMPLE / EXTENDED
 - [ ] Create repository, repository list
 - [ ] Remove workflow run icon
-- [ ] Releases list
+- [x] Releases list
 - [ ] GitHub icon tint, status + octocat button
 - [ ] Notification octocat icon
 - [ ] Missing scopes - information in the extension
