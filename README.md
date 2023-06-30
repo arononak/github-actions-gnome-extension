@@ -7,11 +7,15 @@
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
 
-## 🏞 Preview
+## 🏞 Badges
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_error.png?raw=true)
+
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_in_progress.png?raw=true)
+
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_success.png?raw=true)
+
+## 🏞 Preview
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview.png?raw=true)
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview2.png?raw=true)
