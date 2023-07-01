@@ -134,6 +134,7 @@ async function hotRefresh(settings, indicator) {
         const currentState = indicator.label.text;
 
         indicator.refreshTransfer(settings, indicator.isLogged);
+        indicator.refreshBoredIcon();
 
         /// Notification
         if (!utils.isEmpty(previousState) && previousState !== loadingText && previousState !== notLoggedInText && previousState !== currentState) {
@@ -225,6 +226,16 @@ const Indicator = GObject.registerClass(
             }
         }
 
+        refreshBoredIcon() {
+            const darkTheme = utils.isDarkTheme();
+
+            if (darkTheme) {
+                this.boredButton.child = new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_white.svg`) });
+            } else {
+                this.boredButton.child = new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_black.svg`) });
+            }
+        }
+
         initPopupMenu(isLogged) {
             this.box = new St.BoxLayout({
                 style_class: 'github-actions-top-box',
@@ -277,7 +288,7 @@ const Indicator = GObject.registerClass(
             this.rightBox.add_actor(this.refreshButton);
 
             /// Bored
-            this.boredButton = createRoundButton({ iconName: 'face-monkey-symbolic' });
+            this.boredButton = createRoundButton({ icon: new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_white.svg`) }) });
             this.boredButton.connect('clicked', (self) => utils.openUrl('https://api.github.com/octocat'));
             this.rightBox.add_actor(this.boredButton);
 
@@ -397,7 +408,7 @@ const Indicator = GObject.registerClass(
             const workflowUrl = latestRun["html_url"].toString();
             const repositoryUrl = latestRun["repository"]["html_url"].toString();
             const date = new Date(updatedAt);
-            
+
             const currentState = status + ' ' + conclusion;
 
             if (currentState == 'COMPLETED SUCCESS') {

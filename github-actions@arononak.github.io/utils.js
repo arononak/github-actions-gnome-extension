@@ -67,3 +67,9 @@ function openUrlPrefs(url) {
         logError(e);
     }
 }
+
+function isDarkTheme() {
+    const [res, out] = GLib.spawn_command_line_sync("gsettings get org.gnome.desktop.interface gtk-theme");
+
+    return out.toString().replace(/'/g, "").trim().includes("dark");
+}

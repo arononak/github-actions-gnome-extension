@@ -27,7 +27,7 @@
 - [ ] extension.js - divide to smaller files
 - [x] Releases list
 - [x] GitHub icon tint, status
-- [ ] GitHub icon octocat button
+- [x] GitHub icon octocat button
 - [ ] Notification octocat icon
 - [ ] Missing scopes - information in the extension
 - [ ] QuickSettings status icon - tint
