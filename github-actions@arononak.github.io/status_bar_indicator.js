@@ -146,15 +146,15 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.bottomItem.actor.add_actor(this.box);
         this.menu.addMenuItem(this.bottomItem);
 
-        /// Refresh
-        this.refreshButton = createRoundButton({ iconName: 'view-refresh-symbolic' });
-        this.refreshButton.connect('clicked', (self) => this.refreshCallback());
-        this.rightBox.add_actor(this.refreshButton);
-
         /// Bored
         this.boredButton = createRoundButton({ icon: new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_white.svg`) }) });
         this.boredButton.connect('clicked', (self) => utils.openUrl('https://api.github.com/octocat'));
         this.rightBox.add_actor(this.boredButton);
+
+        /// Refresh
+        this.refreshButton = createRoundButton({ iconName: 'view-refresh-symbolic' });
+        this.refreshButton.connect('clicked', (self) => this.refreshCallback());
+        this.rightBox.add_actor(this.refreshButton);
 
         /// Settings
         this.settingsItem = createRoundButton({ iconName: 'system-settings-symbolic' });
@@ -227,11 +227,11 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this.runsMenuItem);
 
         /// Artifacts
-        this.artifactsMenuItem = new ExpandedMenuItem('insert-object-symbolic', LOADING_TEXT);
+        this.artifactsMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', LOADING_TEXT);
         this.menu.addMenuItem(this.artifactsMenuItem);
 
         /// Releases
-        this.releasesMenuItem = new ExpandedMenuItem('folder-download-symbolic', LOADING_TEXT);
+        this.releasesMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', LOADING_TEXT);
         this.menu.addMenuItem(this.releasesMenuItem);
     }
 
@@ -271,7 +271,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const ownerAndRepo = latestRun["repository"]["full_name"].toString();
         const workflowUrl = latestRun["html_url"].toString();
         const repositoryUrl = latestRun["repository"]["html_url"].toString();
-        const date = new Date(updatedAt);
+        const date = (new Date(updatedAt)).toLocaleFormat('%d %b %Y');
 
         const currentState = status + ' ' + conclusion;
 
@@ -287,7 +287,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.workflowUrl = workflowUrl;
         this.repositoryUrl = repositoryUrl;
         this.repositoryMenuItem.label.text = ownerAndRepo;
-        this.infoItem.label.text = date.toUTCString() + "\n\n#" + runNumber + " " + displayTitle;
+        this.infoItem.label.text = date + ' - ' + displayTitle + ' - (#' + runNumber + ')';
     }
 
     setUser(user) {
@@ -362,7 +362,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
             const labelName = date + ' - ' + filename + ' - (' + size + ')' + (element['expired'] == true ? ' - expired' : '');
 
-            const item = new PopupMenu.PopupImageMenuItem(labelName, 'insert-object-symbolic');
+            const item = new PopupMenu.PopupImageMenuItem(labelName, 'folder-visiting-symbolic');
             item.connect('activate', () => {
                 repository.downloadArtifact(downloadUrl, filename).then(success => {
                     try {
@@ -452,7 +452,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.releasesMenuItem.label.text = 'Releases: ' + releases.length;
 
         releases.forEach((element) => {
-            const item = new PopupMenu.PopupImageMenuItem(element['name'], 'folder-download-symbolic');
+            const item = new PopupMenu.PopupImageMenuItem(element['name'], 'folder-visiting-symbolic');
             item.connect('activate', () => utils.openUrl(element['html_url']));
             this.releasesMenuItem.menuBox.add_actor(item);
         });
