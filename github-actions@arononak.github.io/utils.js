@@ -2,7 +2,9 @@
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const { GLib } = imports.gi;
+const { GLib, Gio } = imports.gi;
+const MessageTray = imports.ui.messageTray;
+const Main = imports.ui.main;
 
 var prefsPackageSize = (settings) => bytesToString(settings.get_int('package-size-in-bytes'));
 var prefsUpdatePackageSize = (settings, sizeInBytes) => settings.set_int('package-size-in-bytes', sizeInBytes);
@@ -72,4 +74,20 @@ function isDarkTheme() {
     const [res, out] = GLib.spawn_command_line_sync("gsettings get org.gnome.desktop.interface gtk-theme");
 
     return out.toString().replace(/'/g, "").trim().includes("dark");
+}
+
+function showNotification(message, success) {
+    const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
+    Main.messageTray.add(source);
+    const notification = new MessageTray.Notification(source, 'Github Actions', message);
+    source.showNotification(notification);
+
+    const file = Gio.File.new_for_path(
+        success === true
+            ? '/usr/share/sounds/freedesktop/stereo/complete.oga'
+            : '/usr/share/sounds/freedesktop/stereo/dialog-warning.oga'
+    );
+
+    const player = global.display.get_sound_player();
+    player.play_from_file(file, '', null);
 }
