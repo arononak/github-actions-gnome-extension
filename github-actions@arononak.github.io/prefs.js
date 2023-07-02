@@ -97,7 +97,7 @@ function fillPreferencesWindow(window) {
     versionRow.add_suffix(new Gtk.Label({ label: version.VERSION, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
     const githubButton = new Gtk.Button({ label: 'Give me a star!' });
-    githubButton.connect('clicked', () => utils.openUrlPrefs('https://github.com/arononak/github-actions-gnome-extension'));
+    githubButton.connect('clicked', () => utils.openUrl('https://github.com/arononak/github-actions-gnome-extension'));
     githubButton.margin_top = 8;
     githubButton.margin_bottom = 8;
     const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });

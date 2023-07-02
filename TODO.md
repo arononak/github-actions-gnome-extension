@@ -19,7 +19,7 @@
 ## 🌟 Version 2 - Interactions with GitHub
 - [x] New PopupMenu
 - [ ] Logout / login buttons - circles in the top
-- [ ] utils.js - merge openUrl and openUrlPrefs
+- [x] utils.js - merge openUrl and openUrlPrefs
 - [x] Pagination, more than 30
 - [x] Pagination, status=1
 - [ ] 2modes - SIMPLE / EXTENDED
