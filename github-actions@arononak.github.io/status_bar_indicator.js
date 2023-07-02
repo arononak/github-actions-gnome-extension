@@ -72,7 +72,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.label = new St.Label({ style_class: 'github-actions-label', text: LOADING_TEXT, y_align: Clutter.ActorAlign.CENTER, y_expand: true });
 
         this.icon = new St.Icon({ style_class: 'system-status-icon' });
-        this.setStatusIconMode('in_progress');
+        this.setStatusIconState('in_progress');
 
         this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
         this.topBox.add_child(this.icon);
@@ -80,12 +80,12 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.add_child(this.topBox);
     }
 
-    setStatusIconMode(mode) {
-        if (mode == 'error') {
+    setStatusIconState(state) {
+        if (state == 'error') {
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github_red.svg`);
-        } else if (mode == 'in_progress') {
+        } else if (state == 'in_progress') {
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github_gray.svg`);
-        } else if (mode == 'success') {
+        } else if (state == 'success') {
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github_white.svg`);
         }
     }
@@ -276,11 +276,11 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const currentState = status + ' ' + conclusion;
 
         if (currentState == 'COMPLETED SUCCESS') {
-            this.setStatusIconMode('success');
+            this.setStatusIconState('success');
         } else if (currentState == 'COMPLETED FAILURE' || currentState == 'COMPLETED CANCELLED') {
-            this.setStatusIconMode('error');
+            this.setStatusIconState('error');
         } else {
-            this.setStatusIconMode(['in_progress']);
+            this.setStatusIconState('in_progress');
         }
 
         this.label.text = currentState;
