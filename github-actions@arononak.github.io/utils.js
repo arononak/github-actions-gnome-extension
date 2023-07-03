@@ -67,9 +67,10 @@ function openUrl(url) {
 }
 
 function isDarkTheme() {
-    const [res, out] = GLib.spawn_command_line_sync("gsettings get org.gnome.desktop.interface gtk-theme");
+    const settings = new Gio.Settings({schema: 'org.gnome.desktop.interface'});
+    const theme = settings.get_string('gtk-theme');
 
-    return out.toString().replace(/'/g, "").trim().includes("dark");
+    return theme.replace(/'/g, "").trim().includes("dark");
 }
 
 function showNotification(message, success) {
