@@ -3,8 +3,6 @@
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const { GLib, Gio } = imports.gi;
-const MessageTray = imports.ui.messageTray;
-const Main = imports.ui.main;
 
 var prefsPackageSize = (settings) => bytesToString(settings.get_int('package-size-in-bytes'));
 var prefsUpdatePackageSize = (settings, sizeInBytes) => settings.set_int('package-size-in-bytes', sizeInBytes);
@@ -74,6 +72,9 @@ function isDarkTheme() {
 }
 
 function showNotification(message, success) {
+    const MessageTray = imports.ui.messageTray;
+    const Main = imports.ui.main;
+    
     const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
     Main.messageTray.add(source);
     const notification = new MessageTray.Notification(source, 'Github Actions', message);
