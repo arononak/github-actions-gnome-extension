@@ -16,9 +16,23 @@ const _ = ExtensionUtils.gettext;
 var LOADING_TEXT = 'Loading';
 var NOT_LOGGED_IN_TEXT = 'Not logged in';
 
-function createPopupImageMenuItem(text, iconName, callback) {
-    const item = new PopupMenu.PopupImageMenuItem(text, iconName);
-    item.connect('activate', () => callback());
+function createPopupImageMenuItem(text, startIconName, itemCallback, endIconName, endIconCallback) {
+    const item = new PopupMenu.PopupImageMenuItem(text, startIconName);
+    item.connect('activate', () => itemCallback());
+
+    if (endIconName != null) {
+        const icon = new IconButton(endIconName, () => endIconCallback())
+        const box = new St.BoxLayout({
+            style_class: 'github-actions-top-box',
+            vertical: false,
+            x_expand: true,
+            x_align: Clutter.ActorAlign.END,
+            y_align: Clutter.ActorAlign.CENTER,
+        });
+        box.add(icon);
+        item.insert_child_at_index(box, 100);
+    }
+
     return item;
 }
 
@@ -35,7 +49,7 @@ function createRoundButton({ icon, iconName }) {
 
 const ExpandedMenuItem = GObject.registerClass(
     class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
-        constructor(iconName, text) {
+        constructor(startIconName, text, endIconName, endIconCallback) {
             super('');
 
             this.menuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
@@ -48,12 +62,53 @@ const ExpandedMenuItem = GObject.registerClass(
 
             this.iconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
             this.insert_child_at_index(this.iconContainer, 0);
-
-            this.icon = new St.Icon({ icon_name: iconName, style_class: 'popup-menu-icon' });
+            this.icon = new St.Icon({ icon_name: startIconName, style_class: 'popup-menu-icon' });
             this.iconContainer.add_child(this.icon);
+
+            if (endIconName != null) {
+                const endIcon = new IconButton(endIconName, () => endIconCallback())
+                const box = new St.BoxLayout({
+                    style_class: 'github-actions-top-box',
+                    vertical: false,
+                    x_expand: true,
+                    x_align: Clutter.ActorAlign.END,
+                    y_align: Clutter.ActorAlign.CENTER,
+                });
+                box.add(endIcon);
+                this.insert_child_at_index(box, 5);
+            }
+        }
+
+        submitItems(items) {
+            this.menuBox.remove_all_children();
+
+            items.forEach((i) => {
+                this.menuBox.add_actor(createPopupImageMenuItem(i['text'], i['iconName'], i['callback']));
+            });
+        }
+
+        setHeaderItemText(text) {
+            this.label.text = text;
         }
     }
 );
+
+var IconButton = class extends St.Button {
+    static {
+        GObject.registerClass(this);
+    }
+
+    constructor(iconName, callback) {
+        super();
+        this.connect('clicked', callback);
+        this.set_can_focus(true);
+        this.set_child(new St.Icon({ style_class: 'popup-menu-icon', iconName }));
+    }
+
+    setIcon(icon) {
+        this.child.set_icon_name(icon);
+    }
+};
 
 var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     _init() {
@@ -203,12 +258,8 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         /// Repository
-        this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', LOADING_TEXT);
+        this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', LOADING_TEXT, 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
         this.menu.addMenuItem(this.repositoryMenuItem);
-
-        /// Repository Open
-        this.openRepositoryItem = createPopupImageMenuItem('Open', 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
-        this.repositoryMenuItem.menuBox.add_actor(this.openRepositoryItem);
 
         /// Repository Last commit
         this.infoItem = createPopupImageMenuItem(LOADING_TEXT, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
@@ -226,13 +277,13 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.runsMenuItem = new ExpandedMenuItem('media-playback-start-symbolic', LOADING_TEXT);
         this.menu.addMenuItem(this.runsMenuItem);
 
-        /// Artifacts
-        this.artifactsMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', LOADING_TEXT);
-        this.menu.addMenuItem(this.artifactsMenuItem);
-
         /// Releases
         this.releasesMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', LOADING_TEXT);
         this.menu.addMenuItem(this.releasesMenuItem);
+
+        /// Artifacts
+        this.artifactsMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', LOADING_TEXT);
+        this.menu.addMenuItem(this.artifactsMenuItem);
     }
 
     refreshTransfer(settings, isLogged) {
@@ -290,6 +341,8 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.infoItem.label.text = date + ' - ' + displayTitle + ' - (#' + runNumber + ')';
     }
 
+    // User ------------------------------------------------------------
+
     setUser(user) {
         let userEmail;
         let userName;
@@ -339,31 +392,120 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
     }
 
-    setWorkflows(workflows) {
-        this.workflowsMenuItem.menuBox.remove_all_children();
-        this.workflowsMenuItem.label.text = 'Workflows: ' + workflows.length;
+    setUserStarred(starred) {
+        function toItem(e) {
+            return {
+                "iconName": 'starred-symbolic',
+                "text": e['full_name'],
+                "callback": () => utils.openUrl(e['html_url']),
+            };
+        }
 
-        workflows.forEach((element) => {
-            const item = new PopupMenu.PopupImageMenuItem(element['name'], 'mail-send-receive-symbolic');
-            item.connect('activate', () => utils.openUrl(element['html_url']));
-            this.workflowsMenuItem.menuBox.add_actor(item);
-        });
+        this.starredMenuItem.setHeaderItemText('Starred: ' + starred.length);
+        this.starredMenuItem.submitItems(starred.map(e => toItem(e)));
+    }
+
+    setUserFollowers(followers) {
+        function toItem(e) {
+            return {
+                "iconName": 'system-users-symbolic',
+                "text": e['login'],
+                "callback": () => utils.openUrl(e['html_url']),
+            };
+        }
+
+        this.followersMenuItem.setHeaderItemText('Followers: ' + followers.length);
+        this.followersMenuItem.submitItems(followers.map(e => toItem(e)));
+    }
+
+    setUserFollowing(following) {
+        function toItem(e) {
+            return {
+                "iconName": 'system-users-symbolic',
+                "text": e['login'],
+                "callback": () => utils.openUrl(e['html_url']),
+            };
+        }
+
+        this.followingMenuItem.setHeaderItemText('Following: ' + following.length);
+        this.followingMenuItem.submitItems(following.map(e => toItem(e)));
+    }
+
+    /// Separator ------------------------------------------------------
+
+    setStargazers(stargazers) {
+        function toItem(e) {
+            return {
+                "iconName": 'starred-symbolic',
+                "text": e['login'],
+                "callback": () => utils.openUrl(e['html_url']),
+            };
+        }
+
+        this.stargazersMenuItem.setHeaderItemText('Stargazers: ' + stargazers.length);
+        this.stargazersMenuItem.submitItems(stargazers.map(e => toItem(e)));
+    }
+
+    setWorkflows(workflows) {
+        function toItem(e) {
+            return {
+                "iconName": 'mail-send-receive-symbolic',
+                "text": e['name'],
+                "callback": () => utils.openUrl(e['html_url']),
+            };
+        }
+
+        this.workflowsMenuItem.setHeaderItemText('Workflows: ' + workflows.length);
+        this.workflowsMenuItem.submitItems(workflows.map(e => toItem(e)));
+    }
+
+    setRuns(runs) {
+        function toItem(e) {
+            const conclusion = e['conclusion'];
+
+            function conclusionIcon(conclusion) {
+                if (conclusion == 'success') {
+                    return 'emblem-default';
+                } else if (conclusion == 'failure') {
+                    return 'emblem-unreadable';
+                } else {
+                    return 'emblem-synchronizing';
+                }
+            }
+
+            return {
+                "iconName": conclusionIcon(conclusion),
+                "text": e['display_title'],
+                "callback": () => utils.openUrl(e['html_url']),
+            };
+        }
+
+        this.runsMenuItem.setHeaderItemText('Workflow runs: ' + runs.length);
+        this.runsMenuItem.submitItems(runs.map(e => toItem(e)));
+    }
+
+    setReleases(releases) {
+        function toItem(e) {
+            return {
+                "iconName": 'folder-visiting-symbolic',
+                "text": e['name'],
+                "callback": () => utils.openUrl(e['html_url']),
+            };
+        }
+
+        this.releasesMenuItem.setHeaderItemText('Releases: ' + releases.length);
+        this.releasesMenuItem.submitItems(releases.map(e => toItem(e)));
     }
 
     setArtifacts(artifacts) {
-        this.artifactsMenuItem.menuBox.remove_all_children();
-        this.artifactsMenuItem.label.text = 'Artifacts: ' + artifacts.length;
+        function toItem(e) {
+            const date = (new Date(e['created_at'])).toLocaleFormat('%d %b %Y');
+            const size = utils.bytesToString(e['size_in_bytes']);
+            const filename = e['name'];
+            const downloadUrl = e['archive_download_url'];
+            const labelName = date + ' - ' + filename + ' - (' + size + ')' + (e['expired'] == true ? ' - expired' : '');
 
-        artifacts.forEach((element) => {
-            const date = (new Date(element['created_at'])).toLocaleFormat('%d %b %Y');
-            const size = utils.bytesToString(element['size_in_bytes']);
-            const filename = element['name'];
-            const downloadUrl = element['archive_download_url'];
-
-            const labelName = date + ' - ' + filename + ' - (' + size + ')' + (element['expired'] == true ? ' - expired' : '');
-
-            const item = new PopupMenu.PopupImageMenuItem(labelName, 'folder-visiting-symbolic');
-            item.connect('activate', () => {
+            function callback() {
                 repository.downloadArtifact(downloadUrl, filename).then(success => {
                     try {
                         if (success === true) {
@@ -375,86 +517,16 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                         logError(e);
                     }
                 });
-
-            });
-            this.artifactsMenuItem.menuBox.add_actor(item);
-        });
-    }
-
-    setStargazers(stargazers) {
-        this.stargazersMenuItem.menuBox.remove_all_children();
-        this.stargazersMenuItem.label.text = 'Stargazers: ' + stargazers.length;
-
-        stargazers.forEach((element) => {
-            const item = new PopupMenu.PopupImageMenuItem(element['login'], 'starred-symbolic');
-            item.connect('activate', () => utils.openUrl(element['html_url']));
-            this.stargazersMenuItem.menuBox.add_actor(item);
-        });
-    }
-
-    setRuns(runs) {
-        this.runsMenuItem.menuBox.remove_all_children();
-        this.runsMenuItem.label.text = 'Runs: ' + runs.length;
-
-        runs.forEach((element) => {
-            const conclusion = element['conclusion'];
-
-            let iconName;
-            if (conclusion == 'success') {
-                iconName = 'emblem-default'
-            } else if (conclusion == 'failure') {
-                iconName = 'emblem-unreadable';
-            } else {
-                iconName = 'emblem-synchronizing';
             }
 
-            const item = new PopupMenu.PopupImageMenuItem(element['display_title'], iconName);
-            item.connect('activate', () => utils.openUrl(element['html_url']));
-            this.runsMenuItem.menuBox.add_actor(item);
-        });
-    }
+            return {
+                "iconName": 'folder-visiting-symbolic',
+                "text": labelName,
+                "callback": () => callback(),
+            };
+        }
 
-    setUserStarred(starred) {
-        this.starredMenuItem.menuBox.remove_all_children();
-        this.starredMenuItem.label.text = 'Starred: ' + starred.length;
-
-        starred.forEach((element) => {
-            const item = new PopupMenu.PopupImageMenuItem(element['full_name'], 'starred-symbolic');
-            item.connect('activate', () => utils.openUrl(element['html_url']));
-            this.starredMenuItem.menuBox.add_actor(item);
-        });
-    }
-
-    setUserFollowers(followers) {
-        this.followersMenuItem.menuBox.remove_all_children();
-        this.followersMenuItem.label.text = 'Followers: ' + followers.length;
-
-        followers.forEach((element) => {
-            const item = new PopupMenu.PopupImageMenuItem(element['login'], 'system-users-symbolic');
-            item.connect('activate', () => utils.openUrl(element['html_url']));
-            this.followersMenuItem.menuBox.add_actor(item);
-        });
-    }
-
-    setUserFollowing(following) {
-        this.followingMenuItem.menuBox.remove_all_children();
-        this.followingMenuItem.label.text = 'Following: ' + following.length;
-
-        following.forEach((element) => {
-            const item = new PopupMenu.PopupImageMenuItem(element['login'], 'system-users-symbolic');
-            item.connect('activate', () => utils.openUrl(element['html_url']));
-            this.followingMenuItem.menuBox.add_actor(item);
-        });
-    }
-
-    setReleases(releases) {
-        this.releasesMenuItem.menuBox.remove_all_children();
-        this.releasesMenuItem.label.text = 'Releases: ' + releases.length;
-
-        releases.forEach((element) => {
-            const item = new PopupMenu.PopupImageMenuItem(element['name'], 'folder-visiting-symbolic');
-            item.connect('activate', () => utils.openUrl(element['html_url']));
-            this.releasesMenuItem.menuBox.add_actor(item);
-        });
+        this.artifactsMenuItem.setHeaderItemText('Artifacts: ' + artifacts.length);
+        this.artifactsMenuItem.submitItems(artifacts.map(e => toItem(e)));
     }
 };
