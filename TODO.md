@@ -24,7 +24,7 @@
 - [x] Pagination, status=1
 - [ ] 2modes - SIMPLE / EXTENDED
 - [ ] Create repository, repository list
-- [ ] Remove workflow run icon
+- [x] Remove workflow run icon
 - [ ] commit link
 - [x] extension.js - divide to smaller files
 - [x] Releases list
