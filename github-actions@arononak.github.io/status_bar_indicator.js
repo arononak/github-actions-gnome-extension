@@ -6,6 +6,8 @@ const PopupMenu = imports.ui.popupMenu;
 const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
 const MessageTray = imports.ui.messageTray;
+const Dialog = imports.ui.dialog;
+const ModalDialog = imports.ui.modalDialog;
 
 const GETTEXT_DOMAIN = 'github-actions-extension';
 const Me = ExtensionUtils.getCurrentExtension();
@@ -15,6 +17,72 @@ const _ = ExtensionUtils.gettext;
 
 var LOADING_TEXT = 'Loading';
 var NOT_LOGGED_IN_TEXT = 'Not logged in';
+
+function showConfirmDialog({
+    title,
+    description,
+    itemTitle,
+    itemDescription,
+    iconName,
+    onConfirm
+}) {
+    let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false });
+    let reminderId = null;
+    let closedId = dialog.connect('closed', (_dialog) => {
+        if (!reminderId) {
+            reminderId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 60,
+                () => {
+                    dialog.open(global.get_current_time());
+                    reminderId = null;
+                    return GLib.SOURCE_REMOVE;
+                },
+            );
+        }
+    });
+
+    dialog.connect('destroy', (_actor) => {
+        if (closedId) {
+            dialog.disconnect(closedId);
+            closedId = null;
+        }
+
+        if (reminderId) {
+            GLib.Source.remove(id);
+            reminderId = null;
+        }
+
+        dialog = null;
+    });
+
+    const content = new Dialog.MessageDialogContent({
+        title: title,
+        description: description,
+    });
+    dialog.contentLayout.add_child(content);
+
+    const item = new Dialog.ListSectionItem({
+        icon_actor: new St.Icon({ icon_name: iconName }),
+        title: itemTitle,
+        description: itemDescription,
+    });
+    content.add_child(item);
+
+    dialog.setButtons([
+        {
+            label: 'Cancel',
+            action: () => dialog.destroy()
+        },
+        {
+            label: 'Confirm',
+            action: () => {
+                dialog.close(global.get_current_time());
+                onConfirm();
+            }
+        },
+    ]);
+
+    dialog.open();
+}
 
 function createPopupImageMenuItem(text, startIconName, itemCallback, endIconName, endIconCallback) {
     const item = new PopupMenu.PopupImageMenuItem(text, startIconName);
@@ -83,7 +151,7 @@ const ExpandedMenuItem = GObject.registerClass(
             this.menuBox.remove_all_children();
 
             items.forEach((i) => {
-                this.menuBox.add_actor(createPopupImageMenuItem(i['text'], i['iconName'], i['callback']));
+                this.menuBox.add_actor(createPopupImageMenuItem(i['text'], i['iconName'], i['callback'], i["endIconName"], i["endIconCallback"]));
             });
         }
 
@@ -188,6 +256,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         /// Network transfer
         this.networkContainer = new St.BoxLayout();
         this.networkButton = new St.Button({ style_class: 'button github-actions-button-action' });
+        this.networkButton.connect('clicked', () => ExtensionUtils.openPrefs());
         this.networkIcon = new St.Icon({ icon_name: 'network-wireless-symbolic', icon_size: 20 });
         this.networkLabel = new St.Label();
         this.networkLabel.style = 'margin-left: 8px; margin-top: 2px;';
@@ -203,17 +272,17 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
         /// Bored
         this.boredButton = createRoundButton({ icon: new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_white.svg`) }) });
-        this.boredButton.connect('clicked', (self) => utils.openUrl('https://api.github.com/octocat'));
+        this.boredButton.connect('clicked', () => utils.openUrl('https://api.github.com/octocat'));
         this.rightBox.add_actor(this.boredButton);
 
         /// Refresh
         this.refreshButton = createRoundButton({ iconName: 'view-refresh-symbolic' });
-        this.refreshButton.connect('clicked', (self) => this.refreshCallback());
+        this.refreshButton.connect('clicked', () => this.refreshCallback());
         this.rightBox.add_actor(this.refreshButton);
 
         /// Settings
         this.settingsItem = createRoundButton({ iconName: 'system-settings-symbolic' });
-        this.settingsItem.connect('clicked', (self) => ExtensionUtils.openPrefs());
+        this.settingsItem.connect('clicked', () => ExtensionUtils.openPrefs());
         this.rightBox.add_actor(this.settingsItem);
 
         if (isLogged == true) {
@@ -318,10 +387,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString().toUpperCase();
         const displayTitle = latestRun["display_title"].toString();
         const runNumber = latestRun["run_number"].toString();
-        const updatedAt = latestRun["updated_at"].toString();
         const ownerAndRepo = latestRun["repository"]["full_name"].toString();
         const workflowUrl = latestRun["html_url"].toString();
         const repositoryUrl = latestRun["repository"]["html_url"].toString();
+        const updatedAt = latestRun["updated_at"].toString();
         const date = (new Date(updatedAt)).toLocaleFormat('%d %b %Y');
 
         const currentState = status + ' ' + conclusion;
@@ -459,7 +528,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.workflowsMenuItem.submitItems(workflows.map(e => toItem(e)));
     }
 
-    setRuns(runs) {
+    setRuns(runs, onDeleteWorkflow) {
         function toItem(e) {
             const conclusion = e['conclusion'];
 
@@ -473,10 +542,24 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                 }
             }
 
+            const id = e['id'];
+            const date = (new Date(e["updated_at"].toString())).toLocaleFormat('%d %b %Y');
+
             return {
                 "iconName": conclusionIcon(conclusion),
-                "text": e['display_title'],
+                "text": date + ' - ' + e['display_title'],
                 "callback": () => utils.openUrl(e['html_url']),
+                "endIconName": 'application-exit-symbolic',
+                "endIconCallback": () => {
+                    showConfirmDialog({
+                        title: 'Workflow run deletion',
+                        description: 'Are you sure you want to delete this workflow run?',
+                        itemTitle: date + ' - ' + e['display_title'],
+                        itemDescription: e['name'],
+                        iconName: conclusionIcon(conclusion),
+                        onConfirm: () => onDeleteWorkflow(id)
+                    });
+                }
             };
         }
 

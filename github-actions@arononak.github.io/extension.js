@@ -83,7 +83,15 @@ async function coldRefresh(settings, indicator) {
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
-        indicator.setRuns(runs['workflow_runs']);
+        indicator.setRuns(runs['workflow_runs'], async (id) => {
+            const status = await repository.deleteWorkflowRun(owner, repo, id);
+            if (status == 'success') {
+                await coldRefresh(settings, indicator);
+                utils.showNotification('The Workflow run was successfully deleted', true);
+            } else {
+                utils.showNotification('Something went wrong :/', false);
+            }
+        });
         indicator.setReleases(releases);
     } catch (error) {
         logError(error);
