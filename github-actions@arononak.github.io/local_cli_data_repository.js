@@ -63,7 +63,7 @@ async function downloadArtifact(downloadUrl, filename) {
     });
 }
 
-async function executeGithubCliCommand(command, pagination = 100) {
+async function executeGithubCliCommand(method, command, pagination = 100) {
     const logged = await isLogged();
 
     return new Promise((resolve, reject) => {
@@ -73,8 +73,10 @@ async function executeGithubCliCommand(command, pagination = 100) {
                 return;
             }
 
+            print(method + ' ' + command);
+
             const proc = Gio.Subprocess.new(
-                ['gh', 'api', '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', command + '?per_page=' + pagination],
+                ['gh', 'api', '--method', method, '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', command + '?per_page=' + pagination],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             );
 
@@ -82,6 +84,11 @@ async function executeGithubCliCommand(command, pagination = 100) {
                 const [, stdout, stderr] = proc.communicate_utf8_finish(res);
 
                 if (proc.get_successful()) {
+                    if (method == 'DELETE') {
+                        resolve('success');
+                        return;
+                    }
+
                     const response = JSON.parse(stdout);
                     response['_size_'] = stdout.length; /// Welcome in JS World :D
 
