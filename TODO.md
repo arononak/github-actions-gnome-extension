@@ -25,6 +25,7 @@
 - [ ] 2modes - SIMPLE / EXTENDED
 - [ ] Create repository, repository list
 - [ ] Remove workflow run icon
+- [ ] commit link
 - [x] extension.js - divide to smaller files
 - [x] Releases list
 - [x] GitHub icon tint, status
