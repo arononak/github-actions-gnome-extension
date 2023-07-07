@@ -3,11 +3,7 @@
 const { Clutter, GObject, St, Gio, GLib } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const Main = imports.ui.main;
 const ExtensionUtils = imports.misc.extensionUtils;
-const MessageTray = imports.ui.messageTray;
-const Dialog = imports.ui.dialog;
-const ModalDialog = imports.ui.modalDialog;
 
 const GETTEXT_DOMAIN = 'github-actions-extension';
 const Me = ExtensionUtils.getCurrentExtension();
@@ -17,72 +13,6 @@ const _ = ExtensionUtils.gettext;
 
 var LOADING_TEXT = 'Loading';
 var NOT_LOGGED_IN_TEXT = 'Not logged in';
-
-function showConfirmDialog({
-    title,
-    description,
-    itemTitle,
-    itemDescription,
-    iconName,
-    onConfirm
-}) {
-    let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false });
-    let reminderId = null;
-    let closedId = dialog.connect('closed', (_dialog) => {
-        if (!reminderId) {
-            reminderId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 60,
-                () => {
-                    dialog.open(global.get_current_time());
-                    reminderId = null;
-                    return GLib.SOURCE_REMOVE;
-                },
-            );
-        }
-    });
-
-    dialog.connect('destroy', (_actor) => {
-        if (closedId) {
-            dialog.disconnect(closedId);
-            closedId = null;
-        }
-
-        if (reminderId) {
-            GLib.Source.remove(id);
-            reminderId = null;
-        }
-
-        dialog = null;
-    });
-
-    const content = new Dialog.MessageDialogContent({
-        title: title,
-        description: description,
-    });
-    dialog.contentLayout.add_child(content);
-
-    const item = new Dialog.ListSectionItem({
-        icon_actor: new St.Icon({ icon_name: iconName }),
-        title: itemTitle,
-        description: itemDescription,
-    });
-    content.add_child(item);
-
-    dialog.setButtons([
-        {
-            label: 'Cancel',
-            action: () => dialog.destroy()
-        },
-        {
-            label: 'Confirm',
-            action: () => {
-                dialog.close(global.get_current_time());
-                onConfirm();
-            }
-        },
-    ]);
-
-    dialog.open();
-}
 
 function createPopupImageMenuItem(text, startIconName, itemCallback, endIconName, endIconCallback) {
     const item = new PopupMenu.PopupImageMenuItem(text, startIconName);
@@ -551,7 +481,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                 "callback": () => utils.openUrl(e['html_url']),
                 "endIconName": 'application-exit-symbolic',
                 "endIconCallback": () => {
-                    showConfirmDialog({
+                    utils.showConfirmDialog({
                         title: 'Workflow run deletion',
                         description: 'Are you sure you want to delete this workflow run?',
                         itemTitle: date + ' - ' + e['display_title'],

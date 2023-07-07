@@ -89,3 +89,73 @@ function showNotification(message, success) {
     const player = global.display.get_sound_player();
     player.play_from_file(file, '', null);
 }
+
+function showConfirmDialog({
+    title,
+    description,
+    itemTitle,
+    itemDescription,
+    iconName,
+    onConfirm
+}) {
+    const Dialog = imports.ui.dialog;
+    const ModalDialog = imports.ui.modalDialog;
+    const { St } = imports.gi;
+    
+    let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false });
+    let reminderId = null;
+    let closedId = dialog.connect('closed', (_dialog) => {
+        if (!reminderId) {
+            reminderId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 60,
+                () => {
+                    dialog.open(global.get_current_time());
+                    reminderId = null;
+                    return GLib.SOURCE_REMOVE;
+                },
+            );
+        }
+    });
+
+    dialog.connect('destroy', (_actor) => {
+        if (closedId) {
+            dialog.disconnect(closedId);
+            closedId = null;
+        }
+
+        if (reminderId) {
+            GLib.Source.remove(id);
+            reminderId = null;
+        }
+
+        dialog = null;
+    });
+
+    const content = new Dialog.MessageDialogContent({
+        title: title,
+        description: description,
+    });
+    dialog.contentLayout.add_child(content);
+
+    const item = new Dialog.ListSectionItem({
+        icon_actor: new St.Icon({ icon_name: iconName }),
+        title: itemTitle,
+        description: itemDescription,
+    });
+    content.add_child(item);
+
+    dialog.setButtons([
+        {
+            label: 'Cancel',
+            action: () => dialog.destroy()
+        },
+        {
+            label: 'Confirm',
+            action: () => {
+                dialog.close(global.get_current_time());
+                onConfirm();
+            }
+        },
+    ]);
+
+    dialog.open();
+}
