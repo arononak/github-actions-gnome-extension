@@ -28,6 +28,11 @@ const repository = Me.imports.data_repository;
 
 const StatusBarIndicator = GObject.registerClass(statusBarIndicator.StatusBarIndicator);
 
+function showFinishNotification(ownerAndRepo, success) {
+    const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
+    utils.showNotification(description, success);
+}
+
 /// 1-60 minutes
 async function coldRefresh(settings, indicator) {
     try {
@@ -89,8 +94,8 @@ async function coldRefresh(settings, indicator) {
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
-        indicator.setRuns(runs['workflow_runs'], async (id) => {
-            const status = await repository.deleteWorkflowRun(owner, repo, id);
+        indicator.setRuns(runs['workflow_runs'], async (runId) => {
+            const status = await repository.deleteWorkflowRun(owner, repo, runId);
             if (status == 'success') {
                 await coldRefresh(settings, indicator);
                 utils.showNotification('The Workflow run was successfully deleted', true);
@@ -130,13 +135,8 @@ async function hotRefresh(settings, indicator) {
         indicator.refreshTransfer(settings, indicator.isLogged);
         indicator.refreshBoredIcon();
 
-        function showFinishNotification(ownerAndRepo, success) {
-            const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
-            utils.showNotification(description, success);
-        }
-
         /// Notification
-        if (!utils.isEmpty(previousState) && previousState !== statusBarIndicator.LOADING_TEXT && previousState !== statusBarIndicator.NOT_LOGGED_IN_TEXT && previousState !== currentState) {
+        if (indicator.shouldShowCompletedNotification(previousState, currentState)) {
             const ownerAndRepo = indicator.repositoryMenuItem.label.text;
 
             if (currentState === 'COMPLETED SUCCESS') {
@@ -185,11 +185,11 @@ class Extension {
     async startRefreshing() {
         await this.refresh();
 
-        const statusRefreshTimeInSeconds = this.settings.get_int('refresh-time');
-        const fullStatusRefreshTimeInMinutes = this.settings.get_int('full-refresh-time');
+        const statusRefreshTime = this.settings.get_int('refresh-time') * 1000;
+        const fullStatusRefreshTime = this.settings.get_int('full-refresh-time') * 60 * 1000;
 
-        this.hotRefreshInterval = setInterval(() => hotRefresh(this.settings, this.indicator), statusRefreshTimeInSeconds * 1000);
-        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), fullStatusRefreshTimeInMinutes * 60 * 1000);
+        this.hotRefreshInterval = setInterval(() => hotRefresh(this.settings, this.indicator), statusRefreshTime);
+        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), fullStatusRefreshTime);
     }
 
     stopRefreshing() {
