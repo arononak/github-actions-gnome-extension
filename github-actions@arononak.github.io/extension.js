@@ -31,17 +31,23 @@ const StatusBarIndicator = GObject.registerClass(statusBarIndicator.StatusBarInd
 /// 1-60 minutes
 async function coldRefresh(settings, indicator) {
     try {
-        if (indicator.isLogged == false) return;
+        if (indicator.isLogged == false) {
+            return;
+        }
 
-        const owner = settings.get_string('owner');
-        const repo = settings.get_string('repo');
-        if (utils.isEmpty(owner) || utils.isEmpty(repo)) return;
+        if (!utils.isRepositorySelected(settings)) {
+            return;
+        }
 
         const user = await repository.fetchUser();
-        if (user == null) return;
+        if (user == null) {
+            return;
+        }
+
         const login = user['login'];
 
-        const pagination = utils.prefsPagination(settings);
+        const pagination = utils.pagination(settings);
+        const { owner, repo } = utils.ownerAndRepo(settings);
 
         const minutes = await repository.fetchUserBillingActionsMinutes(login);
         const packages = await repository.fetchUserBillingPackages(login);
@@ -73,7 +79,7 @@ async function coldRefresh(settings, indicator) {
 
         const sizeInBytes = allDataObjects.filter(e => e != null).reduce((sum, object) => sum + object._size_, 0);
 
-        utils.prefsUpdateColdPackageSize(settings, sizeInBytes);
+        utils.updateColdPackageSize(settings, sizeInBytes);
 
         indicator.setUser(user);
         indicator.setUserBilling(minutes, packages, sharedStorage);
@@ -101,16 +107,21 @@ async function coldRefresh(settings, indicator) {
 /// 1-60sec
 async function hotRefresh(settings, indicator) {
     try {
-        if (indicator.isLogged == false) return;
+        if (indicator.isLogged == false) {
+            return;
+        }
 
-        const owner = settings.get_string('owner');
-        const repo = settings.get_string('repo');
-        if (utils.isEmpty(owner) || utils.isEmpty(repo)) return;
+        if (!utils.isRepositorySelected(settings)) {
+            return;
+        }
 
+        const { owner, repo } = utils.ownerAndRepo(settings);
         const run = await repository.fetchWorkflowRuns(owner, repo, 1);
-        if (run == null) return;
+        if (run == null) {
+            return;
+        }
 
-        utils.prefsUpdatePackageSize(settings, run['_size_']);
+        utils.updatePackageSize(settings, run['_size_']);
 
         const previousState = indicator.label.text;
         indicator.setLatestRun(run['workflow_runs'][0]);

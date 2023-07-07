@@ -41,7 +41,7 @@ function fillPreferencesWindow(window) {
     refreshStatusSpinButton.margin_top = 8;
     refreshStatusSpinButton.margin_bottom = 8;
     refreshStatusSpinButton.adjustment = new Gtk.Adjustment({
-        value: utils.prefsRefreshTime(settings),
+        value: utils.refreshTime(settings),
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -49,7 +49,7 @@ function fillPreferencesWindow(window) {
         page_size: 0,
     });
     const refreshStatusRow = new Adw.ActionRow();
-    refreshStatusRow.add_prefix(new Gtk.Label({ label: 'Status in seconds (Package size: ' + utils.prefsPackageSize(settings) + ')' }));
+    refreshStatusRow.add_prefix(new Gtk.Label({ label: 'Status in seconds (Package size: ' + utils.packageSize(settings) + ')' }));
     refreshStatusRow.add_suffix(refreshStatusSpinButton);
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
     settings.bind('refresh-time', refreshStatusSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -60,7 +60,7 @@ function fillPreferencesWindow(window) {
     fullRefreshSpinButton.margin_top = 8;
     fullRefreshSpinButton.margin_bottom = 8;
     fullRefreshSpinButton.adjustment = new Gtk.Adjustment({
-        value: utils.prefsRefreshTime(settings),
+        value: utils.refreshTime(settings),
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -68,7 +68,7 @@ function fillPreferencesWindow(window) {
         page_size: 0,
     });
     const fullRefreshRow = new Adw.ActionRow();
-    fullRefreshRow.add_prefix(new Gtk.Label({ label: 'Full in minutes (Package size: ' + utils.prefsColdPackageSize(settings) + ')' }));
+    fullRefreshRow.add_prefix(new Gtk.Label({ label: 'Full in minutes (Package size: ' + utils.coldPackageSize(settings) + ')' }));
     fullRefreshRow.add_suffix(fullRefreshSpinButton);
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;
     settings.bind('full-refresh-time', fullRefreshSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -79,7 +79,7 @@ function fillPreferencesWindow(window) {
     paginationSpinButton.margin_top = 8;
     paginationSpinButton.margin_bottom = 8;
     paginationSpinButton.adjustment = new Gtk.Adjustment({
-        value: utils.prefsPagination(settings),
+        value: utils.pagination(settings),
         lower: 1,
         upper: 100,
         step_increment: 1,
