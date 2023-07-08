@@ -1,12 +1,32 @@
 'use strict';
 
-const { Clutter, GObject, St } = imports.gi;
+const { Clutter, GObject, St, Gio } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const utils = Me.imports.utils;
+
+var AppIconType = {
+    WHITE: 1,
+    BLACK: 2,
+    GRAY: 3,
+    RED: 4
+}
+
+function createAppGioIcon(appIconType) {
+    switch (appIconType) {
+        case AppIconType.WHITE:
+            return Gio.icon_new_for_string(`${Me.path}/github_white.svg`);
+        case AppIconType.BLACK:
+            return Gio.icon_new_for_string(`${Me.path}/github_black.svg`);
+        case AppIconType.GRAY:
+            return Gio.icon_new_for_string(`${Me.path}/github_gray.svg`);
+        case AppIconType.RED:
+            return Gio.icon_new_for_string(`${Me.path}/github_red.svg`);
+    }
+}
 
 function showFinishNotification(ownerAndRepo, success) {
     const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');

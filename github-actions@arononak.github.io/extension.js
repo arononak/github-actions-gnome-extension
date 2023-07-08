@@ -158,11 +158,6 @@ class Extension {
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
-        this.indicator = new StatusBarIndicator(() => this.refresh());
-        Main.panel.addToStatusArea(this._uuid, this.indicator);
-
-        this.startRefreshing();
-
         this.settings.connect('changed::refresh-time', (settings, key) => {
             this.stopRefreshing();
             this.startRefreshing();
@@ -172,6 +167,8 @@ class Extension {
             this.stopRefreshing();
             this.startRefreshing();
         });
+
+        this.initIndicator();
     }
 
     disable() {
@@ -180,6 +177,13 @@ class Extension {
         this.indicator.menu = null;
         this.indicator = null;
         this.settings = null;
+    }
+
+    async initIndicator() {
+        const isLogged = await repository.isLogged();
+        this.indicator = new StatusBarIndicator(isLogged, () => this.refresh());
+        Main.panel.addToStatusArea(this._uuid, this.indicator);
+        this.startRefreshing();
     }
 
     async startRefreshing() {

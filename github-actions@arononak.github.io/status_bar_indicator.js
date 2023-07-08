@@ -20,22 +20,26 @@ const StatusBarState = {
     LOGGED: () => 'Logged'
 }
 
-const loadingText = StatusBarState.LOADING();
-
 var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     _init() {
         super._init(0.0, 'Github Action button', false);
     }
 
-    constructor(refreshCallback) {
+    constructor(isLogged, refreshCallback) {
         super();
+
         this.refreshCallback = refreshCallback;
+        
+        this.workflowUrl = "";
+        this.repositoryUrl = "";
+        this.userUrl = "";
+        this.twoFactorEnabled = false;
+        this.isLogged = isLogged;
 
-        this.state = StatusBarState.LOADING;
-
-        this.initState();
         this.initStatusButton();
         this.initPopupMenu(this.isLogged);
+
+        this.setStatusBarState(StatusBarState.LOADING);
     }
 
     shouldShowCompletedNotification(previousState, currentState) {
@@ -66,13 +70,13 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         if (this.icon == null) {
             return;
         }
-        
+
         if (state == 'error') {
-            this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github_red.svg`);
+            this.icon.gicon = widgets.createAppGioIcon(widgets.AppIconType.RED);
         } else if (state == 'in_progress') {
-            this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github_gray.svg`);
+            this.icon.gicon = widgets.createAppGioIcon(widgets.AppIconType.GRAY);
         } else if (state == 'success') {
-            this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github_white.svg`);
+            this.icon.gicon = widgets.createAppGioIcon(widgets.AppIconType.WHITE);
         }
     }
 
@@ -80,18 +84,43 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const darkTheme = utils.isDarkTheme();
 
         if (darkTheme) {
-            this.boredButton.child = new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_white.svg`) });
+            this.boredButton.child = new St.Icon({ gicon: widgets.createAppGioIcon(widgets.AppIconType.WHITE) });
         } else {
-            this.boredButton.child = new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_black.svg`) });
+            this.boredButton.child = new St.Icon({ gicon: widgets.createAppGioIcon(widgets.AppIconType.BLACK) });
         }
     }
 
     setStatusBarState(state) {
+        this.state = state;
+
         var loadingText = StatusBarState.LOADING();
 
         switch (state) {
+            case StatusBarState.NOT_LOGGED:
+                break;
+            case StatusBarState.LOGGED_NOT_CHOOSED_REPO:
+                break;
             case StatusBarState.LOADING:
-                this.label.text = loadingText;
+                this.userMenuItem?.setHeaderItemText(loadingText)
+                this.starredMenuItem?.setHeaderItemText(loadingText)
+                this.followersMenuItem?.setHeaderItemText(loadingText);
+                this.followingMenuItem?.setHeaderItemText(loadingText);
+                this.repositoryMenuItem?.setHeaderItemText(loadingText);
+                this.stargazersMenuItem?.setHeaderItemText(loadingText);
+                this.workflowsMenuItem?.setHeaderItemText(loadingText);
+                this.runsMenuItem?.setHeaderItemText(loadingText);
+                this.releasesMenuItem?.setHeaderItemText(loadingText);
+                this.artifactsMenuItem?.setHeaderItemText(loadingText);
+                
+                this.label.set_text(loadingText);
+                this.twoFactorItem?.label.set_text(loadingText);
+                this.minutesItem?.label.set_text(loadingText);
+                this.packagesItem?.label.set_text(loadingText);
+                this.sharedStorageItem?.label.set_text(loadingText);
+                this.infoItem?.label.set_text(loadingText);
+
+                break;
+            case StatusBarState.LOGGED:
                 break;
         }
     }
@@ -144,7 +173,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this.bottomItem);
 
         /// Bored
-        this.boredButton = widgets.createRoundButton({ icon: new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_white.svg`) }) });
+        this.boredButton = widgets.createRoundButton({ icon: new St.Icon({ gicon: widgets.createAppGioIcon(widgets.AppIconType.WHITE) }) });
         this.boredButton.connect('clicked', () => utils.openUrl('https://api.github.com/octocat'));
         this.rightBox.add_actor(this.boredButton);
 
@@ -166,65 +195,65 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
     initLoggedMenu() {
         /// User
-        this.userMenuItem = new widgets.ExpandedMenuItem(null, loadingText);
+        this.userMenuItem = new widgets.ExpandedMenuItem(null, '');
         this.menu.addMenuItem(this.userMenuItem);
 
         /// 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? utils.openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
-        this.twoFactorItem = widgets.createPopupImageMenuItem(loadingText, 'security-medium-symbolic', this.twoFactorCallback);
+        this.twoFactorItem = widgets.createPopupImageMenuItem('', 'security-medium-symbolic', this.twoFactorCallback);
         this.userMenuItem.menuBox.add_actor(this.twoFactorItem);
 
         /// Minutes
-        this.minutesItem = widgets.createPopupImageMenuItem(loadingText, 'alarm-symbolic', () => { });
+        this.minutesItem = widgets.createPopupImageMenuItem('', 'alarm-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.minutesItem);
 
         /// Packages
-        this.packagesItem = widgets.createPopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic', () => { });
+        this.packagesItem = widgets.createPopupImageMenuItem('', 'network-transmit-receive-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.packagesItem);
 
         /// Shared Storage
-        this.sharedStorageItem = widgets.createPopupImageMenuItem(loadingText, 'network-server-symbolic', () => { });
+        this.sharedStorageItem = widgets.createPopupImageMenuItem('', 'network-server-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.sharedStorageItem);
 
         /// Starred
-        this.starredMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', loadingText);
+        this.starredMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', '');
         this.menu.addMenuItem(this.starredMenuItem);
 
         /// Followers            
-        this.followersMenuItem = new widgets.ExpandedMenuItem('system-users-symbolic', loadingText);
+        this.followersMenuItem = new widgets.ExpandedMenuItem('system-users-symbolic', '');
         this.menu.addMenuItem(this.followersMenuItem);
 
         /// Following
-        this.followingMenuItem = new widgets.ExpandedMenuItem('system-users-symbolic', loadingText);
+        this.followingMenuItem = new widgets.ExpandedMenuItem('system-users-symbolic', '');
         this.menu.addMenuItem(this.followingMenuItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         /// Repository
-        this.repositoryMenuItem = new widgets.ExpandedMenuItem('system-file-manager-symbolic', loadingText, 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
+        this.repositoryMenuItem = new widgets.ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
         this.menu.addMenuItem(this.repositoryMenuItem);
 
         /// Repository Last commit
-        this.infoItem = widgets.createPopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
+        this.infoItem = widgets.createPopupImageMenuItem('', 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
         this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
 
         /// Stargazers
-        this.stargazersMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', loadingText);
+        this.stargazersMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', '');
         this.menu.addMenuItem(this.stargazersMenuItem);
 
         /// Workflows
-        this.workflowsMenuItem = new widgets.ExpandedMenuItem('mail-send-receive-symbolic', loadingText);
+        this.workflowsMenuItem = new widgets.ExpandedMenuItem('mail-send-receive-symbolic', '');
         this.menu.addMenuItem(this.workflowsMenuItem);
 
         /// Runs
-        this.runsMenuItem = new widgets.ExpandedMenuItem('media-playback-start-symbolic', loadingText);
+        this.runsMenuItem = new widgets.ExpandedMenuItem('media-playback-start-symbolic', '');
         this.menu.addMenuItem(this.runsMenuItem);
 
         /// Releases
-        this.releasesMenuItem = new widgets.ExpandedMenuItem('folder-visiting-symbolic', loadingText);
+        this.releasesMenuItem = new widgets.ExpandedMenuItem('folder-visiting-symbolic', '');
         this.menu.addMenuItem(this.releasesMenuItem);
 
         /// Artifacts
-        this.artifactsMenuItem = new widgets.ExpandedMenuItem('folder-visiting-symbolic', loadingText);
+        this.artifactsMenuItem = new widgets.ExpandedMenuItem('folder-visiting-symbolic', '');
         this.menu.addMenuItem(this.artifactsMenuItem);
     }
 
@@ -244,14 +273,6 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
         this.menu.removeAll();
         this.initPopupMenu(this.isLogged);
-    }
-
-    initState() {
-        this.workflowUrl = "";
-        this.repositoryUrl = "";
-        this.userUrl = "";
-        this.twoFactorEnabled = false;
-        this.isLogged = false;
     }
 
     /// Setters
@@ -314,6 +335,8 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             + '\n\nJoined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
 
         if (this.userMenuItem != null) {
+            this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl));
+            this.userMenuItem.icon.icon_size = 54;
             this.userMenuItem.label.text = userLabelText;
             this.userMenuItem.label.style = 'margin-left: 4px';
         }
