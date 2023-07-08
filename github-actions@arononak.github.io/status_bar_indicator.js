@@ -1,15 +1,17 @@
 'use strict';
 
-const { Clutter, GObject, St, Gio, GLib } = imports.gi;
+const { Clutter, GObject, St, Gio } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const GETTEXT_DOMAIN = 'github-actions-extension';
 const Me = ExtensionUtils.getCurrentExtension();
-const utils = Me.imports.utils;
-const repository = Me.imports.data_repository;
 const _ = ExtensionUtils.gettext;
+
+const utils = Me.imports.utils;
+const widgets = Me.imports.widgets;
+const repository = Me.imports.data_repository;
 
 const StatusBarState = {
     LOADING: () => 'Loading',
@@ -18,7 +20,7 @@ const StatusBarState = {
     LOGGED: () => 'Logged'
 }
 
-var LOADING_TEXT = StatusBarState.LOADING();
+const loadingText = StatusBarState.LOADING();
 
 var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     _init() {
@@ -28,6 +30,9 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     constructor(refreshCallback) {
         super();
         this.refreshCallback = refreshCallback;
+
+        this.state = StatusBarState.LOADING;
+
         this.initState();
         this.initStatusButton();
         this.initPopupMenu(this.isLogged);
@@ -41,7 +46,12 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     initStatusButton() {
-        this.label = new St.Label({ style_class: 'github-actions-label', text: LOADING_TEXT, y_align: Clutter.ActorAlign.CENTER, y_expand: true });
+        this.label = new St.Label({
+            style_class: 'github-actions-label',
+            text: '',
+            y_align: Clutter.ActorAlign.CENTER,
+            y_expand: true,
+        });
 
         this.icon = new St.Icon({ style_class: 'system-status-icon' });
         this.setStatusIconState('in_progress');
@@ -53,6 +63,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     setStatusIconState(state) {
+        if (this.icon == null) {
+            return;
+        }
+        
         if (state == 'error') {
             this.icon.gicon = Gio.icon_new_for_string(`${Me.path}/github_red.svg`);
         } else if (state == 'in_progress') {
@@ -69,6 +83,16 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             this.boredButton.child = new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_white.svg`) });
         } else {
             this.boredButton.child = new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_black.svg`) });
+        }
+    }
+
+    setStatusBarState(state) {
+        var loadingText = StatusBarState.LOADING();
+
+        switch (state) {
+            case StatusBarState.LOADING:
+                this.label.text = loadingText;
+                break;
         }
     }
 
@@ -120,17 +144,17 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this.bottomItem);
 
         /// Bored
-        this.boredButton = createRoundButton({ icon: new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_white.svg`) }) });
+        this.boredButton = widgets.createRoundButton({ icon: new St.Icon({ gicon: Gio.icon_new_for_string(`${Me.path}/github_white.svg`) }) });
         this.boredButton.connect('clicked', () => utils.openUrl('https://api.github.com/octocat'));
         this.rightBox.add_actor(this.boredButton);
 
         /// Refresh
-        this.refreshButton = createRoundButton({ iconName: 'view-refresh-symbolic' });
+        this.refreshButton = widgets.createRoundButton({ iconName: 'view-refresh-symbolic' });
         this.refreshButton.connect('clicked', () => this.refreshCallback());
         this.rightBox.add_actor(this.refreshButton);
 
         /// Settings
-        this.settingsItem = createRoundButton({ iconName: 'system-settings-symbolic' });
+        this.settingsItem = widgets.createRoundButton({ iconName: 'system-settings-symbolic' });
         this.settingsItem.connect('clicked', () => ExtensionUtils.openPrefs());
         this.rightBox.add_actor(this.settingsItem);
 
@@ -142,70 +166,70 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
     initLoggedMenu() {
         /// User
-        this.userMenuItem = new ExpandedMenuItem(null, LOADING_TEXT);
+        this.userMenuItem = new widgets.ExpandedMenuItem(null, loadingText);
         this.menu.addMenuItem(this.userMenuItem);
 
         /// 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? utils.openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
-        this.twoFactorItem = createPopupImageMenuItem(LOADING_TEXT, 'security-medium-symbolic', this.twoFactorCallback);
+        this.twoFactorItem = widgets.createPopupImageMenuItem(loadingText, 'security-medium-symbolic', this.twoFactorCallback);
         this.userMenuItem.menuBox.add_actor(this.twoFactorItem);
 
         /// Minutes
-        this.minutesItem = createPopupImageMenuItem(LOADING_TEXT, 'alarm-symbolic', () => { });
+        this.minutesItem = widgets.createPopupImageMenuItem(loadingText, 'alarm-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.minutesItem);
 
         /// Packages
-        this.packagesItem = createPopupImageMenuItem(LOADING_TEXT, 'network-transmit-receive-symbolic', () => { });
+        this.packagesItem = widgets.createPopupImageMenuItem(loadingText, 'network-transmit-receive-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.packagesItem);
 
         /// Shared Storage
-        this.sharedStorageItem = createPopupImageMenuItem(LOADING_TEXT, 'network-server-symbolic', () => { });
+        this.sharedStorageItem = widgets.createPopupImageMenuItem(loadingText, 'network-server-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.sharedStorageItem);
 
         /// Starred
-        this.starredMenuItem = new ExpandedMenuItem('starred-symbolic', LOADING_TEXT);
+        this.starredMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', loadingText);
         this.menu.addMenuItem(this.starredMenuItem);
 
         /// Followers            
-        this.followersMenuItem = new ExpandedMenuItem('system-users-symbolic', LOADING_TEXT);
+        this.followersMenuItem = new widgets.ExpandedMenuItem('system-users-symbolic', loadingText);
         this.menu.addMenuItem(this.followersMenuItem);
 
         /// Following
-        this.followingMenuItem = new ExpandedMenuItem('system-users-symbolic', LOADING_TEXT);
+        this.followingMenuItem = new widgets.ExpandedMenuItem('system-users-symbolic', loadingText);
         this.menu.addMenuItem(this.followingMenuItem);
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         /// Repository
-        this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', LOADING_TEXT, 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
+        this.repositoryMenuItem = new widgets.ExpandedMenuItem('system-file-manager-symbolic', loadingText, 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
         this.menu.addMenuItem(this.repositoryMenuItem);
 
         /// Repository Last commit
-        this.infoItem = createPopupImageMenuItem(LOADING_TEXT, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
+        this.infoItem = widgets.createPopupImageMenuItem(loadingText, 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
         this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
 
         /// Stargazers
-        this.stargazersMenuItem = new ExpandedMenuItem('starred-symbolic', LOADING_TEXT);
+        this.stargazersMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', loadingText);
         this.menu.addMenuItem(this.stargazersMenuItem);
 
         /// Workflows
-        this.workflowsMenuItem = new ExpandedMenuItem('mail-send-receive-symbolic', LOADING_TEXT);
+        this.workflowsMenuItem = new widgets.ExpandedMenuItem('mail-send-receive-symbolic', loadingText);
         this.menu.addMenuItem(this.workflowsMenuItem);
 
         /// Runs
-        this.runsMenuItem = new ExpandedMenuItem('media-playback-start-symbolic', LOADING_TEXT);
+        this.runsMenuItem = new widgets.ExpandedMenuItem('media-playback-start-symbolic', loadingText);
         this.menu.addMenuItem(this.runsMenuItem);
 
         /// Releases
-        this.releasesMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', LOADING_TEXT);
+        this.releasesMenuItem = new widgets.ExpandedMenuItem('folder-visiting-symbolic', loadingText);
         this.menu.addMenuItem(this.releasesMenuItem);
 
         /// Artifacts
-        this.artifactsMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', LOADING_TEXT);
+        this.artifactsMenuItem = new widgets.ExpandedMenuItem('folder-visiting-symbolic', loadingText);
         this.menu.addMenuItem(this.artifactsMenuItem);
     }
 
-    refreshTransfer(settings, isLogged) {
-        if (isLogged == true) {
+    refreshTransfer(settings) {
+        if (this.isLogged) {
             this.networkLabel.text = utils.fullDataConsumptionPerHour(settings);
         }
     }
@@ -255,8 +279,14 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.label.text = currentState;
         this.workflowUrl = workflowUrl;
         this.repositoryUrl = repositoryUrl;
-        this.repositoryMenuItem.label.text = ownerAndRepo;
-        this.infoItem.label.text = date + ' - ' + displayTitle + ' - (#' + runNumber + ')';
+
+        if (this.repositoryMenuItem != null) {
+            this.repositoryMenuItem.label.text = ownerAndRepo;
+        }
+
+        if (this.infoItem != null) {
+            this.infoItem.label.text = date + ' - ' + displayTitle + ' - (#' + runNumber + ')';
+        }
     }
 
     // User ------------------------------------------------------------
@@ -278,15 +308,19 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         this.userUrl = userUrl;
-        this.userMenuItem.label.text = (userName == null || userEmail == null) ? 'Not logged' : userName + ' (' + userEmail + ')'
+        this.twoFactorEnabled = twoFactorEnabled;
+
+        const userLabelText = (userName == null || userEmail == null) ? 'Not logged' : userName + ' (' + userEmail + ')'
             + '\n\nJoined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
 
-        this.twoFactorEnabled = twoFactorEnabled;
-        this.twoFactorItem.label.text = '2FA: ' + (twoFactorEnabled == true ? 'Enabled' : 'Disabled');
+        if (this.userMenuItem != null) {
+            this.userMenuItem.label.text = userLabelText;
+            this.userMenuItem.label.style = 'margin-left: 4px';
+        }
 
-        this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl));
-        this.userMenuItem.icon.icon_size = 54;
-        this.userMenuItem.label.style = 'margin-left: 4px';
+        if (this.twoFactorItem != null) {
+            this.twoFactorItem.label.text = '2FA: ' + (twoFactorEnabled == true ? 'Enabled' : 'Disabled');
+        }
     }
 
     setUserBilling(minutes, packages, sharedStorage) {
@@ -305,9 +339,17 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             parsedSharedStorage = 'Storage for month: ' + sharedStorage['estimated_storage_for_month'] + ' GB, ' + sharedStorage['estimated_paid_storage_for_month'] + ' GB paid';
         }
 
-        this.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
-        this.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
-        this.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
+        if (this.minutesItem != null) {
+            this.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
+        }
+
+        if (this.packagesItem != null) {
+            this.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
+        }
+
+        if (this.sharedStorageItem != null) {
+            this.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
+        }
     }
 
     setUserStarred(starred) {
@@ -319,8 +361,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             };
         }
 
-        this.starredMenuItem.setHeaderItemText('Starred: ' + starred.length);
-        this.starredMenuItem.submitItems(starred.map(e => toItem(e)));
+        if (this.starredMenuItem != null) {
+            this.starredMenuItem.setHeaderItemText('Starred: ' + starred.length);
+            this.starredMenuItem.submitItems(starred.map(e => toItem(e)));
+        }
     }
 
     setUserFollowers(followers) {
@@ -332,8 +376,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             };
         }
 
-        this.followersMenuItem.setHeaderItemText('Followers: ' + followers.length);
-        this.followersMenuItem.submitItems(followers.map(e => toItem(e)));
+        if (this.followersMenuItem != null) {
+            this.followersMenuItem.setHeaderItemText('Followers: ' + followers.length);
+            this.followersMenuItem.submitItems(followers.map(e => toItem(e)));
+        }
     }
 
     setUserFollowing(following) {
@@ -345,8 +391,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             };
         }
 
-        this.followingMenuItem.setHeaderItemText('Following: ' + following.length);
-        this.followingMenuItem.submitItems(following.map(e => toItem(e)));
+        if (this.followingMenuItem != null) {
+            this.followingMenuItem.setHeaderItemText('Following: ' + following.length);
+            this.followingMenuItem.submitItems(following.map(e => toItem(e)));
+        }
     }
 
     /// Separator ------------------------------------------------------
@@ -360,8 +408,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             };
         }
 
-        this.stargazersMenuItem.setHeaderItemText('Stargazers: ' + stargazers.length);
-        this.stargazersMenuItem.submitItems(stargazers.map(e => toItem(e)));
+        if (this.stargazersMenuItem != null) {
+            this.stargazersMenuItem.setHeaderItemText('Stargazers: ' + stargazers.length);
+            this.stargazersMenuItem.submitItems(stargazers.map(e => toItem(e)));
+        }
     }
 
     setWorkflows(workflows) {
@@ -373,8 +423,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             };
         }
 
-        this.workflowsMenuItem.setHeaderItemText('Workflows: ' + workflows.length);
-        this.workflowsMenuItem.submitItems(workflows.map(e => toItem(e)));
+        if (this.workflowsMenuItem != null) {
+            this.workflowsMenuItem.setHeaderItemText('Workflows: ' + workflows.length);
+            this.workflowsMenuItem.submitItems(workflows.map(e => toItem(e)));
+        }
     }
 
     setRuns(runs, onDeleteWorkflow) {
@@ -412,8 +464,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             };
         }
 
-        this.runsMenuItem.setHeaderItemText('Workflow runs: ' + runs.length);
-        this.runsMenuItem.submitItems(runs.map(e => toItem(e)));
+        if (this.runsMenuItem != null) {
+            this.runsMenuItem.setHeaderItemText('Workflow runs: ' + runs.length);
+            this.runsMenuItem.submitItems(runs.map(e => toItem(e)));
+        }
     }
 
     setReleases(releases) {
@@ -425,8 +479,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             };
         }
 
-        this.releasesMenuItem.setHeaderItemText('Releases: ' + releases.length);
-        this.releasesMenuItem.submitItems(releases.map(e => toItem(e)));
+        if (this.releasesMenuItem != null) {
+            this.releasesMenuItem.setHeaderItemText('Releases: ' + releases.length);
+            this.releasesMenuItem.submitItems(releases.map(e => toItem(e)));
+        }
     }
 
     setArtifacts(artifacts) {
@@ -458,105 +514,9 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             };
         }
 
-        this.artifactsMenuItem.setHeaderItemText('Artifacts: ' + artifacts.length);
-        this.artifactsMenuItem.submitItems(artifacts.map(e => toItem(e)));
-    }
-};
-
-function createPopupImageMenuItem(text, startIconName, itemCallback, endIconName, endIconCallback) {
-    const item = new PopupMenu.PopupImageMenuItem(text, startIconName);
-    item.connect('activate', () => itemCallback());
-
-    if (endIconName != null) {
-        const icon = new IconButton(endIconName, () => endIconCallback())
-        const box = new St.BoxLayout({
-            style_class: 'github-actions-top-box',
-            vertical: false,
-            x_expand: true,
-            x_align: Clutter.ActorAlign.END,
-            y_align: Clutter.ActorAlign.CENTER,
-        });
-        box.add(icon);
-        item.insert_child_at_index(box, 100);
-    }
-
-    return item;
-}
-
-function createRoundButton({ icon, iconName }) {
-    const button = new St.Button({ style_class: 'button github-actions-button-action' });
-    if (icon != null) {
-        button.child = icon;
-    }
-    if (iconName != null) {
-        button.child = new St.Icon({ icon_name: iconName });
-    }
-    return button;
-}
-
-const ExpandedMenuItem = GObject.registerClass(
-    class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
-        constructor(startIconName, text, endIconName, endIconCallback) {
-            super('');
-
-            this.menuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
-            this.scrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
-            this.scrollView.add_actor(this.menuBox);
-            this.menu.box.add_actor(this.scrollView);
-
-            this.label = new St.Label({ text: text });
-            this.insert_child_at_index(this.label, 0);
-
-            this.iconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
-            this.insert_child_at_index(this.iconContainer, 0);
-            this.icon = new St.Icon({ icon_name: startIconName, style_class: 'popup-menu-icon' });
-            this.iconContainer.add_child(this.icon);
-
-            if (endIconName != null) {
-                const endIcon = new IconButton(endIconName, () => endIconCallback())
-                const box = new St.BoxLayout({
-                    style_class: 'github-actions-top-box',
-                    vertical: false,
-                    x_expand: true,
-                    x_align: Clutter.ActorAlign.END,
-                    y_align: Clutter.ActorAlign.CENTER,
-                });
-                box.add(endIcon);
-                this.insert_child_at_index(box, 5);
-            }
+        if (this.artifactsMenuItem != null) {
+            this.artifactsMenuItem.setHeaderItemText('Artifacts: ' + artifacts.length);
+            this.artifactsMenuItem.submitItems(artifacts.map(e => toItem(e)));
         }
-
-        submitItems(items) {
-            this.menuBox.remove_all_children();
-
-            items.forEach((i) => {
-                this.menuBox.add_actor(createPopupImageMenuItem(i['text'], i['iconName'], i['callback'], i["endIconName"], i["endIconCallback"]));
-            });
-        }
-
-        setHeaderItemText(text) {
-            this.label.text = text;
-        }
-    }
-);
-
-var IconButton = class extends St.Button {
-    static {
-        GObject.registerClass(this);
-        print(StatusBarState.LOADING());
-        print(StatusBarState.NOT_LOGGED());
-        print(StatusBarState.LOGGED_NOT_CHOOSED_REPO());
-        print(StatusBarState.LOGGED());
-    }
-
-    constructor(iconName, callback) {
-        super();
-        this.connect('clicked', callback);
-        this.set_can_focus(true);
-        this.set_child(new St.Icon({ style_class: 'popup-menu-icon', iconName }));
-    }
-
-    setIcon(icon) {
-        this.child.set_icon_name(icon);
     }
 };

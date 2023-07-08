@@ -16,24 +16,33 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-const { Clutter, GObject, St, Gio, GLib } = imports.gi;
+'use strict';
+
+const { GObject } = imports.gi;
 const Main = imports.ui.main;
-const ExtensionUtils = imports.misc.extensionUtils;
+
 const GETTEXT_DOMAIN = 'github-actions-extension';
+const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const utils = Me.imports.utils;
 const statusBarIndicator = Me.imports.status_bar_indicator;
 const repository = Me.imports.data_repository;
+const utils = Me.imports.utils;
+const widgets = Me.imports.widgets;
 
 const StatusBarIndicator = GObject.registerClass(statusBarIndicator.StatusBarIndicator);
 
-function showFinishNotification(ownerAndRepo, success) {
-    const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
-    utils.showNotification(description, success);
+async function removeWorkflowRun(runId) {
+    const status = await repository.deleteWorkflowRun(owner, repo, runId);
+
+    if (status == 'success') {
+        await coldRefresh(settings, indicator);
+        utils.showNotification('The Workflow run was successfully deleted', true);
+    } else {
+        utils.showNotification('Something went wrong :/', false);
+    }
 }
 
-/// 1-60 minutes
 async function coldRefresh(settings, indicator) {
     try {
         if (indicator.isLogged == false) {
@@ -94,22 +103,13 @@ async function coldRefresh(settings, indicator) {
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
-        indicator.setRuns(runs['workflow_runs'], async (runId) => {
-            const status = await repository.deleteWorkflowRun(owner, repo, runId);
-            if (status == 'success') {
-                await coldRefresh(settings, indicator);
-                utils.showNotification('The Workflow run was successfully deleted', true);
-            } else {
-                utils.showNotification('Something went wrong :/', false);
-            }
-        });
+        indicator.setRuns(runs['workflow_runs'], async (runId) => await removeWorkflowRun(runId));
         indicator.setReleases(releases);
     } catch (error) {
         logError(error);
     }
 }
 
-/// 1-60sec
 async function hotRefresh(settings, indicator) {
     try {
         if (indicator.isLogged == false) {
@@ -131,8 +131,7 @@ async function hotRefresh(settings, indicator) {
         const previousState = indicator.label.text;
         indicator.setLatestRun(run['workflow_runs'][0]);
         const currentState = indicator.label.text;
-
-        indicator.refreshTransfer(settings, indicator.isLogged);
+        indicator.refreshTransfer(settings);
         indicator.refreshBoredIcon();
 
         /// Notification
@@ -140,9 +139,9 @@ async function hotRefresh(settings, indicator) {
             const ownerAndRepo = indicator.repositoryMenuItem.label.text;
 
             if (currentState === 'COMPLETED SUCCESS') {
-                showFinishNotification(ownerAndRepo, true);
+                widgets.showFinishNotification(ownerAndRepo, true);
             } else if (currentState === 'COMPLETED FAILURE') {
-                showFinishNotification(ownerAndRepo, false);
+                widgets.showFinishNotification(ownerAndRepo, false);
             }
         }
     } catch (error) {
@@ -159,6 +158,11 @@ class Extension {
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
+        this.indicator = new StatusBarIndicator(() => this.refresh());
+        Main.panel.addToStatusArea(this._uuid, this.indicator);
+
+        this.startRefreshing();
+
         this.settings.connect('changed::refresh-time', (settings, key) => {
             this.stopRefreshing();
             this.startRefreshing();
@@ -168,10 +172,6 @@ class Extension {
             this.stopRefreshing();
             this.startRefreshing();
         });
-
-        this.indicator = new StatusBarIndicator(() => this.refresh());
-        Main.panel.addToStatusArea(this._uuid, this.indicator);
-        this.startRefreshing();
     }
 
     disable() {
@@ -201,11 +201,15 @@ class Extension {
     }
 
     async refresh() {
-        const isLogged = await repository.isLogged();
-        this.indicator.refreshAuthState(isLogged);
+        try {
+            const isLogged = await repository.isLogged();
+            this.indicator.refreshAuthState(isLogged);
 
-        coldRefresh(this.settings, this.indicator);
-        hotRefresh(this.settings, this.indicator);
+            coldRefresh(this.settings, this.indicator);
+            hotRefresh(this.settings, this.indicator);
+        } catch (e) {
+            logError(e);
+        }
     }
 }
 
