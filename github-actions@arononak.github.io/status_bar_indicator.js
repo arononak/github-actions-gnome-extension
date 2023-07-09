@@ -12,6 +12,7 @@ const _ = ExtensionUtils.gettext;
 const utils = Me.imports.utils;
 const widgets = Me.imports.widgets;
 const repository = Me.imports.data_repository;
+const cliInterface = Me.imports.local_cli_interface;
 
 const StatusBarState = {
     LOADING: () => 'Loading',
@@ -29,7 +30,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         super();
 
         this.refreshCallback = refreshCallback;
-        
+
         this.workflowUrl = "";
         this.repositoryUrl = "";
         this.userUrl = "";
@@ -58,12 +59,12 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         });
 
         this.icon = new St.Icon({ style_class: 'system-status-icon' });
-        this.setStatusIconState('in_progress');
-
         this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
         this.topBox.add_child(this.icon);
         this.topBox.add_child(this.label);
         this.add_child(this.topBox);
+
+        this.setStatusIconState('in_progress');
     }
 
     setStatusIconState(state) {
@@ -93,14 +94,20 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     setStatusBarState(state) {
         this.state = state;
 
-        var loadingText = StatusBarState.LOADING();
+        const loadingText = StatusBarState.LOADING();
 
         switch (state) {
             case StatusBarState.NOT_LOGGED:
+                this.label.set_text(StatusBarState.NOT_LOGGED());
+                this.setStatusIconState('in_progress');
                 break;
             case StatusBarState.LOGGED_NOT_CHOOSED_REPO:
+                this.label.set_text(StatusBarState.LOGGED_NOT_CHOOSED_REPO());
+                this.setStatusIconState('in_progress');
                 break;
             case StatusBarState.LOADING:
+                this.label.set_text(StatusBarState.LOADING());
+
                 this.userMenuItem?.setHeaderItemText(loadingText)
                 this.starredMenuItem?.setHeaderItemText(loadingText)
                 this.followersMenuItem?.setHeaderItemText(loadingText);
@@ -111,8 +118,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                 this.runsMenuItem?.setHeaderItemText(loadingText);
                 this.releasesMenuItem?.setHeaderItemText(loadingText);
                 this.artifactsMenuItem?.setHeaderItemText(loadingText);
-                
-                this.label.set_text(loadingText);
+
                 this.twoFactorItem?.label.set_text(loadingText);
                 this.minutesItem?.label.set_text(loadingText);
                 this.packagesItem?.label.set_text(loadingText);
@@ -121,9 +127,15 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
                 break;
             case StatusBarState.LOGGED:
+                this.label.set_text(StatusBarState.LOGGED());
                 break;
         }
     }
+
+    setStatusBarStateLoading = () => this.setStatusBarState(StatusBarState.LOADING);
+    setStatusBarStateNotLogged = () => this.setStatusBarState(StatusBarState.NOT_LOGGED);
+    setStatusBarStateLoggedNotChoosedRepo = () => this.setStatusBarState(StatusBarState.LOGGED_NOT_CHOOSED_REPO);
+    setStatusBarStateLogged = () => this.setStatusBarState(StatusBarState.LOGGED);
 
     initPopupMenu(isLogged) {
         this.box = new St.BoxLayout({
@@ -155,38 +167,54 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.box.add(this.leftBox);
         this.box.add(this.rightBox);
 
-        /// Network transfer
-        this.networkContainer = new St.BoxLayout();
-        this.networkButton = new St.Button({ style_class: 'button github-actions-button-action' });
-        this.networkButton.connect('clicked', () => ExtensionUtils.openPrefs());
-        this.networkIcon = new St.Icon({ icon_name: 'network-wireless-symbolic', icon_size: 20 });
-        this.networkLabel = new St.Label();
-        this.networkLabel.style = 'margin-left: 8px; margin-top: 2px;';
-        this.networkContainer.add(this.networkIcon);
-        this.networkContainer.add(this.networkLabel);
-        this.networkButton.set_child(this.networkContainer);
-        this.leftBox.add(this.networkButton);
-
         this.bottomItem = new PopupMenu.PopupBaseMenuItem({ reactive: false });
         this.bottomItem.remove_all_children(); // Remove left margin from non visible PopupMenuItem icon
         this.bottomItem.actor.add_actor(this.box);
         this.menu.addMenuItem(this.bottomItem);
+
+        /// Network transfer
+        if (isLogged == true) {
+            this.networkContainer = new St.BoxLayout();
+            this.networkButton = new St.Button({ style_class: 'button github-actions-button-action' });
+            this.networkButton.connect('clicked', () => ExtensionUtils.openPrefs());
+            this.networkIcon = new St.Icon({ icon_name: 'network-wireless-symbolic', icon_size: 20 });
+            this.networkLabel = new St.Label();
+            this.networkLabel.style = 'margin-left: 8px; margin-top: 2px;';
+            this.networkContainer.add(this.networkIcon);
+            this.networkContainer.add(this.networkLabel);
+            this.networkButton.set_child(this.networkContainer);
+            this.leftBox.add(this.networkButton);
+        }
 
         /// Bored
         this.boredButton = widgets.createRoundButton({ icon: new St.Icon({ gicon: widgets.createAppGioIcon(widgets.AppIconType.WHITE) }) });
         this.boredButton.connect('clicked', () => utils.openUrl('https://api.github.com/octocat'));
         this.rightBox.add_actor(this.boredButton);
 
-        /// Refresh
-        this.refreshButton = widgets.createRoundButton({ iconName: 'view-refresh-symbolic' });
-        this.refreshButton.connect('clicked', () => this.refreshCallback());
-        this.rightBox.add_actor(this.refreshButton);
-
         /// Settings
         this.settingsItem = widgets.createRoundButton({ iconName: 'system-settings-symbolic' });
         this.settingsItem.connect('clicked', () => ExtensionUtils.openPrefs());
         this.rightBox.add_actor(this.settingsItem);
 
+        /// Refresh
+        this.refreshButton = widgets.createRoundButton({ iconName: 'view-refresh-symbolic' });
+        this.refreshButton.connect('clicked', () => this.refreshCallback());
+        this.rightBox.add_actor(this.refreshButton);
+
+        if (isLogged == true) {
+            /// Logout{
+            this.logoutButton = widgets.createRoundButton({ iconName: 'system-log-out-symbolic' });
+            this.logoutButton.connect('clicked', async () => {
+                const status = await cliInterface.logout();
+
+                if (status == true) {
+                    this.refreshCallback();
+                }
+            });
+            this.rightBox.add_actor(this.logoutButton);
+        }
+
+        /// Logged Menu
         if (isLogged == true) {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             this.initLoggedMenu();

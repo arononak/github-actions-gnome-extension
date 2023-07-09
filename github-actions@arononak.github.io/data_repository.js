@@ -2,7 +2,7 @@
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const repository = Me.imports.local_cli_data_repository;
+const repository = Me.imports.local_cli_interface;
 
 var isLogged = async () =>
     repository.isLogged();

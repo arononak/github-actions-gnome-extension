@@ -31,6 +31,34 @@ async function isLogged() {
     });
 }
 
+async function logout() {
+    return new Promise((resolve, reject) => {
+        try {
+            let [, stdout, stderr, status] = GLib.spawn_command_line_sync('gh auth logout --hostname github.com');
+
+            if (status !== 0) {
+                if (stderr instanceof Uint8Array) {
+                    stderr = ByteArray.toString(stderr);
+                    print(stderr);
+                }
+
+                resolve(false);
+                return;
+            }
+
+            if (stdout instanceof Uint8Array) {
+                stdout = ByteArray.toString(stdout);
+                print(stdout);
+            }
+
+            resolve(true);
+        } catch (e) {
+            logError(e);
+            resolve(false);
+        }
+    });
+}
+
 async function downloadArtifact(downloadUrl, filename) {
     const logged = await isLogged();
 

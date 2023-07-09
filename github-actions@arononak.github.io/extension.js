@@ -112,7 +112,11 @@ async function coldRefresh(settings, indicator) {
 
 async function hotRefresh(settings, indicator) {
     try {
-        if (indicator.isLogged == false) {
+        const isLogged = await repository.isLogged();
+        indicator.refreshAuthState(isLogged);
+        
+        if (isLogged == false) {
+            indicator.setStatusBarStateNotLogged();
             return;
         }
 
@@ -206,9 +210,6 @@ class Extension {
 
     async refresh() {
         try {
-            const isLogged = await repository.isLogged();
-            this.indicator.refreshAuthState(isLogged);
-
             coldRefresh(this.settings, this.indicator);
             hotRefresh(this.settings, this.indicator);
         } catch (e) {
