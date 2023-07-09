@@ -5,12 +5,11 @@ run:
 build:
 	chmod +x create_version_file.sh
 	./create_version_file.sh
-
-	gnome-extensions pack --force\
-		--extra-source=github_white.svg\
-		--extra-source=github_black.svg\
-		--extra-source=github_gray.svg\
-		--extra-source=github_red.svg\
+	cd github-actions@arononak.github.io &&\
+	gnome-extensions pack\
+		--out-dir=../\
+		--force\
+		--extra-source=assets\
 		--extra-source=utils.js\
 		--extra-source=status_bar_indicator.js\
 		--extra-source=data_repository.js\

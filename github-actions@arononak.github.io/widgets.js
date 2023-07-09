@@ -18,13 +18,13 @@ var AppIconType = {
 function createAppGioIcon(appIconType) {
     switch (appIconType) {
         case AppIconType.WHITE:
-            return Gio.icon_new_for_string(`${Me.path}/github_white.svg`);
+            return Gio.icon_new_for_string(`${Me.path}/assets/github_white.svg`);
         case AppIconType.BLACK:
-            return Gio.icon_new_for_string(`${Me.path}/github_black.svg`);
+            return Gio.icon_new_for_string(`${Me.path}/assets/github_black.svg`);
         case AppIconType.GRAY:
-            return Gio.icon_new_for_string(`${Me.path}/github_gray.svg`);
+            return Gio.icon_new_for_string(`${Me.path}/assets/github_gray.svg`);
         case AppIconType.RED:
-            return Gio.icon_new_for_string(`${Me.path}/github_red.svg`);
+            return Gio.icon_new_for_string(`${Me.path}/assets/github_red.svg`);
     }
 }
 
