@@ -31,6 +31,7 @@
 - [x] Releases list
 - [x] GitHub icon tint, status
 - [x] GitHub icon octocat button
+- [ ] give ma a star - request & notificaton
 - [ ] Notification octocat icon
 - [ ] Missing scopes - information in the extension
 - [ ] QuickSettings status icon - tint
