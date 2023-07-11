@@ -14,7 +14,6 @@ jobs:
           sudo apt-get install -y gnome-shell-extensions
       - name: Build GNOME Extension
         run: |
-          cd github-actions@arononak.github.io
           make build
           mkdir ext
           unzip github-actions@arononak.github.io.shell-extension.zip -d ./ext
