@@ -22,4 +22,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: github-actions@arononak.github.io.shell-extension
-          path: github-actions@arononak.github.io/ext/
+          path: ext/
