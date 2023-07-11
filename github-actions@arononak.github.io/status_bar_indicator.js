@@ -113,7 +113,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                 this.label.set_text(StatusBarState.LOGGED_NOT_CHOOSED_REPO());
                 this.setStatusIconState('in_progress');
                 break;
-            case StatusBarState.INCORRECT_REPOSITORY:                
+            case StatusBarState.INCORRECT_REPOSITORY:
                 this.label.set_text(StatusBarState.INCORRECT_REPOSITORY());
                 break;
         }
@@ -125,7 +125,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const loadingText = StatusBarState.LOADING();
 
         this.label.set_text(loadingText);
-        
+
         this.userMenuItem?.setHeaderItemText(loadingText)
         this.starredMenuItem?.setHeaderItemText(loadingText)
         this.followersMenuItem?.setHeaderItemText(loadingText);
@@ -209,8 +209,17 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.refreshButton.connect('clicked', () => this.refreshCallback());
         this.rightBox.add_actor(this.refreshButton);
 
+        /// Login
+        if (this.isLogged == false) {
+            this.loginButton = widgets.createRoundButton({ iconName: 'avatar-default-symbolic' });
+            this.loginButton.connect('clicked', () => {
+                utils.exec('gnome-terminal -- bash -c "gh auth login --scopes user,repo,workflow"');
+            });
+            this.rightBox.add_actor(this.loginButton);
+        }
+
+        /// Logout{
         if (this.isLogged == true) {
-            /// Logout{
             this.logoutButton = widgets.createRoundButton({ iconName: 'system-log-out-symbolic' });
             this.logoutButton.connect('clicked', async () => {
                 const status = await cliInterface.logout();
