@@ -184,8 +184,9 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.networkButton = new St.Button({ style_class: 'button github-actions-button-action' });
         this.networkButton.connect('clicked', () => ExtensionUtils.openPrefs());
         this.networkIcon = new St.Icon({ icon_name: 'network-wireless-symbolic', icon_size: 20 });
+        this.networkIcon.style = 'margin-left: 2px;';
         this.networkLabel = new St.Label();
-        this.networkLabel.style = 'margin-left: 8px; margin-top: 2px;';
+        this.networkLabel.style = 'margin-left: 8px; margin-top: 2px; margin-right: 2px;';
         this.networkContainer.add(this.networkIcon);
         this.networkContainer.add(this.networkLabel);
         this.networkButton.set_child(this.networkContainer);
