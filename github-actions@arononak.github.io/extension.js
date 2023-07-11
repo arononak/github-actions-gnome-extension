@@ -32,7 +32,15 @@ const widgets = Me.imports.widgets;
 
 const StatusBarIndicator = GObject.registerClass(statusBarIndicator.StatusBarIndicator);
 
-async function removeWorkflowRun(settings, runId) {
+function updateTransfer(settings, jsonObjects) {
+    const sizeInBytes = jsonObjects
+        .filter(e => e != null)
+        .reduce((sum, object) => sum + object._size_, 0);
+
+    utils.updateColdPackageSize(settings, sizeInBytes);
+}
+
+async function removeWorkflowRun(settings, indicator, runId) {
     try {
         const { owner, repo } = utils.ownerAndRepo(settings);
         const status = await repository.deleteWorkflowRun(owner, repo, runId);
@@ -128,14 +136,6 @@ async function fetchRepoData(settings, repository) {
 
 /// Assistant of githubActionsRefresh()
 async function dataRefresh(settings, indicator) {
-    function updateTransfer(jsonObjects) {
-        const sizeInBytes = jsonObjects
-            .filter(e => e != null)
-            .reduce((sum, object) => sum + object._size_, 0);
-
-        utils.updateColdPackageSize(settings, sizeInBytes);
-    }
-
     try {
         if (indicator.isLogged == false) {
             return;
@@ -168,7 +168,7 @@ async function dataRefresh(settings, indicator) {
         indicator.setUserFollowing(following);
 
         if (!indicator.isCorrectState()) {
-            updateTransfer(userObjects);
+            updateTransfer(settings, userObjects);
             return;
         }
 
@@ -188,12 +188,12 @@ async function dataRefresh(settings, indicator) {
             releases
         ];
 
-        updateTransfer([...userObjects, ...repoObjects]);
+        updateTransfer(settings, [...userObjects, ...repoObjects]);
 
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
-        indicator.setRuns(runs['workflow_runs'], async (runId) => await removeWorkflowRun(settings, runId));
+        indicator.setRuns(runs['workflow_runs'], async (runId) => await removeWorkflowRun(settings, indicator, runId));
         indicator.setReleases(releases);
     } catch (error) {
         logError(error);

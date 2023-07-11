@@ -118,7 +118,9 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                 break;
         }
 
-        this.refreshCallback();
+        if (this.state != StatusBarState.LOADING) {
+            this.refreshCallback();
+        }
     }
 
     setLoadingState() {
