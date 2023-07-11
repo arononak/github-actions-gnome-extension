@@ -142,6 +142,8 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.minutesItem?.label.set_text(loadingText);
         this.packagesItem?.label.set_text(loadingText);
         this.sharedStorageItem?.label.set_text(loadingText);
+        this.repositoryPrivateItem?.label.set_text(loadingText);
+        this.repositoryForkItem?.label.set_text(loadingText);
         this.infoItem?.label.set_text(loadingText);
         this.networkLabel?.set_text(loadingText);
     }
@@ -286,8 +288,16 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.repositoryMenuItem = new widgets.ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
         this.menu.addMenuItem(this.repositoryMenuItem);
 
-        /// Repository Last commit
-        this.infoItem = widgets.createPopupImageMenuItem('', 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowUrl));
+        /// Repository isPrivate
+        this.repositoryPrivateItem = widgets.createPopupImageMenuItem('', 'changes-prevent-symbolic', () => { });
+        this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem);
+
+        /// Repository isFork
+        this.repositoryForkItem = widgets.createPopupImageMenuItem('', 'folder-remote-symbolic', () => { });
+        this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem);
+
+        /// Repository Latest Workflow Run
+        this.infoItem = widgets.createPopupImageMenuItem('', 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowRunUrl));
         this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
 
         /// Stargazers
@@ -336,7 +346,9 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const displayTitle = latestRun["display_title"].toString();
         const runNumber = latestRun["run_number"].toString();
         const ownerAndRepo = latestRun["repository"]["full_name"].toString();
-        const workflowUrl = latestRun["html_url"].toString();
+        const isPrivate = latestRun["repository"]["private"].toString();
+        const isFork = latestRun["repository"]["fork"].toString();
+        const workflowRunUrl = latestRun["html_url"].toString();
         const repositoryUrl = latestRun["repository"]["html_url"].toString();
         const updatedAt = latestRun["updated_at"].toString();
         const date = (new Date(updatedAt)).toLocaleFormat('%d %b %Y');
@@ -352,11 +364,19 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         this.label.text = currentState;
-        this.workflowUrl = workflowUrl;
+        this.workflowRunUrl = workflowRunUrl;
         this.repositoryUrl = repositoryUrl;
 
         if (this.repositoryMenuItem != null) {
             this.repositoryMenuItem.label.text = ownerAndRepo;
+        }
+
+        if (this.repositoryPrivateItem != null) {
+            this.repositoryPrivateItem.label.text = 'Private: ' + isPrivate;
+        }
+
+        if (this.repositoryForkItem != null) {
+            this.repositoryForkItem.label.text = 'Fork: ' + isFork;
         }
 
         if (this.infoItem != null) {
