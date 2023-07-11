@@ -18,7 +18,7 @@
 
 ## 🌟 Version 2 - Interactions with GitHub
 - [x] New PopupMenu
-- [ ] Logout / login buttons - circles in the top
+- [x] Logout / login buttons - circles in the top
 - [ ] no selected repository, choose from yours
 - [x] utils.js - merge openUrl and openUrlPrefs
 - [x] Pagination, more than 30
@@ -28,9 +28,10 @@
 - [x] Remove workflow run icon
 - [ ] commit link
 - [x] extension.js - divide to smaller files
-- [x] Releases list
+- [x] Releases lis
 - [x] GitHub icon tint, status
 - [x] GitHub icon octocat button
+- [ ] check githib cli installation
 - [ ] give ma a star - request & notificaton
 - [ ] Notification octocat icon
 - [ ] Missing scopes - information in the extension
