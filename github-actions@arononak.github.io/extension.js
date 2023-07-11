@@ -32,8 +32,9 @@ const widgets = Me.imports.widgets;
 
 const StatusBarIndicator = GObject.registerClass(statusBarIndicator.StatusBarIndicator);
 
-async function removeWorkflowRun(runId) {
+async function removeWorkflowRun(settings, runId) {
     try {
+        const { owner, repo } = utils.ownerAndRepo(settings);
         const status = await repository.deleteWorkflowRun(owner, repo, runId);
 
         if (status == 'success') {
@@ -192,7 +193,7 @@ async function dataRefresh(settings, indicator) {
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
-        indicator.setRuns(runs['workflow_runs'], async (runId) => await removeWorkflowRun(runId));
+        indicator.setRuns(runs['workflow_runs'], async (runId) => await removeWorkflowRun(settings, runId));
         indicator.setReleases(releases);
     } catch (error) {
         logError(error);
