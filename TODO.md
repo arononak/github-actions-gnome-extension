@@ -32,6 +32,7 @@
 - [x] GitHub icon tint, status
 - [x] GitHub icon octocat button
 - [ ] check githib cli installation
+- [ ] Workflow run - calcel/rerun
 - [ ] give ma a star - request & notificaton
 - [ ] Notification octocat icon
 - [ ] Missing scopes - information in the extension
