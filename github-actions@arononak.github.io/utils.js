@@ -58,10 +58,10 @@ function ownerAndRepo(settings) {
 
 }
 
-function isRepositorySelected(settings) {
+function isRepositoryEntered(settings) {
     const { owner, repo } = ownerAndRepo(settings);
 
-    if (isEmpty(owner) || isEmpty(repo)) {
+    if (isEmpty(removeWhiteChars(owner)) || isEmpty(removeWhiteChars(repo))) {
         return false;
     }
 
@@ -79,6 +79,10 @@ function isEmpty(str) {
     return (!str || str.length === 0);
 }
 
+function removeWhiteChars(str) {
+    return str.replace(/\s+/g, '');
+}
+
 function openUrl(url) {
     try {
         GLib.spawn_command_line_async('xdg-open ' + url);
@@ -88,7 +92,7 @@ function openUrl(url) {
 }
 
 function isDarkTheme() {
-    const settings = new Gio.Settings({schema: 'org.gnome.desktop.interface'});
+    const settings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' });
     const theme = settings.get_string('gtk-theme');
 
     return theme.replace(/'/g, "").trim().includes("dark");
@@ -99,7 +103,7 @@ function isDarkTheme() {
 function showNotification(message, success) {
     const MessageTray = imports.ui.messageTray;
     const Main = imports.ui.main;
-    
+
     const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
     Main.messageTray.add(source);
     const notification = new MessageTray.Notification(source, 'Github Actions', message);
@@ -126,7 +130,7 @@ function showConfirmDialog({
     const Dialog = imports.ui.dialog;
     const ModalDialog = imports.ui.modalDialog;
     const { St } = imports.gi;
-    
+
     let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false });
     let reminderId = null;
     let closedId = dialog.connect('closed', (_dialog) => {

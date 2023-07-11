@@ -18,7 +18,8 @@ const StatusBarState = {
     LOADING: () => 'Loading',
     NOT_LOGGED: () => 'Not logged in',
     LOGGED_NOT_CHOOSED_REPO: () => 'No repo selected',
-    LOGGED: () => 'Logged'
+    INCORRECT_REPOSITORY: () => 'Incorrect repository',
+    CORRECT: () => 'Correct'
 }
 
 var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
@@ -28,19 +29,11 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
     constructor(isLogged, refreshCallback) {
         super();
-
+        this.isLogged = isLogged;
         this.refreshCallback = refreshCallback;
 
-        this.workflowUrl = "";
-        this.repositoryUrl = "";
-        this.userUrl = "";
-        this.twoFactorEnabled = false;
-        this.isLogged = isLogged;
-
         this.initStatusButton();
-        this.initPopupMenu(this.isLogged);
-
-        this.setStatusBarState(StatusBarState.LOADING);
+        this.setStateLoading();
     }
 
     shouldShowCompletedNotification(previousState, currentState) {
@@ -91,12 +84,27 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
     }
 
-    setStatusBarState(state) {
-        this.state = state;
+    setStateLoading = () => this.setState(StatusBarState.LOADING);
+    setStateNotLogged = () => this.setState(StatusBarState.NOT_LOGGED);
+    setStateLoggedNotChoosedRepo = () => this.setState(StatusBarState.LOGGED_NOT_CHOOSED_REPO);
+    setStateIncorrectRepository = () => this.setState(StatusBarState.INCORRECT_REPOSITORY);
+    setStateCorrect = () => this.setState(StatusBarState.CORRECT);
 
-        const loadingText = StatusBarState.LOADING();
+    isCorrectState = () => this.state == StatusBarState.CORRECT;
+
+    setState(state) {
+        if (this.state == state) {
+            return;
+        }
+
+        this.state = state;
+        this.menu.removeAll();
+        this.initPopupMenu();
+        this.setLoadingState();
 
         switch (state) {
+            case StatusBarState.LOADING:
+                break;
             case StatusBarState.NOT_LOGGED:
                 this.label.set_text(StatusBarState.NOT_LOGGED());
                 this.setStatusIconState('in_progress');
@@ -105,39 +113,38 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                 this.label.set_text(StatusBarState.LOGGED_NOT_CHOOSED_REPO());
                 this.setStatusIconState('in_progress');
                 break;
-            case StatusBarState.LOADING:
-                this.label.set_text(StatusBarState.LOADING());
-
-                this.userMenuItem?.setHeaderItemText(loadingText)
-                this.starredMenuItem?.setHeaderItemText(loadingText)
-                this.followersMenuItem?.setHeaderItemText(loadingText);
-                this.followingMenuItem?.setHeaderItemText(loadingText);
-                this.repositoryMenuItem?.setHeaderItemText(loadingText);
-                this.stargazersMenuItem?.setHeaderItemText(loadingText);
-                this.workflowsMenuItem?.setHeaderItemText(loadingText);
-                this.runsMenuItem?.setHeaderItemText(loadingText);
-                this.releasesMenuItem?.setHeaderItemText(loadingText);
-                this.artifactsMenuItem?.setHeaderItemText(loadingText);
-
-                this.twoFactorItem?.label.set_text(loadingText);
-                this.minutesItem?.label.set_text(loadingText);
-                this.packagesItem?.label.set_text(loadingText);
-                this.sharedStorageItem?.label.set_text(loadingText);
-                this.infoItem?.label.set_text(loadingText);
-
-                break;
-            case StatusBarState.LOGGED:
-                this.label.set_text(StatusBarState.LOGGED());
+            case StatusBarState.INCORRECT_REPOSITORY:                
+                this.label.set_text(StatusBarState.INCORRECT_REPOSITORY());
                 break;
         }
+
+        this.refreshCallback();
     }
 
-    setStatusBarStateLoading = () => this.setStatusBarState(StatusBarState.LOADING);
-    setStatusBarStateNotLogged = () => this.setStatusBarState(StatusBarState.NOT_LOGGED);
-    setStatusBarStateLoggedNotChoosedRepo = () => this.setStatusBarState(StatusBarState.LOGGED_NOT_CHOOSED_REPO);
-    setStatusBarStateLogged = () => this.setStatusBarState(StatusBarState.LOGGED);
+    setLoadingState() {
+        const loadingText = StatusBarState.LOADING();
 
-    initPopupMenu(isLogged) {
+        this.label.set_text(loadingText);
+        
+        this.userMenuItem?.setHeaderItemText(loadingText)
+        this.starredMenuItem?.setHeaderItemText(loadingText)
+        this.followersMenuItem?.setHeaderItemText(loadingText);
+        this.followingMenuItem?.setHeaderItemText(loadingText);
+        this.repositoryMenuItem?.setHeaderItemText(loadingText);
+        this.stargazersMenuItem?.setHeaderItemText(loadingText);
+        this.workflowsMenuItem?.setHeaderItemText(loadingText);
+        this.runsMenuItem?.setHeaderItemText(loadingText);
+        this.releasesMenuItem?.setHeaderItemText(loadingText);
+        this.artifactsMenuItem?.setHeaderItemText(loadingText);
+        this.twoFactorItem?.label.set_text(loadingText);
+        this.minutesItem?.label.set_text(loadingText);
+        this.packagesItem?.label.set_text(loadingText);
+        this.sharedStorageItem?.label.set_text(loadingText);
+        this.infoItem?.label.set_text(loadingText);
+        this.networkLabel?.set_text(loadingText);
+    }
+
+    initPopupMenu() {
         this.box = new St.BoxLayout({
             style_class: 'github-actions-top-box',
             vertical: false,
@@ -173,16 +180,17 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this.bottomItem);
 
         /// Network transfer
-        if (isLogged == true) {
-            this.networkContainer = new St.BoxLayout();
-            this.networkButton = new St.Button({ style_class: 'button github-actions-button-action' });
-            this.networkButton.connect('clicked', () => ExtensionUtils.openPrefs());
-            this.networkIcon = new St.Icon({ icon_name: 'network-wireless-symbolic', icon_size: 20 });
-            this.networkLabel = new St.Label();
-            this.networkLabel.style = 'margin-left: 8px; margin-top: 2px;';
-            this.networkContainer.add(this.networkIcon);
-            this.networkContainer.add(this.networkLabel);
-            this.networkButton.set_child(this.networkContainer);
+        this.networkContainer = new St.BoxLayout();
+        this.networkButton = new St.Button({ style_class: 'button github-actions-button-action' });
+        this.networkButton.connect('clicked', () => ExtensionUtils.openPrefs());
+        this.networkIcon = new St.Icon({ icon_name: 'network-wireless-symbolic', icon_size: 20 });
+        this.networkLabel = new St.Label();
+        this.networkLabel.style = 'margin-left: 8px; margin-top: 2px;';
+        this.networkContainer.add(this.networkIcon);
+        this.networkContainer.add(this.networkLabel);
+        this.networkButton.set_child(this.networkContainer);
+
+        if (this.isLogged == true) {
             this.leftBox.add(this.networkButton);
         }
 
@@ -201,13 +209,14 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.refreshButton.connect('clicked', () => this.refreshCallback());
         this.rightBox.add_actor(this.refreshButton);
 
-        if (isLogged == true) {
+        if (this.isLogged == true) {
             /// Logout{
             this.logoutButton = widgets.createRoundButton({ iconName: 'system-log-out-symbolic' });
             this.logoutButton.connect('clicked', async () => {
                 const status = await cliInterface.logout();
 
                 if (status == true) {
+                    this.refreshAuthState(false);
                     this.refreshCallback();
                 }
             });
@@ -215,7 +224,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         /// Logged Menu
-        if (isLogged == true) {
+        if (this.isLogged == true) {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             this.initLoggedMenu();
         }
@@ -254,6 +263,11 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         /// Following
         this.followingMenuItem = new widgets.ExpandedMenuItem('system-users-symbolic', '');
         this.menu.addMenuItem(this.followingMenuItem);
+
+        if (!this.isCorrectState()) {
+            return;
+        }
+
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         /// Repository
@@ -292,15 +306,15 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     refreshAuthState(isLogged) {
-        if (this.isLogged == false) {
+        if (isLogged == false) {
             this.label.text = StatusBarState.NOT_LOGGED();
         }
 
-        if (this.isLogged == isLogged) return;
-        this.isLogged = isLogged;
+        if (this.isLogged == isLogged) {
+            return;
+        }
 
-        this.menu.removeAll();
-        this.initPopupMenu(this.isLogged);
+        this.isLogged = isLogged;
     }
 
     /// Setters

@@ -13,7 +13,12 @@ function fillPreferencesWindow(window) {
     window.set_default_size(550, 650);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
-    const ownerEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
+    const ownerEntry = new Gtk.Entry({
+        buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }),
+        hexpand: true,
+        halign: Gtk.Align.CENTER,
+        valign: Gtk.Align.CENTER
+    });
     ownerEntry.set_halign(Gtk.Align.END);
     const ownerRow = new Adw.ActionRow({ title: 'Owner' });
     ownerRow.add_suffix(ownerEntry);
@@ -24,7 +29,12 @@ function fillPreferencesWindow(window) {
         }
     });
 
-    const repoEntry = new Gtk.Entry({ buffer: new Gtk.EntryBuffer({ text: settings.get_string('repo') }), hexpand: true, halign: Gtk.Align.CENTER, valign: Gtk.Align.CENTER });
+    const repoEntry = new Gtk.Entry({
+        buffer: new Gtk.EntryBuffer({ text: settings.get_string('repo') }),
+        hexpand: true,
+        halign: Gtk.Align.CENTER,
+        valign: Gtk.Align.CENTER
+    });
     repoEntry.set_halign(Gtk.Align.END);
     const repoRow = new Adw.ActionRow({ title: 'Repo' });
     repoRow.add_suffix(repoEntry);
@@ -48,8 +58,10 @@ function fillPreferencesWindow(window) {
         page_increment: 10,
         page_size: 0,
     });
-    const refreshStatusRow = new Adw.ActionRow();
-    refreshStatusRow.add_prefix(new Gtk.Label({ label: 'Status in seconds (Package size: ' + utils.packageSize(settings) + ')' }));
+    const refreshStatusRow = new Adw.ActionRow({
+        title: 'Github Actions (in seconds)',
+        subtitle: 'Package size: ' + utils.packageSize(settings)
+    });
     refreshStatusRow.add_suffix(refreshStatusSpinButton);
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
     settings.bind('refresh-time', refreshStatusSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -67,8 +79,11 @@ function fillPreferencesWindow(window) {
         page_increment: 10,
         page_size: 0,
     });
-    const fullRefreshRow = new Adw.ActionRow();
-    fullRefreshRow.add_prefix(new Gtk.Label({ label: 'Full in minutes (Package size: ' + utils.coldPackageSize(settings) + ')' }));
+
+    const fullRefreshRow = new Adw.ActionRow({
+        title: 'Data (in minutes)',
+        subtitle: 'Package size: ' + utils.coldPackageSize(settings)
+    });
     fullRefreshRow.add_suffix(fullRefreshSpinButton);
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;
     settings.bind('full-refresh-time', fullRefreshSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
@@ -86,21 +101,19 @@ function fillPreferencesWindow(window) {
         page_increment: 10,
         page_size: 0,
     });
-    const paginationRow = new Adw.ActionRow();
-    paginationRow.add_prefix(new Gtk.Label({ label: 'Pagination: ' }));
+    const paginationRow = new Adw.ActionRow({ title: 'Pagination:' });
     paginationRow.add_suffix(paginationSpinButton);
     paginationRow.activatable_widget = paginationSpinButton;
     settings.bind('pagination', paginationSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
-    const versionRow = new Adw.ActionRow();
-    versionRow.add_prefix(new Gtk.Label({ label: 'Version: ', halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    const versionRow = new Adw.ActionRow({ title: 'Version:' });
     versionRow.add_suffix(new Gtk.Label({ label: version.VERSION, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
+    const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
     const githubButton = new Gtk.Button({ label: 'Give me a star!' });
     githubButton.connect('clicked', () => utils.openUrl('https://github.com/arononak/github-actions-gnome-extension'));
     githubButton.margin_top = 8;
     githubButton.margin_bottom = 8;
-    const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
     starRow.add_suffix(githubButton);
 
     const generalGroup = new Adw.PreferencesGroup({ title: 'Watched repository' });

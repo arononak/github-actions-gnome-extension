@@ -33,57 +33,153 @@ const widgets = Me.imports.widgets;
 const StatusBarIndicator = GObject.registerClass(statusBarIndicator.StatusBarIndicator);
 
 async function removeWorkflowRun(runId) {
-    const status = await repository.deleteWorkflowRun(owner, repo, runId);
+    try {
+        const status = await repository.deleteWorkflowRun(owner, repo, runId);
 
-    if (status == 'success') {
-        await coldRefresh(settings, indicator);
-        utils.showNotification('The Workflow run was successfully deleted', true);
-    } else {
-        utils.showNotification('Something went wrong :/', false);
+        if (status == 'success') {
+            await dataRefresh(settings, indicator);
+            utils.showNotification('The Workflow run was successfully deleted', true);
+        } else {
+            utils.showNotification('Something went wrong :/', false);
+        }
+    } catch (error) {
+        logError(error);
     }
 }
 
-async function coldRefresh(settings, indicator) {
+async function statusBarStateRefresh(settings, indicator) {
+    try {
+        indicator.refreshBoredIcon();
+        
+        const isLogged = await repository.isLogged();
+        if (isLogged == false) {
+            indicator.setStateNotLogged();
+            return;
+        }
+
+        indicator.refreshAuthState(true);
+
+        if (!utils.isRepositoryEntered(settings)) {
+            indicator.setStateLoggedNotChoosedRepo();
+            return;
+        }
+    } catch (error) {
+        logError(error);
+    }
+}
+
+async function fetchUserData(settings, repository) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const user = await repository.fetchUser();
+
+            const pagination = utils.pagination(settings);
+            const login = user['login'];
+
+            const minutes = await repository.fetchUserBillingActionsMinutes(login);
+            const packages = await repository.fetchUserBillingPackages(login);
+            const sharedStorage = await repository.fetchUserBillingSharedStorage(login);
+            const starredList = await repository.fetchUserStarred(login, pagination);
+            const followers = await repository.fetchUserFollowers(pagination);
+            const following = await repository.fetchUserFollowing(pagination);
+
+            resolve({
+                "user": user,
+                "minutes": minutes,
+                "packages": packages,
+                "sharedStorage": sharedStorage,
+                "starredList": starredList,
+                "followers": followers,
+                "following": following
+            });
+        } catch (error) {
+            logError(error);
+            resolve(null);
+        }
+    });
+}
+
+async function fetchRepoData(settings, repository) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const { owner, repo } = utils.ownerAndRepo(settings);
+            const pagination = utils.pagination(settings);
+
+            const workflows = await repository.fetchWorkflows(owner, repo, pagination);
+            const artifacts = await repository.fetchArtifacts(owner, repo, pagination);
+            const stargazers = await repository.fetchStargazers(owner, repo, pagination);
+            const runs = await repository.fetchWorkflowRuns(owner, repo, pagination);
+            const releases = await repository.fetchReleases(owner, repo, pagination);
+
+            resolve({
+                "workflows": workflows,
+                "artifacts": artifacts,
+                "stargazers": stargazers,
+                "runs": runs,
+                "releases": releases
+            });
+        } catch (error) {
+            logError(error);
+            resolve(null);
+        }
+    });
+}
+
+/// Assistant of githubActionsRefresh()
+async function dataRefresh(settings, indicator) {
+    function updateTransfer(jsonObjects) {
+        const sizeInBytes = jsonObjects
+            .filter(e => e != null)
+            .reduce((sum, object) => sum + object._size_, 0);
+
+        utils.updateColdPackageSize(settings, sizeInBytes);
+    }
+
     try {
         if (indicator.isLogged == false) {
             return;
         }
 
-        if (!utils.isRepositorySelected(settings)) {
-            return;
-        }
-
-        const user = await repository.fetchUser();
-        if (user == null) {
-            return;
-        }
-
-        const login = user['login'];
-
-        const pagination = utils.pagination(settings);
-        const { owner, repo } = utils.ownerAndRepo(settings);
-
-        const minutes = await repository.fetchUserBillingActionsMinutes(login);
-        const packages = await repository.fetchUserBillingPackages(login);
-        const sharedStorage = await repository.fetchUserBillingSharedStorage(login);
-        const starredList = await repository.fetchUserStarred(login, pagination);
-        const followers = await repository.fetchUserFollowers(pagination);
-        const following = await repository.fetchUserFollowing(pagination);
-        const workflows = await repository.fetchWorkflows(owner, repo, pagination);
-        const artifacts = await repository.fetchArtifacts(owner, repo, pagination);
-        const stargazers = await repository.fetchStargazers(owner, repo, pagination);
-        const runs = await repository.fetchWorkflowRuns(owner, repo, pagination);
-        const releases = await repository.fetchReleases(owner, repo, pagination);
-
-        const allDataObjects = [
+        const {
             user,
-
             minutes,
             packages,
             sharedStorage,
             starredList,
             followers,
-            following,
+            following
+        } = await fetchUserData(settings, repository);
+
+        const userObjects = [
+            user,
+            minutes,
+            packages,
+            sharedStorage,
+            starredList,
+            followers,
+            following
+        ];
+
+        indicator.setUser(user);
+        indicator.setUserBilling(minutes, packages, sharedStorage);
+        indicator.setUserStarred(starredList);
+        indicator.setUserFollowers(followers);
+        indicator.setUserFollowing(following);
+
+        if (!indicator.isCorrectState()) {
+            updateTransfer(userObjects);
+            return;
+        }
+
+        const {
+            workflows,
+            artifacts,
+            stargazers,
+            runs,
+            releases
+        } = await fetchRepoData(settings, repository);
+
+        const repoObjects = [
             workflows,
             artifacts,
             stargazers,
@@ -91,15 +187,8 @@ async function coldRefresh(settings, indicator) {
             releases
         ];
 
-        const sizeInBytes = allDataObjects.filter(e => e != null).reduce((sum, object) => sum + object._size_, 0);
+        updateTransfer([...userObjects, ...repoObjects]);
 
-        utils.updateColdPackageSize(settings, sizeInBytes);
-
-        indicator.setUser(user);
-        indicator.setUserBilling(minutes, packages, sharedStorage);
-        indicator.setUserStarred(starredList);
-        indicator.setUserFollowers(followers);
-        indicator.setUserFollowing(following);
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
@@ -110,33 +199,34 @@ async function coldRefresh(settings, indicator) {
     }
 }
 
-async function hotRefresh(settings, indicator) {
+async function githubActionsRefresh(settings, indicator) {
     try {
         const isLogged = await repository.isLogged();
-        indicator.refreshAuthState(isLogged);
-        
         if (isLogged == false) {
-            indicator.setStatusBarStateNotLogged();
             return;
         }
 
-        if (!utils.isRepositorySelected(settings)) {
+        indicator.refreshTransfer(settings);
+
+        if (!utils.isRepositoryEntered(settings)) {
             return;
         }
 
         const { owner, repo } = utils.ownerAndRepo(settings);
         const run = await repository.fetchWorkflowRuns(owner, repo, 1);
         if (run == null) {
+            indicator.setStateIncorrectRepository();
             return;
         }
+
+        indicator.setStateCorrect();
+        indicator.refreshAuthState(isLogged); // Refactor
 
         utils.updatePackageSize(settings, run['_size_']);
 
         const previousState = indicator.label.text;
         indicator.setLatestRun(run['workflow_runs'][0]);
         const currentState = indicator.label.text;
-        indicator.refreshTransfer(settings);
-        indicator.refreshBoredIcon();
 
         /// Notification
         if (indicator.shouldShowCompletedNotification(previousState, currentState)) {
@@ -184,36 +274,49 @@ class Extension {
     }
 
     async initIndicator() {
-        const isLogged = await repository.isLogged();
-        this.indicator = new StatusBarIndicator(isLogged, () => this.refresh());
-        Main.panel.addToStatusArea(this._uuid, this.indicator);
-        this.startRefreshing();
+        try {
+            const isLogged = await repository.isLogged();
+            this.indicator = new StatusBarIndicator(isLogged, () => this.refresh());
+            Main.panel.addToStatusArea(this._uuid, this.indicator);
+            this.startRefreshing();
+        } catch (error) {
+            logError(error);
+        }
     }
 
     async startRefreshing() {
-        await this.refresh();
+        try {
+            await this.refresh();
 
-        const statusRefreshTime = this.settings.get_int('refresh-time') * 1000;
-        const fullStatusRefreshTime = this.settings.get_int('full-refresh-time') * 60 * 1000;
+            this.statusBarStateRefreshInterval = setInterval(() => statusBarStateRefresh(this.settings, this.indicator), 1000);
 
-        this.hotRefreshInterval = setInterval(() => hotRefresh(this.settings, this.indicator), statusRefreshTime);
-        this.coldRefreshInterval = setInterval(() => coldRefresh(this.settings, this.indicator), fullStatusRefreshTime);
+            const githubActionsRefreshTime = this.settings.get_int('refresh-time') * 1000;
+            const dataRefreshTime = this.settings.get_int('full-refresh-time') * 60 * 1000;
+
+            this.githubActionsRefreshInterval = setInterval(() => githubActionsRefresh(this.settings, this.indicator), githubActionsRefreshTime);
+            this.dataRefreshInterval = setInterval(() => dataRefresh(this.settings, this.indicator), dataRefreshTime);
+        } catch (error) {
+            logError(error);
+        }
     }
 
     stopRefreshing() {
-        clearInterval(this.hotRefreshInterval);
-        this.hotRefreshInterval = null;
+        clearInterval(this.statusBarStateRefreshInterval);
+        this.statusBarStateRefreshInterval = null;
 
-        clearInterval(this.coldRefreshInterval);
-        this.coldRefreshInterval = null;
+        clearInterval(this.githubActionsRefreshInterval);
+        this.githubActionsRefreshInterval = null;
+
+        clearInterval(this.dataRefreshInterval);
+        this.dataRefreshInterval = null;
     }
 
     async refresh() {
         try {
-            coldRefresh(this.settings, this.indicator);
-            hotRefresh(this.settings, this.indicator);
-        } catch (e) {
-            logError(e);
+            dataRefresh(this.settings, this.indicator);
+            githubActionsRefresh(this.settings, this.indicator);
+        } catch (error) {
+            logError(error);
         }
     }
 }

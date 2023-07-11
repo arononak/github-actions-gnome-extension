@@ -81,7 +81,7 @@ async function downloadArtifact(downloadUrl, filename) {
                     resolve(true);
                     return;
                 } else {
-                    throw new Error(stderr);
+                    resolve(null);
                 }
             });
         } catch (e) {
@@ -123,7 +123,7 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
                     resolve(response);
                     return;
                 } else {
-                    throw new Error(stderr);
+                    resolve(null);
                 }
             });
         } catch (e) {
