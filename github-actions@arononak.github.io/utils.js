@@ -84,8 +84,12 @@ function removeWhiteChars(str) {
 }
 
 function openUrl(url) {
+    exec('xdg-open ' + url);
+}
+
+function exec(command) {
     try {
-        GLib.spawn_command_line_async('xdg-open ' + url);
+        GLib.spawn_command_line_async(command);
     } catch (e) {
         logError(e);
     }
