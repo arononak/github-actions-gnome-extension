@@ -23,7 +23,7 @@
 - [x] utils.js - merge openUrl and openUrlPrefs
 - [x] Pagination, more than 30
 - [x] Pagination, status=1
-- [ ] 2modes - SIMPLE / EXTENDED
+- [ ] 2modes - SIMPLE / EXTENDED - status tip on touch
 - [ ] Create repository, repository list
 - [x] Remove workflow run icon
 - [ ] commit link
@@ -31,7 +31,7 @@
 - [x] Releases lis
 - [x] GitHub icon tint, status
 - [x] GitHub icon octocat button
-- [ ] GitHub green icon
+- [ ] GitHub green icon for success, blue for loading
 - [ ] Branches / Tags
 - [ ] check githib cli installation
 - [ ] Workflow run - calcel/rerun
