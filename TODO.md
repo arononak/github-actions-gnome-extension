@@ -45,6 +45,7 @@
 - [ ] Memory allocations - check memory leaks
 - [ ] Organization billings
 - [ ] EN / PL - translations
+- [ ] No internet connection
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 
