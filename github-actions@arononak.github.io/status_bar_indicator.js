@@ -291,6 +291,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.repositoryMenuItem = new widgets.ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
         this.menu.addMenuItem(this.repositoryMenuItem);
 
+        /// Repository Latest Workflow Run
+        this.infoItem = widgets.createPopupImageMenuItem('', 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowRunUrl));
+        this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
+
         /// Repository isPrivate
         this.repositoryPrivateItem = widgets.createPopupImageMenuItem('', 'changes-prevent-symbolic', () => { });
         this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem);
@@ -298,10 +302,6 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         /// Repository isFork
         this.repositoryForkItem = widgets.createPopupImageMenuItem('', 'folder-remote-symbolic', () => { });
         this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem);
-
-        /// Repository Latest Workflow Run
-        this.infoItem = widgets.createPopupImageMenuItem('', 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowRunUrl));
-        this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
 
         /// Stargazers
         this.stargazersMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', '');
@@ -369,7 +369,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         if (this.infoItem != null) {
-            this.infoItem.label.text = date + ' - ' + displayTitle + ' - (#' + runNumber + ')';
+            this.infoItem.label.text = '#' + runNumber + ' - ' + date + ' - ' + displayTitle;
         }
     }
 
