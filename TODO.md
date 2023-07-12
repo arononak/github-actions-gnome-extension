@@ -31,6 +31,7 @@
 - [x] Releases lis
 - [x] GitHub icon tint, status
 - [x] GitHub icon octocat button
+- [ ] GitHub green icon
 - [ ] Branches / Tags
 - [ ] check githib cli installation
 - [ ] Workflow run - calcel/rerun
