@@ -66,8 +66,6 @@ async function statusBarStateRefresh(settings, indicator) {
             return;
         }
 
-        indicator.refreshAuthState(true);
-
         if (!utils.isRepositoryEntered(settings)) {
             indicator.setStateLoggedNotChoosedRepo();
             return;
@@ -221,7 +219,6 @@ async function githubActionsRefresh(settings, indicator) {
         }
 
         indicator.setStateCorrect();
-        indicator.refreshAuthState(isLogged); // Refactor
 
         utils.updatePackageSize(settings, run['_size_']);
 

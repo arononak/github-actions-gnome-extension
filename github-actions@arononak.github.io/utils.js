@@ -95,6 +95,10 @@ function exec(command) {
     }
 }
 
+function openAuthScreen() {
+    exec('gnome-terminal -- bash -c "gh auth login --scopes user,repo,workflow"');
+}
+
 function isDarkTheme() {
     const settings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' });
     const theme = settings.get_string('gtk-theme');
