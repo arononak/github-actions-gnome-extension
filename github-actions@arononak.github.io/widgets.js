@@ -80,10 +80,7 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
         this.label = new St.Label({ text: text });
         this.insert_child_at_index(this.label, 0);
 
-        this.iconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
-        this.insert_child_at_index(this.iconContainer, 0);
-        this.icon = new St.Icon({ icon_name: startIconName, style_class: 'popup-menu-icon' });
-        this.iconContainer.add_child(this.icon);
+        this.setStartIcon({ iconName: startIconName });
 
         if (endIconName != null) {
             const endIcon = new IconButton(endIconName, () => endIconCallback())
@@ -109,6 +106,19 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
 
     setHeaderItemText(text) {
         this.label.text = text;
+    }
+
+    setStartIcon({ iconName }) {
+        this.icon = new St.Icon({ icon_name: iconName, style_class: 'popup-menu-icon' });
+
+        const iconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+        if (this.iconContainer == null) {
+            this.iconContainer = iconContainer;
+            this.insert_child_at_index(this.iconContainer, 0);
+        }
+
+        this.iconContainer.remove_all_children();
+        this.iconContainer.add_child(this.icon);
     }
 }
 

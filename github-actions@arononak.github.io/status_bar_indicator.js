@@ -22,6 +22,16 @@ const StatusBarState = {
     CORRECT: () => 'Correct'
 }
 
+function workflowRunConclusionIcon(conclusion) {
+    if (conclusion == 'success') {
+        return 'emblem-default';
+    } else if (conclusion == 'failure') {
+        return 'emblem-unreadable';
+    } else {
+        return 'emblem-synchronizing';
+    }
+}
+
 var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     _init() {
         super._init(0.0, 'Github Action button', false);
@@ -54,6 +64,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             && previousState !== StatusBarState.LOADING()
             && previousState !== StatusBarState.NOT_LOGGED()
             && previousState !== currentState;
+    }
+
+    updateGithubActionsStatus(status) {
+        this.label.text = status;
     }
 
     initStatusBarIndicator() {
@@ -111,15 +125,15 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             case StatusBarState.LOADING:
                 break;
             case StatusBarState.NOT_LOGGED:
-                this.label.set_text(StatusBarState.NOT_LOGGED());
+                this.updateGithubActionsStatus(StatusBarState.NOT_LOGGED());
                 this.setStatusIconState('in_progress');
                 break;
             case StatusBarState.LOGGED_NOT_CHOOSED_REPO:
-                this.label.set_text(StatusBarState.LOGGED_NOT_CHOOSED_REPO());
+                this.updateGithubActionsStatus(StatusBarState.LOGGED_NOT_CHOOSED_REPO());
                 this.setStatusIconState('in_progress');
                 break;
             case StatusBarState.INCORRECT_REPOSITORY:
-                this.label.set_text(StatusBarState.INCORRECT_REPOSITORY());
+                this.updateGithubActionsStatus(StatusBarState.INCORRECT_REPOSITORY());
                 break;
         }
 
@@ -131,7 +145,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     setLoadingTexts() {
         const loadingText = StatusBarState.LOADING();
 
-        this.label.set_text(loadingText);
+        this.updateGithubActionsStatus(loadingText);
 
         this.userMenuItem?.setHeaderItemText(loadingText)
         this.starredMenuItem?.setHeaderItemText(loadingText)
@@ -219,31 +233,31 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.refreshButton.connect('clicked', () => this.refreshCallback());
         this.rightBox.add_actor(this.refreshButton);
 
-        /// Login
-        if (!this.isLogged()) {
+        if (this.isLogged()) {
+            /// Logout
+            this.logoutButton = widgets.createRoundButton({ iconName: 'system-log-out-symbolic' });
+            this.logoutButton.connect('clicked', async () => this.logout());
+            this.rightBox.add_actor(this.logoutButton);
+        } else {
+            /// Login
             this.loginButton = widgets.createRoundButton({ iconName: 'avatar-default-symbolic' });
             this.loginButton.connect('clicked', () => utils.openAuthScreen());
             this.rightBox.add_actor(this.loginButton);
-        }
-
-        /// Logout{
-        if (this.isLogged()) {
-            this.logoutButton = widgets.createRoundButton({ iconName: 'system-log-out-symbolic' });
-            this.logoutButton.connect('clicked', async () => {
-                const status = await cliInterface.logout();
-
-                if (status == true) {
-                    this.setStateNotLogged();
-                    this.refreshCallback();
-                }
-            });
-            this.rightBox.add_actor(this.logoutButton);
         }
 
         /// Logged Menu
         if (this.isLogged()) {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             this.initLoggedMenu();
+        }
+    }
+
+    async logout() {
+        const status = await cliInterface.logout();
+
+        if (status == true) {
+            this.setStateNotLogged();
+            this.refreshCallback();
         }
     }
 
@@ -292,7 +306,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this.repositoryMenuItem);
 
         /// Repository Latest Workflow Run
-        this.infoItem = widgets.createPopupImageMenuItem('', 'object-flip-vertical-symbolic', () => utils.openUrl(this.workflowRunUrl));
+        this.infoItem = widgets.createPopupImageMenuItem('', 'media-playback-start-symbolic', () => utils.openUrl(this.workflowRunUrl));
         this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
 
         /// Repository isPrivate
@@ -329,9 +343,9 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     /// Setters
-    setLatestRun(latestRun) {
-        const status = latestRun["status"].toString().toUpperCase();
-        const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString().toUpperCase();
+    setLatestWorkflowRun(latestRun) {
+        const status = latestRun["status"].toString();
+        const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString();
         const displayTitle = latestRun["display_title"].toString();
         const runNumber = latestRun["run_number"].toString();
         const ownerAndRepo = latestRun["repository"]["full_name"].toString();
@@ -342,7 +356,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const updatedAt = latestRun["updated_at"].toString();
         const date = (new Date(updatedAt)).toLocaleFormat('%d %b %Y');
 
-        const currentState = status + ' ' + conclusion;
+        const currentState = status.toUpperCase() + ' ' + conclusion.toUpperCase();
 
         if (currentState == 'COMPLETED SUCCESS') {
             this.setStatusIconState('success');
@@ -352,12 +366,15 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             this.setStatusIconState('in_progress');
         }
 
-        this.label.text = currentState;
+        this.updateGithubActionsStatus(currentState);
         this.workflowRunUrl = workflowRunUrl;
         this.repositoryUrl = repositoryUrl;
 
         if (this.repositoryMenuItem != null) {
+            const conclusionIconName = workflowRunConclusionIcon(conclusion);
             this.repositoryMenuItem.label.text = ownerAndRepo;
+            this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName });
+            this.infoItem.setIcon(conclusionIconName);
         }
 
         if (this.repositoryPrivateItem != null) {
@@ -369,7 +386,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         if (this.infoItem != null) {
-            this.infoItem.label.text = '#' + runNumber + ' - ' + date + ' - ' + displayTitle;
+            this.infoItem.label.text = '(#' + runNumber + ')' + ' - ' + date + ' - ' + displayTitle;
         }
     }
 
@@ -515,26 +532,19 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
     }
 
-    setRuns(runs, onDeleteWorkflow) {
+    setWorkflowRuns({ runs, onDeleteWorkflow }) {
         function toItem(e) {
             const conclusion = e['conclusion'];
-
-            function conclusionIcon(conclusion) {
-                if (conclusion == 'success') {
-                    return 'emblem-default';
-                } else if (conclusion == 'failure') {
-                    return 'emblem-unreadable';
-                } else {
-                    return 'emblem-synchronizing';
-                }
-            }
-
             const id = e['id'];
+            const runNumber = e["run_number"];
             const date = (new Date(e["updated_at"].toString())).toLocaleFormat('%d %b %Y');
+            const displayTitle = e["display_title"].toString();
+
+            const text = '(#' + runNumber + ')' + ' - ' + date + ' - ' + displayTitle;
 
             return {
-                "iconName": conclusionIcon(conclusion),
-                "text": date + ' - ' + e['display_title'],
+                "iconName": workflowRunConclusionIcon(conclusion),
+                "text": text,
                 "callback": () => utils.openUrl(e['html_url']),
                 "endIconName": 'application-exit-symbolic',
                 "endIconCallback": () => {
@@ -543,7 +553,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                         description: 'Are you sure you want to delete this workflow run?',
                         itemTitle: date + ' - ' + e['display_title'],
                         itemDescription: e['name'],
-                        iconName: conclusionIcon(conclusion),
+                        iconName: workflowRunConclusionIcon(conclusion),
                         onConfirm: () => onDeleteWorkflow(id)
                     });
                 }

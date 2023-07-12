@@ -56,10 +56,10 @@ async function removeWorkflowRun(settings, indicator, runId) {
     }
 }
 
-async function statusBarStateRefresh(settings, indicator) {
+async function stateRefresh(settings, indicator) {
     try {
         indicator.refreshBoredIcon();
-        
+
         const isLogged = await repository.isLogged();
         if (isLogged == false) {
             indicator.setStateNotLogged();
@@ -191,7 +191,10 @@ async function dataRefresh(settings, indicator) {
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
-        indicator.setRuns(runs['workflow_runs'], async (runId) => await removeWorkflowRun(settings, indicator, runId));
+        indicator.setWorkflowRuns({
+            runs: runs['workflow_runs'],
+            onDeleteWorkflow: async (runId) => await removeWorkflowRun(settings, indicator, runId),
+        });
         indicator.setReleases(releases);
     } catch (error) {
         logError(error);
@@ -223,7 +226,7 @@ async function githubActionsRefresh(settings, indicator) {
         utils.updatePackageSize(settings, run['_size_']);
 
         const previousState = indicator.label.text;
-        indicator.setLatestRun(run['workflow_runs'][0]);
+        indicator.setLatestWorkflowRun(run['workflow_runs'][0]);
         const currentState = indicator.label.text;
 
         /// Notification
@@ -286,7 +289,7 @@ class Extension {
         try {
             await this.refresh();
 
-            this.statusBarStateRefreshInterval = setInterval(() => statusBarStateRefresh(this.settings, this.indicator), 1000);
+            this.stateRefreshInterval = setInterval(() => stateRefresh(this.settings, this.indicator), 1000);
 
             const githubActionsRefreshTime = this.settings.get_int('refresh-time') * 1000;
             const dataRefreshTime = this.settings.get_int('full-refresh-time') * 60 * 1000;
@@ -299,8 +302,8 @@ class Extension {
     }
 
     stopRefreshing() {
-        clearInterval(this.statusBarStateRefreshInterval);
-        this.statusBarStateRefreshInterval = null;
+        clearInterval(this.stateRefreshInterval);
+        this.stateRefreshInterval = null;
 
         clearInterval(this.githubActionsRefreshInterval);
         this.githubActionsRefreshInterval = null;
