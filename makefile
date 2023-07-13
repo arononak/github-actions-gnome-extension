@@ -6,6 +6,7 @@ build:
 	chmod +x create_version_file.sh
 	./create_version_file.sh
 	cd github-actions@arononak.github.io &&\
+	glib-compile-schemas schemas/ &&\
 	gnome-extensions pack\
 		--out-dir=../\
 		--force\
