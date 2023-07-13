@@ -46,6 +46,7 @@
 - [ ] Organization billings
 - [ ] EN / PL - translations
 - [ ] No internet connection
+- [ ] No workflow run - status resolve
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 
