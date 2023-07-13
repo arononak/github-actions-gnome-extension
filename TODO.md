@@ -23,18 +23,18 @@
 - [x] utils.js - merge openUrl and openUrlPrefs
 - [x] Pagination, more than 30
 - [x] Pagination, status=1
-- [ ] 2modes - SIMPLE / EXTENDED - status tip on touch
+- [x] 2modes - SIMPLE / EXTENDED - status tip on touch
 - [ ] Create repository, repository list
 - [x] Remove workflow run icon
-- [ ] commit link
+- [x] commit link
 - [x] extension.js - divide to smaller files
 - [x] Releases lis
 - [x] GitHub icon tint, status
 - [x] GitHub icon octocat button
-- [ ] GitHub green icon for success, blue for loading
+- [x] GitHub green icon for success, blue for loading
 - [ ] Branches / Tags
 - [ ] check githib cli installation
-- [ ] Workflow run - calcel/rerun
+- [ ] Workflow run - cancel/rerun
 - [ ] give ma a star - request & notificaton
 - [ ] Notification octocat icon
 - [ ] Missing scopes - information in the extension
