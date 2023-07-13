@@ -8,22 +8,28 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const utils = Me.imports.utils;
 
-var AppIconType = {
+var AppIconColor = {
     WHITE: 1,
     BLACK: 2,
     GRAY: 3,
-    RED: 4
+    GREEN: 4,
+    BLUE: 5,
+    RED: 6,
 }
 
 function createAppGioIcon(appIconType) {
     switch (appIconType) {
-        case AppIconType.WHITE:
+        case AppIconColor.WHITE:
             return Gio.icon_new_for_string(`${Me.path}/assets/github_white.svg`);
-        case AppIconType.BLACK:
+        case AppIconColor.BLACK:
             return Gio.icon_new_for_string(`${Me.path}/assets/github_black.svg`);
-        case AppIconType.GRAY:
+        case AppIconColor.GRAY:
             return Gio.icon_new_for_string(`${Me.path}/assets/github_gray.svg`);
-        case AppIconType.RED:
+        case AppIconColor.GREEN:
+            return Gio.icon_new_for_string(`${Me.path}/assets/github_green.svg`);
+        case AppIconColor.BLUE:
+            return Gio.icon_new_for_string(`${Me.path}/assets/github_blue.svg`);
+        case AppIconColor.RED:
             return Gio.icon_new_for_string(`${Me.path}/assets/github_red.svg`);
     }
 }

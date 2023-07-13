@@ -13,13 +13,57 @@ const utils = Me.imports.utils;
 const widgets = Me.imports.widgets;
 const repository = Me.imports.data_repository;
 const cliInterface = Me.imports.local_cli_interface;
+const AppIconColor = Me.imports.widgets.AppIconColor;
 
-const StatusBarState = {
-    NOT_LOGGED: () => 'Not logged in',
-    LOADING: () => 'Loading',
-    LOGGED_NOT_CHOOSED_REPO: () => 'No repo selected',
-    INCORRECT_REPOSITORY: () => 'Incorrect repository',
-    CORRECT: () => 'Correct'
+var StatusBarState = {
+    NOT_LOGGED: {
+        text: () => 'NOT LOGGED IN',
+        simpleModeShowText: true,
+        color: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.GRAY,
+    },
+    LOADING: {
+        text: () => 'LOADING',
+        simpleModeShowText: false,
+        color: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.BLUE,
+    },
+    LOGGED_NOT_CHOOSED_REPO: {
+        text: () => 'NO REPO ENTERED',
+        simpleModeShowText: true,
+        color: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.RED,
+    },
+    INCORRECT_REPOSITORY: {
+        text: () => 'INCORRECT REPOSITORY',
+        simpleModeShowText: true,
+        color: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.RED,
+    },
+    IN_PROGRESS: {
+        text: () => 'IN PROGRESS',
+        simpleModeShowText: false,
+        color: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.BLUE,
+    },
+    COMPLETED_SUCCESS: {
+        text: () => 'COMPLETED SUCCESS',
+        simpleModeShowText: false,
+        color: AppIconColor.WHITE,
+        coloredModeColor: AppIconColor.GREEN,
+    },
+    COMPLETED_CANCELED: {
+        text: () => 'COMPLETED CANCELED',
+        simpleModeShowText: false,
+        color: AppIconColor.RED,
+        coloredModeColor: AppIconColor.RED,
+    },
+    COMPLETED_FAILURE: {
+        text: () => 'COMPLETED FAILURE',
+        simpleModeShowText: false,
+        color: AppIconColor.RED,
+        coloredModeColor: AppIconColor.RED,
+    },
 }
 
 function workflowRunConclusionIcon(conclusion) {
@@ -37,37 +81,50 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         super._init(0.0, 'Github Action button', false);
     }
 
-    constructor(isLogged, refreshCallback) {
+    constructor({
+        simpleMode = false,
+        coloredMode = false,
+        isLogged = false,
+        refreshCallback = () => { },
+    }) {
         super();
         this.refreshCallback = refreshCallback;
 
-        this.initStatusBarIndicator();
+        this.simpleMode = simpleMode;
+        this.coloredMode = coloredMode;
 
-        if (isLogged) {
-            this.setStateLoading();
-        } else {
-            this.setStateNotLogged();
-        }
+        this.initStatusBarIndicator();
+        this.setState({ state: isLogged ? StatusBarState.LOADING : StatusBarState.NOT_LOGGED });
     }
 
-    setStateLoading = () => this.setState(StatusBarState.LOADING);
-    setStateNotLogged = () => this.setState(StatusBarState.NOT_LOGGED);
-    setStateLoggedNotChoosedRepo = () => this.setState(StatusBarState.LOGGED_NOT_CHOOSED_REPO);
-    setStateIncorrectRepository = () => this.setState(StatusBarState.INCORRECT_REPOSITORY);
-    setStateCorrect = () => this.setState(StatusBarState.CORRECT);
+    setSimpleMode = (mode) => {
+        this.simpleMode = mode;
+        this.refreshState();
+    };
 
-    isCorrectState = () => this.state == StatusBarState.CORRECT;
+    setColoredMode = (mode) => {
+        this.coloredMode = mode;
+        this.refreshState();
+    };
+
+    isCorrectState = () => this.state == StatusBarState.COMPLETED_SUCCESS;
     isLogged = () => this.state != StatusBarState.NOT_LOGGED;
 
     shouldShowCompletedNotification(previousState, currentState) {
         return !utils.isEmpty(previousState)
-            && previousState !== StatusBarState.LOADING()
-            && previousState !== StatusBarState.NOT_LOGGED()
+            && previousState !== StatusBarState.LOADING.text()
+            && previousState !== StatusBarState.NOT_LOGGED.text()
             && previousState !== currentState;
     }
 
-    updateGithubActionsStatus(status) {
-        this.label.text = status;
+    updateGithubActionsStatus(statusBarState) {
+        if (this.simpleMode == true && statusBarState.simpleModeShowText == false) {
+            this.label.text = '';
+        } else {
+            this.label.text = statusBarState.text();
+        }
+
+        this.setStatusIconColor(this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color);
     }
 
     initStatusBarIndicator() {
@@ -83,36 +140,32 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.topBox.add_child(this.icon);
         this.topBox.add_child(this.label);
         this.add_child(this.topBox);
-
-        this.setStatusIconState('in_progress');
     }
 
-    setStatusIconState(state) {
+    setStatusIconColor(appIconColor) {
         if (this.icon == null) {
             return;
         }
 
-        if (state == 'error') {
-            this.icon.gicon = widgets.createAppGioIcon(widgets.AppIconType.RED);
-        } else if (state == 'in_progress') {
-            this.icon.gicon = widgets.createAppGioIcon(widgets.AppIconType.GRAY);
-        } else if (state == 'success') {
-            this.icon.gicon = widgets.createAppGioIcon(widgets.AppIconType.WHITE);
-        }
+        this.icon.gicon = widgets.createAppGioIcon(appIconColor);
     }
 
     refreshBoredIcon() {
         const darkTheme = utils.isDarkTheme();
 
         if (darkTheme) {
-            this.boredButton.child = new St.Icon({ gicon: widgets.createAppGioIcon(widgets.AppIconType.WHITE) });
+            this.boredButton.child = new St.Icon({ gicon: widgets.createAppGioIcon(AppIconColor.WHITE) });
         } else {
-            this.boredButton.child = new St.Icon({ gicon: widgets.createAppGioIcon(widgets.AppIconType.BLACK) });
+            this.boredButton.child = new St.Icon({ gicon: widgets.createAppGioIcon(AppIconColor.BLACK) });
         }
     }
 
-    setState(state) {
-        if (this.state == state) {
+    refreshState() {
+        this.setState({ state: this.state, forceUpdate: true, });
+    }
+
+    setState({ state, forceUpdate = false }) {
+        if (this.state == state && forceUpdate == false) {
             return;
         }
 
@@ -120,22 +173,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.menu.removeAll();
         this.initPopupMenu();
         this.setLoadingTexts();
-
-        switch (state) {
-            case StatusBarState.LOADING:
-                break;
-            case StatusBarState.NOT_LOGGED:
-                this.updateGithubActionsStatus(StatusBarState.NOT_LOGGED());
-                this.setStatusIconState('in_progress');
-                break;
-            case StatusBarState.LOGGED_NOT_CHOOSED_REPO:
-                this.updateGithubActionsStatus(StatusBarState.LOGGED_NOT_CHOOSED_REPO());
-                this.setStatusIconState('in_progress');
-                break;
-            case StatusBarState.INCORRECT_REPOSITORY:
-                this.updateGithubActionsStatus(StatusBarState.INCORRECT_REPOSITORY());
-                break;
-        }
+        this.updateGithubActionsStatus(state);
 
         if (this.state != StatusBarState.LOADING) {
             this.refreshCallback();
@@ -143,9 +181,9 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     setLoadingTexts() {
-        const loadingText = StatusBarState.LOADING();
+        const loadingText = StatusBarState.LOADING.text();
 
-        this.updateGithubActionsStatus(loadingText);
+        this.updateGithubActionsStatus(StatusBarState.LOADING);
 
         this.userMenuItem?.setHeaderItemText(loadingText)
         this.starredMenuItem?.setHeaderItemText(loadingText)
@@ -219,7 +257,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         /// Bored
-        this.boredButton = widgets.createRoundButton({ icon: new St.Icon({ gicon: widgets.createAppGioIcon(widgets.AppIconType.WHITE) }) });
+        this.boredButton = widgets.createRoundButton({ icon: new St.Icon({ gicon: widgets.createAppGioIcon(AppIconColor.WHITE) }) });
         this.boredButton.connect('clicked', () => utils.openUrl('https://api.github.com/octocat'));
         this.rightBox.add_actor(this.boredButton);
 
@@ -256,7 +294,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const status = await cliInterface.logout();
 
         if (status == true) {
-            this.setStateNotLogged();
+            this.setState({ state: StatusBarState.NOT_LOGGED });
             this.refreshCallback();
         }
     }
@@ -344,31 +382,32 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
     /// Setters
     setLatestWorkflowRun(latestRun) {
-        const status = latestRun["status"].toString();
-        const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"].toString();
-        const displayTitle = latestRun["display_title"].toString();
-        const runNumber = latestRun["run_number"].toString();
-        const ownerAndRepo = latestRun["repository"]["full_name"].toString();
-        const isPrivate = latestRun["repository"]["private"].toString();
-        const isFork = latestRun["repository"]["fork"].toString();
-        const workflowRunUrl = latestRun["html_url"].toString();
-        const repositoryUrl = latestRun["repository"]["html_url"].toString();
-        const updatedAt = latestRun["updated_at"].toString();
+        const status = latestRun["status"];
+        const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"];
+        const displayTitle = latestRun["display_title"];
+        const runNumber = latestRun["run_number"];
+        const ownerAndRepo = latestRun["repository"]["full_name"];
+        const isPrivate = latestRun["repository"]["private"];
+        const isFork = latestRun["repository"]["fork"];
+        const workflowRunUrl = latestRun["html_url"];
+        const repositoryUrl = latestRun["repository"]["html_url"];
+        const updatedAt = latestRun["updated_at"];
         const date = (new Date(updatedAt)).toLocaleFormat('%d %b %Y');
 
-        const currentState = status.toUpperCase() + ' ' + conclusion.toUpperCase();
-
-        if (currentState == 'COMPLETED SUCCESS') {
-            this.setStatusIconState('success');
-        } else if (currentState == 'COMPLETED FAILURE' || currentState == 'COMPLETED CANCELLED') {
-            this.setStatusIconState('error');
-        } else {
-            this.setStatusIconState('in_progress');
-        }
-
-        this.updateGithubActionsStatus(currentState);
         this.workflowRunUrl = workflowRunUrl;
         this.repositoryUrl = repositoryUrl;
+
+        const currentState = (status.toUpperCase() + ' ' + conclusion.toUpperCase()).replace('_', ' ');
+
+        if (currentState == 'COMPLETED SUCCESS') {
+            this.updateGithubActionsStatus(StatusBarState.COMPLETED_SUCCESS);
+        } else if (currentState == 'COMPLETED FAILURE') {
+            this.updateGithubActionsStatus(StatusBarState.COMPLETED_FAILURE);
+        } else if (currentState == 'COMPLETED CANCELLED') {
+            this.updateGithubActionsStatus(StatusBarState.COMPLETED_CANCELED);
+        } else {
+            this.updateGithubActionsStatus(StatusBarState.IN_PROGRESS);
+        }
 
         if (this.repositoryMenuItem != null) {
             const conclusionIconName = workflowRunConclusionIcon(conclusion);

@@ -19,6 +19,9 @@ var updateFullRefreshTime = (settings, refreshTime) => settings.set_int('full-re
 var pagination = (settings) => settings.get_int('pagination');
 var updatePagination = (settings, pagination) => settings.set_int('pagination', pagination);
 
+var simpleMode = (settings) => settings.get_boolean('simple-mode');
+var coloredMode = (settings) => settings.get_boolean('colored-mode');
+
 function dataConsumptionPerHour(settings) {
     const packageSizeInBytes = settings.get_int('package-size-in-bytes');
     const refreshTime = refreshTime(settings);

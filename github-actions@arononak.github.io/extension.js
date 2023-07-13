@@ -29,6 +29,7 @@ const statusBarIndicator = Me.imports.status_bar_indicator;
 const repository = Me.imports.data_repository;
 const utils = Me.imports.utils;
 const widgets = Me.imports.widgets;
+const StatusBarState = Me.imports.status_bar_indicator.StatusBarState;
 
 const StatusBarIndicator = GObject.registerClass(statusBarIndicator.StatusBarIndicator);
 
@@ -62,12 +63,12 @@ async function stateRefresh(settings, indicator) {
 
         const isLogged = await repository.isLogged();
         if (isLogged == false) {
-            indicator.setStateNotLogged();
+            indicator.setState({ state: StatusBarState.NOT_LOGGED });
             return;
         }
 
         if (!utils.isRepositoryEntered(settings)) {
-            indicator.setStateLoggedNotChoosedRepo();
+            indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO });
             return;
         }
     } catch (error) {
@@ -217,11 +218,11 @@ async function githubActionsRefresh(settings, indicator) {
         const { owner, repo } = utils.ownerAndRepo(settings);
         const run = await repository.fetchWorkflowRuns(owner, repo, 1);
         if (run == null) {
-            indicator.setStateIncorrectRepository();
+            indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY });
             return;
         }
 
-        indicator.setStateCorrect();
+        indicator.setState({ state: StatusBarState.COMPLETED_SUCCESS });
 
         utils.updatePackageSize(settings, run['_size_']);
 
@@ -263,6 +264,16 @@ class Extension {
             this.startRefreshing();
         });
 
+        this.settings.connect('changed::simple-mode', (settings, key) => {
+            const simpleMode = utils.simpleMode(settings);
+            this.indicator.setSimpleMode(simpleMode);
+        });
+
+        this.settings.connect('changed::colored-mode', (settings, key) => {
+            const coloredMode = utils.coloredMode(settings);
+            this.indicator.setColoredMode(coloredMode);
+        });
+
         this.initIndicator();
     }
 
@@ -277,7 +288,15 @@ class Extension {
     async initIndicator() {
         try {
             const isLogged = await repository.isLogged();
-            this.indicator = new StatusBarIndicator(isLogged, () => this.refresh());
+            const simpleMode = utils.simpleMode(this.settings);
+            const coloredMode = utils.coloredMode(this.settings);
+
+            this.indicator = new StatusBarIndicator({
+                simpleMode: simpleMode,
+                coloredMode: coloredMode,
+                isLogged: isLogged,
+                refreshCallback: () => this.refresh(),
+            });
             Main.panel.addToStatusArea(this._uuid, this.indicator);
             this.startRefreshing();
         } catch (error) {

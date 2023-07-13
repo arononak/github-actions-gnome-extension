@@ -10,9 +10,10 @@ const version = Me.imports.version; // version.js
 function init() { }
 
 function fillPreferencesWindow(window) {
-    window.set_default_size(550, 650);
+    window.set_default_size(550, 820);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
+    /// Repository
     const ownerEntry = new Gtk.Entry({
         buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }),
         hexpand: true,
@@ -45,6 +46,7 @@ function fillPreferencesWindow(window) {
         }
     });
 
+    /// Refresh
     const refreshStatusSpinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
     refreshStatusSpinButton.wrap = true;
     refreshStatusSpinButton.width_chars = 2;
@@ -125,12 +127,38 @@ function fillPreferencesWindow(window) {
     refreshStatusGroup.add(fullRefreshRow);
     refreshStatusGroup.add(paginationRow);
 
+    /// Appearance
+    const simpleModeSwitch = new Gtk.Switch({ active: settings.get_boolean('simple-mode'), valign: Gtk.Align.CENTER });
+    settings.bind('simple-mode', simpleModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
+    const simpleModeRow = new Adw.ActionRow({
+        title: 'Simple mode',
+        subtitle: 'Mode for minimalists containing the most important functionalities',
+    });
+    simpleModeRow.add_suffix(simpleModeSwitch);
+    simpleModeRow.activatable_widget = simpleModeSwitch;
+
+    const coloredModeSwitch = new Gtk.Switch({ active: settings.get_boolean('colored-mode'), valign: Gtk.Align.CENTER });
+    settings.bind('colored-mode', coloredModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
+    const coloredModeRow = new Adw.ActionRow({
+        title: 'Colored mode',
+        subtitle: 'Colored mode for colorblind, aesthetes and gay people',
+    });
+    coloredModeRow.add_suffix(coloredModeSwitch);
+    coloredModeRow.activatable_widget = coloredModeSwitch;
+
+    const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' });
+    appearanceGroup.add(simpleModeRow);
+    appearanceGroup.add(coloredModeRow);
+
+    /// Other
     const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
     otherGroup.add(starRow);
     otherGroup.add(versionRow);
 
+    /// Page
     const page = new Adw.PreferencesPage();
     page.add(generalGroup);
+    page.add(appearanceGroup);
     page.add(refreshStatusGroup);
     page.add(otherGroup);
 
