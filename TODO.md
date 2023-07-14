@@ -36,7 +36,7 @@
 - [ ] check githib cli installation
 - [ ] Workflow run - cancel/rerun
 - [ ] give ma a star - request & notificaton
-- [ ] Notification octocat icon
+- [x] Notification octocat icon
 - [ ] Missing scopes - information in the extension
 - [ ] QuickSettings status icon - tint
 - [ ] Lint

@@ -48,9 +48,9 @@ async function removeWorkflowRun(settings, indicator, runId) {
 
         if (status == 'success') {
             await dataRefresh(settings, indicator);
-            utils.showNotification('The Workflow run was successfully deleted', true);
+            widgets.showNotification('The Workflow run was successfully deleted', true);
         } else {
-            utils.showNotification('Something went wrong :/', false);
+            widgets.showNotification('Something went wrong :/', false);
         }
     } catch (error) {
         logError(error);

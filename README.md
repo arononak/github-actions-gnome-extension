@@ -27,6 +27,8 @@
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview5.png?raw=true)
 
+![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview6.png?raw=true)
+
 ## 🔨 Installation
 
 Ubuntu

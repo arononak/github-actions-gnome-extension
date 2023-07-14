@@ -3,9 +3,8 @@
 const { Clutter, GObject, St, Gio } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
-const ExtensionUtils = imports.misc.extensionUtils;
 
-const GETTEXT_DOMAIN = 'github-actions-extension';
+const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const _ = ExtensionUtils.gettext;
 
@@ -151,13 +150,8 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     refreshBoredIcon() {
-        const darkTheme = utils.isDarkTheme();
+        this.boredButton.child = new St.Icon({ gicon: widgets.appIcon() });
 
-        if (darkTheme) {
-            this.boredButton.child = new St.Icon({ gicon: widgets.createAppGioIcon(AppIconColor.WHITE) });
-        } else {
-            this.boredButton.child = new St.Icon({ gicon: widgets.createAppGioIcon(AppIconColor.BLACK) });
-        }
     }
 
     refreshState() {
@@ -587,7 +581,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                 "callback": () => utils.openUrl(e['html_url']),
                 "endIconName": 'application-exit-symbolic',
                 "endIconCallback": () => {
-                    utils.showConfirmDialog({
+                    widgets.showConfirmDialog({
                         title: 'Workflow run deletion',
                         description: 'Are you sure you want to delete this workflow run?',
                         itemTitle: date + ' - ' + e['display_title'],
@@ -632,9 +626,9 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                 repository.downloadArtifact(downloadUrl, filename).then(success => {
                     try {
                         if (success === true) {
-                            utils.showNotification('The artifact: ' + filename + ' has been downloaded, check your home directory', true);
+                            widgets.showNotification('The artifact: ' + filename + ' has been downloaded, check your home directory', true);
                         } else {
-                            utils.showNotification('Something went wrong :/', false);
+                            widgets.showNotification('Something went wrong :/', false);
                         }
                     } catch (e) {
                         logError(e);

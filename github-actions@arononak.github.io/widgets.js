@@ -1,6 +1,6 @@
 'use strict';
 
-const { Clutter, GObject, St, Gio } = imports.gi;
+const { Clutter, GObject, St, Gio, GLib } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 
@@ -34,9 +34,17 @@ function createAppGioIcon(appIconType) {
     }
 }
 
+function appIcon() {
+    const darkTheme = utils.isDarkTheme();
+
+    return darkTheme
+        ? createAppGioIcon(AppIconColor.WHITE)
+        : createAppGioIcon(AppIconColor.BLACK);
+}
+
 function showFinishNotification(ownerAndRepo, success) {
-    const description = ownerAndRepo + (success === true ? ' - Succeeded' : ' - Failed :/');
-    utils.showNotification(description, success);
+    const description = ownerAndRepo + (success === true ? ' - The workflow has been successfully built' : ' - Failed :/');
+    showNotification(description, success);
 }
 
 function createPopupImageMenuItem(text, startIconName, itemCallback, endIconName, endIconCallback) {
@@ -144,3 +152,92 @@ var IconButton = class extends St.Button {
         this.child.set_icon_name(icon);
     }
 };
+
+function showNotification(message, success) {
+    const MessageTray = imports.ui.messageTray;
+    const Main = imports.ui.main;
+
+    const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
+    Main.messageTray.add(source);
+    const notification = new MessageTray.Notification(source, success === true ? 'Success!' : 'Error', message, { gicon: appIcon() });
+    source.showNotification(notification);
+
+    const file = Gio.File.new_for_path(
+        success === true
+            ? '/usr/share/sounds/freedesktop/stereo/complete.oga'
+            : '/usr/share/sounds/freedesktop/stereo/dialog-warning.oga'
+    );
+
+    const player = global.display.get_sound_player();
+    player.play_from_file(file, '', null);
+}
+
+function showConfirmDialog({
+    title,
+    description,
+    itemTitle,
+    itemDescription,
+    iconName,
+    onConfirm
+}) {
+    const Dialog = imports.ui.dialog;
+    const ModalDialog = imports.ui.modalDialog;
+    const { St } = imports.gi;
+
+    let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false });
+    let reminderId = null;
+    let closedId = dialog.connect('closed', (_dialog) => {
+        if (!reminderId) {
+            reminderId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 60,
+                () => {
+                    dialog.open(global.get_current_time());
+                    reminderId = null;
+                    return GLib.SOURCE_REMOVE;
+                },
+            );
+        }
+    });
+
+    dialog.connect('destroy', (_actor) => {
+        if (closedId) {
+            dialog.disconnect(closedId);
+            closedId = null;
+        }
+
+        if (reminderId) {
+            GLib.Source.remove(id);
+            reminderId = null;
+        }
+
+        dialog = null;
+    });
+
+    const content = new Dialog.MessageDialogContent({
+        title: title,
+        description: description,
+    });
+    dialog.contentLayout.add_child(content);
+
+    const item = new Dialog.ListSectionItem({
+        icon_actor: new St.Icon({ icon_name: iconName }),
+        title: itemTitle,
+        description: itemDescription,
+    });
+    content.add_child(item);
+
+    dialog.setButtons([
+        {
+            label: 'Cancel',
+            action: () => dialog.destroy()
+        },
+        {
+            label: 'Confirm',
+            action: () => {
+                dialog.close(global.get_current_time());
+                onConfirm();
+            }
+        },
+    ]);
+
+    dialog.open();
+}
