@@ -41,14 +41,14 @@ function updateTransfer(settings, jsonObjects) {
     utils.updateColdPackageSize(settings, sizeInBytes);
 }
 
-async function removeWorkflowRun(settings, indicator, runId) {
+async function removeWorkflowRun(settings, indicator, runId, runName) {
     try {
         const { owner, repo } = utils.ownerAndRepo(settings);
         const status = await repository.deleteWorkflowRun(owner, repo, runId);
 
         if (status == 'success') {
             await dataRefresh(settings, indicator);
-            widgets.showNotification('The Workflow run was successfully deleted', true);
+            widgets.showNotification('The Workflow run was successfully deleted.' + '\n\n' + runName, true);
         } else {
             widgets.showNotification('Something went wrong :/', false);
         }
@@ -198,7 +198,7 @@ async function dataRefresh(settings, indicator) {
         indicator.setStargazers(stargazers);
         indicator.setWorkflowRuns({
             runs: runs['workflow_runs'],
-            onDeleteWorkflow: async (runId) => await removeWorkflowRun(settings, indicator, runId),
+            onDeleteWorkflow: async (runId, runName) => await removeWorkflowRun(settings, indicator, runId, runName),
         });
         indicator.setReleases(releases);
         indicator.setBranches(branches);

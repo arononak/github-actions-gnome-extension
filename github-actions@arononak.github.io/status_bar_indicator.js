@@ -576,23 +576,25 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             const id = e['id'];
             const runNumber = e["run_number"];
             const date = (new Date(e["updated_at"].toString())).toLocaleFormat('%d %b %Y');
-            const displayTitle = e["display_title"].toString();
+            const displayTitle = e["display_title"];
+            const name = e["name"];
+            const htmlUrl = e['html_url'];
 
             const text = '(#' + runNumber + ')' + ' - ' + date + ' - ' + displayTitle;
 
             return {
                 "iconName": workflowRunConclusionIcon(conclusion),
                 "text": text,
-                "callback": () => utils.openUrl(e['html_url']),
+                "callback": () => utils.openUrl(htmlUrl),
                 "endIconName": 'application-exit-symbolic',
                 "endIconCallback": () => {
                     widgets.showConfirmDialog({
                         title: 'Workflow run deletion',
                         description: 'Are you sure you want to delete this workflow run?',
-                        itemTitle: date + ' - ' + e['display_title'],
-                        itemDescription: e['name'],
+                        itemTitle: date + ' - ' + displayTitle,
+                        itemDescription: name,
                         iconName: workflowRunConclusionIcon(conclusion),
-                        onConfirm: () => onDeleteWorkflow(id)
+                        onConfirm: () => onDeleteWorkflow(id, (displayTitle + ' ' + name))
                     });
                 }
             };
