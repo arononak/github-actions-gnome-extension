@@ -28,11 +28,11 @@
 - [x] Remove workflow run icon
 - [x] commit link
 - [x] extension.js - divide to smaller files
-- [x] Releases lis
+- [x] Releases list
 - [x] GitHub icon tint, status
 - [x] GitHub icon octocat button
 - [x] GitHub green icon for success, blue for loading
-- [ ] Branches / Tags
+- [x] Branches / Tags
 - [ ] check githib cli installation
 - [ ] Workflow run - cancel/rerun
 - [ ] give ma a star - request & notificaton
