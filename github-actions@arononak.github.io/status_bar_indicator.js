@@ -626,7 +626,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
                 repository.downloadArtifact(downloadUrl, filename).then(success => {
                     try {
                         if (success === true) {
-                            widgets.showNotification('The artifact: ' + filename + ' has been downloaded, check your home directory', true);
+                            widgets.showNotification('The artifact has been downloaded, check your home directory.' + '\n\n' + filename, true);
                         } else {
                             widgets.showNotification('Something went wrong :/', false);
                         }
