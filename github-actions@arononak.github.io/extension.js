@@ -313,13 +313,24 @@ class Extension {
         try {
             await this.refresh();
 
-            this.stateRefreshInterval = setInterval(() => stateRefresh(this.settings, this.indicator), 1000);
-
+            const stateRefreshTime = 1 * 1000;
             const githubActionsRefreshTime = this.settings.get_int('refresh-time') * 1000;
             const dataRefreshTime = this.settings.get_int('full-refresh-time') * 60 * 1000;
 
-            this.githubActionsRefreshInterval = setInterval(() => githubActionsRefresh(this.settings, this.indicator), githubActionsRefreshTime);
-            this.dataRefreshInterval = setInterval(() => dataRefresh(this.settings, this.indicator), dataRefreshTime);
+            this.stateRefreshInterval = setInterval(
+                () => stateRefresh(this.settings, this.indicator),
+                stateRefreshTime,
+            );
+
+            this.githubActionsRefreshInterval = setInterval(
+                () => githubActionsRefresh(this.settings, this.indicator),
+                githubActionsRefreshTime,
+            );
+
+            this.dataRefreshInterval = setInterval(
+                () => dataRefresh(this.settings, this.indicator),
+                dataRefreshTime,
+            );
         } catch (error) {
             logError(error);
         }
@@ -338,8 +349,9 @@ class Extension {
 
     async refresh() {
         try {
-            dataRefresh(this.settings, this.indicator);
+            stateRefresh(this.settings, this.indicator);
             githubActionsRefresh(this.settings, this.indicator);
+            dataRefresh(this.settings, this.indicator);
         } catch (error) {
             logError(error);
         }
