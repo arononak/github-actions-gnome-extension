@@ -311,8 +311,6 @@ class Extension {
 
     async startRefreshing() {
         try {
-            await this.refresh();
-
             const stateRefreshTime = 1 * 1000;
             const githubActionsRefreshTime = this.settings.get_int('refresh-time') * 1000;
             const dataRefreshTime = this.settings.get_int('full-refresh-time') * 60 * 1000;
