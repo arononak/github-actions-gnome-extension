@@ -655,11 +655,13 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     setBranches(branches) {
+        const repositoryUrl = this.repositoryUrl;
         function toItem(e) {
             return {
                 "iconName": 'media-playlist-consecutive-symbolic',
                 "text": e['name'],
-                "callback": utils.openUrl(this.repositoryUrl),
+                "callback": utils.openUrl(repositoryUrl),
+                "endIconName": e['protected'] ? 'changes-prevent-symbolic' : null,
             };
         }
 
