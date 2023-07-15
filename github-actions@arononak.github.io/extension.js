@@ -118,13 +118,15 @@ async function fetchRepoData(settings, repository) {
             const stargazers = await repository.fetchStargazers(owner, repo, pagination);
             const runs = await repository.fetchWorkflowRuns(owner, repo, pagination);
             const releases = await repository.fetchReleases(owner, repo, pagination);
+            const branches = await repository.fetchBranches(owner, repo, pagination);
 
             resolve({
                 "workflows": workflows,
                 "artifacts": artifacts,
                 "stargazers": stargazers,
                 "runs": runs,
-                "releases": releases
+                "releases": releases,
+                "branches": branches,
             });
         } catch (error) {
             logError(error);
@@ -147,7 +149,7 @@ async function dataRefresh(settings, indicator) {
             sharedStorage,
             starredList,
             followers,
-            following
+            following,
         } = await fetchUserData(settings, repository);
 
         const userObjects = [
@@ -176,7 +178,8 @@ async function dataRefresh(settings, indicator) {
             artifacts,
             stargazers,
             runs,
-            releases
+            releases,
+            branches,
         } = await fetchRepoData(settings, repository);
 
         const repoObjects = [
@@ -184,7 +187,8 @@ async function dataRefresh(settings, indicator) {
             artifacts,
             stargazers,
             runs,
-            releases
+            releases,
+            branches,
         ];
 
         updateTransfer(settings, [...userObjects, ...repoObjects]);
@@ -197,6 +201,7 @@ async function dataRefresh(settings, indicator) {
             onDeleteWorkflow: async (runId) => await removeWorkflowRun(settings, indicator, runId),
         });
         indicator.setReleases(releases);
+        indicator.setBranches(branches);
     } catch (error) {
         logError(error);
     }

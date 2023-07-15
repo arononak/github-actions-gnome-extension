@@ -188,6 +188,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.workflowsMenuItem?.setHeaderItemText(loadingText);
         this.runsMenuItem?.setHeaderItemText(loadingText);
         this.releasesMenuItem?.setHeaderItemText(loadingText);
+        this.branchesMenuItem?.setHeaderItemText(loadingText);
         this.artifactsMenuItem?.setHeaderItemText(loadingText);
         this.twoFactorItem?.label.set_text(loadingText);
         this.minutesItem?.label.set_text(loadingText);
@@ -348,6 +349,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         /// Repository isFork
         this.repositoryForkItem = widgets.createPopupImageMenuItem('', 'folder-remote-symbolic', () => { });
         this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem);
+
+        /// Branches
+        this.branchesMenuItem = new widgets.ExpandedMenuItem('media-playlist-consecutive-symbolic', '');
+        this.menu.addMenuItem(this.branchesMenuItem);
 
         /// Stargazers
         this.stargazersMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', '');
@@ -646,6 +651,21 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         if (this.artifactsMenuItem != null) {
             this.artifactsMenuItem.setHeaderItemText('Artifacts: ' + artifacts.length);
             this.artifactsMenuItem.submitItems(artifacts.map(e => toItem(e)));
+        }
+    }
+
+    setBranches(branches) {
+        function toItem(e) {
+            return {
+                "iconName": 'media-playlist-consecutive-symbolic',
+                "text": e['name'],
+                "callback": utils.openUrl(this.repositoryUrl),
+            };
+        }
+
+        if (this.branchesMenuItem != null) {
+            this.branchesMenuItem.setHeaderItemText('Branches: ' + branches.length);
+            this.branchesMenuItem.submitItems(branches.map(e => toItem(e)));
         }
     }
 };

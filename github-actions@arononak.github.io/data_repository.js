@@ -47,6 +47,9 @@ var fetchStargazers = async (owner, repo, pagination) =>
 var fetchReleases = async (owner, repo, pagination) =>
     repository.executeGithubCliCommand('GET', '/repos/' + owner + '/' + repo + '/releases', pagination);
 
+var fetchBranches = async (owner, repo, pagination) =>
+    repository.executeGithubCliCommand('GET', '/repos/' + owner + '/' + repo + '/branches', pagination);
+
 /// Delete
 var deleteWorkflowRun = async (owner, repo, runId) =>
     repository.executeGithubCliCommand('DELETE', '/repos/' + owner + '/' + repo + '/actions/runs/' + runId);
