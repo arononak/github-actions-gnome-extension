@@ -47,6 +47,7 @@
 - [ ] EN / PL - translations
 - [ ] No internet connection
 - [ ] No workflow run - status resolve
+- [ ] gists
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 
