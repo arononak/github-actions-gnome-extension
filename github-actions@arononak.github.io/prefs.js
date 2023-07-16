@@ -4,8 +4,16 @@ const { Adw, Gio, Gtk, GLib } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const utils = Me.imports.utils;     // utils.js
-const version = Me.imports.version; // version.js
+
+const {
+    refreshTime,
+    packageSize,
+    coldPackageSize,
+    pagination,
+    openUrl,
+} = Me.imports.utils;
+
+const { VERSION } = Me.imports.version;
 
 function init() { }
 
@@ -55,7 +63,7 @@ function fillPreferencesWindow(window) {
     refreshStatusSpinButton.margin_top = 8;
     refreshStatusSpinButton.margin_bottom = 8;
     refreshStatusSpinButton.adjustment = new Gtk.Adjustment({
-        value: utils.refreshTime(settings),
+        value: refreshTime(settings),
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -64,7 +72,7 @@ function fillPreferencesWindow(window) {
     });
     const refreshStatusRow = new Adw.ActionRow({
         title: 'Github Actions (in seconds)',
-        subtitle: 'Package size: ' + utils.packageSize(settings)
+        subtitle: 'Package size: ' + packageSize(settings)
     });
     refreshStatusRow.add_suffix(refreshStatusSpinButton);
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
@@ -76,7 +84,7 @@ function fillPreferencesWindow(window) {
     fullRefreshSpinButton.margin_top = 8;
     fullRefreshSpinButton.margin_bottom = 8;
     fullRefreshSpinButton.adjustment = new Gtk.Adjustment({
-        value: utils.refreshTime(settings),
+        value: refreshTime(settings),
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -86,7 +94,7 @@ function fillPreferencesWindow(window) {
 
     const fullRefreshRow = new Adw.ActionRow({
         title: 'Data (in minutes)',
-        subtitle: 'Package size: ' + utils.coldPackageSize(settings)
+        subtitle: 'Package size: ' + coldPackageSize(settings)
     });
     fullRefreshRow.add_suffix(fullRefreshSpinButton);
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;
@@ -98,7 +106,7 @@ function fillPreferencesWindow(window) {
     paginationSpinButton.margin_top = 8;
     paginationSpinButton.margin_bottom = 8;
     paginationSpinButton.adjustment = new Gtk.Adjustment({
-        value: utils.pagination(settings),
+        value: pagination(settings),
         lower: 1,
         upper: 100,
         step_increment: 1,
@@ -111,11 +119,11 @@ function fillPreferencesWindow(window) {
     settings.bind('pagination', paginationSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
     const versionRow = new Adw.ActionRow({ title: 'Version:' });
-    versionRow.add_suffix(new Gtk.Label({ label: version.VERSION, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    versionRow.add_suffix(new Gtk.Label({ label: VERSION, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
     const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
     const githubButton = new Gtk.Button({ label: 'Give me a star!' });
-    githubButton.connect('clicked', () => utils.openUrl('https://github.com/arononak/github-actions-gnome-extension'));
+    githubButton.connect('clicked', () => openUrl('https://github.com/arononak/github-actions-gnome-extension'));
     githubButton.margin_top = 8;
     githubButton.margin_bottom = 8;
     starRow.add_suffix(githubButton);

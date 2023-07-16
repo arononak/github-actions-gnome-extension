@@ -25,10 +25,41 @@ const GETTEXT_DOMAIN = 'github-actions-extension';
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
+const {
+    updateColdPackageSize,
+    updatePackageSize,
+    isRepositoryEntered,
+    ownerAndRepo,
+    pagination,
+    simpleMode,
+    coloredMode,
+} = Me.imports.utils;
+
+const {
+    showNotification,
+    showFinishNotification,
+} = Me.imports.widgets;
+
+const {
+    isInstalledCli,
+    isLogged,
+    fetchUser,
+    fetchUserBillingActionsMinutes,
+    fetchUserBillingPackages,
+    fetchUserBillingSharedStorage,
+    fetchUserStarred,
+    fetchUserFollowers,
+    fetchUserFollowing,
+    fetchWorkflows,
+    fetchArtifacts,
+    fetchStargazers,
+    fetchWorkflowRuns,
+    deleteWorkflowRun,
+    fetchReleases,
+    fetchBranches,
+} = Me.imports.data_repository;
+
 const statusBarIndicator = Me.imports.status_bar_indicator;
-const repository = Me.imports.data_repository;
-const utils = Me.imports.utils;
-const widgets = Me.imports.widgets;
 const StatusBarState = Me.imports.status_bar_indicator.StatusBarState;
 
 const StatusBarIndicator = GObject.registerClass(statusBarIndicator.StatusBarIndicator);
@@ -38,19 +69,19 @@ function updateTransfer(settings, jsonObjects) {
         .filter(e => e != null)
         .reduce((sum, object) => sum + object._size_, 0);
 
-    utils.updateColdPackageSize(settings, sizeInBytes);
+    updateColdPackageSize(settings, sizeInBytes);
 }
 
 async function removeWorkflowRun(settings, indicator, runId, runName) {
     try {
-        const { owner, repo } = utils.ownerAndRepo(settings);
-        const status = await repository.deleteWorkflowRun(owner, repo, runId);
+        const { owner, repo } = ownerAndRepo(settings);
+        const status = await deleteWorkflowRun(owner, repo, runId);
 
         if (status == 'success') {
             await dataRefresh(settings, indicator);
-            widgets.showNotification('The Workflow run was successfully deleted.' + '\n\n' + runName, true);
+            showNotification('The Workflow run was successfully deleted.' + '\n\n' + runName, true);
         } else {
-            widgets.showNotification('Something went wrong :/', false);
+            showNotification('Something went wrong :/', false);
         }
     } catch (error) {
         logError(error);
@@ -61,19 +92,19 @@ async function stateRefresh(settings, indicator) {
     try {
         indicator.refreshBoredIcon();
 
-        const isInstalledCli = await repository.isInstalledCli();
-        if (isInstalledCli == false) {
+        const _isInstalledCli = await isInstalledCli();
+        if (_isInstalledCli == false) {
             indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI });
             return;
         }
 
-        const isLogged = await repository.isLogged();
-        if (isLogged == false) {
+        const _isLogged = await isLogged();
+        if (_isLogged == false) {
             indicator.setState({ state: StatusBarState.NOT_LOGGED });
             return;
         }
 
-        if (!utils.isRepositoryEntered(settings)) {
+        if (!isRepositoryEntered(settings)) {
             indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO });
             return;
         }
@@ -82,20 +113,20 @@ async function stateRefresh(settings, indicator) {
     }
 }
 
-async function fetchUserData(settings, repository) {
+async function fetchUserData(settings) {
     return new Promise(async (resolve, reject) => {
         try {
-            const user = await repository.fetchUser();
+            const user = await fetchUser();
 
-            const pagination = utils.pagination(settings);
+            const _pagination = pagination(settings);
             const login = user['login'];
 
-            const minutes = await repository.fetchUserBillingActionsMinutes(login);
-            const packages = await repository.fetchUserBillingPackages(login);
-            const sharedStorage = await repository.fetchUserBillingSharedStorage(login);
-            const starredList = await repository.fetchUserStarred(login, pagination);
-            const followers = await repository.fetchUserFollowers(pagination);
-            const following = await repository.fetchUserFollowing(pagination);
+            const minutes = await fetchUserBillingActionsMinutes(login);
+            const packages = await fetchUserBillingPackages(login);
+            const sharedStorage = await fetchUserBillingSharedStorage(login);
+            const starredList = await fetchUserStarred(login, _pagination);
+            const followers = await fetchUserFollowers(_pagination);
+            const following = await fetchUserFollowing(_pagination);
 
             resolve({
                 "user": user,
@@ -113,18 +144,18 @@ async function fetchUserData(settings, repository) {
     });
 }
 
-async function fetchRepoData(settings, repository) {
+async function fetchRepoData(settings) {
     return new Promise(async (resolve, reject) => {
         try {
-            const { owner, repo } = utils.ownerAndRepo(settings);
-            const pagination = utils.pagination(settings);
+            const { owner, repo } = ownerAndRepo(settings);
+            const _pagination = pagination(settings);
 
-            const workflows = await repository.fetchWorkflows(owner, repo, pagination);
-            const artifacts = await repository.fetchArtifacts(owner, repo, pagination);
-            const stargazers = await repository.fetchStargazers(owner, repo, pagination);
-            const runs = await repository.fetchWorkflowRuns(owner, repo, pagination);
-            const releases = await repository.fetchReleases(owner, repo, pagination);
-            const branches = await repository.fetchBranches(owner, repo, pagination);
+            const workflows = await fetchWorkflows(owner, repo, _pagination);
+            const artifacts = await fetchArtifacts(owner, repo, _pagination);
+            const stargazers = await fetchStargazers(owner, repo, _pagination);
+            const runs = await fetchWorkflowRuns(owner, repo, _pagination);
+            const releases = await fetchReleases(owner, repo, _pagination);
+            const branches = await fetchBranches(owner, repo, _pagination);
 
             resolve({
                 "workflows": workflows,
@@ -156,7 +187,7 @@ async function dataRefresh(settings, indicator) {
             starredList,
             followers,
             following,
-        } = await fetchUserData(settings, repository);
+        } = await fetchUserData(settings);
 
         const userObjects = [
             user,
@@ -186,7 +217,7 @@ async function dataRefresh(settings, indicator) {
             runs,
             releases,
             branches,
-        } = await fetchRepoData(settings, repository);
+        } = await fetchRepoData(settings);
 
         const repoObjects = [
             workflows,
@@ -215,19 +246,19 @@ async function dataRefresh(settings, indicator) {
 
 async function githubActionsRefresh(settings, indicator) {
     try {
-        const isLogged = await repository.isLogged();
-        if (isLogged == false) {
+        const _isLogged = await isLogged();
+        if (_isLogged == false) {
             return;
         }
 
         indicator.refreshTransfer(settings);
 
-        if (!utils.isRepositoryEntered(settings)) {
+        if (!isRepositoryEntered(settings)) {
             return;
         }
 
-        const { owner, repo } = utils.ownerAndRepo(settings);
-        const run = await repository.fetchWorkflowRuns(owner, repo, 1);
+        const { owner, repo } = ownerAndRepo(settings);
+        const run = await fetchWorkflowRuns(owner, repo, 1);
         if (run == null) {
             indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY });
             return;
@@ -235,7 +266,7 @@ async function githubActionsRefresh(settings, indicator) {
 
         indicator.setState({ state: StatusBarState.COMPLETED_SUCCESS });
 
-        utils.updatePackageSize(settings, run['_size_']);
+        updatePackageSize(settings, run['_size_']);
 
         const previousState = indicator.label.text;
         indicator.setLatestWorkflowRun(run['workflow_runs'][0]);
@@ -246,9 +277,9 @@ async function githubActionsRefresh(settings, indicator) {
             const ownerAndRepo = indicator.repositoryMenuItem.label.text;
 
             if (currentState === 'COMPLETED SUCCESS') {
-                widgets.showFinishNotification(ownerAndRepo, true);
+                showFinishNotification(ownerAndRepo, true);
             } else if (currentState === 'COMPLETED FAILURE') {
-                widgets.showFinishNotification(ownerAndRepo, false);
+                showFinishNotification(ownerAndRepo, false);
             }
         }
     } catch (error) {
@@ -276,13 +307,13 @@ class Extension {
         });
 
         this.settings.connect('changed::simple-mode', (settings, key) => {
-            const simpleMode = utils.simpleMode(settings);
-            this.indicator.setSimpleMode(simpleMode);
+            const _simpleMode = simpleMode(settings);
+            this.indicator.setSimpleMode(_simpleMode);
         });
 
         this.settings.connect('changed::colored-mode', (settings, key) => {
-            const coloredMode = utils.coloredMode(settings);
-            this.indicator.setColoredMode(coloredMode);
+            const _coloredMode = coloredMode(settings);
+            this.indicator.setColoredMode(_coloredMode);
         });
 
         this.initIndicator();
@@ -298,16 +329,16 @@ class Extension {
 
     async initIndicator() {
         try {
-            const isInstalledCli = await repository.isInstalledCli();
-            const isLogged = await repository.isLogged();
-            const simpleMode = utils.simpleMode(this.settings);
-            const coloredMode = utils.coloredMode(this.settings);
+            const _isInstalledCli = await isInstalledCli();
+            const _isLogged = await isLogged();
+            const _simpleMode = simpleMode(this.settings);
+            const _coloredMode = coloredMode(this.settings);
 
             this.indicator = new StatusBarIndicator({
-                simpleMode: simpleMode,
-                coloredMode: coloredMode,
-                isInstalledCli: isInstalledCli,
-                isLogged: isLogged,
+                simpleMode: _simpleMode,
+                coloredMode: _coloredMode,
+                isInstalledCli: _isInstalledCli,
+                isLogged: _isLogged,
                 refreshCallback: () => this.refresh(),
             });
             Main.panel.addToStatusArea(this._uuid, this.indicator);

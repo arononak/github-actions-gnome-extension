@@ -1,9 +1,10 @@
 'use strict';
 
+const { Gio } = imports.gi;
+
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const { GLib, Gio } = imports.gi;
-const ByteArray = imports.byteArray;
+const { executeCommandAsync } = Me.imports.utils;
 
 async function isGitHubCliInstalled() {
     return executeCommandAsync(['gh', '--version']);
@@ -20,7 +21,7 @@ async function logout() {
 async function downloadArtifact(downloadUrl, filename) {
     return new Promise(async (resolve, reject) => {
         try {
-            
+
             const isInstalledCli = await isGitHubCliInstalled();
             if (isInstalledCli == false) {
                 return false;
@@ -97,27 +98,6 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
         } catch (e) {
             logError(e);
             resolve(null);
-        }
-    });
-}
-
-async function executeCommandAsync(commandArray) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const proc = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
-
-            proc.communicate_utf8_async(null, null, (proc, res) => {
-                const [, stdout] = proc.communicate_utf8_finish(res);
-
-                if (!proc.get_successful()) {
-                    resolve(false);
-                }
-
-                resolve(true)
-            });
-        } catch (e) {
-            logError(e);
-            resolve(false);
         }
     });
 }

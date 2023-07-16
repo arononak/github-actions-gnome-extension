@@ -112,3 +112,24 @@ function isDarkTheme() {
 
     return theme.replace(/'/g, "").trim().includes("dark");
 }
+
+async function executeCommandAsync(commandArray) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const proc = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+
+            proc.communicate_utf8_async(null, null, (proc, res) => {
+                const [, stdout] = proc.communicate_utf8_finish(res);
+
+                if (!proc.get_successful()) {
+                    resolve(false);
+                }
+
+                resolve(true)
+            });
+        } catch (e) {
+            logError(e);
+            resolve(false);
+        }
+    });
+}

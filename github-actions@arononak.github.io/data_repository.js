@@ -10,6 +10,9 @@ var isInstalledCli = async () =>
 var isLogged = async () =>
     repository.isLogged();
 
+var logout = async () =>
+    repository.logout();
+
 var fetchUser = async () =>
     repository.executeGithubCliCommand('GET', '/user');
 

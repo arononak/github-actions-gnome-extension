@@ -6,7 +6,7 @@ const PopupMenu = imports.ui.popupMenu;
 
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
-const utils = Me.imports.utils;
+const { isDarkTheme } = Me.imports.utils;
 
 var AppIconColor = {
     WHITE: 1,
@@ -35,7 +35,7 @@ function createAppGioIcon(appIconType) {
 }
 
 function appIcon() {
-    const darkTheme = utils.isDarkTheme();
+    const darkTheme = isDarkTheme();
 
     return darkTheme
         ? createAppGioIcon(AppIconColor.WHITE)

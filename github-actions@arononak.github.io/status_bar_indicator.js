@@ -8,11 +8,30 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const _ = ExtensionUtils.gettext;
 
-const utils = Me.imports.utils;
-const widgets = Me.imports.widgets;
-const repository = Me.imports.data_repository;
-const cliInterface = Me.imports.local_cli_interface;
-const AppIconColor = Me.imports.widgets.AppIconColor;
+const {
+    isEmpty,
+    openUrl,
+    openInstallCliScreen,
+    openAuthScreen,
+    bytesToString,
+    fullDataConsumptionPerHour,
+} = Me.imports.utils;
+
+const {
+    AppIconColor,
+    appIcon,
+    createAppGioIcon,
+    createRoundButton,
+    ExpandedMenuItem,
+    createPopupImageMenuItem,
+    showConfirmDialog,
+    showNotification,
+} = Me.imports.widgets;
+
+const {
+    logout,
+    downloadArtifact,
+} = Me.imports.data_repository;
 
 var StatusBarState = {
     NOT_INSTALLED_CLI: {
@@ -140,7 +159,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     shouldShowCompletedNotification(previousState, currentState) {
-        return !utils.isEmpty(previousState)
+        return !isEmpty(previousState)
             && previousState !== StatusBarState.LOADING.text()
             && previousState !== StatusBarState.NOT_LOGGED.text()
             && previousState !== currentState;
@@ -176,11 +195,11 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return;
         }
 
-        this.icon.gicon = widgets.createAppGioIcon(appIconColor);
+        this.icon.gicon = createAppGioIcon(appIconColor);
     }
 
     refreshBoredIcon() {
-        this.boredButton.child = new St.Icon({ gicon: widgets.appIcon() });
+        this.boredButton.child = new St.Icon({ gicon: appIcon() });
     }
 
     refreshState() {
@@ -291,33 +310,33 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         /// Bored
-        this.boredButton = widgets.createRoundButton({ icon: new St.Icon({ gicon: widgets.createAppGioIcon(AppIconColor.WHITE) }) });
-        this.boredButton.connect('clicked', () => utils.openUrl('https://api.github.com/octocat'));
+        this.boredButton = createRoundButton({ icon: new St.Icon({ gicon: createAppGioIcon(AppIconColor.WHITE) }) });
+        this.boredButton.connect('clicked', () => openUrl('https://api.github.com/octocat'));
         this.rightBox.add_actor(this.boredButton);
 
         /// Settings
-        this.settingsItem = widgets.createRoundButton({ iconName: 'system-settings-symbolic' });
+        this.settingsItem = createRoundButton({ iconName: 'system-settings-symbolic' });
         this.settingsItem.connect('clicked', () => ExtensionUtils.openPrefs());
         this.rightBox.add_actor(this.settingsItem);
 
         if (this.isInstalledCli() == false) {
-            this.installButton = widgets.createRoundButton({ iconName: 'application-x-addon-symbolic' });
-            this.installButton.connect('clicked', () => utils.openInstallCliScreen());
+            this.installButton = createRoundButton({ iconName: 'application-x-addon-symbolic' });
+            this.installButton.connect('clicked', () => openInstallCliScreen());
             this.rightBox.add_actor(this.installButton);
         } else if (this.isLogged()) {
             /// Refresh
-            this.refreshButton = widgets.createRoundButton({ iconName: 'view-refresh-symbolic' });
+            this.refreshButton = createRoundButton({ iconName: 'view-refresh-symbolic' });
             this.refreshButton.connect('clicked', () => this.refreshCallback());
             this.rightBox.add_actor(this.refreshButton);
 
             /// Logout
-            this.logoutButton = widgets.createRoundButton({ iconName: 'system-log-out-symbolic' });
+            this.logoutButton = createRoundButton({ iconName: 'system-log-out-symbolic' });
             this.logoutButton.connect('clicked', async () => this.logout());
             this.rightBox.add_actor(this.logoutButton);
         } else {
             /// Login
-            this.loginButton = widgets.createRoundButton({ iconName: 'avatar-default-symbolic' });
-            this.loginButton.connect('clicked', () => utils.openAuthScreen());
+            this.loginButton = createRoundButton({ iconName: 'avatar-default-symbolic' });
+            this.loginButton.connect('clicked', () => openAuthScreen());
             this.rightBox.add_actor(this.loginButton);
         }
 
@@ -329,7 +348,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     async logout() {
-        const status = await cliInterface.logout();
+        const status = await logout();
 
         if (status == true) {
             this.setState({ state: StatusBarState.NOT_LOGGED });
@@ -339,36 +358,36 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
     initLoggedMenu() {
         /// User
-        this.userMenuItem = new widgets.ExpandedMenuItem(null, '');
+        this.userMenuItem = new ExpandedMenuItem(null, '');
         this.menu.addMenuItem(this.userMenuItem);
 
         /// 2 FA
-        this.twoFactorCallback = () => this.twoFactorEnabled == false ? utils.openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
-        this.twoFactorItem = widgets.createPopupImageMenuItem('', 'security-medium-symbolic', this.twoFactorCallback);
+        this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
+        this.twoFactorItem = createPopupImageMenuItem('', 'security-medium-symbolic', this.twoFactorCallback);
         this.userMenuItem.menuBox.add_actor(this.twoFactorItem);
 
         /// Minutes
-        this.minutesItem = widgets.createPopupImageMenuItem('', 'alarm-symbolic', () => { });
+        this.minutesItem = createPopupImageMenuItem('', 'alarm-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.minutesItem);
 
         /// Packages
-        this.packagesItem = widgets.createPopupImageMenuItem('', 'network-transmit-receive-symbolic', () => { });
+        this.packagesItem = createPopupImageMenuItem('', 'network-transmit-receive-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.packagesItem);
 
         /// Shared Storage
-        this.sharedStorageItem = widgets.createPopupImageMenuItem('', 'network-server-symbolic', () => { });
+        this.sharedStorageItem = createPopupImageMenuItem('', 'network-server-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.sharedStorageItem);
 
         /// Starred
-        this.starredMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', '');
+        this.starredMenuItem = new ExpandedMenuItem('starred-symbolic', '');
         this.menu.addMenuItem(this.starredMenuItem);
 
         /// Followers            
-        this.followersMenuItem = new widgets.ExpandedMenuItem('system-users-symbolic', '');
+        this.followersMenuItem = new ExpandedMenuItem('system-users-symbolic', '');
         this.menu.addMenuItem(this.followersMenuItem);
 
         /// Following
-        this.followingMenuItem = new widgets.ExpandedMenuItem('system-users-symbolic', '');
+        this.followingMenuItem = new ExpandedMenuItem('system-users-symbolic', '');
         this.menu.addMenuItem(this.followingMenuItem);
 
         if (!this.isCorrectState()) {
@@ -378,48 +397,48 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
         /// Repository
-        this.repositoryMenuItem = new widgets.ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => utils.openUrl(this.repositoryUrl));
+        this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => openUrl(this.repositoryUrl));
         this.menu.addMenuItem(this.repositoryMenuItem);
 
         /// Repository Latest Workflow Run
-        this.infoItem = widgets.createPopupImageMenuItem('', 'media-playback-start-symbolic', () => utils.openUrl(this.workflowRunUrl));
+        this.infoItem = createPopupImageMenuItem('', 'media-playback-start-symbolic', () => openUrl(this.workflowRunUrl));
         this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
 
         /// Repository isPrivate
-        this.repositoryPrivateItem = widgets.createPopupImageMenuItem('', 'changes-prevent-symbolic', () => { });
+        this.repositoryPrivateItem = createPopupImageMenuItem('', 'changes-prevent-symbolic', () => { });
         this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem);
 
         /// Repository isFork
-        this.repositoryForkItem = widgets.createPopupImageMenuItem('', 'folder-remote-symbolic', () => { });
+        this.repositoryForkItem = createPopupImageMenuItem('', 'folder-remote-symbolic', () => { });
         this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem);
 
         /// Branches
-        this.branchesMenuItem = new widgets.ExpandedMenuItem('media-playlist-consecutive-symbolic', '');
+        this.branchesMenuItem = new ExpandedMenuItem('media-playlist-consecutive-symbolic', '');
         this.menu.addMenuItem(this.branchesMenuItem);
 
         /// Stargazers
-        this.stargazersMenuItem = new widgets.ExpandedMenuItem('starred-symbolic', '');
+        this.stargazersMenuItem = new ExpandedMenuItem('starred-symbolic', '');
         this.menu.addMenuItem(this.stargazersMenuItem);
 
         /// Workflows
-        this.workflowsMenuItem = new widgets.ExpandedMenuItem('mail-send-receive-symbolic', '');
+        this.workflowsMenuItem = new ExpandedMenuItem('mail-send-receive-symbolic', '');
         this.menu.addMenuItem(this.workflowsMenuItem);
 
         /// Runs
-        this.runsMenuItem = new widgets.ExpandedMenuItem('media-playback-start-symbolic', '');
+        this.runsMenuItem = new ExpandedMenuItem('media-playback-start-symbolic', '');
         this.menu.addMenuItem(this.runsMenuItem);
 
         /// Releases
-        this.releasesMenuItem = new widgets.ExpandedMenuItem('folder-visiting-symbolic', '');
+        this.releasesMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '');
         this.menu.addMenuItem(this.releasesMenuItem);
 
         /// Artifacts
-        this.artifactsMenuItem = new widgets.ExpandedMenuItem('folder-visiting-symbolic', '');
+        this.artifactsMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '');
         this.menu.addMenuItem(this.artifactsMenuItem);
     }
 
     refreshTransfer(settings) {
-        this.networkLabel.text = utils.fullDataConsumptionPerHour(settings);
+        this.networkLabel.text = fullDataConsumptionPerHour(settings);
     }
 
     /// Setters
@@ -541,7 +560,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return {
                 "iconName": 'starred-symbolic',
                 "text": e['full_name'],
-                "callback": () => utils.openUrl(e['html_url']),
+                "callback": () => openUrl(e['html_url']),
             };
         }
 
@@ -556,7 +575,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return {
                 "iconName": 'system-users-symbolic',
                 "text": e['login'],
-                "callback": () => utils.openUrl(e['html_url']),
+                "callback": () => openUrl(e['html_url']),
             };
         }
 
@@ -571,7 +590,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return {
                 "iconName": 'system-users-symbolic',
                 "text": e['login'],
-                "callback": () => utils.openUrl(e['html_url']),
+                "callback": () => openUrl(e['html_url']),
             };
         }
 
@@ -588,7 +607,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return {
                 "iconName": 'starred-symbolic',
                 "text": e['login'],
-                "callback": () => utils.openUrl(e['html_url']),
+                "callback": () => openUrl(e['html_url']),
             };
         }
 
@@ -603,7 +622,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return {
                 "iconName": 'mail-send-receive-symbolic',
                 "text": e['name'],
-                "callback": () => utils.openUrl(e['html_url']),
+                "callback": () => openUrl(e['html_url']),
             };
         }
 
@@ -628,10 +647,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return {
                 "iconName": workflowRunConclusionIcon(conclusion),
                 "text": text,
-                "callback": () => utils.openUrl(htmlUrl),
+                "callback": () => openUrl(htmlUrl),
                 "endIconName": 'application-exit-symbolic',
                 "endIconCallback": () => {
-                    widgets.showConfirmDialog({
+                    showConfirmDialog({
                         title: 'Workflow run deletion',
                         description: 'Are you sure you want to delete this workflow run?',
                         itemTitle: date + ' - ' + displayTitle,
@@ -654,7 +673,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return {
                 "iconName": 'folder-visiting-symbolic',
                 "text": e['name'],
-                "callback": () => utils.openUrl(e['html_url']),
+                "callback": () => openUrl(e['html_url']),
             };
         }
 
@@ -667,18 +686,18 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     setArtifacts(artifacts) {
         function toItem(e) {
             const date = (new Date(e['created_at'])).toLocaleFormat('%d %b %Y');
-            const size = utils.bytesToString(e['size_in_bytes']);
+            const size = bytesToString(e['size_in_bytes']);
             const filename = e['name'];
             const downloadUrl = e['archive_download_url'];
             const labelName = date + ' - ' + filename + ' - (' + size + ')' + (e['expired'] == true ? ' - expired' : '');
 
             function callback() {
-                repository.downloadArtifact(downloadUrl, filename).then(success => {
+                downloadArtifact(downloadUrl, filename).then(success => {
                     try {
                         if (success === true) {
-                            widgets.showNotification('The artifact has been downloaded, check your home directory.' + '\n\n' + filename, true);
+                            showNotification('The artifact has been downloaded, check your home directory.' + '\n\n' + filename, true);
                         } else {
-                            widgets.showNotification('Something went wrong :/', false);
+                            showNotification('Something went wrong :/', false);
                         }
                     } catch (e) {
                         logError(e);
@@ -706,7 +725,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return {
                 "iconName": 'media-playlist-consecutive-symbolic',
                 "text": e['name'],
-                "callback": () => utils.openUrl(repositoryUrl),
+                "callback": () => openUrl(repositoryUrl),
                 "endIconName": e['protected'] ? 'changes-prevent-symbolic' : null,
             };
         }
