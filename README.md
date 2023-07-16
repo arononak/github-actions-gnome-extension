@@ -19,6 +19,8 @@
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview3.png?raw=true)
 
+---
+
 # 🔨 Manual configuration
 
 Ubuntu
@@ -81,9 +83,13 @@ make run
 make build
 ```
 
+---
+
 # [✅️ TODO](TODO.md)
 
 If you have any feedback, please contact me at arononak@gmail.com
+
+---
 
 # 📝 Copyright 2023 Aron Onak
 
