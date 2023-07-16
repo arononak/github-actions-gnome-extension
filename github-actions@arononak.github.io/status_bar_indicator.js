@@ -28,11 +28,6 @@ const {
     showNotification,
 } = Me.imports.widgets;
 
-const {
-    logout,
-    downloadArtifact,
-} = Me.imports.data_repository;
-
 var StatusBarState = {
     NOT_INSTALLED_CLI: {
         text: () => 'NOT INSTALLED CLI',
@@ -111,12 +106,17 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         isInstalledCli = false,
         isLogged = false,
         refreshCallback = () => { },
+        logoutCallback = () => { },
+        downloadArtifactCallback = (downloadUrl, filename) => { },
     }) {
         super();
-        this.refreshCallback = refreshCallback;
 
         this.simpleMode = simpleMode;
         this.coloredMode = coloredMode;
+
+        this.refreshCallback = refreshCallback;
+        this.logoutCallback = logoutCallback;
+        this.downloadArtifactCallback = downloadArtifactCallback;
 
         this.initStatusBarIndicator();
 
@@ -331,7 +331,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
             /// Logout
             this.logoutButton = createRoundButton({ iconName: 'system-log-out-symbolic' });
-            this.logoutButton.connect('clicked', async () => this.logout());
+            this.logoutButton.connect('clicked', async () => this.logoutCallback());
             this.rightBox.add_actor(this.logoutButton);
         } else {
             /// Login
@@ -684,6 +684,8 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     }
 
     setArtifacts(artifacts) {
+        const self = this;
+
         function toItem(e) {
             const date = (new Date(e['created_at'])).toLocaleFormat('%d %b %Y');
             const size = bytesToString(e['size_in_bytes']);
@@ -691,24 +693,12 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             const downloadUrl = e['archive_download_url'];
             const labelName = date + ' - ' + filename + ' - (' + size + ')' + (e['expired'] == true ? ' - expired' : '');
 
-            function callback() {
-                downloadArtifact(downloadUrl, filename).then(success => {
-                    try {
-                        if (success === true) {
-                            showNotification('The artifact has been downloaded, check your home directory.' + '\n\n' + filename, true);
-                        } else {
-                            showNotification('Something went wrong :/', false);
-                        }
-                    } catch (e) {
-                        logError(e);
-                    }
-                });
-            }
+
 
             return {
                 "iconName": 'folder-visiting-symbolic',
                 "text": labelName,
-                "callback": () => callback(),
+                "callback": () => self.downloadArtifactCallback(downloadUrl, filename),
             };
         }
 

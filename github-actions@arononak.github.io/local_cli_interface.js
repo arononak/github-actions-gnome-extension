@@ -21,7 +21,6 @@ async function logout() {
 async function downloadArtifact(downloadUrl, filename) {
     return new Promise(async (resolve, reject) => {
         try {
-
             const isInstalledCli = await isGitHubCliInstalled();
             if (isInstalledCli == false) {
                 return false;

@@ -41,6 +41,8 @@ const {
 } = Me.imports.widgets;
 
 const {
+    logout,
+    downloadArtifact,
     isInstalledCli,
     isLogged,
     fetchUser,
@@ -340,6 +342,20 @@ class Extension {
                 isInstalledCli: _isInstalledCli,
                 isLogged: _isLogged,
                 refreshCallback: () => this.refresh(),
+                logoutCallback: () => logout(),
+                downloadArtifactCallback: (downloadUrl, filename) => {
+                    downloadArtifact(downloadUrl, filename).then(success => {
+                        try {
+                            if (success === true) {
+                                showNotification('The artifact has been downloaded, check your home directory.' + '\n\n' + filename, true);
+                            } else {
+                                showNotification('Something went wrong :/', false);
+                            }
+                        } catch (e) {
+                            logError(e);
+                        }
+                    });
+                },
             });
             Main.panel.addToStatusArea(this._uuid, this.indicator);
             this.startRefreshing();
