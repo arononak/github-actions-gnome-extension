@@ -61,7 +61,7 @@ async function stateRefresh(settings, indicator) {
     try {
         indicator.refreshBoredIcon();
 
-        const isInstalledCli = repository.isInstalledCli();
+        const isInstalledCli = await repository.isInstalledCli();
         if (isInstalledCli == false) {
             indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI });
             return;
@@ -298,7 +298,7 @@ class Extension {
 
     async initIndicator() {
         try {
-            const isInstalledCli = repository.isInstalledCli();
+            const isInstalledCli = await repository.isInstalledCli();
             const isLogged = await repository.isLogged();
             const simpleMode = utils.simpleMode(this.settings);
             const coloredMode = utils.coloredMode(this.settings);

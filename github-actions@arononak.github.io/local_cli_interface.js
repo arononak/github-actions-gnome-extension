@@ -5,80 +5,28 @@ const Me = ExtensionUtils.getCurrentExtension();
 const { GLib, Gio } = imports.gi;
 const ByteArray = imports.byteArray;
 
+async function isGitHubCliInstalled() {
+    return executeCommandAsync(['gh', '--version']);
+}
+
 async function isLogged() {
-    const isInstalledCli = isGitHubCliInstalled();
-    if (isInstalledCli == false) {
-        return false;
-    }
-
-    return new Promise((resolve, reject) => {
-        try {
-            let [, stdout, stderr, status] = GLib.spawn_command_line_sync('gh auth token');
-
-            if (status !== 0) {
-                if (stderr instanceof Uint8Array) {
-                    stderr = ByteArray.toString(stderr); /// no auth token
-                }
-
-                resolve(false);
-                return;
-            }
-
-            if (stdout instanceof Uint8Array) {
-                stdout = ByteArray.toString(stdout);
-            }
-
-            resolve(true);
-        } catch (e) {
-            logError(e);
-            resolve(false);
-        }
-    });
+    return executeCommandAsync(['gh', 'auth', 'token']);
 }
 
 async function logout() {
-    const isInstalledCli = isGitHubCliInstalled();
-    if (isInstalledCli == false) {
-        return false;
-    }
-
-    return new Promise((resolve, reject) => {
-        try {
-            let [, stdout, stderr, status] = GLib.spawn_command_line_sync('gh auth logout --hostname github.com');
-
-            if (status !== 0) {
-                if (stderr instanceof Uint8Array) {
-                    stderr = ByteArray.toString(stderr);
-                    print(stderr);
-                }
-
-                resolve(false);
-                return;
-            }
-
-            if (stdout instanceof Uint8Array) {
-                stdout = ByteArray.toString(stdout);
-                print(stdout);
-            }
-
-            resolve(true);
-        } catch (e) {
-            logError(e);
-            resolve(false);
-        }
-    });
+    return executeCommandAsync(['gh', 'auth', 'logout', '--hostname', 'github.com']);
 }
 
-async function downloadArtifact(downloadUrl, filename) {    
-    const isInstalledCli = isGitHubCliInstalled();
-    if (isInstalledCli == false) {
-        return false;
-    }
-
-    const logged = await isLogged();
-
-    return new Promise((resolve, reject) => {
+async function downloadArtifact(downloadUrl, filename) {
+    return new Promise(async (resolve, reject) => {
         try {
+            
+            const isInstalledCli = await isGitHubCliInstalled();
+            if (isInstalledCli == false) {
+                return false;
+            }
+
+            const logged = await isLogged();
             if (!logged) {
                 resolve(false);
                 return;
@@ -107,15 +55,15 @@ async function downloadArtifact(downloadUrl, filename) {
 }
 
 async function executeGithubCliCommand(method, command, pagination = 100) {
-    const isInstalledCli = isGitHubCliInstalled();
-    if (isInstalledCli == false) {
-        return null;
-    }
-
-    const logged = await isLogged();
-
-    return new Promise((resolve, reject) => {
+    return new Promise(async (resolve, reject) => {
         try {
+            const isInstalledCli = await isGitHubCliInstalled();
+            if (isInstalledCli == false) {
+                return null;
+            }
+
+            const logged = await isLogged();
+
             if (!logged) {
                 resolve(null);
                 return;
@@ -153,11 +101,23 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
     });
 }
 
-function isGitHubCliInstalled() {
-    try {
-        const [success, stdout] = GLib.spawn_command_line_sync('gh --version');
-        return success;
-    } catch (e) {
-        return false;
-    }
+async function executeCommandAsync(commandArray) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const proc = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+
+            proc.communicate_utf8_async(null, null, (proc, res) => {
+                const [, stdout] = proc.communicate_utf8_finish(res);
+
+                if (!proc.get_successful()) {
+                    resolve(false);
+                }
+
+                resolve(true)
+            });
+        } catch (e) {
+            logError(e);
+            resolve(false);
+        }
+    });
 }
