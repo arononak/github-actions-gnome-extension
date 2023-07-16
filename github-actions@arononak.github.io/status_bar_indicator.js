@@ -15,6 +15,12 @@ const cliInterface = Me.imports.local_cli_interface;
 const AppIconColor = Me.imports.widgets.AppIconColor;
 
 var StatusBarState = {
+    NOT_INSTALLED_CLI: {
+        text: () => 'NOT INSTALLED CLI',
+        simpleModeShowText: true,
+        color: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.GRAY,
+    },
     NOT_LOGGED: {
         text: () => 'NOT LOGGED IN',
         simpleModeShowText: true,
@@ -83,6 +89,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
     constructor({
         simpleMode = false,
         coloredMode = false,
+        isInstalledCli = false,
         isLogged = false,
         refreshCallback = () => { },
     }) {
@@ -93,6 +100,12 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.coloredMode = coloredMode;
 
         this.initStatusBarIndicator();
+
+        if (isInstalledCli == false) {
+            this.setState({ state: StatusBarState.NOT_INSTALLED_CLI });
+            return;
+        }
+
         this.setState({ state: isLogged ? StatusBarState.LOADING : StatusBarState.NOT_LOGGED });
     }
 
@@ -106,8 +119,25 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.refreshState();
     };
 
-    isCorrectState = () => this.state == StatusBarState.COMPLETED_SUCCESS;
-    isLogged = () => this.state != StatusBarState.NOT_LOGGED;
+    isCorrectState = () => {
+        return this.state == StatusBarState.COMPLETED_SUCCESS;
+    }
+
+    isInstalledCli = () => {
+        return this.state != StatusBarState.NOT_INSTALLED_CLI;
+    }
+
+    isLogged = () => {
+        if (this.state == StatusBarState.NOT_INSTALLED_CLI) {
+            return false;
+        };
+
+        if (this.state == StatusBarState.NOT_LOGGED) {
+            return false;
+        };
+
+        return true;
+    }
 
     shouldShowCompletedNotification(previousState, currentState) {
         return !utils.isEmpty(previousState)
@@ -151,7 +181,6 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
     refreshBoredIcon() {
         this.boredButton.child = new St.Icon({ gicon: widgets.appIcon() });
-
     }
 
     refreshState() {
@@ -166,12 +195,22 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.state = state;
         this.menu.removeAll();
         this.initPopupMenu();
-        this.setLoadingTexts();
         this.updateGithubActionsStatus(state);
 
-        if (this.state != StatusBarState.LOADING) {
-            this.refreshCallback();
+        if (this.state == StatusBarState.NOT_INSTALLED_CLI) {
+            return;
         }
+
+        if (this.state == StatusBarState.NOT_LOGGED) {
+            return;
+        }
+
+        if (this.state == StatusBarState.LOADING) {
+            return;
+        }
+
+        this.setLoadingTexts();
+        this.refreshCallback();
     }
 
     setLoadingTexts() {
@@ -261,12 +300,16 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.settingsItem.connect('clicked', () => ExtensionUtils.openPrefs());
         this.rightBox.add_actor(this.settingsItem);
 
-        /// Refresh
-        this.refreshButton = widgets.createRoundButton({ iconName: 'view-refresh-symbolic' });
-        this.refreshButton.connect('clicked', () => this.refreshCallback());
-        this.rightBox.add_actor(this.refreshButton);
+        if (this.isInstalledCli() == false) {
+            this.installButton = widgets.createRoundButton({ iconName: 'application-x-addon-symbolic' });
+            this.installButton.connect('clicked', () => utils.openInstallCliScreen());
+            this.rightBox.add_actor(this.installButton);
+        } else if (this.isLogged()) {
+            /// Refresh
+            this.refreshButton = widgets.createRoundButton({ iconName: 'view-refresh-symbolic' });
+            this.refreshButton.connect('clicked', () => this.refreshCallback());
+            this.rightBox.add_actor(this.refreshButton);
 
-        if (this.isLogged()) {
             /// Logout
             this.logoutButton = widgets.createRoundButton({ iconName: 'system-log-out-symbolic' });
             this.logoutButton.connect('clicked', async () => this.logout());

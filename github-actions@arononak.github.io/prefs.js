@@ -18,7 +18,7 @@ function fillPreferencesWindow(window) {
         buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }),
         hexpand: true,
         halign: Gtk.Align.CENTER,
-        valign: Gtk.Align.CENTER
+        valign: Gtk.Align.CENTER,
     });
     ownerEntry.set_halign(Gtk.Align.END);
     ownerEntry.set_size_request(300, -1);
@@ -35,7 +35,7 @@ function fillPreferencesWindow(window) {
         buffer: new Gtk.EntryBuffer({ text: settings.get_string('repo') }),
         hexpand: true,
         halign: Gtk.Align.CENTER,
-        valign: Gtk.Align.CENTER
+        valign: Gtk.Align.CENTER,
     });
     repoEntry.set_halign(Gtk.Align.END);
     repoEntry.set_size_request(300, -1);

@@ -73,6 +73,14 @@ function isRepositoryEntered(settings) {
 
 /// Helpers ----------------------
 
+function exec(command) {
+    try {
+        GLib.spawn_command_line_async(command);
+    } catch (e) {
+        logError(e);
+    }
+}
+
 function bytesToString(size) {
     var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024));
     return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'KB', 'MB'][i];
@@ -90,12 +98,8 @@ function openUrl(url) {
     exec('xdg-open ' + url);
 }
 
-function exec(command) {
-    try {
-        GLib.spawn_command_line_async(command);
-    } catch (e) {
-        logError(e);
-    }
+function openInstallCliScreen() {
+    openUrl('https://github.com/cli/cli/blob/trunk/docs/install_linux.md');
 }
 
 function openAuthScreen() {

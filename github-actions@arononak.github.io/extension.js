@@ -61,6 +61,12 @@ async function stateRefresh(settings, indicator) {
     try {
         indicator.refreshBoredIcon();
 
+        const isInstalledCli = repository.isInstalledCli();
+        if (isInstalledCli == false) {
+            indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI });
+            return;
+        }
+
         const isLogged = await repository.isLogged();
         if (isLogged == false) {
             indicator.setState({ state: StatusBarState.NOT_LOGGED });
@@ -159,7 +165,7 @@ async function dataRefresh(settings, indicator) {
             sharedStorage,
             starredList,
             followers,
-            following
+            following,
         ];
 
         indicator.setUser(user);
@@ -292,6 +298,7 @@ class Extension {
 
     async initIndicator() {
         try {
+            const isInstalledCli = repository.isInstalledCli();
             const isLogged = await repository.isLogged();
             const simpleMode = utils.simpleMode(this.settings);
             const coloredMode = utils.coloredMode(this.settings);
@@ -299,6 +306,7 @@ class Extension {
             this.indicator = new StatusBarIndicator({
                 simpleMode: simpleMode,
                 coloredMode: coloredMode,
+                isInstalledCli: isInstalledCli,
                 isLogged: isLogged,
                 refreshCallback: () => this.refresh(),
             });

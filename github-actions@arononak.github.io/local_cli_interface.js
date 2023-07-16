@@ -6,6 +6,11 @@ const { GLib, Gio } = imports.gi;
 const ByteArray = imports.byteArray;
 
 async function isLogged() {
+    const isInstalledCli = isGitHubCliInstalled();
+    if (isInstalledCli == false) {
+        return false;
+    }
+
     return new Promise((resolve, reject) => {
         try {
             let [, stdout, stderr, status] = GLib.spawn_command_line_sync('gh auth token');
@@ -32,6 +37,11 @@ async function isLogged() {
 }
 
 async function logout() {
+    const isInstalledCli = isGitHubCliInstalled();
+    if (isInstalledCli == false) {
+        return false;
+    }
+
     return new Promise((resolve, reject) => {
         try {
             let [, stdout, stderr, status] = GLib.spawn_command_line_sync('gh auth logout --hostname github.com');
@@ -59,7 +69,12 @@ async function logout() {
     });
 }
 
-async function downloadArtifact(downloadUrl, filename) {
+async function downloadArtifact(downloadUrl, filename) {    
+    const isInstalledCli = isGitHubCliInstalled();
+    if (isInstalledCli == false) {
+        return false;
+    }
+
     const logged = await isLogged();
 
     return new Promise((resolve, reject) => {
@@ -92,6 +107,11 @@ async function downloadArtifact(downloadUrl, filename) {
 }
 
 async function executeGithubCliCommand(method, command, pagination = 100) {
+    const isInstalledCli = isGitHubCliInstalled();
+    if (isInstalledCli == false) {
+        return null;
+    }
+
     const logged = await isLogged();
 
     return new Promise((resolve, reject) => {
@@ -131,4 +151,13 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
             resolve(null);
         }
     });
+}
+
+function isGitHubCliInstalled() {
+    try {
+        const [success, stdout] = GLib.spawn_command_line_sync('gh --version');
+        return success;
+    } catch (e) {
+        return false;
+    }
 }

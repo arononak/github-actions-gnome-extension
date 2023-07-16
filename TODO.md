@@ -33,7 +33,7 @@
 - [x] GitHub icon octocat button
 - [x] GitHub green icon for success, blue for loading
 - [x] Branches / Tags
-- [ ] check githib cli installation
+- [x] check githib cli installation
 - [ ] Workflow run - cancel/rerun
 - [ ] give ma a star - request & notificaton
 - [x] Notification octocat icon
