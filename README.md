@@ -15,7 +15,7 @@
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_error.png?raw=true)
 
-## 🏞 Preview
+## 🏞 Preview [MORE](SCREENSHOTS.md)
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview3.png?raw=true)
 
