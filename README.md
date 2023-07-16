@@ -1,13 +1,13 @@
 [<img src="https://github.com/arononak/github-actions-gnome-extension/blob/12c985b40d027f1f455199bb3c134bf209008de5/get-it.png" height="100" align="right">](https://extensions.gnome.org/extension/5973/github-actions/)
 
-# Github Actions Gnome Extension 🧩
+# 🧩 Github Actions Gnome Extension
 
 [![Build GNOME Extension](https://github.com/arononak/github-actions-gnome-extension/actions/workflows/main.yml/badge.svg)](https://github.com/arononak/github-actions-gnome-extension/actions/workflows/main.yml)
 
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
 
-## 🏞 Badges
+#### 🏞 Badges
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_success.png?raw=true)
 
@@ -15,11 +15,11 @@
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_error.png?raw=true)
 
-## 🏞 Preview [MORE](SCREENSHOTS.md)
+#### 🏞 Preview [MORE](SCREENSHOTS.md)
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview3.png?raw=true)
 
-## 🔨 Manual Installation
+# 🔨 Manual configuration
 
 Ubuntu
 ```bash
@@ -28,14 +28,14 @@ sudo apt install gh
 ```
 [https://github.com/cli/cli/blob/trunk/docs/install_linux.md](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)
 
-## 🔒 Manual Login
+#### 🔒 Login
 
 ```bash
 gh auth login --scopes user,repo,workflow
 ```
 And configure owner and repository in extension settings.
 
-## 🔓 After logging in
+#### 🔓 After logging in
 
 Check the permissions with the command:
 ```bash
@@ -47,18 +47,22 @@ If any is missing, you can add it with the command:
 gh auth refresh --scopes user,repo,workflow
 ```
 
-## ▶️ Start a gnome session in a window
+---
+
+# 🛠 Development
+
+#### ▶️ Start a gnome session in a window
 ```bash
 make run
 ```
 
-## 🛠️ Build gnome-extensions pack
+#### 🔨 Build gnome-extensions pack
 
 ```bash
 make build
 ```
 
-## Project file structure diagram
+#### 📊 Project file structure diagram
 ```mermaid
 graph TD;
     prefs.js-->EXTENSION[GNOME EXTENSION]
@@ -78,11 +82,11 @@ graph TD;
     data_repository.js-->extension.js;
 ```
 
-## [✅️ TODO list](TODO.md)
+# [✅️ TODO](TODO.md)
 
 If you have any feedback, please contact me at arononak@gmail.com
 
-## 📝 Copyright 2023 Aron Onak
+# 📝 Copyright 2023 Aron Onak
 
 The GitHub logo is a trademark of Microsoft.
 
