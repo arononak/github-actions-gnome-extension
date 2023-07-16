@@ -21,6 +21,7 @@ function fillPreferencesWindow(window) {
         valign: Gtk.Align.CENTER
     });
     ownerEntry.set_halign(Gtk.Align.END);
+    ownerEntry.set_size_request(300, -1);
     const ownerRow = new Adw.ActionRow({ title: 'Owner' });
     ownerRow.add_suffix(ownerEntry);
     ownerRow.activatable_widget = ownerEntry;
@@ -37,6 +38,7 @@ function fillPreferencesWindow(window) {
         valign: Gtk.Align.CENTER
     });
     repoEntry.set_halign(Gtk.Align.END);
+    repoEntry.set_size_request(300, -1);
     const repoRow = new Adw.ActionRow({ title: 'Repo' });
     repoRow.add_suffix(repoEntry);
     repoRow.activatable_widget = repoEntry;
