@@ -77,7 +77,7 @@ graph TD;
 make run
 ```
 
-#### 🔨 Build gnome-extensions pack
+#### 🔨 Build gnome-extensions package
 
 ```bash
 make build
