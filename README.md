@@ -51,18 +51,6 @@ gh auth refresh --scopes user,repo,workflow
 
 # 🛠 Development
 
-#### ▶️ Start a gnome session in a window
-```bash
-make run
-```
-
-#### 🔨 Build gnome-extensions pack
-
-```bash
-make build
-```
-
-#### 📊 Project file structure diagram
 ```mermaid
 graph TD;
     prefs.js-->EXTENSION[GNOME EXTENSION]
@@ -80,6 +68,17 @@ graph TD;
     widgets.js-->extension.js;
     local_cli_interface.js-->data_repository.js;
     data_repository.js-->extension.js;
+```
+
+#### ▶️ Start a gnome session in a window
+```bash
+make run
+```
+
+#### 🔨 Build gnome-extensions pack
+
+```bash
+make build
 ```
 
 # [✅️ TODO](TODO.md)
