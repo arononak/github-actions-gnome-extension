@@ -22,6 +22,8 @@ var updatePagination = (settings, pagination) => settings.set_int('pagination', 
 var fetchSimpleMode = (settings) => settings.get_boolean('simple-mode');
 var fetchColoredMode = (settings) => settings.get_boolean('colored-mode');
 
+var formatDate = (date) => (new Date(date)).toLocaleFormat('%d.%m.%Y');
+
 function dataConsumptionPerHour(settings) {
     const packageSizeInBytes = settings.get_int('package-size-in-bytes');
     const refreshTime = fetchRefreshTime(settings);

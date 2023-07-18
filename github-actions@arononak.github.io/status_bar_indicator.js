@@ -15,6 +15,7 @@ const {
     openAuthScreen,
     bytesToString,
     fullDataConsumptionPerHour,
+    formatDate,
 } = Me.imports.utils;
 
 const {
@@ -243,6 +244,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.starredMenuItem?.setHeaderItemText(loadingText)
         this.followersMenuItem?.setHeaderItemText(loadingText);
         this.followingMenuItem?.setHeaderItemText(loadingText);
+        this.reposMenuItem?.setHeaderItemText(loadingText);
         this.repositoryMenuItem?.setHeaderItemText(loadingText);
         this.stargazersMenuItem?.setHeaderItemText(loadingText);
         this.workflowsMenuItem?.setHeaderItemText(loadingText);
@@ -392,6 +394,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.followingMenuItem = new ExpandedMenuItem('system-users-symbolic', '');
         this.menu.addMenuItem(this.followingMenuItem);
 
+        /// Repos
+        this.reposMenuItem = new ExpandedMenuItem('folder-symbolic', '');
+        this.menu.addMenuItem(this.reposMenuItem);
+
         if (!this.isCorrectState()) {
             return;
         }
@@ -455,7 +461,6 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const workflowRunUrl = latestRun["html_url"];
         const repositoryUrl = latestRun["repository"]["html_url"];
         const updatedAt = latestRun["updated_at"];
-        const date = (new Date(updatedAt)).toLocaleFormat('%d %b %Y');
 
         this.workflowRunUrl = workflowRunUrl;
         this.repositoryUrl = repositoryUrl;
@@ -488,7 +493,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         if (this.infoItem != null) {
-            this.infoItem.label.text = '(#' + runNumber + ')' + ' - ' + date + ' - ' + displayTitle;
+            this.infoItem.label.text = '(#' + runNumber + ')' + ' - ' + formatDate(updatedAt) + ' - ' + displayTitle;
         }
     }
 
@@ -504,7 +509,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         if (user != null) {
             userEmail = user['email'];
             userName = user['name'];
-            createdAt = new Date(user['created_at']);
+            createdAt = user['created_at'];
             userUrl = user['html_url'];
             avatarUrl = user['avatar_url'];
             twoFactorEnabled = user['two_factor_authentication'];
@@ -514,7 +519,7 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.twoFactorEnabled = twoFactorEnabled;
 
         const userLabelText = (userName == null || userEmail == null) ? 'Not logged' : userName + ' (' + userEmail + ')'
-            + '\n\nJoined GitHub on: ' + createdAt.toLocaleFormat('%d %b %Y');
+            + '\n\nJoined GitHub on: ' + formatDate(createdAt);
 
         if (this.userMenuItem != null) {
             this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl));
@@ -602,6 +607,28 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
     }
 
+    setUserRepos(repos) {
+        function toItem(e) {
+            const visibility = e['visibility'];
+            const createdAt = formatDate(e['created_at']);
+            const name = e['name'];
+
+            return {
+                "iconName": 'folder-symbolic',
+                "text": `${createdAt} - (${visibility}) - ${name}`,
+                "callback": () => openUrl(e['html_url']),
+            };
+        }
+
+        if (this.reposMenuItem != null) {
+            this.reposMenuItem.setHeaderItemText('Repos: ' + repos.length);
+            this.reposMenuItem.submitItems(
+                repos
+                    .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
+                    .map(e => toItem(e)));
+        }
+    }
+
     /// Separator ------------------------------------------------------
 
     setStargazers(stargazers) {
@@ -639,12 +666,12 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             const conclusion = e['conclusion'];
             const id = e['id'];
             const runNumber = e["run_number"];
-            const date = (new Date(e["updated_at"].toString())).toLocaleFormat('%d %b %Y');
+            const updatedAt = e["updated_at"];
             const displayTitle = e["display_title"];
             const name = e["name"];
             const htmlUrl = e['html_url'];
 
-            const text = '(#' + runNumber + ')' + ' - ' + date + ' - ' + displayTitle;
+            const text = '(#' + runNumber + ')' + ' - ' + formatDate(updatedAt) + ' - ' + displayTitle;
 
             return {
                 "iconName": workflowRunConclusionIcon(conclusion),
@@ -689,13 +716,11 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         const self = this;
 
         function toItem(e) {
-            const date = (new Date(e['created_at'])).toLocaleFormat('%d %b %Y');
+            const createdAt = e['created_at'];
             const size = bytesToString(e['size_in_bytes']);
             const filename = e['name'];
             const downloadUrl = e['archive_download_url'];
-            const labelName = date + ' - ' + filename + ' - (' + size + ')' + (e['expired'] == true ? ' - expired' : '');
-
-
+            const labelName = formatDate(createdAt) + ' - ' + filename + ' - (' + size + ')' + (e['expired'] == true ? ' - expired' : '');
 
             return {
                 "iconName": 'folder-visiting-symbolic',

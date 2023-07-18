@@ -29,6 +29,9 @@ var downloadArtifact = async (downloadUrl, filename) =>
     cliInterface.downloadArtifact(downloadUrl, filename);
 
 /// Pagoinated lists
+var fetchUserRepos = async (pagination) =>
+    cliInterface.executeGithubCliCommand('GET', '/user/repos', pagination);
+
 var fetchUserStarred = async (username, pagination) =>
     cliInterface.executeGithubCliCommand('GET', '/users/' + username + '/starred', pagination);
 

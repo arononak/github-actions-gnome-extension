@@ -51,6 +51,7 @@ const {
     fetchUserStarred,
     fetchUserFollowers,
     fetchUserFollowing,
+    fetchUserRepos,
     fetchWorkflows,
     fetchArtifacts,
     fetchStargazers,
@@ -128,6 +129,7 @@ async function fetchUserData(settings) {
             const starredList = await fetchUserStarred(login, pagination);
             const followers = await fetchUserFollowers(pagination);
             const following = await fetchUserFollowing(pagination);
+            const repos = await fetchUserRepos(pagination);
 
             resolve({
                 "user": user,
@@ -136,7 +138,8 @@ async function fetchUserData(settings) {
                 "sharedStorage": sharedStorage,
                 "starredList": starredList,
                 "followers": followers,
-                "following": following
+                "following": following,
+                "repos": repos,
             });
         } catch (error) {
             logError(error);
@@ -188,6 +191,7 @@ async function dataRefresh(settings, indicator) {
             starredList,
             followers,
             following,
+            repos,
         } = await fetchUserData(settings);
 
         const userObjects = [
@@ -198,6 +202,7 @@ async function dataRefresh(settings, indicator) {
             starredList,
             followers,
             following,
+            repos,
         ];
 
         indicator.setUser(user);
@@ -205,6 +210,7 @@ async function dataRefresh(settings, indicator) {
         indicator.setUserStarred(starredList);
         indicator.setUserFollowers(followers);
         indicator.setUserFollowing(following);
+        indicator.setUserRepos(repos);
 
         if (!indicator.isCorrectState()) {
             updateTransfer(settings, userObjects);
