@@ -96,7 +96,11 @@ function workflowRunConclusionIcon(conclusion) {
     }
 }
 
-var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
+var StatusBarIndicator = class extends PanelMenu.Button {
+    static {
+        GObject.registerClass(this);
+    }
+
     _init() {
         super._init(0.0, 'Github Action button', false);
     }
@@ -348,15 +352,6 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         if (this.isLogged()) {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             this.initLoggedMenu();
-        }
-    }
-
-    async logout() {
-        const status = await logout();
-
-        if (status == true) {
-            this.setState({ state: StatusBarState.NOT_LOGGED });
-            this.refreshCallback();
         }
     }
 

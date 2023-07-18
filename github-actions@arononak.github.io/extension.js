@@ -61,10 +61,10 @@ const {
     fetchBranches,
 } = Me.imports.data_repository;
 
-const statusBarIndicator = Me.imports.status_bar_indicator;
-const StatusBarState = Me.imports.status_bar_indicator.StatusBarState;
-
-const StatusBarIndicator = GObject.registerClass(statusBarIndicator.StatusBarIndicator);
+const {
+    StatusBarIndicator,
+    StatusBarState,
+} = Me.imports.status_bar_indicator;
 
 function updateTransfer(settings, jsonObjects) {
     const sizeInBytes = jsonObjects
@@ -346,8 +346,16 @@ class Extension {
                 coloredMode: coloredMode,
                 isInstalledCli: _isInstalledCli,
                 isLogged: _isLogged,
-                refreshCallback: () => this.refresh(),
-                logoutCallback: () => logout(),
+                refreshCallback: () => {
+                    this.refresh();
+                },
+                logoutCallback: async () => {
+                    const status = await logout();
+
+                    if (status == true) {
+                        indicator.setState({ state: StatusBarState.NOT_LOGGED });
+                    }
+                },
                 downloadArtifactCallback: (downloadUrl, filename) => {
                     downloadArtifact(downloadUrl, filename).then(success => {
                         try {
