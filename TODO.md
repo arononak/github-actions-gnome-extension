@@ -51,5 +51,5 @@
 - [ ] prefs.js - uppercase status ON/OFF
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
-
 - [ ] Multirepo
+- [ ] Data cache
