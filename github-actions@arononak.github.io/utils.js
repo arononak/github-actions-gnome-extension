@@ -4,27 +4,27 @@ const { GLib, Gio } = imports.gi;
 
 /// Data --------------------
 
-var packageSize = (settings) => bytesToString(settings.get_int('package-size-in-bytes'));
+var fetchPackageSize = (settings) => bytesToString(settings.get_int('package-size-in-bytes'));
 var updatePackageSize = (settings, sizeInBytes) => settings.set_int('package-size-in-bytes', sizeInBytes);
 
-var coldPackageSize = (settings) => bytesToString(settings.get_int('cold-package-size-in-bytes'));
+var fetchColdPackageSize = (settings) => bytesToString(settings.get_int('cold-package-size-in-bytes'));
 var updateColdPackageSize = (settings, sizeInBytes) => settings.set_int('cold-package-size-in-bytes', sizeInBytes);
 
-var refreshTime = (settings) => settings.get_int('refresh-time');
+var fetchRefreshTime = (settings) => settings.get_int('refresh-time');
 var updateRefreshTime = (settings, refreshTime) => settings.set_int('refresh-time', refreshTime);
 
-var refreshFullUpdateTime = (settings) => settings.get_int('full-refresh-time');
+var fetchRefreshFullUpdateTime = (settings) => settings.get_int('full-refresh-time');
 var updateFullRefreshTime = (settings, refreshTime) => settings.set_int('full-refresh-time', refreshTime);
 
-var pagination = (settings) => settings.get_int('pagination');
+var fetchPagination = (settings) => settings.get_int('pagination');
 var updatePagination = (settings, pagination) => settings.set_int('pagination', pagination);
 
-var simpleMode = (settings) => settings.get_boolean('simple-mode');
-var coloredMode = (settings) => settings.get_boolean('colored-mode');
+var fetchSimpleMode = (settings) => settings.get_boolean('simple-mode');
+var fetchColoredMode = (settings) => settings.get_boolean('colored-mode');
 
 function dataConsumptionPerHour(settings) {
     const packageSizeInBytes = settings.get_int('package-size-in-bytes');
-    const refreshTime = refreshTime(settings);
+    const refreshTime = fetchRefreshTime(settings);
     const dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60 * 60);
 
     return bytesToString(dataConsumptionPerHour) + '/h';
@@ -32,7 +32,7 @@ function dataConsumptionPerHour(settings) {
 
 function fullDataConsumptionPerHour(settings) {
     const packageSizeInBytes = settings.get_int('cold-package-size-in-bytes');
-    const refreshTime = refreshFullUpdateTime(settings);
+    const refreshTime = fetchRefreshFullUpdateTime(settings);
     const dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60);
 
     return bytesToString(dataConsumptionPerHour) + '/h';
@@ -40,11 +40,11 @@ function fullDataConsumptionPerHour(settings) {
 
 function fullDataConsumptionPerHour(settings) {
     const hotRefreshSize = settings.get_int('package-size-in-bytes');
-    const hotRefreshTime = refreshTime(settings);
+    const hotRefreshTime = fetchRefreshTime(settings);
     const hotConsumption = ((hotRefreshSize / hotRefreshTime) * 60 * 60);
 
     const coldRefreshSize = settings.get_int('cold-package-size-in-bytes');
-    const coldRefreshTime = refreshFullUpdateTime(settings);
+    const coldRefreshTime = fetchRefreshFullUpdateTime(settings);
     const coldConsumption = ((coldRefreshSize / coldRefreshTime) * 60);
 
     return bytesToString(hotConsumption + coldConsumption) + '/h';

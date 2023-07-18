@@ -6,10 +6,10 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
 const {
-    refreshTime,
-    packageSize,
-    coldPackageSize,
-    pagination,
+    fetchRefreshTime,
+    fetchPackageSize,
+    fetchColdPackageSize,
+    fetchPagination,
     openUrl,
 } = Me.imports.utils;
 
@@ -63,7 +63,7 @@ function fillPreferencesWindow(window) {
     refreshStatusSpinButton.margin_top = 8;
     refreshStatusSpinButton.margin_bottom = 8;
     refreshStatusSpinButton.adjustment = new Gtk.Adjustment({
-        value: refreshTime(settings),
+        value: fetchRefreshTime(settings),
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -72,7 +72,7 @@ function fillPreferencesWindow(window) {
     });
     const refreshStatusRow = new Adw.ActionRow({
         title: 'Github Actions (in seconds)',
-        subtitle: 'Package size: ' + packageSize(settings)
+        subtitle: 'Package size: ' + fetchPackageSize(settings)
     });
     refreshStatusRow.add_suffix(refreshStatusSpinButton);
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
@@ -84,7 +84,7 @@ function fillPreferencesWindow(window) {
     fullRefreshSpinButton.margin_top = 8;
     fullRefreshSpinButton.margin_bottom = 8;
     fullRefreshSpinButton.adjustment = new Gtk.Adjustment({
-        value: refreshTime(settings),
+        value: fetchRefreshTime(settings),
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -94,7 +94,7 @@ function fillPreferencesWindow(window) {
 
     const fullRefreshRow = new Adw.ActionRow({
         title: 'Data (in minutes)',
-        subtitle: 'Package size: ' + coldPackageSize(settings)
+        subtitle: 'Package size: ' + fetchColdPackageSize(settings)
     });
     fullRefreshRow.add_suffix(fullRefreshSpinButton);
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;
@@ -106,7 +106,7 @@ function fillPreferencesWindow(window) {
     paginationSpinButton.margin_top = 8;
     paginationSpinButton.margin_bottom = 8;
     paginationSpinButton.adjustment = new Gtk.Adjustment({
-        value: pagination(settings),
+        value: fetchPagination(settings),
         lower: 1,
         upper: 100,
         step_increment: 1,

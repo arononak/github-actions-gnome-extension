@@ -30,9 +30,9 @@ const {
     updatePackageSize,
     isRepositoryEntered,
     ownerAndRepo,
-    pagination,
-    simpleMode,
-    coloredMode,
+    fetchPagination,
+    fetchSimpleMode,
+    fetchColoredMode,
 } = Me.imports.utils;
 
 const {
@@ -119,15 +119,15 @@ async function fetchUserData(settings) {
         try {
             const user = await fetchUser();
 
-            const _pagination = pagination(settings);
+            const pagination = fetchPagination(settings);
             const login = user['login'];
 
             const minutes = await fetchUserBillingActionsMinutes(login);
             const packages = await fetchUserBillingPackages(login);
             const sharedStorage = await fetchUserBillingSharedStorage(login);
-            const starredList = await fetchUserStarred(login, _pagination);
-            const followers = await fetchUserFollowers(_pagination);
-            const following = await fetchUserFollowing(_pagination);
+            const starredList = await fetchUserStarred(login, pagination);
+            const followers = await fetchUserFollowers(pagination);
+            const following = await fetchUserFollowing(pagination);
 
             resolve({
                 "user": user,
@@ -149,14 +149,14 @@ async function fetchRepoData(settings) {
     return new Promise(async (resolve, reject) => {
         try {
             const { owner, repo } = ownerAndRepo(settings);
-            const _pagination = pagination(settings);
+            const pagination = fetchPagination(settings);
 
-            const workflows = await fetchWorkflows(owner, repo, _pagination);
-            const artifacts = await fetchArtifacts(owner, repo, _pagination);
-            const stargazers = await fetchStargazers(owner, repo, _pagination);
-            const runs = await fetchWorkflowRuns(owner, repo, _pagination);
-            const releases = await fetchReleases(owner, repo, _pagination);
-            const branches = await fetchBranches(owner, repo, _pagination);
+            const workflows = await fetchWorkflows(owner, repo, pagination);
+            const artifacts = await fetchArtifacts(owner, repo, pagination);
+            const stargazers = await fetchStargazers(owner, repo, pagination);
+            const runs = await fetchWorkflowRuns(owner, repo, pagination);
+            const releases = await fetchReleases(owner, repo, pagination);
+            const branches = await fetchBranches(owner, repo, pagination);
 
             resolve({
                 "workflows": workflows,
@@ -308,13 +308,13 @@ class Extension {
         });
 
         this.settings.connect('changed::simple-mode', (settings, key) => {
-            const _simpleMode = simpleMode(settings);
-            this.indicator.setSimpleMode(_simpleMode);
+            const simpleMode = fetchSimpleMode(settings);
+            this.indicator.setSimpleMode(simpleMode);
         });
 
         this.settings.connect('changed::colored-mode', (settings, key) => {
-            const _coloredMode = coloredMode(settings);
-            this.indicator.setColoredMode(_coloredMode);
+            const coloredMode = fetchColoredMode(settings);
+            this.indicator.setColoredMode(coloredMode);
         });
 
         this.initIndicator();
@@ -332,12 +332,12 @@ class Extension {
         try {
             const _isInstalledCli = await isInstalledCli();
             const _isLogged = await isLogged();
-            const _simpleMode = simpleMode(this.settings);
-            const _coloredMode = coloredMode(this.settings);
+            const simpleMode = fetchSimpleMode(this.settings);
+            const coloredMode = fetchColoredMode(this.settings);
 
             this.indicator = new StatusBarIndicator({
-                simpleMode: _simpleMode,
-                coloredMode: _coloredMode,
+                simpleMode: simpleMode,
+                coloredMode: coloredMode,
                 isInstalledCli: _isInstalledCli,
                 isLogged: _isLogged,
                 refreshCallback: () => this.refresh(),
