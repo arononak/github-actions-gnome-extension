@@ -212,9 +212,10 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         this.state = state;
+        this.updateGithubActionsStatus(state);
+
         this.menu.removeAll();
         this.initPopupMenu();
-        this.updateGithubActionsStatus(state);
 
         if (this.state == StatusBarState.NOT_INSTALLED_CLI) {
             return;
@@ -224,11 +225,12 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
             return;
         }
 
+        this.setLoadingTexts();
+
         if (this.state == StatusBarState.LOADING) {
             return;
         }
 
-        this.setLoadingTexts();
         this.refreshCallback();
     }
 
