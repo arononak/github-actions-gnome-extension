@@ -37,7 +37,6 @@ const {
 
 const {
     showNotification,
-    showFinishNotification,
 } = Me.imports.widgets;
 
 const {
@@ -279,9 +278,9 @@ async function githubActionsRefresh(settings, indicator) {
             const ownerAndRepo = indicator.repositoryMenuItem.label.text;
 
             if (currentState === 'COMPLETED SUCCESS') {
-                showFinishNotification(ownerAndRepo, true);
+                showNotification(ownerAndRepo + ' - The workflow has been successfully built', true);
             } else if (currentState === 'COMPLETED FAILURE') {
-                showFinishNotification(ownerAndRepo, false);
+                showNotification(description + ' - Failed :/', false);
             }
         }
     } catch (error) {

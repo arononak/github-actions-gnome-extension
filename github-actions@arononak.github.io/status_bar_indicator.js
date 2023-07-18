@@ -21,9 +21,9 @@ const {
     AppIconColor,
     appIcon,
     createAppGioIcon,
-    createRoundButton,
+    RoundedButton,
     ExpandedMenuItem,
-    createPopupImageMenuItem,
+    IconPopupMenuItem,
     showConfirmDialog,
     showNotification,
 } = Me.imports.widgets;
@@ -312,32 +312,32 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         }
 
         /// Bored
-        this.boredButton = createRoundButton({ icon: new St.Icon({ gicon: createAppGioIcon(AppIconColor.WHITE) }) });
+        this.boredButton = new RoundedButton({ icon: new St.Icon({ gicon: createAppGioIcon(AppIconColor.WHITE) }) });
         this.boredButton.connect('clicked', () => openUrl('https://api.github.com/octocat'));
         this.rightBox.add_actor(this.boredButton);
 
         /// Settings
-        this.settingsItem = createRoundButton({ iconName: 'system-settings-symbolic' });
+        this.settingsItem = new RoundedButton({ iconName: 'system-settings-symbolic' });
         this.settingsItem.connect('clicked', () => ExtensionUtils.openPrefs());
         this.rightBox.add_actor(this.settingsItem);
 
         if (this.isInstalledCli() == false) {
-            this.installButton = createRoundButton({ iconName: 'application-x-addon-symbolic' });
+            this.installButton = new RoundedButton({ iconName: 'application-x-addon-symbolic' });
             this.installButton.connect('clicked', () => openInstallCliScreen());
             this.rightBox.add_actor(this.installButton);
         } else if (this.isLogged()) {
             /// Refresh
-            this.refreshButton = createRoundButton({ iconName: 'view-refresh-symbolic' });
+            this.refreshButton = new RoundedButton({ iconName: 'view-refresh-symbolic' });
             this.refreshButton.connect('clicked', () => this.refreshCallback());
             this.rightBox.add_actor(this.refreshButton);
 
             /// Logout
-            this.logoutButton = createRoundButton({ iconName: 'system-log-out-symbolic' });
+            this.logoutButton = new RoundedButton({ iconName: 'system-log-out-symbolic' });
             this.logoutButton.connect('clicked', async () => this.logoutCallback());
             this.rightBox.add_actor(this.logoutButton);
         } else {
             /// Login
-            this.loginButton = createRoundButton({ iconName: 'avatar-default-symbolic' });
+            this.loginButton = new RoundedButton({ iconName: 'avatar-default-symbolic' });
             this.loginButton.connect('clicked', () => openAuthScreen());
             this.rightBox.add_actor(this.loginButton);
         }
@@ -365,19 +365,19 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
 
         /// 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
-        this.twoFactorItem = createPopupImageMenuItem('', 'security-medium-symbolic', this.twoFactorCallback);
+        this.twoFactorItem = new IconPopupMenuItem('', 'security-medium-symbolic', this.twoFactorCallback);
         this.userMenuItem.menuBox.add_actor(this.twoFactorItem);
 
         /// Minutes
-        this.minutesItem = createPopupImageMenuItem('', 'alarm-symbolic', () => { });
+        this.minutesItem = new IconPopupMenuItem('', 'alarm-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.minutesItem);
 
         /// Packages
-        this.packagesItem = createPopupImageMenuItem('', 'network-transmit-receive-symbolic', () => { });
+        this.packagesItem = new IconPopupMenuItem('', 'network-transmit-receive-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.packagesItem);
 
         /// Shared Storage
-        this.sharedStorageItem = createPopupImageMenuItem('', 'network-server-symbolic', () => { });
+        this.sharedStorageItem = new IconPopupMenuItem('', 'network-server-symbolic', () => { });
         this.userMenuItem.menuBox.add_actor(this.sharedStorageItem);
 
         /// Starred
@@ -403,15 +403,15 @@ var StatusBarIndicator = class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this.repositoryMenuItem);
 
         /// Repository Latest Workflow Run
-        this.infoItem = createPopupImageMenuItem('', 'media-playback-start-symbolic', () => openUrl(this.workflowRunUrl));
+        this.infoItem = new IconPopupMenuItem('', 'media-playback-start-symbolic', () => openUrl(this.workflowRunUrl));
         this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
 
         /// Repository isPrivate
-        this.repositoryPrivateItem = createPopupImageMenuItem('', 'changes-prevent-symbolic', () => { });
+        this.repositoryPrivateItem = new IconPopupMenuItem('', 'changes-prevent-symbolic', () => { });
         this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem);
 
         /// Repository isFork
-        this.repositoryForkItem = createPopupImageMenuItem('', 'folder-remote-symbolic', () => { });
+        this.repositoryForkItem = new IconPopupMenuItem('', 'folder-remote-symbolic', () => { });
         this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem);
 
         /// Branches

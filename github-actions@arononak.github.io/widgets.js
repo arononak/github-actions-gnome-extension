@@ -42,41 +42,41 @@ function appIcon() {
         : createAppGioIcon(AppIconColor.BLACK);
 }
 
-function showFinishNotification(ownerAndRepo, success) {
-    const description = ownerAndRepo + (success === true ? ' - The workflow has been successfully built' : ' - Failed :/');
-    showNotification(description, success);
-}
-
-function createPopupImageMenuItem(text, startIconName, itemCallback, endIconName, endIconCallback) {
-    const item = new PopupMenu.PopupImageMenuItem(text, startIconName);
-    item.connect('activate', () => itemCallback());
-
-    if (endIconName != null) {
-        const icon = new IconButton(endIconName, () => endIconCallback())
-        const box = new St.BoxLayout({
-            style_class: 'github-actions-top-box',
-            vertical: false,
-            x_expand: true,
-            x_align: Clutter.ActorAlign.END,
-            y_align: Clutter.ActorAlign.CENTER,
-        });
-        box.add(icon);
-        item.insert_child_at_index(box, 100);
+var RoundedButton = class extends St.Button {
+    static {
+        GObject.registerClass(this);
     }
 
-    return item;
-}
+    constructor({ icon, iconName }) {
+        super({ style_class: 'button github-actions-button-action' });
 
-function createRoundButton({ icon, iconName }) {
-    const button = new St.Button({ style_class: 'button github-actions-button-action' });
-    if (icon != null) {
-        button.child = icon;
+        if (icon != null) {
+            this.child = icon;
+        }
+
+        if (iconName != null) {
+            this.child = new St.Icon({ icon_name: iconName });
+        }
     }
-    if (iconName != null) {
-        button.child = new St.Icon({ icon_name: iconName });
+};
+
+var IconButton = class extends St.Button {
+    static {
+        GObject.registerClass(this);
     }
-    return button;
-}
+
+    constructor(iconName, callback) {
+        super();
+
+        this.connect('clicked', callback);
+        this.set_can_focus(true);
+        this.set_child(new St.Icon({ style_class: 'popup-menu-icon', iconName }));
+    }
+
+    setIcon(icon) {
+        this.child.set_icon_name(icon);
+    }
+};
 
 var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
     static {
@@ -114,7 +114,7 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
         this.menuBox.remove_all_children();
 
         items.forEach((i) => {
-            this.menuBox.add_actor(createPopupImageMenuItem(i['text'], i['iconName'], i['callback'], i["endIconName"], i["endIconCallback"]));
+            this.menuBox.add_actor(new IconPopupMenuItem(i['text'], i['iconName'], i['callback'], i["endIconName"], i["endIconCallback"]));
         });
     }
 
@@ -136,22 +136,30 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
     }
 }
 
-var IconButton = class extends St.Button {
+var IconPopupMenuItem = class extends PopupMenu.PopupImageMenuItem {
     static {
         GObject.registerClass(this);
     }
 
-    constructor(iconName, callback) {
-        super();
-        this.connect('clicked', callback);
-        this.set_can_focus(true);
-        this.set_child(new St.Icon({ style_class: 'popup-menu-icon', iconName }));
-    }
+    constructor(text, startIconName, itemCallback, endIconName, endIconCallback) {
+        super(text, startIconName);
 
-    setIcon(icon) {
-        this.child.set_icon_name(icon);
+        this.connect('activate', () => itemCallback());
+
+        if (endIconName != null) {
+            const icon = new IconButton(endIconName, () => endIconCallback())
+            const box = new St.BoxLayout({
+                style_class: 'github-actions-top-box',
+                vertical: false,
+                x_expand: true,
+                x_align: Clutter.ActorAlign.END,
+                y_align: Clutter.ActorAlign.CENTER,
+            });
+            box.add(icon);
+            this.insert_child_at_index(box, 100);
+        }
     }
-};
+}
 
 function showNotification(message, success) {
     const MessageTray = imports.ui.messageTray;
