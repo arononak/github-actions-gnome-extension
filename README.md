@@ -92,4 +92,6 @@ If you have any feedback, please contact me at arononak@gmail.com
 
 # 📝 © Copyright 2023 Aron Onak
 
-> :warning: The GitHub logo is a trademark of Microsoft.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
+> **Warning**<br>
+> The GitHub logo is a trademark of Microsoft.<br>
+> This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
