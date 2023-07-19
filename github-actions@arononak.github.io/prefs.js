@@ -10,6 +10,8 @@ const {
     fetchPackageSize,
     fetchColdPackageSize,
     fetchPagination,
+    fetchOwner,
+    fetchRepo,
     openUrl,
 } = Me.imports.utils;
 
@@ -23,7 +25,7 @@ function fillPreferencesWindow(window) {
 
     /// Repository
     const ownerEntry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer({ text: settings.get_string('owner') }),
+        buffer: new Gtk.EntryBuffer({ text: fetchOwner(settings) }),
         hexpand: true,
         halign: Gtk.Align.CENTER,
         valign: Gtk.Align.CENTER,
@@ -35,12 +37,12 @@ function fillPreferencesWindow(window) {
     ownerRow.activatable_widget = ownerEntry;
     ownerEntry.connect('changed', (widget) => {
         if (ownerEntry.get_buffer().text) {
-            settings.set_string('owner', ownerEntry.get_buffer().text);
+            updateOwner(settings, ownerEntry.get_buffer().text);
         }
     });
 
     const repoEntry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer({ text: settings.get_string('repo') }),
+        buffer: new Gtk.EntryBuffer({ text: fetchRepo(settings) }),
         hexpand: true,
         halign: Gtk.Align.CENTER,
         valign: Gtk.Align.CENTER,
@@ -52,7 +54,7 @@ function fillPreferencesWindow(window) {
     repoRow.activatable_widget = repoEntry;
     repoEntry.connect('changed', (widget) => {
         if (repoEntry.get_buffer().text) {
-            settings.set_string('repo', repoEntry.get_buffer().text);
+            updateRepo(settings, repoEntry.get_buffer().text);
         }
     });
 

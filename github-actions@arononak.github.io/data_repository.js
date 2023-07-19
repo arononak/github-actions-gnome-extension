@@ -25,6 +25,9 @@ var fetchUserBillingPackages = async (username) =>
 var fetchUserBillingSharedStorage = async (username) =>
     cliInterface.executeGithubCliCommand('GET', '/users/' + username + '/settings/billing/shared-storage');
 
+var fetchUserRepo = async (owner, repo) =>
+    cliInterface.executeGithubCliCommand('GET', '/repos/' + owner + '/' + repo);
+
 var downloadArtifact = async (downloadUrl, filename) =>
     cliInterface.downloadArtifact(downloadUrl, filename);
 

@@ -26,13 +26,17 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
 const {
-    updateColdPackageSize,
-    updatePackageSize,
     isRepositoryEntered,
-    ownerAndRepo,
     fetchPagination,
     fetchSimpleMode,
     fetchColoredMode,
+    updateColdPackageSize,
+    updatePackageSize,
+    updateOwner,
+    updateRepo,
+    ownerAndRepo,
+    fetchRefreshTime,
+    fetchRefreshFullUpdateTime,
 } = Me.imports.utils;
 
 const {
@@ -56,9 +60,10 @@ const {
     fetchArtifacts,
     fetchStargazers,
     fetchWorkflowRuns,
-    deleteWorkflowRun,
     fetchReleases,
     fetchBranches,
+    fetchUserRepo,
+    deleteWorkflowRun,
 } = Me.imports.data_repository;
 
 const {
@@ -154,6 +159,7 @@ async function fetchRepoData(settings) {
             const { owner, repo } = ownerAndRepo(settings);
             const pagination = fetchPagination(settings);
 
+            const userRepo = await fetchUserRepo(owner, repo);
             const workflows = await fetchWorkflows(owner, repo, pagination);
             const artifacts = await fetchArtifacts(owner, repo, pagination);
             const stargazers = await fetchStargazers(owner, repo, pagination);
@@ -162,6 +168,7 @@ async function fetchRepoData(settings) {
             const branches = await fetchBranches(owner, repo, pagination);
 
             resolve({
+                "userRepo": userRepo,
                 "workflows": workflows,
                 "artifacts": artifacts,
                 "stargazers": stargazers,
@@ -210,7 +217,15 @@ async function dataRefresh(settings, indicator) {
         indicator.setUserStarred(starredList);
         indicator.setUserFollowers(followers);
         indicator.setUserFollowing(following);
-        indicator.setUserRepos(repos);
+        indicator.setUserRepos(repos, (owner, repo) => {
+            updateOwner(settings, owner);
+            updateRepo(settings, repo);
+
+            showNotification(`${owner}/${repo} - set as watched !`, true);
+
+            githubActionsRefresh(settings, indicator);
+            dataRefresh(settings, indicator);
+        });
 
         if (!indicator.isCorrectState()) {
             updateTransfer(settings, userObjects);
@@ -218,6 +233,7 @@ async function dataRefresh(settings, indicator) {
         }
 
         const {
+            userRepo,
             workflows,
             artifacts,
             stargazers,
@@ -227,6 +243,7 @@ async function dataRefresh(settings, indicator) {
         } = await fetchRepoData(settings);
 
         const repoObjects = [
+            userRepo,
             workflows,
             artifacts,
             stargazers,
@@ -237,6 +254,7 @@ async function dataRefresh(settings, indicator) {
 
         updateTransfer(settings, [...userObjects, ...repoObjects]);
 
+        indicator.setWatchedRepo(userRepo);
         indicator.setWorkflows(workflows['workflows']);
         indicator.setArtifacts(artifacts['artifacts']);
         indicator.setStargazers(stargazers);
@@ -271,12 +289,17 @@ async function githubActionsRefresh(settings, indicator) {
             return;
         }
 
-        indicator.setState({ state: StatusBarState.COMPLETED_SUCCESS });
-
         updatePackageSize(settings, run['_size_']);
 
+        const runs = run['workflow_runs'];
+        if (runs.length == 0) {
+            indicator.setState({ state: StatusBarState.REPO_WITHOUT_ACTIONS });
+            return;
+        }
+
+        indicator.setState({ state: StatusBarState.COMPLETED_SUCCESS });
         const previousState = indicator.label.text;
-        indicator.setLatestWorkflowRun(run['workflow_runs'][0]);
+        indicator.setLatestWorkflowRun(runs[0]);
         const currentState = indicator.label.text;
 
         /// Notification
@@ -380,8 +403,8 @@ class Extension {
     async startRefreshing() {
         try {
             const stateRefreshTime = 1 * 1000;
-            const githubActionsRefreshTime = this.settings.get_int('refresh-time') * 1000;
-            const dataRefreshTime = this.settings.get_int('full-refresh-time') * 60 * 1000;
+            const githubActionsRefreshTime = fetchRefreshTime(this.settings) * 1000;
+            const dataRefreshTime = fetchRefreshFullUpdateTime(this.settings) * 60 * 1000;
 
             this.stateRefreshInterval = setInterval(
                 () => stateRefresh(this.settings, this.indicator),
