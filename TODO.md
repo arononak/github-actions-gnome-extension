@@ -1,4 +1,4 @@
-# 📋 TODO list
+2# 📋 TODO list
 
 ## 🚀 Version 1 - one-way communication
 
@@ -46,7 +46,7 @@
 - [ ] Organization billings
 - [ ] EN / PL - translations
 - [ ] No internet connection
-- [ ] No workflow run - status resolve
+- [x] No workflow run - status resolve
 - [ ] gists
 - [ ] prefs.js - uppercase status ON/OFF
 
