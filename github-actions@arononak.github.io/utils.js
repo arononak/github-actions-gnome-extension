@@ -4,6 +4,12 @@ const { GLib, Gio } = imports.gi;
 
 /// Data --------------------
 
+var fetchOwner = (settings) => settings.get_string('owner');
+var updateOwner = (settings, owner) => settings.set_string('owner', owner);
+
+var fetchRepo = (settings) => settings.get_string('repo');
+var updateRepo = (settings, repo) => settings.set_string('repo', repo);
+
 var fetchPackageSize = (settings) => bytesToString(settings.get_int('package-size-in-bytes'));
 var updatePackageSize = (settings, sizeInBytes) => settings.set_int('package-size-in-bytes', sizeInBytes);
 
@@ -53,14 +59,13 @@ function fullDataConsumptionPerHour(settings) {
 }
 
 function ownerAndRepo(settings) {
-    const owner = settings.get_string('owner');
-    const repo = settings.get_string('repo');
+    const owner = fetchOwner(settings);
+    const repo = fetchRepo(settings);
 
     return {
         owner: owner,
         repo: repo,
     };
-
 }
 
 function isRepositoryEntered(settings) {

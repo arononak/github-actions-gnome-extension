@@ -39,8 +39,10 @@ function conclusionIconName(conclusion) {
         return 'emblem-default';
     } else if (conclusion == 'failure') {
         return 'emblem-unreadable';
-    } else {
+    } else if (conculstion == 'in_progress') {
         return 'emblem-synchronizing-symbolic';
+    } else {
+        return 'dialog-question-symbolic';
     }
 }
 
@@ -88,6 +90,7 @@ var IconButton = class extends St.Button {
     }
 };
 
+/// Parent item
 var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
     static {
         GObject.registerClass(this);
@@ -124,7 +127,17 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
         this.menuBox.remove_all_children();
 
         items.forEach((i) => {
-            this.menuBox.add_actor(new IconPopupMenuItem(i['text'], i['iconName'], i['callback'], i["endIconName"], i["endIconCallback"]));
+            this.menuBox.add_actor(
+                new IconPopupMenuItem({
+                    text: i['text'],
+                    startIconName: i['iconName'],
+                    itemCallback: i['callback'],
+                    endIconName: i["endIconName"],
+                    endIconCallback: i["endIconCallback"],
+                    endButtonText: i["endButtonText"],
+                    endButtonCallback: i["endButtonCallback"],
+                }),
+            );
         });
     }
 
@@ -146,28 +159,54 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
     }
 }
 
+/// Child item
 var IconPopupMenuItem = class extends PopupMenu.PopupImageMenuItem {
     static {
         GObject.registerClass(this);
     }
 
-    constructor(text, startIconName, itemCallback, endIconName, endIconCallback) {
+    constructor({
+        text = '',
+        startIconName,
+        itemCallback = () => { },
+        endIconName,
+        endIconCallback,
+        endButtonText,
+        endButtonCallback,
+    }) {
         super(text, startIconName);
 
         this.connect('activate', () => itemCallback());
 
         if (endIconName != null) {
-            const icon = new IconButton(endIconName, () => endIconCallback())
-            const box = new St.BoxLayout({
-                style_class: 'github-actions-top-box',
-                vertical: false,
-                x_expand: true,
-                x_align: Clutter.ActorAlign.END,
-                y_align: Clutter.ActorAlign.CENTER,
-            });
-            box.add(icon);
+            const icon = new IconButton(endIconName, () => endIconCallback());
+
+            const box = this.createEndAlignBox();
             this.insert_child_at_index(box, 100);
+            box.add(icon);
+
+            return;
         }
+
+        if (endButtonText != null) {
+            const button = new St.Button({ label: endButtonText });
+            button.connect('clicked', endButtonCallback);
+
+            const box = this.createEndAlignBox();
+            this.insert_child_at_index(box, 100);
+            box.add(button);
+
+            return;
+        }
+    }
+
+    createEndAlignBox() {
+        return new St.BoxLayout({
+            vertical: false,
+            x_expand: true,
+            x_align: Clutter.ActorAlign.END,
+            y_align: Clutter.ActorAlign.CENTER,
+        });
     }
 }
 
@@ -175,9 +214,20 @@ function showNotification(message, success) {
     const MessageTray = imports.ui.messageTray;
     const Main = imports.ui.main;
 
-    const source = new MessageTray.Source('Github Actions', success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic');
+    const source = new MessageTray.Source(
+        'Github Actions',
+        success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic',
+    );
+
     Main.messageTray.add(source);
-    const notification = new MessageTray.Notification(source, success === true ? 'Success!' : 'Error', message, { gicon: appIcon() });
+
+    const notification = new MessageTray.Notification(
+        source,
+        success === true ? 'Success!' : 'Error',
+        message,
+        { gicon: appIcon() },
+    );
+
     source.showNotification(notification);
 
     const file = Gio.File.new_for_path(

@@ -67,11 +67,11 @@ var StatusBarState = {
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.BLUE,
     },
-    COMPLETED_SUCCESS: {
-        text: () => 'COMPLETED SUCCESS',
-        simpleModeShowText: false,
-        color: AppIconColor.WHITE,
-        coloredModeColor: AppIconColor.GREEN,
+    REPO_WITHOUT_ACTIONS: {
+        text: () => 'REPO WITHOUT ACTIONS',
+        simpleModeShowText: true,
+        color: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.GRAY,
     },
     COMPLETED_CANCELED: {
         text: () => 'COMPLETED CANCELED',
@@ -84,6 +84,12 @@ var StatusBarState = {
         simpleModeShowText: false,
         color: AppIconColor.RED,
         coloredModeColor: AppIconColor.RED,
+    },
+    COMPLETED_SUCCESS: {
+        text: () => 'COMPLETED SUCCESS',
+        simpleModeShowText: false,
+        color: AppIconColor.WHITE,
+        coloredModeColor: AppIconColor.GREEN,
     },
 }
 
@@ -135,7 +141,11 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     };
 
     isCorrectState = () => {
-        return this.state == StatusBarState.COMPLETED_SUCCESS;
+        return this.state == StatusBarState.IN_PROGRESS
+            || this.state == StatusBarState.REPO_WITHOUT_ACTIONS
+            || this.state == StatusBarState.COMPLETED_CANCELED
+            || this.state == StatusBarState.COMPLETED_FAILURE
+            || this.state == StatusBarState.COMPLETED_SUCCESS;
     }
 
     isInstalledCli = () => {
@@ -206,7 +216,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         if (this.state == state && forceUpdate == false) {
             return;
         }
-
+        
         this.state = state;
         this.updateGithubActionsStatus(state);
 
@@ -233,8 +243,6 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     setLoadingTexts() {
         const loadingText = StatusBarState.LOADING.text();
 
-        this.updateGithubActionsStatus(StatusBarState.LOADING);
-
         this.userMenuItem?.setHeaderItemText(loadingText)
         this.starredMenuItem?.setHeaderItemText(loadingText)
         this.followersMenuItem?.setHeaderItemText(loadingText);
@@ -253,7 +261,6 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.sharedStorageItem?.label.set_text(loadingText);
         this.repositoryPrivateItem?.label.set_text(loadingText);
         this.repositoryForkItem?.label.set_text(loadingText);
-        this.infoItem?.label.set_text(loadingText);
         this.networkLabel?.set_text(loadingText);
     }
 
@@ -353,19 +360,22 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
         /// 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
-        this.twoFactorItem = new IconPopupMenuItem('', 'security-medium-symbolic', this.twoFactorCallback);
+        this.twoFactorItem = new IconPopupMenuItem({
+            startIconName: 'security-medium-symbolic',
+            itemCallback: this.twoFactorCallback,
+        });
         this.userMenuItem.menuBox.add_actor(this.twoFactorItem);
 
         /// Minutes
-        this.minutesItem = new IconPopupMenuItem('', 'alarm-symbolic', () => { });
+        this.minutesItem = new IconPopupMenuItem({ startIconName: 'alarm-symbolic' });
         this.userMenuItem.menuBox.add_actor(this.minutesItem);
 
         /// Packages
-        this.packagesItem = new IconPopupMenuItem('', 'network-transmit-receive-symbolic', () => { });
+        this.packagesItem = new IconPopupMenuItem({ startIconName: 'network-transmit-receive-symbolic' });
         this.userMenuItem.menuBox.add_actor(this.packagesItem);
 
         /// Shared Storage
-        this.sharedStorageItem = new IconPopupMenuItem('', 'network-server-symbolic', () => { });
+        this.sharedStorageItem = new IconPopupMenuItem({ startIconName: 'network-server-symbolic' });
         this.userMenuItem.menuBox.add_actor(this.sharedStorageItem);
 
         /// Starred
@@ -394,16 +404,12 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => openUrl(this.repositoryUrl));
         this.menu.addMenuItem(this.repositoryMenuItem);
 
-        /// Repository Latest Workflow Run
-        this.infoItem = new IconPopupMenuItem('', 'media-playback-start-symbolic', () => openUrl(this.workflowRunUrl));
-        this.repositoryMenuItem.menuBox.add_actor(this.infoItem);
-
         /// Repository isPrivate
-        this.repositoryPrivateItem = new IconPopupMenuItem('', 'changes-prevent-symbolic', () => { });
+        this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: 'changes-prevent-symbolic' });
         this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem);
 
         /// Repository isFork
-        this.repositoryForkItem = new IconPopupMenuItem('', 'folder-remote-symbolic', () => { });
+        this.repositoryForkItem = new IconPopupMenuItem({ startIconName: 'folder-remote-symbolic' });
         this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem);
 
         /// Branches
@@ -436,70 +442,33 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     /// Setters
-    setLatestWorkflowRun(latestRun) {
-        const status = latestRun["status"];
-        const conclusion = latestRun["conclusion"] == null ? '' : latestRun["conclusion"];
-        const displayTitle = latestRun["display_title"];
-        const runNumber = latestRun["run_number"];
-        const ownerAndRepo = latestRun["repository"]["full_name"];
-        const isPrivate = latestRun["repository"]["private"];
-        const isFork = latestRun["repository"]["fork"];
-        const workflowRunUrl = latestRun["html_url"];
-        const repositoryUrl = latestRun["repository"]["html_url"];
-        const updatedAt = latestRun["updated_at"];
+    setLatestWorkflowRun(run) {
+        const conclusion = run["conclusion"];
 
-        this.workflowRunUrl = workflowRunUrl;
-        this.repositoryUrl = repositoryUrl;
-
-        const currentState = (status.toUpperCase() + ' ' + conclusion.toUpperCase()).replace('_', ' ');
-
-        if (currentState == 'COMPLETED SUCCESS') {
+        if (conclusion == 'success') {
             this.updateGithubActionsStatus(StatusBarState.COMPLETED_SUCCESS);
-        } else if (currentState == 'COMPLETED FAILURE') {
+        } else if (conclusion == 'failure') {
             this.updateGithubActionsStatus(StatusBarState.COMPLETED_FAILURE);
-        } else if (currentState == 'COMPLETED CANCELLED') {
+        } else if (conclusion == 'cancelled') {
             this.updateGithubActionsStatus(StatusBarState.COMPLETED_CANCELED);
-        } else {
+        } else if (conclusion == 'in_progress') {
             this.updateGithubActionsStatus(StatusBarState.IN_PROGRESS);
         }
 
         if (this.repositoryMenuItem != null) {
-            const iconName = conclusionIconName(conclusion);
-            this.repositoryMenuItem.label.text = ownerAndRepo;
-            this.repositoryMenuItem.setStartIcon({ iconName: iconName });
-            this.infoItem.setIcon(iconName);
-        }
-
-        if (this.repositoryPrivateItem != null) {
-            this.repositoryPrivateItem.label.text = 'Private: ' + isPrivate;
-        }
-
-        if (this.repositoryForkItem != null) {
-            this.repositoryForkItem.label.text = 'Fork: ' + isFork;
-        }
-
-        if (this.infoItem != null) {
-            this.infoItem.label.text = '(#' + runNumber + ')' + ' - ' + formatDate(updatedAt) + ' - ' + displayTitle;
+            this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName(conclusion) });
         }
     }
 
     // User ------------------------------------------------------------
 
     setUser(user) {
-        let userEmail;
-        let userName;
-        let createdAt;
-        let userUrl;
-        let avatarUrl;
-        let twoFactorEnabled;
-        if (user != null) {
-            userEmail = user['email'];
-            userName = user['name'];
-            createdAt = user['created_at'];
-            userUrl = user['html_url'];
-            avatarUrl = user['avatar_url'];
-            twoFactorEnabled = user['two_factor_authentication'];
-        }
+        const userEmail = user['email'];
+        const userName = user['name'];
+        const createdAt = user['created_at'];
+        const userUrl = user['html_url'];
+        const avatarUrl = user['avatar_url'];
+        const twoFactorEnabled = user['two_factor_authentication'];
 
         this.userUrl = userUrl;
         this.twoFactorEnabled = twoFactorEnabled;
@@ -593,16 +562,19 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
     }
 
-    setUserRepos(repos) {
+    setUserRepos(repos, onWatchCallback) {
         function toItem(e) {
             const visibility = e['visibility'];
             const createdAt = formatDate(e['created_at']);
             const name = e['name'];
+            const owner = e['owner']['login'];
 
             return {
                 "iconName": 'folder-symbolic',
                 "text": `${createdAt} - (${visibility}) - ${name}`,
                 "callback": () => openUrl(e['html_url']),
+                "endButtonText": 'Watch',
+                "endButtonCallback": () => onWatchCallback(owner, name),
             };
         }
 
@@ -616,6 +588,21 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     /// Separator ------------------------------------------------------
+
+    setWatchedRepo(repo) {
+        if (this.repositoryMenuItem != null) {
+            this.repositoryMenuItem.label.text = repo['full_name'];
+            this.repositoryUrl = repo['html_url'];
+        }
+
+        if (this.repositoryPrivateItem != null) {
+            this.repositoryPrivateItem.label.text = 'Private: ' + (repo["private"] == true).toString();
+        }
+
+        if (this.repositoryForkItem != null) {
+            this.repositoryForkItem.label.text = 'Fork: ' + (repo["fork"] == true).toString();
+        }
+    }
 
     setStargazers(stargazers) {
         function toItem(e) {
@@ -657,7 +644,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             const name = e["name"];
             const htmlUrl = e['html_url'];
 
-            const text = '(#' + runNumber + ')' + ' - ' + formatDate(updatedAt) + ' - ' + displayTitle;
+            const date = formatDate(updatedAt);
+            const text = '(#' + runNumber + ')' + ' - ' + date + ' - ' + displayTitle;
 
             const iconName = conclusionIconName(conclusion);
 
