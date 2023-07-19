@@ -1,4 +1,4 @@
-2# 📋 TODO list
+# 📋 TODO list
 
 ## 🚀 Version 1 - one-way communication
 
