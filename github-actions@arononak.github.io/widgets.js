@@ -34,6 +34,16 @@ function createAppGioIcon(appIconType) {
     }
 }
 
+function conclusionIconName(conclusion) {
+    if (conclusion == 'success') {
+        return 'emblem-default';
+    } else if (conclusion == 'failure') {
+        return 'emblem-unreadable';
+    } else {
+        return 'emblem-synchronizing-symbolic';
+    }
+}
+
 function appIcon() {
     const darkTheme = isDarkTheme();
 

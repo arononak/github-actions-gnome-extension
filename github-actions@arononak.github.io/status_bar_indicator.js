@@ -27,6 +27,7 @@ const {
     IconPopupMenuItem,
     showConfirmDialog,
     showNotification,
+    conclusionIconName,
 } = Me.imports.widgets;
 
 var StatusBarState = {
@@ -84,16 +85,6 @@ var StatusBarState = {
         color: AppIconColor.RED,
         coloredModeColor: AppIconColor.RED,
     },
-}
-
-function workflowRunConclusionIcon(conclusion) {
-    if (conclusion == 'success') {
-        return 'emblem-default';
-    } else if (conclusion == 'failure') {
-        return 'emblem-unreadable';
-    } else {
-        return 'emblem-synchronizing';
-    }
 }
 
 var StatusBarIndicator = class extends PanelMenu.Button {
@@ -473,10 +464,10 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.repositoryMenuItem != null) {
-            const conclusionIconName = workflowRunConclusionIcon(conclusion);
+            const iconName = conclusionIconName(conclusion);
             this.repositoryMenuItem.label.text = ownerAndRepo;
-            this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName });
-            this.infoItem.setIcon(conclusionIconName);
+            this.repositoryMenuItem.setStartIcon({ iconName: iconName });
+            this.infoItem.setIcon(iconName);
         }
 
         if (this.repositoryPrivateItem != null) {
@@ -668,8 +659,10 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
             const text = '(#' + runNumber + ')' + ' - ' + formatDate(updatedAt) + ' - ' + displayTitle;
 
+            const iconName = conclusionIconName(conclusion);
+
             return {
-                "iconName": workflowRunConclusionIcon(conclusion),
+                "iconName": iconName,
                 "text": text,
                 "callback": () => openUrl(htmlUrl),
                 "endIconName": 'application-exit-symbolic',
@@ -679,7 +672,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                         description: 'Are you sure you want to delete this workflow run?',
                         itemTitle: date + ' - ' + displayTitle,
                         itemDescription: name,
-                        iconName: workflowRunConclusionIcon(conclusion),
+                        iconName: iconName,
                         onConfirm: () => onDeleteWorkflow(id, (displayTitle + ' ' + name))
                     });
                 }
