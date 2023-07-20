@@ -28,6 +28,7 @@ const Me = ExtensionUtils.getCurrentExtension();
 const {
     isRepositoryEntered,
     fetchPagination,
+    fetchUppercaseMode,
     fetchSimpleMode,
     fetchColoredMode,
     updateColdPackageSize,
@@ -346,6 +347,11 @@ class Extension {
             this.indicator.setColoredMode(coloredMode);
         });
 
+        this.settings.connect('changed::uppercase-mode', (settings, key) => {
+            const uppercaseMode = fetchUppercaseMode(settings);
+            this.indicator.setUppercaseMode(uppercaseMode);
+        });
+
         this.initIndicator();
     }
 
@@ -363,10 +369,12 @@ class Extension {
             const _isLogged = await isLogged();
             const simpleMode = fetchSimpleMode(this.settings);
             const coloredMode = fetchColoredMode(this.settings);
+            const uppercaseMode = fetchUppercaseMode(this.settings);
 
             this.indicator = new StatusBarIndicator({
                 simpleMode: simpleMode,
                 coloredMode: coloredMode,
+                uppercaseMode: uppercaseMode,
                 isInstalledCli: _isInstalledCli,
                 isLogged: _isLogged,
                 refreshCallback: () => {

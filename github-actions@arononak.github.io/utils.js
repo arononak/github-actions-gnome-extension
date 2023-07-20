@@ -27,6 +27,7 @@ var updatePagination = (settings, pagination) => settings.set_int('pagination', 
 
 var fetchSimpleMode = (settings) => settings.get_boolean('simple-mode');
 var fetchColoredMode = (settings) => settings.get_boolean('colored-mode');
+var fetchUppercaseMode = (settings) => settings.get_boolean('uppercase-mode');
 
 var formatDate = (date) => (new Date(date)).toLocaleFormat('%d.%m.%Y');
 

@@ -32,61 +32,61 @@ const {
 
 var StatusBarState = {
     NOT_INSTALLED_CLI: {
-        text: () => 'NOT INSTALLED CLI',
+        text: () => 'Not installed CLI',
         simpleModeShowText: true,
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.GRAY,
     },
     NOT_LOGGED: {
-        text: () => 'NOT LOGGED IN',
+        text: () => 'Not logged in',
         simpleModeShowText: true,
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.GRAY,
     },
     LOADING: {
-        text: () => 'LOADING',
+        text: () => 'Loading',
         simpleModeShowText: false,
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.BLUE,
     },
     LOGGED_NOT_CHOOSED_REPO: {
-        text: () => 'NO REPO ENTERED',
+        text: () => 'No repo entered',
         simpleModeShowText: true,
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.RED,
     },
     INCORRECT_REPOSITORY: {
-        text: () => 'INCORRECT REPOSITORY',
+        text: () => 'Incorrect repository',
         simpleModeShowText: true,
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.RED,
     },
     IN_PROGRESS: {
-        text: () => 'IN PROGRESS',
+        text: () => 'In progress',
         simpleModeShowText: false,
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.BLUE,
     },
     REPO_WITHOUT_ACTIONS: {
-        text: () => 'REPO WITHOUT ACTIONS',
+        text: () => 'Repo without actions',
         simpleModeShowText: true,
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.GRAY,
     },
     COMPLETED_CANCELED: {
-        text: () => 'COMPLETED CANCELED',
+        text: () => 'Cancelled',
         simpleModeShowText: false,
         color: AppIconColor.RED,
         coloredModeColor: AppIconColor.RED,
     },
     COMPLETED_FAILURE: {
-        text: () => 'COMPLETED FAILURE',
+        text: () => 'Failure',
         simpleModeShowText: false,
         color: AppIconColor.RED,
         coloredModeColor: AppIconColor.RED,
     },
     COMPLETED_SUCCESS: {
-        text: () => 'COMPLETED SUCCESS',
+        text: () => 'Success',
         simpleModeShowText: false,
         color: AppIconColor.WHITE,
         coloredModeColor: AppIconColor.GREEN,
@@ -105,6 +105,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     constructor({
         simpleMode = false,
         coloredMode = false,
+        uppercaseMode = false,
         isInstalledCli = false,
         isLogged = false,
         refreshCallback = () => { },
@@ -115,6 +116,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
         this.simpleMode = simpleMode;
         this.coloredMode = coloredMode;
+        this.uppercaseMode = uppercaseMode;
 
         this.refreshCallback = refreshCallback;
         this.logoutCallback = logoutCallback;
@@ -137,6 +139,11 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
     setColoredMode = (mode) => {
         this.coloredMode = mode;
+        this.refreshState();
+    };
+
+    setUppercaseMode = (mode) => {
+        this.uppercaseMode = mode;
         this.refreshState();
     };
 
@@ -175,7 +182,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         if (this.simpleMode == true && statusBarState.simpleModeShowText == false) {
             this.label.text = '';
         } else {
-            this.label.text = statusBarState.text();
+            this.label.text = this.uppercaseMode == true
+            ? statusBarState.text().toUpperCase()
+            : statusBarState.text();
         }
 
         this.setStatusIconColor(this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color);

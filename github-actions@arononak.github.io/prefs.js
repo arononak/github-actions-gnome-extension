@@ -13,6 +13,9 @@ const {
     fetchOwner,
     fetchRepo,
     openUrl,
+    fetchSimpleMode,
+    fetchColoredMode,
+    fetchUppercaseMode,
 } = Me.imports.utils;
 
 const { VERSION } = Me.imports.version;
@@ -20,7 +23,7 @@ const { VERSION } = Me.imports.version;
 function init() { }
 
 function fillPreferencesWindow(window) {
-    window.set_default_size(550, 820);
+    window.set_default_size(550, 870);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
 
     /// Repository
@@ -140,7 +143,7 @@ function fillPreferencesWindow(window) {
     refreshStatusGroup.add(paginationRow);
 
     /// Appearance
-    const simpleModeSwitch = new Gtk.Switch({ active: settings.get_boolean('simple-mode'), valign: Gtk.Align.CENTER });
+    const simpleModeSwitch = new Gtk.Switch({ active: fetchSimpleMode(settings), valign: Gtk.Align.CENTER });
     settings.bind('simple-mode', simpleModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
     const simpleModeRow = new Adw.ActionRow({
         title: 'Simple mode',
@@ -149,7 +152,7 @@ function fillPreferencesWindow(window) {
     simpleModeRow.add_suffix(simpleModeSwitch);
     simpleModeRow.activatable_widget = simpleModeSwitch;
 
-    const coloredModeSwitch = new Gtk.Switch({ active: settings.get_boolean('colored-mode'), valign: Gtk.Align.CENTER });
+    const coloredModeSwitch = new Gtk.Switch({ active: fetchColoredMode(settings), valign: Gtk.Align.CENTER });
     settings.bind('colored-mode', coloredModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
     const coloredModeRow = new Adw.ActionRow({
         title: 'Colored mode',
@@ -158,9 +161,18 @@ function fillPreferencesWindow(window) {
     coloredModeRow.add_suffix(coloredModeSwitch);
     coloredModeRow.activatable_widget = coloredModeSwitch;
 
+    const uppercaseModeSwitch = new Gtk.Switch({ active: fetchUppercaseMode(settings), valign: Gtk.Align.CENTER });
+    settings.bind('uppercase-mode', uppercaseModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
+    const uppercaseModeRow = new Adw.ActionRow({
+        title: 'UpperCase mode',
+    });
+    uppercaseModeRow.add_suffix(uppercaseModeSwitch);
+    uppercaseModeRow.activatable_widget = uppercaseModeSwitch;
+
     const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' });
     appearanceGroup.add(simpleModeRow);
     appearanceGroup.add(coloredModeRow);
+    appearanceGroup.add(uppercaseModeRow);
 
     /// Other
     const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
