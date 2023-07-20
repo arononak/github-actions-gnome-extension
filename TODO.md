@@ -24,7 +24,7 @@
 - [x] Pagination, more than 30
 - [x] Pagination, status=1
 - [x] 2modes - SIMPLE / EXTENDED - status tip on touch
-- [ ] Create repository, repository list
+- [x] repository list
 - [x] Remove workflow run icon
 - [x] commit link
 - [x] extension.js - divide to smaller files
