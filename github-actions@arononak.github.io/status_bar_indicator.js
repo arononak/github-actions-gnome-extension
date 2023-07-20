@@ -457,6 +457,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
         if (this.repositoryMenuItem != null) {
             this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName(conclusion) });
+            this.repositoryMenuItem.icon.icon_size = 22;
         }
     }
 
@@ -592,7 +593,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
     setWatchedRepo(repo) {
         if (this.repositoryMenuItem != null) {
-            this.repositoryMenuItem.label.text = repo['full_name'];
+            this.repositoryMenuItem.label.style = 'margin-left: 4px';
+            this.repositoryMenuItem.label.text = `${repo['full_name']}\n\nCreated at: ${formatDate(repo['created_at'])}`;
+
             this.repositoryUrl = repo['html_url'];
         }
 
