@@ -48,7 +48,7 @@
 - [ ] No internet connection
 - [x] No workflow run - status resolve
 - [ ] gists
-- [ ] prefs.js - uppercase status ON/OFF
+- [x] prefs.js - uppercase status ON/OFF
 - [ ] prefs.js - refactor
 - [ ] README.md gif preview
 - [ ] ColoredMode - repoisotryItem - symbolic
