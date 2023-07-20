@@ -12,6 +12,8 @@ const {
     fetchPagination,
     fetchOwner,
     fetchRepo,
+    updateOwner,
+    updateRepo,
     openUrl,
     fetchSimpleMode,
     fetchColoredMode,
@@ -39,8 +41,10 @@ function fillPreferencesWindow(window) {
     ownerRow.add_suffix(ownerEntry);
     ownerRow.activatable_widget = ownerEntry;
     ownerEntry.connect('changed', (widget) => {
-        if (ownerEntry.get_buffer().text) {
-            updateOwner(settings, ownerEntry.get_buffer().text);
+        const owner = ownerEntry.get_buffer().text;
+
+        if (owner) {
+            updateOwner(settings, owner);
         }
     });
 
@@ -56,8 +60,10 @@ function fillPreferencesWindow(window) {
     repoRow.add_suffix(repoEntry);
     repoRow.activatable_widget = repoEntry;
     repoEntry.connect('changed', (widget) => {
-        if (repoEntry.get_buffer().text) {
-            updateRepo(settings, repoEntry.get_buffer().text);
+        const repo = repoEntry.get_buffer().text;
+
+        if (repo) {
+            updateRepo(settings, repo);
         }
     });
 
