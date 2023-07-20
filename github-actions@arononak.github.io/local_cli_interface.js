@@ -69,10 +69,10 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
                 return;
             }
 
-            print(method + ' ' + command);
+            print(`${method} ${command}`);
 
             const proc = Gio.Subprocess.new(
-                ['gh', 'api', '--method', method, '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', command + '?per_page=' + pagination],
+                ['gh', 'api', '--method', method, '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', `${command}?per_page=${pagination}`],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             );
 

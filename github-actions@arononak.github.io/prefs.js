@@ -74,7 +74,7 @@ function fillPreferencesWindow(window) {
     });
     const refreshStatusRow = new Adw.ActionRow({
         title: 'Github Actions (in seconds)',
-        subtitle: 'Package size: ' + fetchPackageSize(settings)
+        subtitle: `Package size: ${fetchPackageSize(settings)}`,
     });
     refreshStatusRow.add_suffix(refreshStatusSpinButton);
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
@@ -96,7 +96,7 @@ function fillPreferencesWindow(window) {
 
     const fullRefreshRow = new Adw.ActionRow({
         title: 'Data (in minutes)',
-        subtitle: 'Package size: ' + fetchColdPackageSize(settings)
+        subtitle: `Package size: ${fetchColdPackageSize(settings)}`,
     });
     fullRefreshRow.add_suffix(fullRefreshSpinButton);
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;

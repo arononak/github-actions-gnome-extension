@@ -86,7 +86,7 @@ async function removeWorkflowRun(settings, indicator, runId, runName) {
 
         if (status == 'success') {
             await dataRefresh(settings, indicator);
-            showNotification('The Workflow run was successfully deleted.' + '\n\n' + runName, true);
+            showNotification(`The Workflow run was successfully deleted.\n\n${runName}`, true);
         } else {
             showNotification('Something went wrong :/', false);
         }
@@ -307,9 +307,9 @@ async function githubActionsRefresh(settings, indicator) {
             const ownerAndRepo = indicator.repositoryMenuItem.label.text;
 
             if (currentState === 'COMPLETED SUCCESS') {
-                showNotification(ownerAndRepo + ' - The workflow has been successfully built', true);
+                showNotification(`${ownerAndRepo} - The workflow has been successfully built`, true);
             } else if (currentState === 'COMPLETED FAILURE') {
-                showNotification(description + ' - Failed :/', false);
+                showNotification(`${description} - Failed :/`, false);
             }
         }
     } catch (error) {
@@ -383,7 +383,7 @@ class Extension {
                     downloadArtifact(downloadUrl, filename).then(success => {
                         try {
                             if (success === true) {
-                                showNotification('The artifact has been downloaded, check your home directory.' + '\n\n' + filename, true);
+                                showNotification(`The artifact has been downloaded, check your home directory.\n\n${filename}`, true);
                             } else {
                                 showNotification('Something went wrong :/', false);
                             }

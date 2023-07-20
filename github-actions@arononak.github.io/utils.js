@@ -35,7 +35,7 @@ function dataConsumptionPerHour(settings) {
     const refreshTime = fetchRefreshTime(settings);
     const dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60 * 60);
 
-    return bytesToString(dataConsumptionPerHour) + '/h';
+    return `${bytesToString(dataConsumptionPerHour)}/h`;
 }
 
 function fullDataConsumptionPerHour(settings) {
@@ -43,7 +43,7 @@ function fullDataConsumptionPerHour(settings) {
     const refreshTime = fetchRefreshFullUpdateTime(settings);
     const dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60);
 
-    return bytesToString(dataConsumptionPerHour) + '/h';
+    return `${bytesToString(dataConsumptionPerHour)}/h`;
 }
 
 function fullDataConsumptionPerHour(settings) {
@@ -55,7 +55,7 @@ function fullDataConsumptionPerHour(settings) {
     const coldRefreshTime = fetchRefreshFullUpdateTime(settings);
     const coldConsumption = ((coldRefreshSize / coldRefreshTime) * 60);
 
-    return bytesToString(hotConsumption + coldConsumption) + '/h';
+    return `${bytesToString(hotConsumption + coldConsumption)}/h`;
 }
 
 function ownerAndRepo(settings) {
@@ -102,7 +102,7 @@ function removeWhiteChars(str) {
 }
 
 function openUrl(url) {
-    exec('xdg-open ' + url);
+    exec(`xdg-open ${url}`);
 }
 
 function openInstallCliScreen() {

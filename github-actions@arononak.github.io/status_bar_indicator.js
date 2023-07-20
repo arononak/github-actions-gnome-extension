@@ -216,7 +216,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         if (this.state == state && forceUpdate == false) {
             return;
         }
-        
+
         this.state = state;
         this.updateGithubActionsStatus(state);
 
@@ -473,8 +473,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.userUrl = userUrl;
         this.twoFactorEnabled = twoFactorEnabled;
 
-        const userLabelText = (userName == null || userEmail == null) ? 'Not logged' : userName + ' (' + userEmail + ')'
-            + '\n\nJoined GitHub on: ' + formatDate(createdAt);
+        const userLabelText = (userName == null || userEmail == null)
+            ? 'Not logged'
+            : `${userName} (${userEmail})\n\nJoined GitHub on: ${formatDate(createdAt)}`;
 
         if (this.userMenuItem != null) {
             this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl));
@@ -484,24 +485,24 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.twoFactorItem != null) {
-            this.twoFactorItem.label.text = '2FA: ' + (twoFactorEnabled == true ? 'Enabled' : 'Disabled');
+            this.twoFactorItem.label.text = `2FA: ${(twoFactorEnabled == true ? 'Enabled' : 'Disabled')}`;
         }
     }
 
     setUserBilling(minutes, packages, sharedStorage) {
         let parsedMinutes;
         if (minutes != null) {
-            parsedMinutes = 'Usage minutes: ' + minutes['total_minutes_used'] + ' of ' + minutes['included_minutes'] + ', ' + minutes['total_paid_minutes_used'] + ' paid';
+            parsedMinutes = `Usage minutes: ${minutes['total_minutes_used']} of ${minutes['included_minutes']}, ${minutes['total_paid_minutes_used']} paid`;
         }
 
         let parsedPackages;
         if (packages != null) {
-            parsedPackages = 'Data transfer out: ' + packages['total_gigabytes_bandwidth_used'] + ' GB of ' + packages['included_gigabytes_bandwidth'] + ' GB, ' + packages['total_paid_gigabytes_bandwidth_used'] + ' GB paid';
+            parsedPackages = `Data transfer out: ${packages['total_gigabytes_bandwidth_used']} GB of ${packages['included_gigabytes_bandwidth']} GB, ${packages['total_paid_gigabytes_bandwidth_used']} GB paid`;
         }
 
         let parsedSharedStorage;
         if (sharedStorage != null) {
-            parsedSharedStorage = 'Storage for month: ' + sharedStorage['estimated_storage_for_month'] + ' GB, ' + sharedStorage['estimated_paid_storage_for_month'] + ' GB paid';
+            parsedSharedStorage = `Storage for month: ${sharedStorage['estimated_storage_for_month']} GB, ${sharedStorage['estimated_paid_storage_for_month']} GB paid`;
         }
 
         if (this.minutesItem != null) {
@@ -527,7 +528,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.starredMenuItem != null) {
-            this.starredMenuItem.setHeaderItemText('Starred: ' + starred.length);
+            this.starredMenuItem.setHeaderItemText(`Starred: ${starred.length}`);
             this.starredMenuItem.submitItems(starred.map(e => toItem(e)));
         }
     }
@@ -542,7 +543,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.followersMenuItem != null) {
-            this.followersMenuItem.setHeaderItemText('Followers: ' + followers.length);
+            this.followersMenuItem.setHeaderItemText(`Followers: ${followers.length}`);
             this.followersMenuItem.submitItems(followers.map(e => toItem(e)));
         }
     }
@@ -557,7 +558,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.followingMenuItem != null) {
-            this.followingMenuItem.setHeaderItemText('Following: ' + following.length);
+            this.followingMenuItem.setHeaderItemText(`Following: ${following.length}`);
             this.followingMenuItem.submitItems(following.map(e => toItem(e)));
         }
     }
@@ -579,7 +580,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.reposMenuItem != null) {
-            this.reposMenuItem.setHeaderItemText('Repos: ' + repos.length);
+            this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length}`);
             this.reposMenuItem.submitItems(
                 repos
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
@@ -596,11 +597,11 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.repositoryPrivateItem != null) {
-            this.repositoryPrivateItem.label.text = 'Private: ' + (repo["private"] == true).toString();
+            this.repositoryPrivateItem.label.text = `Private: ${(repo["private"] == true).toString()}`;
         }
 
         if (this.repositoryForkItem != null) {
-            this.repositoryForkItem.label.text = 'Fork: ' + (repo["fork"] == true).toString();
+            this.repositoryForkItem.label.text = `Fork: ${(repo["fork"] == true).toString()}`;
         }
     }
 
@@ -614,7 +615,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.stargazersMenuItem != null) {
-            this.stargazersMenuItem.setHeaderItemText('Stargazers: ' + stargazers.length);
+            this.stargazersMenuItem.setHeaderItemText(`Stargazers: ${stargazers.length}`);
             this.stargazersMenuItem.submitItems(stargazers.map(e => toItem(e)));
         }
     }
@@ -629,7 +630,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.workflowsMenuItem != null) {
-            this.workflowsMenuItem.setHeaderItemText('Workflows: ' + workflows.length);
+            this.workflowsMenuItem.setHeaderItemText(`Workflows: ${workflows.length}`);
             this.workflowsMenuItem.submitItems(workflows.map(e => toItem(e)));
         }
     }
@@ -645,7 +646,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             const htmlUrl = e['html_url'];
 
             const date = formatDate(updatedAt);
-            const text = '(#' + runNumber + ')' + ' - ' + date + ' - ' + displayTitle;
+            const text = `(#${runNumber}) - ${date} - ${displayTitle}`;
 
             const iconName = conclusionIconName(conclusion);
 
@@ -658,17 +659,17 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                     showConfirmDialog({
                         title: 'Workflow run deletion',
                         description: 'Are you sure you want to delete this workflow run?',
-                        itemTitle: date + ' - ' + displayTitle,
+                        itemTitle: `${date} - ${displayTitle}`,
                         itemDescription: name,
                         iconName: iconName,
-                        onConfirm: () => onDeleteWorkflow(id, (displayTitle + ' ' + name))
+                        onConfirm: () => onDeleteWorkflow(id, `${displayTitle} ${name}`),
                     });
                 }
             };
         }
 
         if (this.runsMenuItem != null) {
-            this.runsMenuItem.setHeaderItemText('Workflow runs: ' + runs.length);
+            this.runsMenuItem.setHeaderItemText(`Workflow runs: ${runs.length}`);
             this.runsMenuItem.submitItems(runs.map(e => toItem(e)));
         }
     }
@@ -683,7 +684,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.releasesMenuItem != null) {
-            this.releasesMenuItem.setHeaderItemText('Releases: ' + releases.length);
+            this.releasesMenuItem.setHeaderItemText(`Releases: ${releases.length}`);
             this.releasesMenuItem.submitItems(releases.map(e => toItem(e)));
         }
     }
@@ -696,7 +697,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             const size = bytesToString(e['size_in_bytes']);
             const filename = e['name'];
             const downloadUrl = e['archive_download_url'];
-            const labelName = formatDate(createdAt) + ' - ' + filename + ' - (' + size + ')' + (e['expired'] == true ? ' - expired' : '');
+            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${(e['expired'] == true ? ' - expired' : '')}`;
 
             return {
                 "iconName": 'folder-visiting-symbolic',
@@ -706,7 +707,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.artifactsMenuItem != null) {
-            this.artifactsMenuItem.setHeaderItemText('Artifacts: ' + artifacts.length);
+            this.artifactsMenuItem.setHeaderItemText(`Artifacts: ${artifacts.length}`);
             this.artifactsMenuItem.submitItems(artifacts.map(e => toItem(e)));
         }
     }
@@ -724,7 +725,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.branchesMenuItem != null) {
-            this.branchesMenuItem.setHeaderItemText('Branches: ' + branches.length);
+            this.branchesMenuItem.setHeaderItemText(`Branches: ${branches.length}`);
             this.branchesMenuItem.submitItems(branches.map(e => toItem(e)));
         }
     }

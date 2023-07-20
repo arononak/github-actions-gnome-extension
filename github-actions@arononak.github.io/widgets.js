@@ -9,29 +9,16 @@ const Me = ExtensionUtils.getCurrentExtension();
 const { isDarkTheme } = Me.imports.utils;
 
 var AppIconColor = {
-    WHITE: 1,
-    BLACK: 2,
-    GRAY: 3,
-    GREEN: 4,
-    BLUE: 5,
-    RED: 6,
+    WHITE: `${Me.path}/assets/github_white.svg`,
+    BLACK: `${Me.path}/assets/github_black.svg`,
+    GRAY: `${Me.path}/assets/github_gray.svg`,
+    GREEN: `${Me.path}/assets/github_green.svg`,
+    BLUE: `${Me.path}/assets/github_blue.svg`,
+    RED: `${Me.path}/assets/github_red.svg`,
 }
 
-function createAppGioIcon(appIconType) {
-    switch (appIconType) {
-        case AppIconColor.WHITE:
-            return Gio.icon_new_for_string(`${Me.path}/assets/github_white.svg`);
-        case AppIconColor.BLACK:
-            return Gio.icon_new_for_string(`${Me.path}/assets/github_black.svg`);
-        case AppIconColor.GRAY:
-            return Gio.icon_new_for_string(`${Me.path}/assets/github_gray.svg`);
-        case AppIconColor.GREEN:
-            return Gio.icon_new_for_string(`${Me.path}/assets/github_green.svg`);
-        case AppIconColor.BLUE:
-            return Gio.icon_new_for_string(`${Me.path}/assets/github_blue.svg`);
-        case AppIconColor.RED:
-            return Gio.icon_new_for_string(`${Me.path}/assets/github_red.svg`);
-    }
+function createAppGioIcon(iconColor) {
+    return Gio.icon_new_for_string(iconColor);
 }
 
 function conclusionIconName(conclusion) {
