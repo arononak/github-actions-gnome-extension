@@ -6,17 +6,9 @@
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
 
-#### 🏞 Badges
+#### 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
 
-![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_success.png?raw=true)
-
-![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_in_progress.png?raw=true)
-
-![](https://github.com/arononak/github-actions-gnome-extension/blob/main/status_error.png?raw=true)
-
-#### 🏞 Preview [MORE](SCREENSHOTS.md)
-
-![](https://github.com/arononak/github-actions-gnome-extension/blob/main/preview3.png?raw=true)
+![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/preview3.png?raw=true)
 
 ---
 
@@ -84,7 +76,7 @@ make build
 
 ---
 
-# [✅️ TODO](TODO.md)
+# [✅️ TODO](./docs/TODO.md)
 
 If you have any feedback, please contact me at arononak@gmail.com
 
