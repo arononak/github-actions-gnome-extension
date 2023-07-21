@@ -52,6 +52,7 @@
 - [ ] prefs.js - refactor
 - [ ] README.md gif preview
 - [ ] ColoredMode - repoisotryItem - symbolic
+- [ ] async operation - progress bar or something else
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 - [ ] Multirepo
