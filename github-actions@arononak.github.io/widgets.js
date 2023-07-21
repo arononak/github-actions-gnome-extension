@@ -26,10 +26,8 @@ function conclusionIconName(conclusion) {
         return 'emblem-default';
     } else if (conclusion == 'failure') {
         return 'emblem-unreadable';
-    } else if (conculstion == 'in_progress') {
-        return 'emblem-synchronizing-symbolic';
     } else {
-        return 'dialog-question-symbolic';
+        return 'emblem-synchronizing-symbolic';
     }
 }
 

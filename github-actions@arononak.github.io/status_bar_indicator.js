@@ -172,10 +172,10 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     shouldShowCompletedNotification(previousState, currentState) {
-        return !isEmpty(previousState)
-            && previousState !== StatusBarState.LOADING.text()
-            && previousState !== StatusBarState.NOT_LOGGED.text()
-            && previousState !== currentState;
+        return previousState === StatusBarState.IN_PROGRESS
+            && (currentState === StatusBarState.COMPLETED_SUCCESS
+                || currentState === StatusBarState.COMPLETED_FAILURE
+                || currentState === StatusBarState.COMPLETED_CANCELED);
     }
 
     updateGithubActionsStatus(statusBarState) {
@@ -183,8 +183,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             this.label.text = '';
         } else {
             this.label.text = this.uppercaseMode == true
-            ? statusBarState.text().toUpperCase()
-            : statusBarState.text();
+                ? statusBarState.text().toUpperCase()
+                : statusBarState.text();
         }
 
         this.setStatusIconColor(this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color);
@@ -218,10 +218,14 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     refreshState() {
-        this.setState({ state: this.state, forceUpdate: true, });
+        this.setState({ state: this.state, forceUpdate: true });
     }
 
     setState({ state, forceUpdate = false }) {
+        if (state == null || state == undefined) {
+            return;
+        }
+
         if (this.state == state && forceUpdate == false) {
             return;
         }
@@ -455,13 +459,13 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         const conclusion = run["conclusion"];
 
         if (conclusion == 'success') {
-            this.updateGithubActionsStatus(StatusBarState.COMPLETED_SUCCESS);
+            this.setState({ state: StatusBarState.COMPLETED_SUCCESS });
         } else if (conclusion == 'failure') {
-            this.updateGithubActionsStatus(StatusBarState.COMPLETED_FAILURE);
+            this.setState({ state: StatusBarState.COMPLETED_FAILURE });
         } else if (conclusion == 'cancelled') {
-            this.updateGithubActionsStatus(StatusBarState.COMPLETED_CANCELED);
-        } else if (conclusion == 'in_progress') {
-            this.updateGithubActionsStatus(StatusBarState.IN_PROGRESS);
+            this.setState({ state: StatusBarState.COMPLETED_CANCELED });
+        } else {
+            this.setState({ state: StatusBarState.IN_PROGRESS });
         }
 
         if (this.repositoryMenuItem != null) {
@@ -470,7 +474,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
     }
 
-    // User ------------------------------------------------------------
+    /// User ------------------------------------------------------------
 
     setUser(user) {
         const userEmail = user['email'];

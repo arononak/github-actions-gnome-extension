@@ -298,19 +298,20 @@ async function githubActionsRefresh(settings, indicator) {
             return;
         }
 
-        indicator.setState({ state: StatusBarState.COMPLETED_SUCCESS });
-        const previousState = indicator.label.text;
-        indicator.setLatestWorkflowRun(runs[0]);
-        const currentState = indicator.label.text;
-
         /// Notification
-        if (indicator.shouldShowCompletedNotification(previousState, currentState)) {
-            const ownerAndRepo = indicator.repositoryMenuItem.label.text;
+        const previousState = indicator.state;
+        indicator.setLatestWorkflowRun(runs[0]);
+        const currentState = indicator.state;
 
-            if (currentState === 'COMPLETED SUCCESS') {
-                showNotification(`${ownerAndRepo} - The workflow has been successfully built`, true);
-            } else if (currentState === 'COMPLETED FAILURE') {
-                showNotification(`${description} - Failed :/`, false);
+        if (indicator.shouldShowCompletedNotification(previousState, currentState)) {
+            const { owner, repo } = ownerAndRepo(settings);
+
+            if (currentState === StatusBarState.COMPLETED_SUCCESS) {
+                showNotification(`${owner}/${repo} - The workflow has been successfully built`, true);
+            } else if (currentState === StatusBarState.COMPLETED_FAILURE) {
+                showNotification(`${owner}/${repo} - Failed :/`, false);
+            } else if (currentState === StatusBarState.COMPLETED_CANCELED) {
+                showNotification(`${owner}/${repo} - Canceled`, false);
             }
         }
     } catch (error) {
