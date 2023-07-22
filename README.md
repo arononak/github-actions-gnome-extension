@@ -65,7 +65,7 @@ graph TD;
 | ------------------------------------ | --------------------------------- |
 | `make run`                           | `make build`                      |
 
-## 📝 © Copyright 2023 Aron Onak
+## 📝 © 2023 Aron Onak
 
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
