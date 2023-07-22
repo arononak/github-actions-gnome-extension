@@ -1,3 +1,5 @@
+# Screenshots
+
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/preview.png?raw=true)
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/preview2.png?raw=true)
