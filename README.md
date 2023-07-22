@@ -35,6 +35,11 @@
 | 🔓 Check scopes      | `gh auth status`                              |
 | 🔄 If any is missing | `gh auth refresh --scopes user,repo,workflow` |
 
+## [✅️ TODO](./docs/TODO.md) list
+
+> **Note**<br>
+> If you have any feedback, please contact me at arononak@gmail.com
+
 ## 🛠 Development
 
 ```mermaid
@@ -59,13 +64,6 @@ graph TD;
 | ▶️ Start a gnome session in a window | 🔨 Build gnome-extensions package |
 | ------------------------------------ | --------------------------------- |
 | `make run`                           | `make build`                      |
-
-___
-
-## [✅️ TODO](./docs/TODO.md) list
-
-> **Note**<br>
-> If you have any feedback, please contact me at arononak@gmail.com
 
 ## 📝 © Copyright 2023 Aron Onak
 
