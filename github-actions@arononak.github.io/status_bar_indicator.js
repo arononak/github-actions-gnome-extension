@@ -61,17 +61,17 @@ var StatusBarState = {
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.RED,
     },
-    IN_PROGRESS: {
-        text: () => 'In progress',
-        simpleModeShowText: false,
-        color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.BLUE,
-    },
     REPO_WITHOUT_ACTIONS: {
         text: () => 'Repo without actions',
         simpleModeShowText: true,
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.GRAY,
+    },
+    IN_PROGRESS: {
+        text: () => 'In progress',
+        simpleModeShowText: false,
+        color: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.BLUE,
     },
     COMPLETED_CANCELED: {
         text: () => 'Cancelled',
