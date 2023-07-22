@@ -62,7 +62,7 @@ ___
 
 ## [✅️ TODO](./docs/TODO.md) list
 
-> **Note**
+> **Note**<br>
 > If you have any feedback, please contact me at arononak@gmail.com
 
 ## 📝 © Copyright 2023 Aron Onak
