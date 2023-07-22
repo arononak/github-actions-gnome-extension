@@ -27,9 +27,11 @@
 
 ## [🔨 Installation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) and Configuration
 
-| 🔒 Login                                    | 🔓 Check scopes                    | 🔄 If any is missing                          |
-|:--------------------------------------------|:-----------------------------------|:----------------------------------------------|
-| `gh auth login --scopes user,repo,workflow` | `gh auth status`                   | `gh auth refresh --scopes user,repo,workflow` |
+| Steps                | Commands                                      |
+|----------------------|-----------------------------------------------|
+| 🔒 Login             | `gh auth login --scopes user,repo,workflow`   |
+| 🔓 Check scopes      | `gh auth status`                              |
+| 🔄 If any is missing | `gh auth refresh --scopes user,repo,workflow` |
 
 ## 🛠 Development
 
@@ -56,11 +58,12 @@ graph TD;
 | ------------------------------------ | --------------------------------- |
 | `make run`                           | `make build`                      |
 
-## [✅️ TODO](./docs/TODO.md)
+___
 
-If you have any feedback, please contact me at arononak@gmail.com
+## [✅️ TODO](./docs/TODO.md) list
 
----
+> **Note**
+> If you have any feedback, please contact me at arononak@gmail.com
 
 ## 📝 © Copyright 2023 Aron Onak
 
