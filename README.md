@@ -10,8 +10,10 @@
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/preview3.png?raw=true)
 
+#### 🧮 Possible states
+
 | State                   | Default                                                                                                                    | Colored                                                                                                                            |
-|:-----------------------:|:--------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------:|
+|:------------------------|:--------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------:|
 | NOT_INSTALLED_CLI       | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/not_installed_cli.png?raw=true)       | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/not_installed_cli_colored.png?raw=true)       |
 | NOT_LOGGED              | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/not_logged.png?raw=true)              | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/not_logged_colored.png?raw=true)              |
 | LOADING                 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/loading.png?raw=true)                 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/loading_colored.png?raw=true)                 |
