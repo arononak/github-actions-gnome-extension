@@ -2,9 +2,9 @@ run:
 	env MUTTER_DEBUG_DUMMY_MODE_SPECS=1600x1200 \
 	dbus-run-session -- gnome-shell --nested --wayland
 
+GIT_TAG := $(shell git describe --tags --abbrev=0)
 build:
-	chmod +x create_version_file.sh
-	./create_version_file.sh
+	@echo 'var VERSION = "$(GIT_TAG)";' > github-actions@arononak.github.io/version.js
 	cd github-actions@arononak.github.io &&\
 	glib-compile-schemas schemas/ &&\
 	gnome-extensions pack\
