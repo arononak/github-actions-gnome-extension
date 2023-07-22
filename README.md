@@ -6,11 +6,11 @@
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
 
-#### 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
+## 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
 
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/preview3.png?raw=true)
 
-#### 🧮 Possible states
+## 🧮 Possible states
 
 | State                   | Default                                                                                                                    | Colored                                                                                                                            |
 |:------------------------|:--------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------:|
@@ -25,39 +25,13 @@
 | COMPLETED_FAILURE       | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/failure.png?raw=true)                 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/failure_colored.png?raw=true)                 |
 | COMPLETED_SUCCESS       | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/success.png?raw=true)                 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/status/success_colored.png?raw=true)                 |
 
----
+## [🔨 Installation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) and Configuration
 
-# 🔨 Manual configuration
+| 🔒 Login                                    | 🔓 Check scopes                    | 🔄 If any is missing                          |
+|:--------------------------------------------|:-----------------------------------|:----------------------------------------------|
+| `gh auth login --scopes user,repo,workflow` | `gh auth status`                   | `gh auth refresh --scopes user,repo,workflow` |
 
-Ubuntu
-```bash
-sudo apt update
-sudo apt install gh
-```
-[https://github.com/cli/cli/blob/trunk/docs/install_linux.md](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)
-
-#### 🔒 Login
-
-```bash
-gh auth login --scopes user,repo,workflow
-```
-And configure owner and repository in extension settings.
-
-#### 🔓 After logging in
-
-Check the permissions with the command:
-```bash
-gh auth status
-```
-
-If any is missing, you can add it with the command:
-```bash
-gh auth refresh --scopes user,repo,workflow
-```
-
----
-
-# 🛠 Development
+## 🛠 Development
 
 ```mermaid
 graph TD;
@@ -78,26 +52,17 @@ graph TD;
     data_repository.js-->extension.js;
 ```
 
-#### ▶️ Start a gnome session in a window
-```bash
-make run
-```
+| ▶️ Start a gnome session in a window | 🔨 Build gnome-extensions package |
+| ------------------------------------ | --------------------------------- |
+| `make run`                           | `make build`                      |
 
-#### 🔨 Build gnome-extensions package
-
-```bash
-make build
-```
-
----
-
-# [✅️ TODO](./docs/TODO.md)
+## [✅️ TODO](./docs/TODO.md)
 
 If you have any feedback, please contact me at arononak@gmail.com
 
 ---
 
-# 📝 © Copyright 2023 Aron Onak
+## 📝 © Copyright 2023 Aron Onak
 
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
