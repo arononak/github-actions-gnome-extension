@@ -28,7 +28,7 @@
 ## [🔨 Installation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) and Configuration
 
 | Steps                | Commands                                      |
-|----------------------|-----------------------------------------------|
+|:---------------------|:----------------------------------------------|
 | 🔒 Login             | `gh auth login --scopes user,repo,workflow`   |
 | 🔓 Check scopes      | `gh auth status`                              |
 | 🔄 If any is missing | `gh auth refresh --scopes user,repo,workflow` |
