@@ -14,11 +14,11 @@ async function isLogged() {
     return executeCommandAsync(['gh', 'auth', 'token']);
 }
 
-async function logout() {
+async function logoutUser() {
     return executeCommandAsync(['gh', 'auth', 'logout', '--hostname', 'github.com']);
 }
 
-async function downloadArtifact(downloadUrl, filename) {
+async function downloadArtifactFile(downloadUrl, filename) {
     return new Promise(async (resolve, reject) => {
         try {
             const isInstalledCli = await isGitHubCliInstalled();

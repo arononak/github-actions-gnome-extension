@@ -26,7 +26,6 @@ const {
     ExpandedMenuItem,
     IconPopupMenuItem,
     showConfirmDialog,
-    showNotification,
     conclusionIconName,
 } = Me.imports.widgets;
 
@@ -53,7 +52,7 @@ var StatusBarState = {
         text: () => 'No repo entered',
         simpleModeShowText: true,
         color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.RED,
     },
     INCORRECT_REPOSITORY: {
         text: () => 'Incorrect repository',
@@ -651,7 +650,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
     }
 
-    setWorkflowRuns({ runs, onDeleteWorkflow }) {
+    setWorkflowRuns({ runs, onDeleteWorkflowRun }) {
         function toItem(e) {
             const conclusion = e['conclusion'];
             const id = e['id'];
@@ -678,7 +677,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                         itemTitle: `${date} - ${displayTitle}`,
                         itemDescription: name,
                         iconName: iconName,
-                        onConfirm: () => onDeleteWorkflow(id, `${displayTitle} ${name}`),
+                        onConfirm: () => onDeleteWorkflowRun(id, `${displayTitle} ${name}`),
                     });
                 }
             };

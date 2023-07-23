@@ -31,6 +31,28 @@ var fetchUppercaseMode = (settings) => settings.get_boolean('uppercase-mode');
 
 var formatDate = (date) => (new Date(date)).toLocaleFormat('%d.%m.%Y');
 
+function ownerAndRepo(settings) {
+    const owner = fetchOwner(settings);
+    const repo = fetchRepo(settings);
+
+    return {
+        owner: owner,
+        repo: repo,
+    };
+}
+
+function isRepositoryEntered(settings) {
+    const { owner, repo } = ownerAndRepo(settings);
+
+    if (isEmpty(removeWhiteChars(owner)) || isEmpty(removeWhiteChars(repo))) {
+        return false;
+    }
+
+    return true;
+}
+
+/// Data usage -------------------
+
 function dataConsumptionPerHour(settings) {
     const packageSizeInBytes = settings.get_int('package-size-in-bytes');
     const refreshTime = fetchRefreshTime(settings);
@@ -59,24 +81,12 @@ function fullDataConsumptionPerHour(settings) {
     return `${bytesToString(hotConsumption + coldConsumption)}/h`;
 }
 
-function ownerAndRepo(settings) {
-    const owner = fetchOwner(settings);
-    const repo = fetchRepo(settings);
+function updateTransfer(settings, jsonObjects) {
+    const sizeInBytes = jsonObjects
+        .filter(e => e != null)
+        .reduce((sum, object) => sum + object._size_, 0);
 
-    return {
-        owner: owner,
-        repo: repo,
-    };
-}
-
-function isRepositoryEntered(settings) {
-    const { owner, repo } = ownerAndRepo(settings);
-
-    if (isEmpty(removeWhiteChars(owner)) || isEmpty(removeWhiteChars(repo))) {
-        return false;
-    }
-
-    return true;
+    updateColdPackageSize(settings, sizeInBytes);
 }
 
 /// Helpers ----------------------

@@ -10,8 +10,8 @@ var isInstalledCli = async () =>
 var isLogged = async () =>
     cliInterface.isLogged();
 
-var logout = async () =>
-    cliInterface.logout();
+var logoutUser = async () =>
+    cliInterface.logoutUser();
 
 var fetchUser = async () =>
     cliInterface.executeGithubCliCommand('GET', 'user');
@@ -28,8 +28,8 @@ var fetchUserBillingSharedStorage = async (username) =>
 var fetchUserRepo = async (owner, repo) =>
     cliInterface.executeGithubCliCommand('GET', `repos/${owner}/${repo}`);
 
-var downloadArtifact = async (downloadUrl, filename) =>
-    cliInterface.downloadArtifact(downloadUrl, filename);
+var downloadArtifactFile = async (downloadUrl, filename) =>
+    cliInterface.downloadArtifactFile(downloadUrl, filename);
 
 /// Pagoinated lists
 var fetchUserRepos = async (pagination) =>
