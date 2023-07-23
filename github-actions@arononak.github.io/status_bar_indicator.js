@@ -73,7 +73,7 @@ var StatusBarState = {
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.BLUE,
     },
-    COMPLETED_CANCELED: {
+    COMPLETED_CANCELLED: {
         text: () => 'Cancelled',
         simpleModeShowText: false,
         color: AppIconColor.RED,
@@ -150,7 +150,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     isCorrectState = () => {
         return this.state == StatusBarState.IN_PROGRESS
             || this.state == StatusBarState.REPO_WITHOUT_ACTIONS
-            || this.state == StatusBarState.COMPLETED_CANCELED
+            || this.state == StatusBarState.COMPLETED_CANCELLED
             || this.state == StatusBarState.COMPLETED_FAILURE
             || this.state == StatusBarState.COMPLETED_SUCCESS;
     }
@@ -175,7 +175,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         return previousState === StatusBarState.IN_PROGRESS
             && (currentState === StatusBarState.COMPLETED_SUCCESS
                 || currentState === StatusBarState.COMPLETED_FAILURE
-                || currentState === StatusBarState.COMPLETED_CANCELED);
+                || currentState === StatusBarState.COMPLETED_CANCELLED);
     }
 
     updateGithubActionsStatus(statusBarState) {
@@ -463,7 +463,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         } else if (conclusion == 'failure') {
             this.setState({ state: StatusBarState.COMPLETED_FAILURE });
         } else if (conclusion == 'cancelled') {
-            this.setState({ state: StatusBarState.COMPLETED_CANCELED });
+            this.setState({ state: StatusBarState.COMPLETED_CANCELLED });
         } else {
             this.setState({ state: StatusBarState.IN_PROGRESS });
         }

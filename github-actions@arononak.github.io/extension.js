@@ -310,8 +310,8 @@ async function githubActionsRefresh(settings, indicator) {
                 showNotification(`${owner}/${repo} - The workflow has been successfully built`, true);
             } else if (currentState === StatusBarState.COMPLETED_FAILURE) {
                 showNotification(`${owner}/${repo} - Failed :/`, false);
-            } else if (currentState === StatusBarState.COMPLETED_CANCELED) {
-                showNotification(`${owner}/${repo} - Canceled`, false);
+            } else if (currentState === StatusBarState.COMPLETED_CANCELLED) {
+                showNotification(`${owner}/${repo} - Cancelled`, false);
             }
         }
     } catch (error) {
