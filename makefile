@@ -13,7 +13,9 @@ build:
 		--extra-source=assets\
 		--extra-source=utils.js\
 		--extra-source=status_bar_indicator.js\
+		--extra-source=data_controller.js\
 		--extra-source=data_repository.js\
+		--extra-source=notification_controller.js\
 		--extra-source=local_cli_interface.js\
 		--extra-source=widgets.js\
 		--extra-source=version.js
