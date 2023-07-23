@@ -52,13 +52,13 @@ var StatusBarState = {
         text: () => 'No repo entered',
         simpleModeShowText: true,
         color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.RED,
+        coloredModeColor: AppIconColor.GRAY,
     },
     INCORRECT_REPOSITORY: {
         text: () => 'Incorrect repository',
         simpleModeShowText: true,
         color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.RED,
+        coloredModeColor: AppIconColor.GRAY,
     },
     REPO_WITHOUT_ACTIONS: {
         text: () => 'Repo without actions',
