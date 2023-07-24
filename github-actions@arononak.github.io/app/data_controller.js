@@ -2,8 +2,8 @@ const { GObject } = imports.gi;
 const Main = imports.ui.main;
 
 const GETTEXT_DOMAIN = 'github-actions-extension';
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+
+const extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const {
     isRepositoryEntered,
@@ -19,73 +19,26 @@ const {
     fetchRefreshTime,
     fetchRefreshFullUpdateTime,
     updateTransfer,
-} = Me.imports.utils;
+} = extension.imports.app.utils;
 
-const {
-    logoutUser,
-    downloadArtifactFile,
-    isInstalledCli,
-    isLogged,
-    fetchUser,
-    fetchUserBillingActionsMinutes,
-    fetchUserBillingPackages,
-    fetchUserBillingSharedStorage,
-    fetchUserStarred,
-    fetchUserFollowers,
-    fetchUserFollowing,
-    fetchUserRepos,
-    fetchWorkflows,
-    fetchArtifacts,
-    fetchStargazers,
-    fetchWorkflowRuns,
-    fetchReleases,
-    fetchBranches,
-    fetchUserRepo,
-    deleteWorkflowRun,
-} = Me.imports.data_repository;
+const { DataRepository } = extension.imports.app.data_repository;
+const { StatusBarState } = extension.imports.app.status_bar_indicator;
 
-const { StatusBarState } = Me.imports.status_bar_indicator;
-
-async function stateRefresh(settings, indicator) {
-    try {
-        indicator.refreshBoredIcon();
-
-        const _isInstalledCli = await isInstalledCli();
-        if (_isInstalledCli == false) {
-            indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI });
-            return;
-        }
-
-        const _isLogged = await isLogged();
-        if (_isLogged == false) {
-            indicator.setState({ state: StatusBarState.NOT_LOGGED });
-            return;
-        }
-
-        if (!isRepositoryEntered(settings)) {
-            indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO });
-            return;
-        }
-    } catch (error) {
-        logError(error);
-    }
-}
-
-async function fetchUserData(settings) {
+async function fetchUserData(settings, dataRepository) {
     return new Promise(async (resolve, reject) => {
         try {
-            const user = await fetchUser();
+            const user = await dataRepository.fetchUser();
 
             const pagination = fetchPagination(settings);
             const login = user['login'];
 
-            const minutes = await fetchUserBillingActionsMinutes(login);
-            const packages = await fetchUserBillingPackages(login);
-            const sharedStorage = await fetchUserBillingSharedStorage(login);
-            const starredList = await fetchUserStarred(login, pagination);
-            const followers = await fetchUserFollowers(pagination);
-            const following = await fetchUserFollowing(pagination);
-            const repos = await fetchUserRepos(pagination);
+            const minutes = await dataRepository.fetchUserBillingActionsMinutes(login);
+            const packages = await dataRepository.fetchUserBillingPackages(login);
+            const sharedStorage = await dataRepository.fetchUserBillingSharedStorage(login);
+            const starredList = await dataRepository.fetchUserStarred(login, pagination);
+            const followers = await dataRepository.fetchUserFollowers(pagination);
+            const following = await dataRepository.fetchUserFollowing(pagination);
+            const repos = await dataRepository.fetchUserRepos(pagination);
 
             resolve({
                 "user": user,
@@ -104,19 +57,19 @@ async function fetchUserData(settings) {
     });
 }
 
-async function fetchRepoData(settings) {
+async function fetchRepoData(settings, dataRepository) {
     return new Promise(async (resolve, reject) => {
         try {
             const { owner, repo } = ownerAndRepo(settings);
             const pagination = fetchPagination(settings);
 
-            const userRepo = await fetchUserRepo(owner, repo);
-            const workflows = await fetchWorkflows(owner, repo, pagination);
-            const artifacts = await fetchArtifacts(owner, repo, pagination);
-            const stargazers = await fetchStargazers(owner, repo, pagination);
-            const runs = await fetchWorkflowRuns(owner, repo, pagination);
-            const releases = await fetchReleases(owner, repo, pagination);
-            const branches = await fetchBranches(owner, repo, pagination);
+            const userRepo = await dataRepository.fetchUserRepo(owner, repo);
+            const workflows = await dataRepository.fetchWorkflows(owner, repo, pagination);
+            const artifacts = await dataRepository.fetchArtifacts(owner, repo, pagination);
+            const stargazers = await dataRepository.fetchStargazers(owner, repo, pagination);
+            const runs = await dataRepository.fetchWorkflowRuns(owner, repo, pagination);
+            const releases = await dataRepository.fetchReleases(owner, repo, pagination);
+            const branches = await dataRepository.fetchBranches(owner, repo, pagination);
 
             resolve({
                 "userRepo": userRepo,
@@ -134,8 +87,35 @@ async function fetchRepoData(settings) {
     });
 }
 
+/// Main 3 refresh Functions ------------------------------------------
+
+async function stateRefresh(settings, indicator, dataRepository) {
+    try {
+        indicator.refreshBoredIcon();
+
+        const isInstalledCli = await dataRepository.isInstalledCli();
+        if (isInstalledCli == false) {
+            indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI });
+            return;
+        }
+
+        const isLogged = await dataRepository.isLogged();
+        if (isLogged == false) {
+            indicator.setState({ state: StatusBarState.NOT_LOGGED });
+            return;
+        }
+
+        if (!isRepositoryEntered(settings)) {
+            indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO });
+            return;
+        }
+    } catch (error) {
+        logError(error);
+    }
+}
+
 /// Assistant of githubActionsRefresh()
-async function dataRefresh(settings, indicator, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
+async function dataRefresh(settings, indicator, dataRepository, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
     try {
         if (indicator.isLogged == false) {
             return;
@@ -150,7 +130,7 @@ async function dataRefresh(settings, indicator, onRepoSetAsWatched, onDeleteWork
             followers,
             following,
             repos,
-        } = await fetchUserData(settings);
+        } = await fetchUserData(settings, dataRepository);
 
         const userObjects = [
             user,
@@ -190,7 +170,7 @@ async function dataRefresh(settings, indicator, onRepoSetAsWatched, onDeleteWork
             runs,
             releases,
             branches,
-        } = await fetchRepoData(settings);
+        } = await fetchRepoData(settings, dataRepository);
 
         const repoObjects = [
             userRepo,
@@ -219,10 +199,10 @@ async function dataRefresh(settings, indicator, onRepoSetAsWatched, onDeleteWork
     }
 }
 
-async function githubActionsRefresh(settings, indicator, onBuildCompleted) {
+async function githubActionsRefresh(settings, indicator, dataRepository, onBuildCompleted) {
     try {
-        const _isLogged = await isLogged();
-        if (_isLogged == false) {
+        const isLogged = await dataRepository.isLogged();
+        if (isLogged == false) {
             return;
         }
 
@@ -233,7 +213,7 @@ async function githubActionsRefresh(settings, indicator, onBuildCompleted) {
         }
 
         const { owner, repo } = ownerAndRepo(settings);
-        const run = await fetchWorkflowRuns(owner, repo, 1);
+        const run = await dataRepository.fetchWorkflowRuns(owner, repo, 1);
         if (run == null) {
             indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY });
             return;
@@ -273,12 +253,49 @@ async function githubActionsRefresh(settings, indicator, onBuildCompleted) {
 var DataController = class {
     constructor(settings) {
         this.settings = settings;
+        this.dataRepository = new DataRepository();
     }
 
-    fetchIsInstalledCli = async () => await isInstalledCli();
+    fetchIsInstalledCli = async () => await this.dataRepository.isInstalledCli();
 
-    fetchIsLogged = async () => await isLogged();
+    fetchIsLogged = async () => await this.dataRepository.isLogged();
 
+    /// Main 3 refresh Functions
+    refreshState() {
+        stateRefresh(this.settings, this.indicator, this.dataRepository);
+    }
+
+    refreshGithubActions() {
+        githubActionsRefresh(
+            this.settings,
+            this.indicator,
+            this.dataRepository,
+            (owner, repo, conclusion) => this.onBuildCompleted(owner, repo, conclusion),
+        );
+    }
+
+    refreshData() {
+        dataRefresh(
+            this.settings,
+            this.indicator,
+            this.dataRepository,
+            this.onRepoSetAsWatched,
+            (runId, runName) => this.removeWorkflowRun(runId, runName),
+            this.refresh,
+        );
+    }
+
+    refresh() {
+        try {
+            this.refreshState();
+            this.refreshGithubActions();
+            this.refreshData();
+        } catch (error) {
+            logError(error);
+        }
+    }
+
+    /// Start / Stop
     startRefreshing({
         indicator,
         onRepoSetAsWatched,
@@ -295,65 +312,11 @@ var DataController = class {
             const githubActionsRefreshTime = fetchRefreshTime(this.settings) * 1000;
             const dataRefreshTime = fetchRefreshFullUpdateTime(this.settings) * 60 * 1000;
 
-            this.stateRefreshInterval = setInterval(
-                () => stateRefresh(this.settings, this.indicator),
-                stateRefreshTime,
-            );
+            this.stateRefreshInterval = setInterval(() => this.refreshState(), stateRefreshTime);
+            this.githubActionsRefreshInterval = setInterval(() => this.refreshGithubActions(), githubActionsRefreshTime);
+            this.dataRefreshInterval = setInterval(() => refreshData(), dataRefreshTime);
 
-            this.githubActionsRefreshInterval = setInterval(
-                () => githubActionsRefresh(
-                    this.settings,
-                    this.indicator,
-                    (owner, repo, conclusion) => this.onBuildCompleted(owner, repo, conclusion),
-                ),
-                githubActionsRefreshTime,
-            );
-
-            this.dataRefreshInterval = setInterval(
-                () => dataRefresh(
-                    this.settings,
-                    this.indicator,
-                    this.onRepoSetAsWatched,
-                    (runId, runName) => this.removeWorkflowRun(runId, runName),
-                    this.refresh,
-                ),
-                dataRefreshTime,
-            );
-
-            this.settings.connect('changed::refresh-time', (settings, key) => {
-                this.stopRefreshing();
-                this.startRefreshing({
-                    indicator: indicator,
-                    onRepoSetAsWatched: onRepoSetAsWatched,
-                    onDeleteWorkflowRun: onDeleteWorkflowRun,
-                    onBuildCompleted: onBuildCompleted,
-                });
-            });
-
-            this.settings.connect('changed::full-refresh-time', (settings, key) => {
-                this.stopRefreshing();
-                this.startRefreshing({
-                    indicator: indicator,
-                    onRepoSetAsWatched: onRepoSetAsWatched,
-                    onDeleteWorkflowRun: onDeleteWorkflowRun,
-                    onBuildCompleted: onBuildCompleted,
-                });
-            });
-
-            this.settings.connect('changed::simple-mode', (settings, key) => {
-                const simpleMode = fetchSimpleMode(settings);
-                this.indicator.setSimpleMode(simpleMode);
-            });
-
-            this.settings.connect('changed::colored-mode', (settings, key) => {
-                const coloredMode = fetchColoredMode(settings);
-                this.indicator.setColoredMode(coloredMode);
-            });
-
-            this.settings.connect('changed::uppercase-mode', (settings, key) => {
-                const uppercaseMode = fetchUppercaseMode(settings);
-                this.indicator.setUppercaseMode(uppercaseMode);
-            });
+            this.observeSettings();
         } catch (error) {
             logError(error);
         }
@@ -370,18 +333,46 @@ var DataController = class {
         this.dataRefreshInterval = null;
     }
 
-    refresh() {
-        try {
-            stateRefresh(this.settings, this.indicator);
-            githubActionsRefresh(this.settings, this.indicator, (owner, repo, conclusion) => this.onBuildCompleted(owner, repo, conclusion));
-            dataRefresh(this.settings, this.indicator, this.onRepoSetAsWatched, (runId, runName) => this.removeWorkflowRun(runId, runName), this.refresh);
-        } catch (error) {
-            logError(error);
-        }
+    /// Others
+    observeSettings() {
+        this.settings.connect('changed::refresh-time', (settings, key) => {
+            this.stopRefreshing();
+            this.startRefreshing({
+                indicator: indicator,
+                onRepoSetAsWatched: onRepoSetAsWatched,
+                onDeleteWorkflowRun: onDeleteWorkflowRun,
+                onBuildCompleted: onBuildCompleted,
+            });
+        });
+
+        this.settings.connect('changed::full-refresh-time', (settings, key) => {
+            this.stopRefreshing();
+            this.startRefreshing({
+                indicator: indicator,
+                onRepoSetAsWatched: onRepoSetAsWatched,
+                onDeleteWorkflowRun: onDeleteWorkflowRun,
+                onBuildCompleted: onBuildCompleted,
+            });
+        });
+
+        this.settings.connect('changed::simple-mode', (settings, key) => {
+            const simpleMode = fetchSimpleMode(settings);
+            this.indicator.setSimpleMode(simpleMode);
+        });
+
+        this.settings.connect('changed::colored-mode', (settings, key) => {
+            const coloredMode = fetchColoredMode(settings);
+            this.indicator.setColoredMode(coloredMode);
+        });
+
+        this.settings.connect('changed::uppercase-mode', (settings, key) => {
+            const uppercaseMode = fetchUppercaseMode(settings);
+            this.indicator.setUppercaseMode(uppercaseMode);
+        });
     }
 
-    async logout() {
-        const isLogged = await logout();
+    async logout(indicator) {
+        const isLogged = await this.dataRepository.logoutUser();
 
         if (isLogged == true) {
             indicator.setState({ state: StatusBarState.NOT_LOGGED });
@@ -389,9 +380,26 @@ var DataController = class {
     }
 
     async downloadArtifact({ downloadUrl, filename, onFinishCallback }) {
-        const success = await downloadArtifactFile(downloadUrl, filename);
+        const success = await this.dataRepository.downloadArtifactFile(downloadUrl, filename);
 
         onFinishCallback(success, filename);
+    }
+
+    async removeWorkflowRun(runId, runName) {
+        try {
+            const { owner, repo } = ownerAndRepo(this.settings);
+
+            const status = await this.dataRepository.deleteWorkflowRun(owner, repo, runId);
+
+            if (status == 'success') {
+                this.onDeleteWorkflowRun(true, runName);
+                this.refreshData();
+            } else {
+                this.onDeleteWorkflowRun(false, runName);
+            }
+        } catch (error) {
+            logError(error);
+        }
     }
 
     fetchAppearanceSettings() {
@@ -404,22 +412,5 @@ var DataController = class {
             "coloredMode": coloredMode,
             "uppercaseMode": uppercaseMode,
         };
-    }
-
-    async removeWorkflowRun(runId, runName) {
-        try {
-            const { owner, repo } = ownerAndRepo(this.settings);
-
-            const status = await deleteWorkflowRun(owner, repo, runId);
-
-            if (status == 'success') {
-                this.onDeleteWorkflowRun(true, runName);
-                dataRefresh(this.settings, this.indicator, this.onRepoSetAsWatched, (runId, runName) => this.removeWorkflowRun(runId, runName), this.refresh);
-            } else {
-                this.onDeleteWorkflowRun(false, runName);
-            }
-        } catch (error) {
-            logError(error);
-        }
     }
 }

@@ -3,7 +3,8 @@
 const { Adw, Gio, Gtk, GLib } = imports.gi;
 
 const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+
+const extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const {
     fetchRefreshTime,
@@ -18,9 +19,9 @@ const {
     fetchSimpleMode,
     fetchColoredMode,
     fetchUppercaseMode,
-} = Me.imports.utils;
+} = extension.imports.app.utils;
 
-const { VERSION } = Me.imports.version;
+const { VERSION } = extension.imports.app.version;
 
 function init() { }
 

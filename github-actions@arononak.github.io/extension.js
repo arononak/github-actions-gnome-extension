@@ -25,14 +25,16 @@ const GETTEXT_DOMAIN = 'github-actions-extension';
 const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 
-const { StatusBarIndicator, StatusBarState } = Me.imports.status_bar_indicator;
-const { DataController } = Me.imports.data_controller;
+const extension = imports.misc.extensionUtils.getCurrentExtension();
+
+const { StatusBarIndicator, StatusBarState } = extension.imports.app.status_bar_indicator;
+const { DataController } = extension.imports.app.data_controller;
 const {
     showDownloadArtifactNotification,
     showSetAsWatchedNotification,
     showDeleteWorkflowRunNotification,
     showCompletedBuildNotification,
-} = Me.imports.notification_controller;
+} = extension.imports.app.notification_controller;
 
 class Extension {
     constructor(uuid) {
@@ -42,22 +44,22 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
-        this.initIndicator();
+        this.dataController = new DataController(this.settings);
+        this.initIndicator(this.dataController);
     }
 
     disable() {
+        this.dataController.stopRefreshing();
         this.disposeIndicator();
         this.settings = null;
     }
 
-    async initIndicator() {
+    async initIndicator(dataController) {
         try {
-            this.dataController = new DataController(this.settings);
+            const isInstalledCli = await dataController.fetchIsInstalledCli();
+            const isLogged = await dataController.fetchIsLogged();
 
-            const isInstalledCli = await this.dataController.fetchIsInstalledCli();
-            const isLogged = await this.dataController.fetchIsLogged();
-
-            const { simpleMode, coloredMode, uppercaseMode } = this.dataController.fetchAppearanceSettings();
+            const { simpleMode, coloredMode, uppercaseMode } = dataController.fetchAppearanceSettings();
 
             this.indicator = new StatusBarIndicator({
                 isInstalledCli: isInstalledCli,
@@ -66,17 +68,17 @@ class Extension {
                 coloredMode: coloredMode,
                 uppercaseMode: uppercaseMode,
                 refreshCallback: () => {
-                    this.dataController.refresh();
+                    dataController.refresh();
                 },
                 downloadArtifactCallback: (downloadUrl, filename) => {
-                    this.dataController.downloadArtifact({
+                    dataController.downloadArtifact({
                         downloadUrl: downloadUrl,
                         filename: filename,
                         onFinishCallback: (success, filename) => showDownloadArtifactNotification(success, filename),
                     });
                 },
                 logoutCallback: () => {
-                    this.dataController.logout();
+                    dataController.logout(this.indicator);
                 },
             });
 
@@ -94,7 +96,6 @@ class Extension {
     }
 
     disposeIndicator() {
-        this.dataController.stopRefreshing();
         this.indicator.destroy();
         this.indicator.menu = null;
         this.indicator = null;

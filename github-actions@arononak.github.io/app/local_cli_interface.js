@@ -2,9 +2,9 @@
 
 const { Gio } = imports.gi;
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const { executeCommandAsync } = Me.imports.utils;
+const extension = imports.misc.extensionUtils.getCurrentExtension();
+
+const { executeCommandAsync } = extension.imports.app.utils;
 
 async function isGitHubCliInstalled() {
     return executeCommandAsync(['gh', '--version']);

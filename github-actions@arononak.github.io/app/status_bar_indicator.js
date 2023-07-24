@@ -8,6 +8,8 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const Me = ExtensionUtils.getCurrentExtension();
 const _ = ExtensionUtils.gettext;
 
+const extension = imports.misc.extensionUtils.getCurrentExtension();
+
 const {
     isEmpty,
     openUrl,
@@ -16,7 +18,7 @@ const {
     bytesToString,
     fullDataConsumptionPerHour,
     formatDate,
-} = Me.imports.utils;
+} = extension.imports.app.utils;
 
 const {
     AppIconColor,
@@ -27,7 +29,7 @@ const {
     IconPopupMenuItem,
     showConfirmDialog,
     conclusionIconName,
-} = Me.imports.widgets;
+} = extension.imports.app.widgets;
 
 var StatusBarState = {
     NOT_INSTALLED_CLI: {

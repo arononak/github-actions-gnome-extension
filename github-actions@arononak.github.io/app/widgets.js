@@ -4,17 +4,16 @@ const { Clutter, GObject, St, Gio, GLib } = imports.gi;
 const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const { isDarkTheme } = Me.imports.utils;
+const extension = imports.misc.extensionUtils.getCurrentExtension();
+const { isDarkTheme } = extension.imports.app.utils;
 
 var AppIconColor = {
-    WHITE: `${Me.path}/assets/github_white.svg`,
-    BLACK: `${Me.path}/assets/github_black.svg`,
-    GRAY: `${Me.path}/assets/github_gray.svg`,
-    GREEN: `${Me.path}/assets/github_green.svg`,
-    BLUE: `${Me.path}/assets/github_blue.svg`,
-    RED: `${Me.path}/assets/github_red.svg`,
+    WHITE: `${extension.path}/assets/github_white.svg`,
+    BLACK: `${extension.path}/assets/github_black.svg`,
+    GRAY: `${extension.path}/assets/github_gray.svg`,
+    GREEN: `${extension.path}/assets/github_green.svg`,
+    BLUE: `${extension.path}/assets/github_blue.svg`,
+    RED: `${extension.path}/assets/github_red.svg`,
 }
 
 function createAppGioIcon(iconColor) {

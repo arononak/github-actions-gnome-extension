@@ -1,7 +1,8 @@
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
+'use strict';
 
-const { showNotification } = Me.imports.widgets;
+const extension = imports.misc.extensionUtils.getCurrentExtension();
+
+const { showNotification } = extension.imports.app.widgets;
 
 function showDownloadArtifactNotification(success, filename) {
     if (success === true) {
