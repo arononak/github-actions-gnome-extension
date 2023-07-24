@@ -392,21 +392,23 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.sharedStorageItem = new IconPopupMenuItem({ startIconName: 'network-server-symbolic' });
         this.userMenuItem.menuBox.add_actor(this.sharedStorageItem);
 
-        /// Starred
-        this.starredMenuItem = new ExpandedMenuItem('starred-symbolic', '');
-        this.menu.addMenuItem(this.starredMenuItem);
+        if (this.simpleMode === false) {
+            /// Starred
+            this.starredMenuItem = new ExpandedMenuItem('starred-symbolic', '');
+            this.menu.addMenuItem(this.starredMenuItem);
 
-        /// Followers            
-        this.followersMenuItem = new ExpandedMenuItem('system-users-symbolic', '');
-        this.menu.addMenuItem(this.followersMenuItem);
+            /// Followers            
+            this.followersMenuItem = new ExpandedMenuItem('system-users-symbolic', '');
+            this.menu.addMenuItem(this.followersMenuItem);
 
-        /// Following
-        this.followingMenuItem = new ExpandedMenuItem('system-users-symbolic', '');
-        this.menu.addMenuItem(this.followingMenuItem);
+            /// Following
+            this.followingMenuItem = new ExpandedMenuItem('system-users-symbolic', '');
+            this.menu.addMenuItem(this.followingMenuItem);
 
-        /// Repos
-        this.reposMenuItem = new ExpandedMenuItem('folder-symbolic', '');
-        this.menu.addMenuItem(this.reposMenuItem);
+            /// Repos
+            this.reposMenuItem = new ExpandedMenuItem('folder-symbolic', '');
+            this.menu.addMenuItem(this.reposMenuItem);
+        }
 
         if (!this.isCorrectState()) {
             return;
@@ -414,37 +416,41 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
 
-        /// Repository
-        this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => openUrl(this.repositoryUrl));
-        this.menu.addMenuItem(this.repositoryMenuItem);
+        if (this.simpleMode === false) {
+            /// Repository
+            this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => openUrl(this.repositoryUrl));
+            this.menu.addMenuItem(this.repositoryMenuItem);
 
-        /// Repository isPrivate
-        this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: 'changes-prevent-symbolic' });
-        this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem);
+            /// Repository isPrivate
+            this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: 'changes-prevent-symbolic' });
+            this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem);
 
-        /// Repository isFork
-        this.repositoryForkItem = new IconPopupMenuItem({ startIconName: 'folder-remote-symbolic' });
-        this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem);
+            /// Repository isFork
+            this.repositoryForkItem = new IconPopupMenuItem({ startIconName: 'folder-remote-symbolic' });
+            this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem);
 
-        /// Branches
-        this.branchesMenuItem = new ExpandedMenuItem('media-playlist-consecutive-symbolic', '');
-        this.menu.addMenuItem(this.branchesMenuItem);
+            /// Branches
+            this.branchesMenuItem = new ExpandedMenuItem('media-playlist-consecutive-symbolic', '');
+            this.menu.addMenuItem(this.branchesMenuItem);
 
-        /// Stargazers
-        this.stargazersMenuItem = new ExpandedMenuItem('starred-symbolic', '');
-        this.menu.addMenuItem(this.stargazersMenuItem);
+            /// Stargazers
+            this.stargazersMenuItem = new ExpandedMenuItem('starred-symbolic', '');
+            this.menu.addMenuItem(this.stargazersMenuItem);
 
-        /// Workflows
-        this.workflowsMenuItem = new ExpandedMenuItem('mail-send-receive-symbolic', '');
-        this.menu.addMenuItem(this.workflowsMenuItem);
+            /// Workflows
+            this.workflowsMenuItem = new ExpandedMenuItem('mail-send-receive-symbolic', '');
+            this.menu.addMenuItem(this.workflowsMenuItem);
+        }
 
-        /// Runs
+        /// WorkflowRuns
         this.runsMenuItem = new ExpandedMenuItem('media-playback-start-symbolic', '');
         this.menu.addMenuItem(this.runsMenuItem);
 
-        /// Releases
-        this.releasesMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '');
-        this.menu.addMenuItem(this.releasesMenuItem);
+        if (this.simpleMode === false) {
+            /// Releases
+            this.releasesMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '');
+            this.menu.addMenuItem(this.releasesMenuItem);
+        }
 
         /// Artifacts
         this.artifactsMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '');
@@ -457,6 +463,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
     /// Setters
     setLatestWorkflowRun(run) {
+        if (run === null || run === undefined) return;
+
         const conclusion = run["conclusion"];
 
         if (conclusion == 'success') {
@@ -478,6 +486,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     /// User ------------------------------------------------------------
 
     setUser(user) {
+        if (user === null || user === undefined) return;
+
         const userEmail = user['email'];
         const userName = user['name'];
         const createdAt = user['created_at'];
@@ -534,6 +544,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setUserStarred(starred) {
+        if (starred === null || starred === undefined) return;
+
         function toItem(e) {
             return {
                 "iconName": 'starred-symbolic',
@@ -549,6 +561,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setUserFollowers(followers) {
+        if (followers === null || followers === undefined) return;
+
         function toItem(e) {
             return {
                 "iconName": 'system-users-symbolic',
@@ -564,6 +578,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setUserFollowing(following) {
+        if (following === null || following === undefined) return;
+
         function toItem(e) {
             return {
                 "iconName": 'system-users-symbolic',
@@ -579,6 +595,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setUserRepos(repos, onWatchCallback) {
+        if (repos === null || repos === undefined) return;
+
         function toItem(e) {
             const visibility = e['visibility'];
             const createdAt = formatDate(e['created_at']);
@@ -606,6 +624,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     /// Separator ------------------------------------------------------
 
     setWatchedRepo(repo) {
+        if (repo === null || repo === undefined) return;
+
         if (this.repositoryMenuItem != null) {
             this.repositoryMenuItem.label.style = 'margin-left: 4px';
             this.repositoryMenuItem.label.text = `${repo['full_name']}\n\nCreated at: ${formatDate(repo['created_at'])}`;
@@ -623,6 +643,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setStargazers(stargazers) {
+        if (stargazers === null || stargazers === undefined) return;
+
         function toItem(e) {
             return {
                 "iconName": 'starred-symbolic',
@@ -638,6 +660,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setWorkflows(workflows) {
+        if (workflows === null || workflows === undefined) return;
+
         function toItem(e) {
             return {
                 "iconName": 'mail-send-receive-symbolic',
@@ -653,6 +677,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setWorkflowRuns({ runs, onDeleteWorkflowRun }) {
+        if (runs === null || runs === undefined) return;
+
         function toItem(e) {
             const conclusion = e['conclusion'];
             const id = e['id'];
@@ -692,6 +718,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setReleases(releases) {
+        if (releases === null || releases === undefined) return;
+
         function toItem(e) {
             return {
                 "iconName": 'folder-visiting-symbolic',
@@ -707,6 +735,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setArtifacts(artifacts) {
+        if (artifacts === null || artifacts === undefined) return;
+
         const self = this;
 
         function toItem(e) {
@@ -730,6 +760,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setBranches(branches) {
+        if (branches === null || branches === undefined) return;
+
         const repositoryUrl = this.repositoryUrl;
 
         function toItem(e) {

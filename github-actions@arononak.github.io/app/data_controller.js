@@ -24,17 +24,31 @@ const {
 const { DataRepository } = extension.imports.app.data_repository;
 const { StatusBarState } = extension.imports.app.status_bar_indicator;
 
-async function fetchUserData(settings, dataRepository) {
+async function fetchUserData(settings, dataRepository, simpleMode) {
     return new Promise(async (resolve, reject) => {
         try {
-            const user = await dataRepository.fetchUser();
-
             const pagination = fetchPagination(settings);
+
+            const user = await dataRepository.fetchUser();
             const login = user['login'];
 
+            /// Simple Mode
             const minutes = await dataRepository.fetchUserBillingActionsMinutes(login);
             const packages = await dataRepository.fetchUserBillingPackages(login);
             const sharedStorage = await dataRepository.fetchUserBillingSharedStorage(login);
+
+            if (simpleMode) {
+                resolve({
+                    "user": user,
+                    "minutes": minutes,
+                    "packages": packages,
+                    "sharedStorage": sharedStorage,
+                });
+
+                return;
+            }
+
+            /// Full Mode
             const starredList = await dataRepository.fetchUserStarred(login, pagination);
             const followers = await dataRepository.fetchUserFollowers(pagination);
             const following = await dataRepository.fetchUserFollowing(pagination);
@@ -45,6 +59,7 @@ async function fetchUserData(settings, dataRepository) {
                 "minutes": minutes,
                 "packages": packages,
                 "sharedStorage": sharedStorage,
+
                 "starredList": starredList,
                 "followers": followers,
                 "following": following,
@@ -57,26 +72,39 @@ async function fetchUserData(settings, dataRepository) {
     });
 }
 
-async function fetchRepoData(settings, dataRepository) {
+async function fetchRepoData(settings, dataRepository, simpleMode) {
     return new Promise(async (resolve, reject) => {
         try {
             const { owner, repo } = ownerAndRepo(settings);
             const pagination = fetchPagination(settings);
 
+            /// Simple Mode
+            const runs = await dataRepository.fetchWorkflowRuns(owner, repo, pagination);
+            const artifacts = await dataRepository.fetchArtifacts(owner, repo, pagination);
+
+            if (simpleMode) {
+                resolve({
+                    "runs": runs,
+                    "artifacts": artifacts,
+                });
+
+                return;
+            }
+
+            /// Full Mode
             const userRepo = await dataRepository.fetchUserRepo(owner, repo);
             const workflows = await dataRepository.fetchWorkflows(owner, repo, pagination);
-            const artifacts = await dataRepository.fetchArtifacts(owner, repo, pagination);
             const stargazers = await dataRepository.fetchStargazers(owner, repo, pagination);
-            const runs = await dataRepository.fetchWorkflowRuns(owner, repo, pagination);
             const releases = await dataRepository.fetchReleases(owner, repo, pagination);
             const branches = await dataRepository.fetchBranches(owner, repo, pagination);
 
             resolve({
+                "runs": runs,
+                "artifacts": artifacts,
+
                 "userRepo": userRepo,
                 "workflows": workflows,
-                "artifacts": artifacts,
                 "stargazers": stargazers,
-                "runs": runs,
                 "releases": releases,
                 "branches": branches,
             });
@@ -119,6 +147,8 @@ async function dataRefresh(settings, indicator, dataRepository, onRepoSetAsWatch
             return;
         }
 
+        const simpleMode = fetchSimpleMode(settings);
+
         const {
             user,
             minutes,
@@ -128,7 +158,7 @@ async function dataRefresh(settings, indicator, dataRepository, onRepoSetAsWatch
             followers,
             following,
             repos,
-        } = await fetchUserData(settings, dataRepository);
+        } = await fetchUserData(settings, dataRepository, simpleMode);
 
         const userObjects = [
             user,
@@ -168,7 +198,7 @@ async function dataRefresh(settings, indicator, dataRepository, onRepoSetAsWatch
             runs,
             releases,
             branches,
-        } = await fetchRepoData(settings, dataRepository);
+        } = await fetchRepoData(settings, dataRepository, simpleMode);
 
         const repoObjects = [
             userRepo,
@@ -183,8 +213,8 @@ async function dataRefresh(settings, indicator, dataRepository, onRepoSetAsWatch
         updateTransfer(settings, [...userObjects, ...repoObjects]);
 
         indicator.setWatchedRepo(userRepo);
-        indicator.setWorkflows(workflows['workflows']);
-        indicator.setArtifacts(artifacts['artifacts']);
+        indicator.setWorkflows(workflows === undefined ? null : workflows['workflows']);
+        indicator.setArtifacts(artifacts === undefined ? null : artifacts['artifacts']);
         indicator.setStargazers(stargazers);
         indicator.setWorkflowRuns({
             runs: runs['workflow_runs'],
