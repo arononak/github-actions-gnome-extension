@@ -10,7 +10,9 @@
 
 ## 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
 
-![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/preview3.png?raw=true)
+| SimpleMode OFF                                                                                        | SimpleMode ON                                                                                           |
+|:-----------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------:|
+| ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_full.png?raw=true) | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_simple.png?raw=true) |
 
 ## 🧮 Possible states
 
