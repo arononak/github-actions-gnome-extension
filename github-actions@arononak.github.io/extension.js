@@ -29,12 +29,7 @@ const extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const { StatusBarIndicator, StatusBarState } = extension.imports.app.status_bar_indicator;
 const { DataController } = extension.imports.app.data_controller;
-const {
-    showDownloadArtifactNotification,
-    showSetAsWatchedNotification,
-    showDeleteWorkflowRunNotification,
-    showCompletedBuildNotification,
-} = extension.imports.app.notification_controller;
+const { NotificationController } = extension.imports.app.notification_controller;
 
 class Extension {
     constructor(uuid) {
@@ -74,7 +69,7 @@ class Extension {
                     dataController.downloadArtifact({
                         downloadUrl: downloadUrl,
                         filename: filename,
-                        onFinishCallback: (success, filename) => showDownloadArtifactNotification(success, filename),
+                        onFinishCallback: (success, filename) => NotificationController.showDownloadArtifact(success, filename),
                     });
                 },
                 logoutCallback: () => {
@@ -86,9 +81,9 @@ class Extension {
 
             this.dataController.startRefreshing({
                 indicator: this.indicator,
-                onRepoSetAsWatched: (owner, repo) => showSetAsWatchedNotification(owner, repo),
-                onDeleteWorkflowRun: (success, runName) => showDeleteWorkflowRunNotification(success, runName),
-                onBuildCompleted: (owner, repo, conclusion) => showCompletedBuildNotification(owner, repo, conclusion),
+                onRepoSetAsWatched: (owner, repo) => NotificationController.showSetAsWatched(owner, repo),
+                onDeleteWorkflowRun: (success, runName) => NotificationController.showDeleteWorkflowRun(success, runName),
+                onBuildCompleted: (owner, repo, conclusion) => NotificationController.showCompletedBuild(owner, repo, conclusion),
             });
         } catch (error) {
             logError(error);

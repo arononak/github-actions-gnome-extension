@@ -87,8 +87,7 @@ async function fetchRepoData(settings, dataRepository) {
     });
 }
 
-/// Main 3 refresh Functions ------------------------------------------
-
+/// Main 3 refresh Functions ----------------------------------------------------------------------
 async function stateRefresh(settings, indicator, dataRepository) {
     try {
         indicator.refreshBoredIcon();
@@ -114,7 +113,6 @@ async function stateRefresh(settings, indicator, dataRepository) {
     }
 }
 
-/// Assistant of githubActionsRefresh()
 async function dataRefresh(settings, indicator, dataRepository, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
     try {
         if (indicator.isLogged == false) {
@@ -281,7 +279,7 @@ var DataController = class {
             this.dataRepository,
             this.onRepoSetAsWatched,
             (runId, runName) => this.removeWorkflowRun(runId, runName),
-            this.refresh,
+            () => this.refresh(),
         );
     }
 
@@ -314,7 +312,7 @@ var DataController = class {
 
             this.stateRefreshInterval = setInterval(() => this.refreshState(), stateRefreshTime);
             this.githubActionsRefreshInterval = setInterval(() => this.refreshGithubActions(), githubActionsRefreshTime);
-            this.dataRefreshInterval = setInterval(() => refreshData(), dataRefreshTime);
+            this.dataRefreshInterval = setInterval(() => this.refreshData(), dataRefreshTime);
 
             this.observeSettings();
         } catch (error) {
