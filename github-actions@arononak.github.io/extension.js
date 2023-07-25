@@ -28,8 +28,8 @@ const Me = ExtensionUtils.getCurrentExtension();
 const extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const { StatusBarIndicator, StatusBarState } = extension.imports.app.status_bar_indicator;
-const { DataController } = extension.imports.app.data_controller;
 const { NotificationController } = extension.imports.app.notification_controller;
+const { DataController } = extension.imports.app.data_controller;
 
 class Extension {
     constructor(uuid) {
@@ -39,13 +39,17 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
+
         this.dataController = new DataController(this.settings);
+
         this.initIndicator(this.dataController);
     }
 
     disable() {
         this.dataController.stopRefreshing();
         this.disposeIndicator();
+
+        this.dataController = null;
         this.settings = null;
     }
 

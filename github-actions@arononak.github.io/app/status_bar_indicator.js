@@ -16,7 +16,6 @@ const {
     openInstallCliScreen,
     openAuthScreen,
     bytesToString,
-    fullDataConsumptionPerHour,
     formatDate,
 } = extension.imports.app.utils;
 
@@ -457,8 +456,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.menu.addMenuItem(this.artifactsMenuItem);
     }
 
-    refreshTransfer(settings) {
-        this.networkLabel.text = fullDataConsumptionPerHour(settings);
+    setTransferText(text) {
+        this.networkLabel.text = text;
     }
 
     /// Setters

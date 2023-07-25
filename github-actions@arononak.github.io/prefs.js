@@ -5,22 +5,7 @@ const { Adw, Gio, Gtk, GLib } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const extension = imports.misc.extensionUtils.getCurrentExtension();
-
-const {
-    fetchRefreshTime,
-    fetchPackageSize,
-    fetchColdPackageSize,
-    fetchPagination,
-    fetchOwner,
-    fetchRepo,
-    updateOwner,
-    updateRepo,
-    openUrl,
-    fetchSimpleMode,
-    fetchColoredMode,
-    fetchUppercaseMode,
-} = extension.imports.app.utils;
-
+const { openUrl } = extension.imports.app.utils;
 const { VERSION } = extension.imports.app.version;
 
 function init() { }
@@ -28,10 +13,11 @@ function init() { }
 function fillPreferencesWindow(window) {
     window.set_default_size(550, 870);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
+    const settingsRepository = new SettingsRepository(settings);
 
     /// Repository
     const ownerEntry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer({ text: fetchOwner(settings) }),
+        buffer: new Gtk.EntryBuffer({ text: settingsRepository.fetchOwner(settings) }),
         hexpand: true,
         halign: Gtk.Align.CENTER,
         valign: Gtk.Align.CENTER,
@@ -45,12 +31,12 @@ function fillPreferencesWindow(window) {
         const owner = ownerEntry.get_buffer().text;
 
         if (owner) {
-            updateOwner(settings, owner);
+            settingsRepository.updateOwner(owner);
         }
     });
 
     const repoEntry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer({ text: fetchRepo(settings) }),
+        buffer: new Gtk.EntryBuffer({ text: settingsRepository.fetchRepo() }),
         hexpand: true,
         halign: Gtk.Align.CENTER,
         valign: Gtk.Align.CENTER,
@@ -64,7 +50,7 @@ function fillPreferencesWindow(window) {
         const repo = repoEntry.get_buffer().text;
 
         if (repo) {
-            updateRepo(settings, repo);
+            settingsRepository.updateRepo(repo);
         }
     });
 
@@ -75,7 +61,7 @@ function fillPreferencesWindow(window) {
     refreshStatusSpinButton.margin_top = 8;
     refreshStatusSpinButton.margin_bottom = 8;
     refreshStatusSpinButton.adjustment = new Gtk.Adjustment({
-        value: fetchRefreshTime(settings),
+        value: settingsRepository.fetchRefreshTime(),
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -84,7 +70,7 @@ function fillPreferencesWindow(window) {
     });
     const refreshStatusRow = new Adw.ActionRow({
         title: 'Github Actions (in seconds)',
-        subtitle: `Package size: ${fetchPackageSize(settings)}`,
+        subtitle: `Package size: ${settingsRepository.fetchPackageSize()}`,
     });
     refreshStatusRow.add_suffix(refreshStatusSpinButton);
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
@@ -106,7 +92,7 @@ function fillPreferencesWindow(window) {
 
     const fullRefreshRow = new Adw.ActionRow({
         title: 'Data (in minutes)',
-        subtitle: `Package size: ${fetchColdPackageSize(settings)}`,
+        subtitle: `Package size: ${settingsRepository.fetchColdPackageSize()}`,
     });
     fullRefreshRow.add_suffix(fullRefreshSpinButton);
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;
@@ -150,7 +136,7 @@ function fillPreferencesWindow(window) {
     refreshStatusGroup.add(paginationRow);
 
     /// Appearance
-    const simpleModeSwitch = new Gtk.Switch({ active: fetchSimpleMode(settings), valign: Gtk.Align.CENTER });
+    const simpleModeSwitch = new Gtk.Switch({ active: settingsRepository.fetchSimpleMode(), valign: Gtk.Align.CENTER });
     settings.bind('simple-mode', simpleModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
     const simpleModeRow = new Adw.ActionRow({
         title: 'Simple mode',
@@ -159,7 +145,7 @@ function fillPreferencesWindow(window) {
     simpleModeRow.add_suffix(simpleModeSwitch);
     simpleModeRow.activatable_widget = simpleModeSwitch;
 
-    const coloredModeSwitch = new Gtk.Switch({ active: fetchColoredMode(settings), valign: Gtk.Align.CENTER });
+    const coloredModeSwitch = new Gtk.Switch({ active: settingsRepository.fetchColoredMode(), valign: Gtk.Align.CENTER });
     settings.bind('colored-mode', coloredModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
     const coloredModeRow = new Adw.ActionRow({
         title: 'Colored mode',
@@ -168,7 +154,7 @@ function fillPreferencesWindow(window) {
     coloredModeRow.add_suffix(coloredModeSwitch);
     coloredModeRow.activatable_widget = coloredModeSwitch;
 
-    const uppercaseModeSwitch = new Gtk.Switch({ active: fetchUppercaseMode(settings), valign: Gtk.Align.CENTER });
+    const uppercaseModeSwitch = new Gtk.Switch({ active: settingsRepository.fetchUppercaseMode(), valign: Gtk.Align.CENTER });
     settings.bind('uppercase-mode', uppercaseModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
     const uppercaseModeRow = new Adw.ActionRow({
         title: 'UpperCase mode',

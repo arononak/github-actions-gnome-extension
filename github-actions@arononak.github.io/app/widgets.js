@@ -5,7 +5,6 @@ const PanelMenu = imports.ui.panelMenu;
 const PopupMenu = imports.ui.popupMenu;
 
 const extension = imports.misc.extensionUtils.getCurrentExtension();
-const { isDarkTheme } = extension.imports.app.utils;
 
 var AppIconColor = {
     WHITE: `${extension.path}/assets/github_white.svg`,
@@ -28,6 +27,13 @@ function conclusionIconName(conclusion) {
     } else {
         return 'emblem-synchronizing-symbolic';
     }
+}
+
+function isDarkTheme() {
+    const settings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' });
+    const theme = settings.get_string('gtk-theme');
+
+    return theme.replace(/'/g, "").trim().includes("dark");
 }
 
 function appIcon() {
