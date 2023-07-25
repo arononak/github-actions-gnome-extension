@@ -29,7 +29,7 @@ const extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const { StatusBarIndicator, StatusBarState } = extension.imports.app.status_bar_indicator;
 const { NotificationController } = extension.imports.app.notification_controller;
-const { DataController } = extension.imports.app.data_controller;
+const { ExtensionDataController } = extension.imports.app.extension_data_controller;
 
 class Extension {
     constructor(uuid) {
@@ -39,26 +39,24 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
-
-        this.dataController = new DataController(this.settings);
-
-        this.initIndicator(this.dataController);
+        this.extensionDataController = new ExtensionDataController(this.settings);
+        this.initIndicator(this.extensionDataController);
     }
 
     disable() {
-        this.dataController.stopRefreshing();
+        this.extensionDataController.stopRefreshing();
         this.disposeIndicator();
 
-        this.dataController = null;
+        this.extensionDataController = null;
         this.settings = null;
     }
 
-    async initIndicator(dataController) {
+    async initIndicator(extensionDataController) {
         try {
-            const isInstalledCli = await dataController.fetchIsInstalledCli();
-            const isLogged = await dataController.fetchIsLogged();
+            const isInstalledCli = await extensionDataController.fetchIsInstalledCli();
+            const isLogged = await extensionDataController.fetchIsLogged();
 
-            const { simpleMode, coloredMode, uppercaseMode } = dataController.fetchAppearanceSettings();
+            const { simpleMode, coloredMode, uppercaseMode } = extensionDataController.fetchAppearanceSettings();
 
             this.indicator = new StatusBarIndicator({
                 isInstalledCli: isInstalledCli,
@@ -67,23 +65,23 @@ class Extension {
                 coloredMode: coloredMode,
                 uppercaseMode: uppercaseMode,
                 refreshCallback: () => {
-                    dataController.refresh();
+                    extensionDataController.refresh();
                 },
                 downloadArtifactCallback: (downloadUrl, filename) => {
-                    dataController.downloadArtifact({
+                    extensionDataController.downloadArtifact({
                         downloadUrl: downloadUrl,
                         filename: filename,
                         onFinishCallback: (success, filename) => NotificationController.showDownloadArtifact(success, filename),
                     });
                 },
                 logoutCallback: () => {
-                    dataController.logout(this.indicator);
+                    extensionDataController.logout(this.indicator);
                 },
             });
 
             Main.panel.addToStatusArea(this._uuid, this.indicator);
 
-            this.dataController.startRefreshing({
+            this.extensionDataController.startRefreshing({
                 indicator: this.indicator,
                 onRepoSetAsWatched: (owner, repo) => NotificationController.showSetAsWatched(owner, repo),
                 onDeleteWorkflowRun: (success, runName) => NotificationController.showDeleteWorkflowRun(success, runName),

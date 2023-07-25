@@ -46,20 +46,20 @@
 
 ```mermaid
 graph TD;
-    local_cli_interface.js-->data_repository.js;
-    data_repository.js-->data_controller.js;
+    local_cli_interface.js-->github_api_repository.js;
+    github_api_repository.js-->extension_data_controller.js;
     widgets.js-->status_bar_indicator.js;
     widgets.js-->notification_controller.js;
     notification_controller.js-->extension.js;
     status_bar_indicator.js-->extension.js;
-    data_usage_controller.js-->data_controller.js;
-    data_controller.js-->extension.js;
+    data_usage_controller.js-->extension_data_controller.js;
+    extension_data_controller.js-->extension.js;
     settings_repository.js-->data_usage_controller.js;
     utils.js-->status_bar_indicator.js;
     utils.js-->settings_repository.js;
     data_usage_controller.js-->prefs_controller.js;
     settings_repository.js-->prefs_controller.js;
-    settings_repository.js-->data_controller.js;
+    settings_repository.js-->extension_data_controller.js;
     utils.js-->prefs_controller.js;
     prefs_controller.js-->prefs.js
 
