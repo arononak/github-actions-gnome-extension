@@ -8,6 +8,71 @@ const { PrefsController } = extension.imports.app.prefs_controller;
 
 function init() { }
 
+function createEntityRow({ title, text, onChanged }) {
+    const entry = new Gtk.Entry({
+        buffer: new Gtk.EntryBuffer({ text: text }),
+        hexpand: true,
+        halign: Gtk.Align.END,
+        valign: Gtk.Align.CENTER,
+    });
+    entry.set_size_request(300, -1);
+    entry.connect('changed', (widget) => {
+        const text = entry.get_buffer().text;
+
+        if (text) {
+            onChanged(text);
+        }
+    });
+
+    const row = new Adw.ActionRow({ title: title });
+    row.add_suffix(entry);
+    row.activatable_widget = entry;
+
+    return row;
+}
+
+function createSpinButtonRow({ title, subtitle, value, lower, upper, onSpinButtonCreated }) {
+    const spinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
+    spinButton.wrap = true;
+    spinButton.width_chars = 2;
+    spinButton.margin_top = 8;
+    spinButton.margin_bottom = 8;
+    spinButton.adjustment = new Gtk.Adjustment({
+        value: value,
+        lower: lower,
+        upper: upper,
+        step_increment: 1,
+        page_increment: 10,
+        page_size: 0,
+    });
+
+    onSpinButtonCreated(spinButton);
+
+    const row = new Adw.ActionRow({
+        title: title == undefined ? null : title,
+        subtitle: subtitle == undefined ? null : subtitle,
+    });
+
+    row.add_suffix(spinButton);
+    row.activatable_widget = spinButton;
+
+    return row;
+}
+
+function createToggleRow({ title, subtitle, value, onSwitchButtonCreated }) {
+    const switchButton = new Gtk.Switch({ active: value, valign: Gtk.Align.CENTER });
+    onSwitchButtonCreated(switchButton);
+
+    const row = new Adw.ActionRow({
+        title: title == undefined ? null : title,
+        subtitle: subtitle == undefined ? null : subtitle,
+    });
+    row.add_suffix(switchButton);
+    row.activatable_widget = switchButton;
+
+    return row;
+}
+
 function fillPreferencesWindow(window) {
     window.set_default_size(550, 870);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
@@ -30,115 +95,70 @@ function fillPreferencesWindow(window) {
     } = prefsController.fetchData();
 
     /// Repository
-    const ownerEntry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer({ text: owner }),
-        hexpand: true,
-        halign: Gtk.Align.CENTER,
-        valign: Gtk.Align.CENTER,
-    });
-    ownerEntry.set_halign(Gtk.Align.END);
-    ownerEntry.set_size_request(300, -1);
-    const ownerRow = new Adw.ActionRow({ title: 'Owner' });
-    ownerRow.add_suffix(ownerEntry);
-    ownerRow.activatable_widget = ownerEntry;
-    ownerEntry.connect('changed', (widget) => {
-        const owner = ownerEntry.get_buffer().text;
-
-        if (owner) {
-            prefsController.updateOwner(owner);
-        }
+    const ownerRow = createEntityRow({
+        title: 'Owner',
+        text: owner,
+        onChanged: (text) => prefsController.updateOwner(text),
     });
 
-    const repoEntry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer({ text: repo }),
-        hexpand: true,
-        halign: Gtk.Align.CENTER,
-        valign: Gtk.Align.CENTER,
+    const repoRow = createEntityRow({
+        title: 'Repo',
+        text: repo,
+        onChanged: (text) => prefsController.updateRepo(text),
     });
-    repoEntry.set_halign(Gtk.Align.END);
-    repoEntry.set_size_request(300, -1);
-    const repoRow = new Adw.ActionRow({ title: 'Repo' });
-    repoRow.add_suffix(repoEntry);
-    repoRow.activatable_widget = repoEntry;
-    repoEntry.connect('changed', (widget) => {
-        const repo = repoEntry.get_buffer().text;
 
-        if (repo) {
-            prefsController.updateRepo(repo);
-        }
+    /// Appearance
+    const simpleModeRow = createToggleRow({
+        title: 'Simple mode',
+        subtitle: 'Mode for minimalists containing the most important functionalities',
+        value: simpleMode,
+        onSwitchButtonCreated: (switchButton) => settings.bind('simple-mode', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
     });
+
+    const coloredModeRow = createToggleRow({
+        title: 'Colored mode',
+        subtitle: 'Colored mode for colorblind, aesthetes and gay people',
+        value: coloredMode,
+        onSwitchButtonCreated: (switchButton) => settings.bind('colored-mode', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
+    });
+
+    const uppercaseModeRow = createToggleRow({
+        title: 'UpperCase mode',
+        value: uppercaseMode,
+        onSwitchButtonCreated: (switchButton) => settings.bind('uppercase-mode', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
+    });
+
+    const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' });
+    appearanceGroup.add(simpleModeRow);
+    appearanceGroup.add(coloredModeRow);
+    appearanceGroup.add(uppercaseModeRow);
 
     /// Refresh
-    const refreshStatusSpinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
-    refreshStatusSpinButton.wrap = true;
-    refreshStatusSpinButton.width_chars = 2;
-    refreshStatusSpinButton.margin_top = 8;
-    refreshStatusSpinButton.margin_bottom = 8;
-    refreshStatusSpinButton.adjustment = new Gtk.Adjustment({
+    const refreshStatusRow = createSpinButtonRow({
+        title: 'Github Actions (in seconds)',
+        subtitle: `Package size: ${packageSize}`,
         value: refreshTime,
         lower: 1,
         upper: 60,
-        step_increment: 1,
-        page_increment: 10,
-        page_size: 0,
+        onSpinButtonCreated: (spinButton) => settings.bind('refresh-time', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT),
     });
-    const refreshStatusRow = new Adw.ActionRow({
-        title: 'Github Actions (in seconds)',
-        subtitle: `Package size: ${packageSize}`,
-    });
-    refreshStatusRow.add_suffix(refreshStatusSpinButton);
-    refreshStatusRow.activatable_widget = refreshStatusSpinButton;
-    settings.bind('refresh-time', refreshStatusSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
-    const fullRefreshSpinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
-    fullRefreshSpinButton.wrap = true;
-    fullRefreshSpinButton.width_chars = 2;
-    fullRefreshSpinButton.margin_top = 8;
-    fullRefreshSpinButton.margin_bottom = 8;
-    fullRefreshSpinButton.adjustment = new Gtk.Adjustment({
+    const fullRefreshRow = createSpinButtonRow({
+        title: 'Data (in minutes)',
+        subtitle: `Package size: ${coldPackageSize}`,
         value: coldRefreshTime,
         lower: 1,
         upper: 60,
-        step_increment: 1,
-        page_increment: 10,
-        page_size: 0,
+        onSpinButtonCreated: (spinButton) => settings.bind('full-refresh-time', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT),
     });
 
-    const fullRefreshRow = new Adw.ActionRow({
-        title: 'Data (in minutes)',
-        subtitle: `Package size: ${coldPackageSize}`,
-    });
-    fullRefreshRow.add_suffix(fullRefreshSpinButton);
-    fullRefreshRow.activatable_widget = fullRefreshSpinButton;
-    settings.bind('full-refresh-time', fullRefreshSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
-
-    const paginationSpinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 });
-    paginationSpinButton.wrap = true;
-    paginationSpinButton.width_chars = 2;
-    paginationSpinButton.margin_top = 8;
-    paginationSpinButton.margin_bottom = 8;
-    paginationSpinButton.adjustment = new Gtk.Adjustment({
+    const paginationRow = createSpinButtonRow({
+        title: 'Pagination:',
         value: pagination,
         lower: 1,
         upper: 100,
-        step_increment: 1,
-        page_increment: 10,
-        page_size: 0,
+        onSpinButtonCreated: (spinButton) => settings.bind('pagination', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT),
     });
-    const paginationRow = new Adw.ActionRow({ title: 'Pagination:' });
-    paginationRow.add_suffix(paginationSpinButton);
-    paginationRow.activatable_widget = paginationSpinButton;
-    settings.bind('pagination', paginationSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
-
-    const versionRow = new Adw.ActionRow({ title: 'Version:' });
-    versionRow.add_suffix(new Gtk.Label({ label: version, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
-
-    const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
-    const githubButton = new Gtk.Button({ label: 'Give me a star!' });
-    githubButton.connect('clicked', () => prefsController.onStarClicked());
-    githubButton.margin_top = 8;
-    githubButton.margin_bottom = 8;
-    starRow.add_suffix(githubButton);
 
     const generalGroup = new Adw.PreferencesGroup({ title: 'Watched repository' });
     generalGroup.add(ownerRow);
@@ -149,44 +169,20 @@ function fillPreferencesWindow(window) {
     refreshStatusGroup.add(fullRefreshRow);
     refreshStatusGroup.add(paginationRow);
 
-    /// Appearance
-    const simpleModeSwitch = new Gtk.Switch({ active: simpleMode, valign: Gtk.Align.CENTER });
-    settings.bind('simple-mode', simpleModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
-    const simpleModeRow = new Adw.ActionRow({
-        title: 'Simple mode',
-        subtitle: 'Mode for minimalists containing the most important functionalities',
-    });
-    simpleModeRow.add_suffix(simpleModeSwitch);
-    simpleModeRow.activatable_widget = simpleModeSwitch;
+    const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
+    const githubButton = new Gtk.Button({ label: 'Give me a star!' });
+    githubButton.connect('clicked', () => prefsController.onStarClicked());
+    githubButton.margin_top = 8;
+    githubButton.margin_bottom = 8;
+    starRow.add_suffix(githubButton);
 
-    const coloredModeSwitch = new Gtk.Switch({ active: coloredMode, valign: Gtk.Align.CENTER });
-    settings.bind('colored-mode', coloredModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
-    const coloredModeRow = new Adw.ActionRow({
-        title: 'Colored mode',
-        subtitle: 'Colored mode for colorblind, aesthetes and gay people',
-    });
-    coloredModeRow.add_suffix(coloredModeSwitch);
-    coloredModeRow.activatable_widget = coloredModeSwitch;
+    const versionRow = new Adw.ActionRow({ title: 'Version:' });
+    versionRow.add_suffix(new Gtk.Label({ label: version, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
-    const uppercaseModeSwitch = new Gtk.Switch({ active: uppercaseMode, valign: Gtk.Align.CENTER });
-    settings.bind('uppercase-mode', uppercaseModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
-    const uppercaseModeRow = new Adw.ActionRow({
-        title: 'UpperCase mode',
-    });
-    uppercaseModeRow.add_suffix(uppercaseModeSwitch);
-    uppercaseModeRow.activatable_widget = uppercaseModeSwitch;
-
-    const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' });
-    appearanceGroup.add(simpleModeRow);
-    appearanceGroup.add(coloredModeRow);
-    appearanceGroup.add(uppercaseModeRow);
-
-    /// Other
     const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
     otherGroup.add(starRow);
     otherGroup.add(versionRow);
 
-    /// Page
     const page = new Adw.PreferencesPage();
     page.add(generalGroup);
     page.add(appearanceGroup);

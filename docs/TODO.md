@@ -37,6 +37,7 @@
 - [ ] Workflow run - cancel/rerun
 - [ ] give ma a star - request & notificaton
 - [x] Notification octocat icon
+- [ ] Performance
 - [ ] Missing scopes - information in the extension
 - [ ] QuickSettings status icon - tint
 - [ ] Lint
@@ -49,7 +50,7 @@
 - [x] No workflow run - status resolve
 - [ ] gists
 - [x] prefs.js - uppercase status ON/OFF
-- [ ] prefs.js - refactor
+- [x] prefs.js - refactor
 - [ ] README.md gif preview
 - [ ] ColoredMode - repoisotryItem - symbolic
 - [ ] async operation - progress bar or something else
