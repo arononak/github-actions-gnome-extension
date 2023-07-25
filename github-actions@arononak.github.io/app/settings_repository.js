@@ -1,7 +1,7 @@
 'use strict';
 
 const extension = imports.misc.extensionUtils.getCurrentExtension();
-const { removeWhiteChars, isEmpty } = extension.imports.app.utils;
+const { removeWhiteChars, isEmpty, bytesToString } = extension.imports.app.utils;
 
 var SettingsRepository = class {
     constructor(settings) {

@@ -4,8 +4,6 @@ const { Gio } = imports.gi;
 
 const extension = imports.misc.extensionUtils.getCurrentExtension();
 
-const { executeCommandAsync } = extension.imports.app.utils;
-
 async function isGitHubCliInstalled() {
     return executeCommandAsync(['gh', '--version']);
 }
@@ -97,6 +95,27 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
         } catch (e) {
             logError(e);
             resolve(null);
+        }
+    });
+}
+
+async function executeCommandAsync(commandArray) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const proc = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+
+            proc.communicate_utf8_async(null, null, (proc, res) => {
+                const [, stdout] = proc.communicate_utf8_finish(res);
+
+                if (!proc.get_successful()) {
+                    resolve(false);
+                }
+
+                resolve(true)
+            });
+        } catch (e) {
+            logError(e);
+            resolve(false);
         }
     });
 }

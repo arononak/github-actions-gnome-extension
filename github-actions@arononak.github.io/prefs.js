@@ -1,23 +1,37 @@
 'use strict';
 
 const { Adw, Gio, Gtk, GLib } = imports.gi;
-
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const extension = imports.misc.extensionUtils.getCurrentExtension();
-const { openUrl } = extension.imports.app.utils;
-const { VERSION } = extension.imports.app.version;
+const { PrefsController } = extension.imports.app.prefs_controller;
 
 function init() { }
 
 function fillPreferencesWindow(window) {
     window.set_default_size(550, 870);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
-    const settingsRepository = new SettingsRepository(settings);
+    const prefsController = new PrefsController(settings);
+
+    const {
+        owner,
+        repo,
+        refreshTime,
+        coldRefreshTime,
+        packageSize,
+        coldPackageSize,
+        pagination,
+
+        simpleMode,
+        coloredMode,
+        uppercaseMode,
+
+        version,
+    } = prefsController.fetchData();
 
     /// Repository
     const ownerEntry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer({ text: settingsRepository.fetchOwner(settings) }),
+        buffer: new Gtk.EntryBuffer({ text: owner }),
         hexpand: true,
         halign: Gtk.Align.CENTER,
         valign: Gtk.Align.CENTER,
@@ -31,12 +45,12 @@ function fillPreferencesWindow(window) {
         const owner = ownerEntry.get_buffer().text;
 
         if (owner) {
-            settingsRepository.updateOwner(owner);
+            prefsController.updateOwner(owner);
         }
     });
 
     const repoEntry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer({ text: settingsRepository.fetchRepo() }),
+        buffer: new Gtk.EntryBuffer({ text: repo }),
         hexpand: true,
         halign: Gtk.Align.CENTER,
         valign: Gtk.Align.CENTER,
@@ -50,7 +64,7 @@ function fillPreferencesWindow(window) {
         const repo = repoEntry.get_buffer().text;
 
         if (repo) {
-            settingsRepository.updateRepo(repo);
+            prefsController.updateRepo(repo);
         }
     });
 
@@ -61,7 +75,7 @@ function fillPreferencesWindow(window) {
     refreshStatusSpinButton.margin_top = 8;
     refreshStatusSpinButton.margin_bottom = 8;
     refreshStatusSpinButton.adjustment = new Gtk.Adjustment({
-        value: settingsRepository.fetchRefreshTime(),
+        value: refreshTime,
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -70,7 +84,7 @@ function fillPreferencesWindow(window) {
     });
     const refreshStatusRow = new Adw.ActionRow({
         title: 'Github Actions (in seconds)',
-        subtitle: `Package size: ${settingsRepository.fetchPackageSize()}`,
+        subtitle: `Package size: ${packageSize}`,
     });
     refreshStatusRow.add_suffix(refreshStatusSpinButton);
     refreshStatusRow.activatable_widget = refreshStatusSpinButton;
@@ -82,7 +96,7 @@ function fillPreferencesWindow(window) {
     fullRefreshSpinButton.margin_top = 8;
     fullRefreshSpinButton.margin_bottom = 8;
     fullRefreshSpinButton.adjustment = new Gtk.Adjustment({
-        value: fetchRefreshTime(settings),
+        value: coldRefreshTime,
         lower: 1,
         upper: 60,
         step_increment: 1,
@@ -92,7 +106,7 @@ function fillPreferencesWindow(window) {
 
     const fullRefreshRow = new Adw.ActionRow({
         title: 'Data (in minutes)',
-        subtitle: `Package size: ${settingsRepository.fetchColdPackageSize()}`,
+        subtitle: `Package size: ${coldPackageSize}`,
     });
     fullRefreshRow.add_suffix(fullRefreshSpinButton);
     fullRefreshRow.activatable_widget = fullRefreshSpinButton;
@@ -104,7 +118,7 @@ function fillPreferencesWindow(window) {
     paginationSpinButton.margin_top = 8;
     paginationSpinButton.margin_bottom = 8;
     paginationSpinButton.adjustment = new Gtk.Adjustment({
-        value: fetchPagination(settings),
+        value: pagination,
         lower: 1,
         upper: 100,
         step_increment: 1,
@@ -117,11 +131,11 @@ function fillPreferencesWindow(window) {
     settings.bind('pagination', paginationSpinButton, 'value', Gio.SettingsBindFlags.DEFAULT);
 
     const versionRow = new Adw.ActionRow({ title: 'Version:' });
-    versionRow.add_suffix(new Gtk.Label({ label: VERSION, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
+    versionRow.add_suffix(new Gtk.Label({ label: version, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
 
     const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
     const githubButton = new Gtk.Button({ label: 'Give me a star!' });
-    githubButton.connect('clicked', () => openUrl('https://github.com/arononak/github-actions-gnome-extension'));
+    githubButton.connect('clicked', () => prefsController.onStarClicked());
     githubButton.margin_top = 8;
     githubButton.margin_bottom = 8;
     starRow.add_suffix(githubButton);
@@ -136,7 +150,7 @@ function fillPreferencesWindow(window) {
     refreshStatusGroup.add(paginationRow);
 
     /// Appearance
-    const simpleModeSwitch = new Gtk.Switch({ active: settingsRepository.fetchSimpleMode(), valign: Gtk.Align.CENTER });
+    const simpleModeSwitch = new Gtk.Switch({ active: simpleMode, valign: Gtk.Align.CENTER });
     settings.bind('simple-mode', simpleModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
     const simpleModeRow = new Adw.ActionRow({
         title: 'Simple mode',
@@ -145,7 +159,7 @@ function fillPreferencesWindow(window) {
     simpleModeRow.add_suffix(simpleModeSwitch);
     simpleModeRow.activatable_widget = simpleModeSwitch;
 
-    const coloredModeSwitch = new Gtk.Switch({ active: settingsRepository.fetchColoredMode(), valign: Gtk.Align.CENTER });
+    const coloredModeSwitch = new Gtk.Switch({ active: coloredMode, valign: Gtk.Align.CENTER });
     settings.bind('colored-mode', coloredModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
     const coloredModeRow = new Adw.ActionRow({
         title: 'Colored mode',
@@ -154,7 +168,7 @@ function fillPreferencesWindow(window) {
     coloredModeRow.add_suffix(coloredModeSwitch);
     coloredModeRow.activatable_widget = coloredModeSwitch;
 
-    const uppercaseModeSwitch = new Gtk.Switch({ active: settingsRepository.fetchUppercaseMode(), valign: Gtk.Align.CENTER });
+    const uppercaseModeSwitch = new Gtk.Switch({ active: uppercaseMode, valign: Gtk.Align.CENTER });
     settings.bind('uppercase-mode', uppercaseModeSwitch, 'active', Gio.SettingsBindFlags.DEFAULT);
     const uppercaseModeRow = new Adw.ActionRow({
         title: 'UpperCase mode',
