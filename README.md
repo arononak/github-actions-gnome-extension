@@ -14,12 +14,12 @@
 |:-----------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------:|
 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_full.png?raw=true) | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_simple.png?raw=true) |
 
-| Notifications 🔔                                                                                                                                |
-|:-----------------------------------------------------------------------------------------------------------------------------------------------:|
-| ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_artifact_downloaded.png?raw=true)       |
-| ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_run_success.png?raw=true)               |
-| ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_run_deleted.png?raw=true)               |
-| ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_repo_watched.png?raw=true)              |
+|Event| Notifications 🔔                                                                                                                                |
+|:-----------------------|:-----------------------------------------------------------------------------------------------------------------------------------------------:|
+| Artifact downloaded    | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_artifact_downloaded.png?raw=true)       |
+| Workflow run - success | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_run_success.png?raw=true)               |
+| Workflow run - deleted | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_run_deleted.png?raw=true)               |
+| Repo set as watched    | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_repo_watched.png?raw=true)              |
 
 ## 🧮 Possible states
 
