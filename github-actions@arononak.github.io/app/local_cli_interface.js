@@ -61,7 +61,6 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
             }
 
             const logged = await isLogged();
-
             if (!logged) {
                 resolve(null);
                 return;
@@ -75,7 +74,15 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
             );
 
             proc.communicate_utf8_async(null, null, (proc, res) => {
-                const [, stdout, stderr] = proc.communicate_utf8_finish(res);
+                const [status, stdout, stderr] = proc.communicate_utf8_finish(res);
+
+                /// [NO_INTERNET_CONNECTION]
+                /// stdout: 
+                /// stderr: error connecting to api.github.com
+
+                /// [INCORRECT_REQUEST]
+                /// stdout: {"message":"Not Found","documentation_url":"https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository"}
+                /// stderr: gh: Not Found (HTTP 404)
 
                 if (proc.get_successful()) {
                     if (method == 'DELETE') {
@@ -89,6 +96,11 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
                     resolve(response);
                     return;
                 } else {
+                    if (stdout.length < 2) {
+                        resolve('no-internet-connection');
+                        return;
+                    }
+                    
                     resolve(null);
                 }
             });

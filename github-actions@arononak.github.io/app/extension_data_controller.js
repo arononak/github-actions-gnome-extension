@@ -12,10 +12,14 @@ const { StatusBarState } = extension.imports.app.status_bar_indicator;
 async function fetchUserData(settings, settingsRepository, githubApiRepository, simpleMode) {
     return new Promise(async (resolve, reject) => {
         try {
-            const pagination = settingsRepository.fetchPagination(settings);
-
             const user = await githubApiRepository.fetchUser();
+            if (user == null) {
+                return;
+            }
+
             const login = user['login'];
+
+            const pagination = settingsRepository.fetchPagination(settings);
 
             /// Simple Mode
             const minutes = await githubApiRepository.fetchUserBillingActionsMinutes(login);
@@ -227,23 +231,27 @@ async function githubActionsRefresh(settings, settingsRepository, indicator, git
         }
 
         const { owner, repo } = settingsRepository.ownerAndRepo(settings);
-        const run = await githubApiRepository.fetchWorkflowRuns(owner, repo, 1);
-        if (run == null) {
+
+        const workflowRunsResponse = await githubApiRepository.fetchWorkflowRuns(owner, repo, 1);
+        if (workflowRunsResponse == null) {
             indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY });
+            return;
+        } else if (workflowRunsResponse == 'no-internet-connection') {
+            indicator.setState({ state: StatusBarState.LOGGED_NO_INTERNET_CONNECTION });
             return;
         }
 
-        settingsRepository.updatePackageSize(run['_size_']);
+        settingsRepository.updatePackageSize(workflowRunsResponse['_size_']);
 
-        const runs = run['workflow_runs'];
-        if (runs.length == 0) {
+        const workflowRuns = workflowRunsResponse['workflow_runs'];
+        if (workflowRuns.length == 0) {
             indicator.setState({ state: StatusBarState.REPO_WITHOUT_ACTIONS });
             return;
         }
 
         /// Notification
         const previousState = indicator.state;
-        indicator.setLatestWorkflowRun(runs[0]);
+        indicator.setLatestWorkflowRun(workflowRuns[0]);
         const currentState = indicator.state;
 
         if (indicator.shouldShowCompletedNotification(previousState, currentState)) {

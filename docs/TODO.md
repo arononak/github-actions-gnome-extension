@@ -46,7 +46,7 @@
 - [ ] Memory allocations - check memory leaks
 - [ ] Organization billings
 - [ ] EN / PL - translations
-- [ ] No internet connection
+- [x] No internet connection
 - [x] No workflow run - status resolve
 - [ ] gists
 - [x] prefs.js - uppercase status ON/OFF

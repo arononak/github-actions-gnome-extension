@@ -43,6 +43,12 @@ var StatusBarState = {
         color: AppIconColor.GRAY,
         coloredModeColor: AppIconColor.GRAY,
     },
+    LOGGED_NO_INTERNET_CONNECTION: {
+        text: () => 'No internet connection',
+        simpleModeShowText: true,
+        color: AppIconColor.GRAY,
+        coloredModeColor: AppIconColor.GRAY,
+    },
     LOADING: {
         text: () => 'Loading',
         simpleModeShowText: false,
@@ -244,6 +250,10 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             return;
         }
 
+        if (this.state == StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
+            return;
+        }
+
         this.setLoadingTexts();
 
         if (this.state == StatusBarState.LOADING) {
@@ -324,7 +334,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.networkContainer.add(this.networkLabel);
         this.networkButton.set_child(this.networkContainer);
 
-        if (this.isLogged()) {
+        if (this.isLogged() && this.state != StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
             this.leftBox.add(this.networkButton);
         }
 
@@ -360,7 +370,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         /// Logged Menu
-        if (this.isLogged()) {
+        if (this.isLogged() && this.state != StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
             this.initLoggedMenu();
         }
