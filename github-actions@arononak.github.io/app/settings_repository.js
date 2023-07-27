@@ -52,4 +52,40 @@ var SettingsRepository = class {
 
         return true;
     }
+
+    dataConsumptionPerHour() {
+        const packageSizeInBytes = this.settings.get_int('package-size-in-bytes');
+        const refreshTime = this.fetchRefreshTime();
+        const dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60 * 60);
+
+        return `${bytesToString(dataConsumptionPerHour)}/h`;
+    }
+
+    fullDataConsumptionPerHour() {
+        const packageSizeInBytes = this.settings.get_int('cold-package-size-in-bytes');
+        const refreshTime = this.fetchRefreshFullUpdateTime();
+        const dataConsumptionPerHour = ((packageSizeInBytes / refreshTime) * 60);
+
+        return `${bytesToString(dataConsumptionPerHour)}/h`;
+    }
+
+    fullDataConsumptionPerHour() {
+        const hotRefreshSize = this.settings.get_int('package-size-in-bytes');
+        const hotRefreshTime = this.fetchRefreshTime();
+        const hotConsumption = ((hotRefreshSize / hotRefreshTime) * 60 * 60);
+
+        const coldRefreshSize = this.settings.get_int('cold-package-size-in-bytes');
+        const coldRefreshTime = this.fetchRefreshFullUpdateTime();
+        const coldConsumption = ((coldRefreshSize / coldRefreshTime) * 60);
+
+        return `${bytesToString(hotConsumption + coldConsumption)}/h`;
+    }
+
+    updateTransfer(jsonObjects) {
+        const sizeInBytes = jsonObjects
+            .filter(e => e != null)
+            .reduce((sum, object) => sum + object._size_, 0);
+
+        this.updateColdPackageSize(sizeInBytes);
+    }
 }

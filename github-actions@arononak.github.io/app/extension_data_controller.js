@@ -5,7 +5,6 @@ const GETTEXT_DOMAIN = 'github-actions-extension';
 const extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const { GithubApiRepository } = extension.imports.app.github_api_repository;
-const { DataUsageController } = extension.imports.app.data_usage_controller;
 const { SettingsRepository } = extension.imports.app.settings_repository;
 const { StatusBarState } = extension.imports.app.status_bar_indicator;
 
@@ -130,7 +129,7 @@ async function stateRefresh(settings, settingsRepository, indicator, githubApiRe
     }
 }
 
-async function dataRefresh(settings, settingsRepository, indicator, githubApiRepository, dataUsageController, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
+async function dataRefresh(settings, settingsRepository, indicator, githubApiRepository, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
     try {
         if (indicator.isLogged == false) {
             return;
@@ -175,7 +174,7 @@ async function dataRefresh(settings, settingsRepository, indicator, githubApiRep
         });
 
         if (!indicator.isCorrectState()) {
-            dataUsageController.updateTransfer(userObjects);
+            settingsRepository.updateTransfer(userObjects);
             return;
         }
 
@@ -199,7 +198,7 @@ async function dataRefresh(settings, settingsRepository, indicator, githubApiRep
             branches,
         ];
 
-        dataUsageController.updateTransfer([...userObjects, ...repoObjects]);
+        settingsRepository.updateTransfer([...userObjects, ...repoObjects]);
 
         indicator.setWatchedRepo(userRepo);
         indicator.setWorkflows(workflows === undefined ? null : workflows['workflows']);
@@ -216,14 +215,14 @@ async function dataRefresh(settings, settingsRepository, indicator, githubApiRep
     }
 }
 
-async function githubActionsRefresh(settings, settingsRepository, indicator, githubApiRepository, dataUsageController, onBuildCompleted) {
+async function githubActionsRefresh(settings, settingsRepository, indicator, githubApiRepository, onBuildCompleted) {
     try {
         const isLogged = await githubApiRepository.isLogged();
         if (isLogged == false) {
             return;
         }
 
-        const transferTerxt = dataUsageController.fullDataConsumptionPerHour();
+        const transferTerxt = settingsRepository.fullDataConsumptionPerHour();
         indicator.setTransferText(transferTerxt);
 
         if (!settingsRepository.isRepositoryEntered(settings)) {
@@ -277,7 +276,6 @@ var ExtensionDataController = class {
         this.settings = settings;
         this.githubApiRepository = new GithubApiRepository(settings);
         this.settingsRepository = new SettingsRepository(settings);
-        this.dataUsageController = new DataUsageController(settings);
     }
 
     fetchIsInstalledCli = async () => await this.githubApiRepository.isInstalledCli();
@@ -300,7 +298,6 @@ var ExtensionDataController = class {
             this.settingsRepository,
             this.indicator,
             this.githubApiRepository,
-            this.dataUsageController,
             (owner, repo, conclusion) => this.onBuildCompleted(owner, repo, conclusion),
         );
     }
@@ -311,7 +308,6 @@ var ExtensionDataController = class {
             this.settingsRepository,
             this.indicator,
             this.githubApiRepository,
-            this.dataUsageController,
             this.onRepoSetAsWatched,
             (runId, runName) => this.removeWorkflowRun(runId, runName),
             () => this.refresh(),
