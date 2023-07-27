@@ -4,7 +4,7 @@ const { Adw, Gio, Gtk, GLib } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const extension = imports.misc.extensionUtils.getCurrentExtension();
-const { PrefsController } = extension.imports.app.prefs_controller;
+const { PrefsDataController } = extension.imports.app.prefs_data_controller;
 
 function init() { }
 
@@ -76,7 +76,7 @@ function createToggleRow({ title, subtitle, value, onSwitchButtonCreated }) {
 function fillPreferencesWindow(window) {
     window.set_default_size(550, 870);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
-    const prefsController = new PrefsController(settings);
+    const prefsDataController = new PrefsDataController(settings);
 
     const {
         owner,
@@ -92,19 +92,19 @@ function fillPreferencesWindow(window) {
         uppercaseMode,
 
         version,
-    } = prefsController.fetchData();
+    } = prefsDataController.fetchData();
 
     /// Repository
     const ownerRow = createEntityRow({
         title: 'Owner',
         text: owner,
-        onChanged: (text) => prefsController.updateOwner(text),
+        onChanged: (text) => prefsDataController.updateOwner(text),
     });
 
     const repoRow = createEntityRow({
         title: 'Repo',
         text: repo,
-        onChanged: (text) => prefsController.updateRepo(text),
+        onChanged: (text) => prefsDataController.updateRepo(text),
     });
 
     /// Appearance
@@ -169,11 +169,12 @@ function fillPreferencesWindow(window) {
     refreshStatusGroup.add(fullRefreshRow);
     refreshStatusGroup.add(paginationRow);
 
-    const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
     const githubButton = new Gtk.Button({ label: 'Give me a star!' });
-    githubButton.connect('clicked', () => prefsController.onStarClicked());
+    githubButton.connect('clicked', () => prefsDataController.onStarClicked());
     githubButton.margin_top = 8;
     githubButton.margin_bottom = 8;
+    
+    const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
     starRow.add_suffix(githubButton);
 
     const versionRow = new Adw.ActionRow({ title: 'Version:' });
