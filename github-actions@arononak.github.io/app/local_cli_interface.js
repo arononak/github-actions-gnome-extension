@@ -84,11 +84,6 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
 
                 if (proc.get_successful()) {
                     if (status === true && stdout.length === 0 && stderr.length === 0) {
-                        resolve(true);
-                        return;
-                    }
-
-                    if (method == 'DELETE') {
                         resolve('success');
                         return;
                     }

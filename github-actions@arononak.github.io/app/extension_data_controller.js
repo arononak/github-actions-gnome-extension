@@ -27,7 +27,7 @@ async function fetchUserData(settings, settingsRepository, githubApiRepository, 
             /// Hidden Mode
             const { owner, repo } = settingsRepository.ownerAndRepo(settings);
             const isStarred = await githubApiRepository.checkIsRepoStarred(owner, repo);
-            settingsRepository.updateHiddenMode(isStarred);
+            settingsRepository.updateHiddenMode(isStarred === 'success');
 
             if (simpleMode) {
                 resolve({
