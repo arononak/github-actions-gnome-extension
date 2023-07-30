@@ -31,6 +31,9 @@ var GithubApiRepository = class {
     fetchUserRepo = async (owner, repo) =>
         cliInterface.executeGithubCliCommand('GET', `repos/${owner}/${repo}`);
 
+    checkIsRepoStarred = async (owner, repo) =>
+        cliInterface.executeGithubCliCommand('GET', `user/starred/${owner}/${repo}`);
+
     downloadArtifactFile = async (downloadUrl, filename) =>
         cliInterface.downloadArtifactFile(downloadUrl, filename);
 

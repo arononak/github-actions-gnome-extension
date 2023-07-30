@@ -56,7 +56,12 @@ class Extension {
             const isInstalledCli = await extensionDataController.fetchIsInstalledCli();
             const isLogged = await extensionDataController.fetchIsLogged();
 
-            const { simpleMode, coloredMode, uppercaseMode } = extensionDataController.fetchAppearanceSettings();
+            const {
+                simpleMode,
+                coloredMode,
+                uppercaseMode,
+                extendedColoredMode,
+            } = extensionDataController.fetchAppearanceSettings();
 
             this.indicator = new StatusBarIndicator({
                 isInstalledCli: isInstalledCli,
@@ -64,6 +69,7 @@ class Extension {
                 simpleMode: simpleMode,
                 coloredMode: coloredMode,
                 uppercaseMode: uppercaseMode,
+                extendedColoredMode: extendedColoredMode,
                 refreshCallback: () => {
                     extensionDataController.refresh();
                 },

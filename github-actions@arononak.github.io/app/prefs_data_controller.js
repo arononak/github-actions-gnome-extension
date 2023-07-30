@@ -24,6 +24,8 @@ var PrefsDataController = class {
         const coloredMode = this.settingsRepository.fetchColoredMode();
         const uppercaseMode = this.settingsRepository.fetchUppercaseMode();
 
+        const hiddenMode = this.settingsRepository.fetchHiddenMode();
+
         return {
             "owner": owner,
             "repo": repo,
@@ -36,6 +38,8 @@ var PrefsDataController = class {
             "simpleMode": simpleMode,
             "coloredMode": coloredMode,
             "uppercaseMode": uppercaseMode,
+
+            "hiddenMode": hiddenMode,
 
             "version": VERSION,
         };

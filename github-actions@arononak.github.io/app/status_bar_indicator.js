@@ -112,6 +112,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         simpleMode = false,
         coloredMode = false,
         uppercaseMode = false,
+        extendedColoredMode = false,
         isInstalledCli = false,
         isLogged = false,
         refreshCallback = () => { },
@@ -123,6 +124,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.simpleMode = simpleMode;
         this.coloredMode = coloredMode;
         this.uppercaseMode = uppercaseMode;
+        this.extendedColoredMode = extendedColoredMode;
 
         this.refreshCallback = refreshCallback;
         this.logoutCallback = logoutCallback;
@@ -150,6 +152,11 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
     setUppercaseMode = (mode) => {
         this.uppercaseMode = mode;
+        this.refreshState();
+    };
+
+    setExtendedColoredMode = (mode) => {
+        this.extendedColoredMode = mode;
         this.refreshState();
     };
 
@@ -193,12 +200,17 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                 : statusBarState.text();
         }
 
+        if (this.extendedColoredMode == true) {
+            this.setStatusTextColor(this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color);
+        } else {
+            this.setStatusTextColor(AppIconColor.WHITE);
+        }
+
         this.setStatusIconColor(this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color);
     }
 
     initStatusBarIndicator() {
         this.label = new St.Label({
-            style_class: 'github-actions-label',
             text: '',
             y_align: Clutter.ActorAlign.CENTER,
             y_expand: true,
@@ -217,6 +229,33 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         this.icon.gicon = createAppGioIcon(appIconColor);
+    }
+
+    setStatusTextColor(appIconColor) {
+        let textColor = '#FFFFFF';
+
+        switch (appIconColor) {
+            case AppIconColor.WHITE:
+                textColor = '#FFFFFF';
+                break;
+            case AppIconColor.BLACK:
+                textColor = '#555555';
+                break;
+            case AppIconColor.GRAY:
+                textColor = '#757575';
+                break;
+            case AppIconColor.GREEN:
+                textColor = '#00FF66';
+                break;
+            case AppIconColor.BLUE:
+                textColor = '#64B5F6';
+                break;
+            case AppIconColor.RED:
+                textColor = '#EF5350';
+                break;
+        }
+
+        this.label.style = `color: ${textColor};`;
     }
 
     refreshBoredIcon() {

@@ -18,12 +18,16 @@ async function fetchUserData(settings, settingsRepository, githubApiRepository, 
 
             const login = user['login'];
 
-            const pagination = settingsRepository.fetchPagination(settings);
-
+            
             /// Simple Mode
             const minutes = await githubApiRepository.fetchUserBillingActionsMinutes(login);
             const packages = await githubApiRepository.fetchUserBillingPackages(login);
             const sharedStorage = await githubApiRepository.fetchUserBillingSharedStorage(login);
+            
+            /// Hidden Mode
+            const { owner, repo } = settingsRepository.ownerAndRepo(settings);
+            const isStarred = await githubApiRepository.checkIsRepoStarred(owner, repo);
+            settingsRepository.updateHiddenMode(isStarred);
 
             if (simpleMode) {
                 resolve({
@@ -32,9 +36,11 @@ async function fetchUserData(settings, settingsRepository, githubApiRepository, 
                     "packages": packages,
                     "sharedStorage": sharedStorage,
                 });
-
+                
                 return;
             }
+
+            const pagination = settingsRepository.fetchPagination(settings);
 
             /// Full Mode
             const starredList = await githubApiRepository.fetchUserStarred(login, pagination);
@@ -404,6 +410,11 @@ var ExtensionDataController = class {
             const uppercaseMode = settingsRepository.fetchUppercaseMode(settings);
             this.indicator.setUppercaseMode(uppercaseMode);
         });
+
+        this.settings.connect('changed::extended-colored-mode', (settings, key) => {
+            const extendedColoredMode = settingsRepository.fetchExtendedColoredMode(settings);
+            this.indicator.setExtendedColoredMode(extendedColoredMode);
+        });
     }
 
     async logout(indicator) {
@@ -441,11 +452,13 @@ var ExtensionDataController = class {
         const simpleMode = this.settingsRepository.fetchSimpleMode();
         const coloredMode = this.settingsRepository.fetchColoredMode();
         const uppercaseMode = this.settingsRepository.fetchUppercaseMode();
+        const extendedColoredMode = this.settingsRepository.fetchExtendedColoredMode();
 
         return {
             "simpleMode": simpleMode,
             "coloredMode": coloredMode,
             "uppercaseMode": uppercaseMode,
+            "extendedColoredMode": extendedColoredMode,
         };
     }
 }

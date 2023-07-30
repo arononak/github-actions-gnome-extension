@@ -74,10 +74,8 @@ function createToggleRow({ title, subtitle, value, onSwitchButtonCreated }) {
 }
 
 function fillPreferencesWindow(window) {
-    window.set_default_size(550, 870);
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
     const prefsDataController = new PrefsDataController(settings);
-
     const {
         owner,
         repo,
@@ -91,8 +89,13 @@ function fillPreferencesWindow(window) {
         coloredMode,
         uppercaseMode,
 
+        hiddenMode,
+
         version,
     } = prefsDataController.fetchData();
+
+    window.set_default_size(550, 870);
+
 
     /// Repository
     const ownerRow = createEntityRow({
@@ -169,19 +172,30 @@ function fillPreferencesWindow(window) {
     refreshStatusGroup.add(fullRefreshRow);
     refreshStatusGroup.add(paginationRow);
 
-    const githubButton = new Gtk.Button({ label: 'Give me a star!' });
-    githubButton.connect('clicked', () => prefsDataController.onStarClicked());
-    githubButton.margin_top = 8;
-    githubButton.margin_bottom = 8;
-    
-    const starRow = new Adw.ActionRow({ title: 'You love this extension ?' });
-    starRow.add_suffix(githubButton);
+    /// Other
+    const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
+    if (hiddenMode) {
+        const extendedColoredMode = createToggleRow({
+            title: 'Extended colored mode (Hidden feature)',
+            subtitle: 'More intense colored mode',
+            value: coloredMode,
+            onSwitchButtonCreated: (switchButton) => settings.bind('extended-colored-mode', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
+        });
+
+        otherGroup.add(extendedColoredMode);
+    } else {
+        const githubButton = new Gtk.Button({ label: 'Give me a star!' });
+        githubButton.connect('clicked', () => prefsDataController.onStarClicked());
+        githubButton.margin_top = 8;
+        githubButton.margin_bottom = 8;
+
+        const starRow = new Adw.ActionRow({ title: 'Unlock hidden features' });
+        starRow.add_suffix(githubButton);
+        otherGroup.add(starRow);
+    }
 
     const versionRow = new Adw.ActionRow({ title: 'Version:' });
     versionRow.add_suffix(new Gtk.Label({ label: version, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }));
-
-    const otherGroup = new Adw.PreferencesGroup({ title: 'Other' });
-    otherGroup.add(starRow);
     otherGroup.add(versionRow);
 
     const page = new Adw.PreferencesPage();

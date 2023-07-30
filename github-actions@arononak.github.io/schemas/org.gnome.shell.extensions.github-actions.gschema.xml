@@ -31,5 +31,11 @@
     <key name="uppercase-mode" type="b">
       <default>false</default>
     </key>
+    <key name="hidden-mode" type="b">
+      <default>false</default>
+    </key>
+    <key name="extended-colored-mode" type="b">
+      <default>false</default>
+    </key>
   </schema>
 </schemalist>

@@ -32,6 +32,10 @@ var SettingsRepository = class {
     fetchSimpleMode = () => this.settings.get_boolean('simple-mode');
     fetchColoredMode = () => this.settings.get_boolean('colored-mode');
     fetchUppercaseMode = () => this.settings.get_boolean('uppercase-mode');
+    fetchExtendedColoredMode = () => this.settings.get_boolean('extended-colored-mode');
+
+    fetchHiddenMode = () => this.settings.get_boolean('hidden-mode');
+    updateHiddenMode = (mode) => this.settings.set_boolean('hidden-mode', mode);
 
     ownerAndRepo() {
         const owner = this.fetchOwner(this.settings);
