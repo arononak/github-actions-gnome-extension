@@ -34,26 +34,29 @@
 - [x] GitHub green icon for success, blue for loading
 - [x] Branches / Tags
 - [x] check githib cli installation
-- [ ] Workflow run - cancel/rerun
-- [ ] give ma a star - request & notificaton
+- [x] give ma a star - request & notificaton
 - [x] Notification octocat icon
+- [x] No internet connection
+- [x] No workflow run - status resolve
+- [x] prefs.js - uppercase status ON/OFF
+- [x] prefs.js - refactor
+- [ ] GitHub logo - copyright allow to change color / remove icon from extension :/
+- [ ] ExtendedColoredMode - Transfer border line - status color
+- [ ] Refactor status_bar_indicator.js to callbacks
+- [ ] thyttan - "Configure icon position in top panel"
+- [ ] Workflow run - cancel/rerun
 - [ ] Performance
 - [ ] Missing scopes - information in the extension
 - [ ] QuickSettings status icon - tint
-- [ ] Lint
-- [ ] Adjust to Github Enterprice
-- [ ] More notifications
+- [ ] README.md gif preview
+- [ ] async operation - progress bar or something else
 - [ ] Memory allocations - check memory leaks
 - [ ] Organization billings
 - [ ] EN / PL - translations
-- [x] No internet connection
-- [x] No workflow run - status resolve
+- [ ] Lint
+- [ ] Adjust to Github Enterprice
+- [ ] More notifications
 - [ ] gists
-- [x] prefs.js - uppercase status ON/OFF
-- [x] prefs.js - refactor
-- [ ] README.md gif preview
-- [ ] ColoredMode - repoisotryItem - symbolic
-- [ ] async operation - progress bar or something else
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 - [ ] Multirepo
