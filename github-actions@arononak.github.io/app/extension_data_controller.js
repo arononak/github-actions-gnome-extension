@@ -85,6 +85,7 @@ async function fetchRepoData(settings, settingsRepository, githubApiRepository, 
             const stargazers = await githubApiRepository.fetchStargazers(owner, repo, pagination);
             const releases = await githubApiRepository.fetchReleases(owner, repo, pagination);
             const branches = await githubApiRepository.fetchBranches(owner, repo, pagination);
+            const tags = await githubApiRepository.fetchTags(owner, repo, pagination);
 
             resolve({
                 "runs": runs,
@@ -95,6 +96,7 @@ async function fetchRepoData(settings, settingsRepository, githubApiRepository, 
                 "stargazers": stargazers,
                 "releases": releases,
                 "branches": branches,
+                "tags": tags,
             });
         } catch (error) {
             logError(error);
@@ -186,6 +188,7 @@ async function dataRefresh(settings, settingsRepository, indicator, githubApiRep
             runs,
             releases,
             branches,
+            tags,
         } = await fetchRepoData(settings, settingsRepository, githubApiRepository, simpleMode);
 
         const repoObjects = [
@@ -210,6 +213,7 @@ async function dataRefresh(settings, settingsRepository, indicator, githubApiRep
         });
         indicator.setReleases(releases);
         indicator.setBranches(branches);
+        indicator.setTags(tags);
     } catch (error) {
         logError(error);
     }

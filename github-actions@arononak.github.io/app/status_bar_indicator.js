@@ -277,6 +277,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.runsMenuItem?.setHeaderItemText(loadingText);
         this.releasesMenuItem?.setHeaderItemText(loadingText);
         this.branchesMenuItem?.setHeaderItemText(loadingText);
+        this.tagsMenuItem?.setHeaderItemText(loadingText);
         this.artifactsMenuItem?.setHeaderItemText(loadingText);
         this.twoFactorItem?.label.set_text(loadingText);
         this.minutesItem?.label.set_text(loadingText);
@@ -441,6 +442,10 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             /// Branches
             this.branchesMenuItem = new ExpandedMenuItem('media-playlist-consecutive-symbolic', '');
             this.menu.addMenuItem(this.branchesMenuItem);
+
+            /// Tags
+            this.tagsMenuItem = new ExpandedMenuItem('edit-clear-symbolic', '');
+            this.menu.addMenuItem(this.tagsMenuItem);
 
             /// Stargazers
             this.stargazersMenuItem = new ExpandedMenuItem('starred-symbolic', '');
@@ -785,6 +790,25 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         if (this.branchesMenuItem != null) {
             this.branchesMenuItem.setHeaderItemText(`Branches: ${branches.length}`);
             this.branchesMenuItem.submitItems(branches.map(e => toItem(e)));
+        }
+    }
+
+    setTags(tags) {
+        if (tags === null || tags === undefined) return;
+
+        function toItem(e) {
+            return {
+                "iconName": 'edit-clear-symbolic',
+                "text": e['name'],
+                "callback": () => openUrl(e['commit']['url']),
+                "endIconName": 'folder-download-symbolic',
+                "endIconCallback": () => openUrl(e['zipball_url'])
+            };
+        }
+
+        if (this.tagsMenuItem != null) {
+            this.tagsMenuItem.setHeaderItemText(`Tags: ${tags.length}`);
+            this.tagsMenuItem.submitItems(tags.map(e => toItem(e)));
         }
     }
 };

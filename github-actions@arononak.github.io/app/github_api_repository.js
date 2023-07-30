@@ -65,6 +65,9 @@ var GithubApiRepository = class {
     fetchBranches = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand('GET', `repos/${owner}/${repo}/branches`, pagination);
 
+    fetchTags = async (owner, repo, pagination) =>
+        cliInterface.executeGithubCliCommand('GET', `repos/${owner}/${repo}/tags`, pagination);
+
     /// Delete
     deleteWorkflowRun = async (owner, repo, runId) =>
         cliInterface.executeGithubCliCommand('DELETE', `repos/${owner}/${repo}/actions/runs/${runId}`);
