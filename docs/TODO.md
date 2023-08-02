@@ -44,6 +44,7 @@
 - [ ] ExtendedColoredMode - Transfer border line - status color
 - [ ] Refactor status_bar_indicator.js to callbacks
 - [ ] thyttan - "Configure icon position in top panel"
+- [ ] UpperCase mode - Full Popup
 - [ ] Workflow run - cancel/rerun
 - [ ] Performance
 - [ ] Missing scopes - information in the extension
