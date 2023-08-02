@@ -20,82 +20,84 @@ const {
 } = extension.imports.app.utils;
 
 const {
-    AppIconColor,
+    AppStatusColor,
     appIcon,
     createAppGioIcon,
+    createAppGioIconInner,
     RoundedButton,
     ExpandedMenuItem,
     IconPopupMenuItem,
     showConfirmDialog,
     conclusionIconName,
+    isDarkTheme,
 } = extension.imports.app.widgets;
 
 var StatusBarState = {
     NOT_INSTALLED_CLI: {
         text: () => 'Not installed CLI',
         simpleModeShowText: true,
-        color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.GRAY,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
     },
     NOT_LOGGED: {
         text: () => 'Not logged in',
         simpleModeShowText: true,
-        color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.GRAY,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
     },
     LOGGED_NO_INTERNET_CONNECTION: {
         text: () => 'No internet connection',
         simpleModeShowText: true,
-        color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.GRAY,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
     },
     LOADING: {
         text: () => 'Loading',
         simpleModeShowText: false,
-        color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.BLUE,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.BLUE,
     },
     LOGGED_NOT_CHOOSED_REPO: {
         text: () => 'No repo entered',
         simpleModeShowText: true,
-        color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.GRAY,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
     },
     INCORRECT_REPOSITORY: {
         text: () => 'Incorrect repository',
         simpleModeShowText: true,
-        color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.GRAY,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
     },
     REPO_WITHOUT_ACTIONS: {
         text: () => 'Repo without actions',
         simpleModeShowText: true,
-        color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.GRAY,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
     },
     IN_PROGRESS: {
         text: () => 'In progress',
         simpleModeShowText: false,
-        color: AppIconColor.GRAY,
-        coloredModeColor: AppIconColor.BLUE,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.BLUE,
     },
     COMPLETED_CANCELLED: {
         text: () => 'Cancelled',
         simpleModeShowText: false,
-        color: AppIconColor.RED,
-        coloredModeColor: AppIconColor.RED,
+        color: AppStatusColor.RED,
+        coloredModeColor: AppStatusColor.RED,
     },
     COMPLETED_FAILURE: {
         text: () => 'Failure',
         simpleModeShowText: false,
-        color: AppIconColor.RED,
-        coloredModeColor: AppIconColor.RED,
+        color: AppStatusColor.RED,
+        coloredModeColor: AppStatusColor.RED,
     },
     COMPLETED_SUCCESS: {
         text: () => 'Success',
         simpleModeShowText: false,
-        color: AppIconColor.WHITE,
-        coloredModeColor: AppIconColor.GREEN,
+        color: AppStatusColor.WHITE,
+        coloredModeColor: AppStatusColor.GREEN,
     },
 }
 
@@ -191,6 +193,16 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                 || currentState === StatusBarState.COMPLETED_CANCELLED);
     }
 
+    initStatusBarIndicator() {
+        this.label = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
+        this.icon = new St.Icon({ style_class: 'system-status-icon' });
+
+        this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+        this.topBox.add_child(this.icon);
+        this.topBox.add_child(this.label);
+        this.add_child(this.topBox);
+    }
+
     updateGithubActionsStatus(statusBarState) {
         if (this.simpleMode == true && statusBarState.simpleModeShowText == false) {
             this.label.text = '';
@@ -200,66 +212,39 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                 : statusBarState.text();
         }
 
-        if (this.extendedColoredMode == true) {
-            this.setStatusTextColor(this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color);
-        } else {
-            this.setStatusTextColor(AppIconColor.WHITE);
-        }
-
-        this.setStatusIconColor(this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color);
+        this.setStatusColor(
+            this.coloredMode,
+            this.extendedColoredMode,
+            this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color,
+        );
     }
 
-    initStatusBarIndicator() {
-        this.label = new St.Label({
-            text: '',
-            y_align: Clutter.ActorAlign.CENTER,
-            y_expand: true,
+    setStatusColor(coloredMode, extendedColoredMode, appStatusColor) {
+        this.icon.gicon = createAppGioIcon(appStatusColor);
+
+        this.label.style = extendedColoredMode
+            ? `color: ${appStatusColor.color};`
+            : `color: ${AppStatusColor.WHITE};`;
+
+        this.networkLabel.style
+            = `margin-left: 8px; margin-top: 2px; margin-right: 2px; color: ${isDarkTheme() ? appStatusColor.textColorDark : appStatusColor.textColor}`;
+
+        this.networkContainer.style = coloredMode && extendedColoredMode
+            ? `background-color: ${appStatusColor.backgroundColor}; border-color: ${appStatusColor.borderColor};`
+            : ``;
+    }
+
+    refreshGithubIcon() {
+        this.networkIcon = new St.Icon({
+            gicon: this.extendedColoredMode
+                ? createAppGioIconInner(this.state.coloredModeColor)
+                : appIcon()
         });
+        this.networkIcon.style = 'margin-left: 2px;';
 
-        this.icon = new St.Icon({ style_class: 'system-status-icon' });
-        this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-        this.topBox.add_child(this.icon);
-        this.topBox.add_child(this.label);
-        this.add_child(this.topBox);
-    }
-
-    setStatusIconColor(appIconColor) {
-        if (this.icon == null) {
-            return;
-        }
-
-        this.icon.gicon = createAppGioIcon(appIconColor);
-    }
-
-    setStatusTextColor(appIconColor) {
-        let textColor = '#FFFFFF';
-
-        switch (appIconColor) {
-            case AppIconColor.WHITE:
-                textColor = '#FFFFFF';
-                break;
-            case AppIconColor.BLACK:
-                textColor = '#555555';
-                break;
-            case AppIconColor.GRAY:
-                textColor = '#757575';
-                break;
-            case AppIconColor.GREEN:
-                textColor = '#00FF66';
-                break;
-            case AppIconColor.BLUE:
-                textColor = '#64B5F6';
-                break;
-            case AppIconColor.RED:
-                textColor = '#EF5350';
-                break;
-        }
-
-        this.label.style = `color: ${textColor};`;
-    }
-
-    refreshBoredIcon() {
-        this.boredButton.child = new St.Icon({ gicon: appIcon() });
+        this.networkContainer.remove_all_children();
+        this.networkContainer.add(this.networkIcon);
+        this.networkContainer.add(this.networkLabel);
     }
 
     refreshState() {
@@ -276,10 +261,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         this.state = state;
-        this.updateGithubActionsStatus(state);
-
         this.menu.removeAll();
         this.initPopupMenu();
+        this.updateGithubActionsStatus(state);
 
         if (this.state == StatusBarState.NOT_INSTALLED_CLI) {
             return;
@@ -363,25 +347,18 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.menu.addMenuItem(this.bottomItem);
 
         /// Network transfer
-        this.networkContainer = new St.BoxLayout();
-        this.networkButton = new St.Button({ style_class: 'button github-actions-button-action' });
-        this.networkButton.connect('clicked', () => ExtensionUtils.openPrefs());
-        this.networkIcon = new St.Icon({ icon_name: 'network-wireless-symbolic', icon_size: 20 });
-        this.networkIcon.style = 'margin-left: 2px;';
-        this.networkLabel = new St.Label();
-        this.networkLabel.style = 'margin-left: 8px; margin-top: 2px; margin-right: 2px;';
-        this.networkContainer.add(this.networkIcon);
-        this.networkContainer.add(this.networkLabel);
+        this.networkLabel = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
+
+        this.networkContainer = new St.BoxLayout({ style_class: 'button github-actions-button-action' });
+        this.refreshGithubIcon();
+
+        this.networkButton = new St.Button();
+        this.networkButton.connect('clicked', () => openUrl('https://api.github.com/octocat'));
         this.networkButton.set_child(this.networkContainer);
 
         if (this.isLogged() && this.state != StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
             this.leftBox.add(this.networkButton);
         }
-
-        /// Bored
-        this.boredButton = new RoundedButton({ icon: new St.Icon({ gicon: createAppGioIcon(AppIconColor.WHITE) }) });
-        this.boredButton.connect('clicked', () => openUrl('https://api.github.com/octocat'));
-        this.rightBox.add_actor(this.boredButton);
 
         /// Settings
         this.settingsItem = new RoundedButton({ iconName: 'system-settings-symbolic' });
@@ -553,7 +530,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
         const userLabelText = (userName == null || userEmail == null)
             ? 'Not logged'
-            : `${userName} (${userEmail})\n\nJoined GitHub on: ${formatDate(createdAt)}`;
+            : `${userName} (${userEmail}) \n\nJoined GitHub on: ${formatDate(createdAt)} `;
 
         if (this.userMenuItem != null) {
             this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl));
@@ -563,7 +540,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.twoFactorItem != null) {
-            this.twoFactorItem.label.text = `2FA: ${(twoFactorEnabled == true ? 'Enabled' : 'Disabled')}`;
+            this.twoFactorItem.label.text = `2FA: ${(twoFactorEnabled == true ? 'Enabled' : 'Disabled')} `;
         }
     }
 
@@ -608,7 +585,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.starredMenuItem != null) {
-            this.starredMenuItem.setHeaderItemText(`Starred: ${starred.length}`);
+            this.starredMenuItem.setHeaderItemText(`Starred: ${starred.length} `);
             this.starredMenuItem.submitItems(starred.map(e => toItem(e)));
         }
     }
@@ -625,7 +602,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.followersMenuItem != null) {
-            this.followersMenuItem.setHeaderItemText(`Followers: ${followers.length}`);
+            this.followersMenuItem.setHeaderItemText(`Followers: ${followers.length} `);
             this.followersMenuItem.submitItems(followers.map(e => toItem(e)));
         }
     }
@@ -642,7 +619,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.followingMenuItem != null) {
-            this.followingMenuItem.setHeaderItemText(`Following: ${following.length}`);
+            this.followingMenuItem.setHeaderItemText(`Following: ${following.length} `);
             this.followingMenuItem.submitItems(following.map(e => toItem(e)));
         }
     }
@@ -658,7 +635,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
             return {
                 "iconName": 'folder-symbolic',
-                "text": `${createdAt} - (${visibility}) - ${name}`,
+                "text": `${createdAt} - (${visibility}) - ${name} `,
                 "callback": () => openUrl(e['html_url']),
                 "endButtonText": 'Watch',
                 "endButtonCallback": () => onWatchCallback(owner, name),
@@ -666,7 +643,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.reposMenuItem != null) {
-            this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length}`);
+            this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length} `);
             this.reposMenuItem.submitItems(
                 repos
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
@@ -681,17 +658,17 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
         if (this.repositoryMenuItem != null) {
             this.repositoryMenuItem.label.style = 'margin-left: 4px';
-            this.repositoryMenuItem.label.text = `${repo['full_name']}\n\nCreated at: ${formatDate(repo['created_at'])}`;
+            this.repositoryMenuItem.label.text = `${repo['full_name']} \n\nCreated at: ${formatDate(repo['created_at'])} `;
 
             this.repositoryUrl = repo['html_url'];
         }
 
         if (this.repositoryPrivateItem != null) {
-            this.repositoryPrivateItem.label.text = `Private: ${(repo["private"] == true).toString()}`;
+            this.repositoryPrivateItem.label.text = `Private: ${(repo["private"] == true).toString()} `;
         }
 
         if (this.repositoryForkItem != null) {
-            this.repositoryForkItem.label.text = `Fork: ${(repo["fork"] == true).toString()}`;
+            this.repositoryForkItem.label.text = `Fork: ${(repo["fork"] == true).toString()} `;
         }
     }
 
@@ -707,7 +684,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.stargazersMenuItem != null) {
-            this.stargazersMenuItem.setHeaderItemText(`Stargazers: ${stargazers.length}`);
+            this.stargazersMenuItem.setHeaderItemText(`Stargazers: ${stargazers.length} `);
             this.stargazersMenuItem.submitItems(stargazers.map(e => toItem(e)));
         }
     }
@@ -724,7 +701,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.workflowsMenuItem != null) {
-            this.workflowsMenuItem.setHeaderItemText(`Workflows: ${workflows.length}`);
+            this.workflowsMenuItem.setHeaderItemText(`Workflows: ${workflows.length} `);
             this.workflowsMenuItem.submitItems(workflows.map(e => toItem(e)));
         }
     }
@@ -742,7 +719,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             const htmlUrl = e['html_url'];
 
             const date = formatDate(updatedAt);
-            const text = `(#${runNumber}) - ${date} - ${displayTitle}`;
+            const text = `(#${runNumber}) - ${date} - ${displayTitle} `;
 
             const iconName = conclusionIconName(conclusion);
 
@@ -755,17 +732,17 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                     showConfirmDialog({
                         title: 'Workflow run deletion',
                         description: 'Are you sure you want to delete this workflow run?',
-                        itemTitle: `${date} - ${displayTitle}`,
+                        itemTitle: `${date} - ${displayTitle} `,
                         itemDescription: name,
                         iconName: iconName,
-                        onConfirm: () => onDeleteWorkflowRun(id, `${displayTitle} ${name}`),
+                        onConfirm: () => onDeleteWorkflowRun(id, `${displayTitle} ${name} `),
                     });
                 }
             };
         }
 
         if (this.runsMenuItem != null) {
-            this.runsMenuItem.setHeaderItemText(`Workflow runs: ${runs.length}`);
+            this.runsMenuItem.setHeaderItemText(`Workflow runs: ${runs.length} `);
             this.runsMenuItem.submitItems(runs.map(e => toItem(e)));
         }
     }
@@ -782,7 +759,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.releasesMenuItem != null) {
-            this.releasesMenuItem.setHeaderItemText(`Releases: ${releases.length}`);
+            this.releasesMenuItem.setHeaderItemText(`Releases: ${releases.length} `);
             this.releasesMenuItem.submitItems(releases.map(e => toItem(e)));
         }
     }
@@ -797,7 +774,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             const size = bytesToString(e['size_in_bytes']);
             const filename = e['name'];
             const downloadUrl = e['archive_download_url'];
-            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${(e['expired'] == true ? ' - expired' : '')}`;
+            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${(e['expired'] == true ? ' - expired' : '')} `;
 
             return {
                 "iconName": 'folder-visiting-symbolic',
@@ -807,7 +784,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.artifactsMenuItem != null) {
-            this.artifactsMenuItem.setHeaderItemText(`Artifacts: ${artifacts.length}`);
+            this.artifactsMenuItem.setHeaderItemText(`Artifacts: ${artifacts.length} `);
             this.artifactsMenuItem.submitItems(artifacts.map(e => toItem(e)));
         }
     }
@@ -827,7 +804,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.branchesMenuItem != null) {
-            this.branchesMenuItem.setHeaderItemText(`Branches: ${branches.length}`);
+            this.branchesMenuItem.setHeaderItemText(`Branches: ${branches.length} `);
             this.branchesMenuItem.submitItems(branches.map(e => toItem(e)));
         }
     }
@@ -846,7 +823,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.tagsMenuItem != null) {
-            this.tagsMenuItem.setHeaderItemText(`Tags: ${tags.length}`);
+            this.tagsMenuItem.setHeaderItemText(`Tags: ${tags.length} `);
             this.tagsMenuItem.submitItems(tags.map(e => toItem(e)));
         }
     }

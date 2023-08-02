@@ -114,7 +114,7 @@ async function fetchRepoData(settings, settingsRepository, githubApiRepository, 
 /// Main 3 refresh Functions ----------------------------------------------------------------------
 async function stateRefresh(settings, settingsRepository, indicator, githubApiRepository) {
     try {
-        indicator.refreshBoredIcon();
+        indicator.refreshGithubIcon();
 
         const isInstalledCli = await githubApiRepository.isInstalledCli();
         if (isInstalledCli == false) {
@@ -357,7 +357,7 @@ var ExtensionDataController = class {
             this.githubActionsRefreshInterval = setInterval(() => this.refreshGithubActions(), githubActionsRefreshTime);
             this.dataRefreshInterval = setInterval(() => this.refreshData(), dataRefreshTime);
 
-            this.observeSettings(settingsRepository);
+            this.observeSettings(settingsRepository, indicator);
         } catch (error) {
             logError(error);
         }
@@ -375,7 +375,7 @@ var ExtensionDataController = class {
     }
 
     /// Others
-    observeSettings(settingsRepository) {
+    observeSettings(settingsRepository, indicator) {
         this.settings.connect('changed::refresh-time', (settings, key) => {
             this.stopRefreshing();
             this.startRefreshing({

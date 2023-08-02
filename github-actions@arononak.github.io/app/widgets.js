@@ -6,17 +6,79 @@ const PopupMenu = imports.ui.popupMenu;
 
 const extension = imports.misc.extensionUtils.getCurrentExtension();
 
-var AppIconColor = {
-    WHITE: `${extension.path}/assets/github_white.svg`,
-    BLACK: `${extension.path}/assets/github_black.svg`,
-    GRAY: `${extension.path}/assets/github_gray.svg`,
-    GREEN: `${extension.path}/assets/github_green.svg`,
-    BLUE: `${extension.path}/assets/github_blue.svg`,
-    RED: `${extension.path}/assets/github_red.svg`,
+var AppStatusColor = {
+    WHITE: {
+        icon: `${extension.path}/assets/github_white.svg`,
+        innerIcon: `${extension.path}/assets/github_white.svg`,
+        innerIconDark: `${extension.path}/assets/github_black.svg`,
+        color: '#FFFFFF',
+        textColor: '#555555',
+        textColorDark: '#FFFFFF',
+        backgroundColor: '#F0F0F0',
+        borderColor: '#F0F0F0',
+    },
+    BLACK: {
+        icon: `${extension.path}/assets/github_black.svg`,
+        innerIcon: `${extension.path}/assets/github_black.svg`,
+        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        color: '#555555',
+        textColor: '#555555',
+        textColorDark: '#FFFFFF',
+        backgroundColor: '#999999',
+        borderColor: '#F0F0F0',
+    },
+    GRAY: {
+        icon: `${extension.path}/assets/github_gray.svg`,
+        innerIcon: `${extension.path}/assets/github_black.svg`,
+        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        color: '#757575',
+        textColor: '#555555',
+        textColorDark: '#FFFFFF',
+        backgroundColor: '#9E9E9E',
+        borderColor: '#9E9E9E',
+    },
+    GREEN: {
+        icon: `${extension.path}/assets/github_green.svg`,
+        innerIcon: `${extension.path}/assets/github_black.svg`,
+        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        color: '#00FF66',
+        textColor: '#555555',
+        textColorDark: '#FFFFFF',
+        backgroundColor: '#43A047',
+        borderColor: '#2E7D32',
+    },
+    BLUE: {
+        icon: `${extension.path}/assets/github_blue.svg`,
+        innerIcon: `${extension.path}/assets/github_black.svg`,
+        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        color: '#64B5F6',
+        textColor: '#555555',
+        textColorDark: '#FFFFFF',
+        backgroundColor: '#2196F3',
+        borderColor: '#0D47A1',
+    },
+    RED: {
+        icon: `${extension.path}/assets/github_red.svg`,
+        innerIcon: `${extension.path}/assets/github_black.svg`,
+        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        color: '#EF5350',
+        textColor: '#555555',
+        textColorDark: '#FFFFFF',
+        backgroundColor: '#E53935',
+        borderColor: '#C62828',
+    },
 }
 
-function createAppGioIcon(iconColor) {
-    return Gio.icon_new_for_string(iconColor);
+function createAppGioIcon(appStatusColor) {
+    return Gio.icon_new_for_string(appStatusColor.icon);
+}
+
+function createAppGioIconInner(appStatusColor) {
+    const darkTheme = isDarkTheme();
+
+    return darkTheme
+        ? Gio.icon_new_for_string(appStatusColor.innerIconDark)
+        : Gio.icon_new_for_string(appStatusColor.innerIcon);
 }
 
 function conclusionIconName(conclusion) {
@@ -40,8 +102,8 @@ function appIcon() {
     const darkTheme = isDarkTheme();
 
     return darkTheme
-        ? createAppGioIcon(AppIconColor.WHITE)
-        : createAppGioIcon(AppIconColor.BLACK);
+        ? createAppGioIcon(AppStatusColor.WHITE)
+        : createAppGioIcon(AppStatusColor.BLACK);
 }
 
 var RoundedButton = class extends St.Button {
