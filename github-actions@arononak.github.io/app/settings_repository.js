@@ -33,6 +33,7 @@ var SettingsRepository = class {
     fetchColoredMode = () => this.settings.get_boolean('colored-mode');
     fetchUppercaseMode = () => this.settings.get_boolean('uppercase-mode');
     fetchExtendedColoredMode = () => this.settings.get_boolean('extended-colored-mode');
+    fetchIconPosition = () => this.settings.get_int('icon-position');
 
     fetchHiddenMode = () => this.settings.get_boolean('hidden-mode');
     updateHiddenMode = (mode) => this.settings.set_boolean('hidden-mode', mode);

@@ -23,6 +23,7 @@ var PrefsDataController = class {
         const simpleMode = this.settingsRepository.fetchSimpleMode();
         const coloredMode = this.settingsRepository.fetchColoredMode();
         const uppercaseMode = this.settingsRepository.fetchUppercaseMode();
+        const iconPosition = this.settingsRepository.fetchIconPosition();
 
         const hiddenMode = this.settingsRepository.fetchHiddenMode();
 
@@ -38,6 +39,7 @@ var PrefsDataController = class {
             "simpleMode": simpleMode,
             "coloredMode": coloredMode,
             "uppercaseMode": uppercaseMode,
+            "iconPosition": iconPosition,
 
             "hiddenMode": hiddenMode,
 

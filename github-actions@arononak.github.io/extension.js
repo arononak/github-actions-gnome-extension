@@ -46,7 +46,6 @@ class Extension {
     disable() {
         this.extensionDataController.stopRefreshing();
         this.disposeIndicator();
-
         this.extensionDataController = null;
         this.settings = null;
     }
@@ -61,6 +60,7 @@ class Extension {
                 coloredMode,
                 uppercaseMode,
                 extendedColoredMode,
+                iconPosition,
             } = extensionDataController.fetchAppearanceSettings();
 
             this.indicator = new StatusBarIndicator({
@@ -85,13 +85,17 @@ class Extension {
                 },
             });
 
-            Main.panel.addToStatusArea(this._uuid, this.indicator);
+            Main.panel.addToStatusArea(this._uuid, this.indicator, iconPosition);
 
             this.extensionDataController.startRefreshing({
                 indicator: this.indicator,
                 onRepoSetAsWatched: (owner, repo) => NotificationController.showSetAsWatched(owner, repo),
                 onDeleteWorkflowRun: (success, runName) => NotificationController.showDeleteWorkflowRun(success, runName),
                 onBuildCompleted: (owner, repo, conclusion) => NotificationController.showCompletedBuild(owner, repo, conclusion),
+                onReloadCallback: () => {
+                    this.disposeIndicator();
+                    this.initIndicator(this.extensionDataController);
+                }
             });
         } catch (error) {
             logError(error);

@@ -88,13 +88,14 @@ function fillPreferencesWindow(window) {
         simpleMode,
         coloredMode,
         uppercaseMode,
+        iconPosition,
 
         hiddenMode,
 
         version,
     } = prefsDataController.fetchData();
 
-    window.set_default_size(550, 870);
+    window.set_default_size(550, 940);
 
 
     /// Repository
@@ -131,10 +132,20 @@ function fillPreferencesWindow(window) {
         onSwitchButtonCreated: (switchButton) => settings.bind('uppercase-mode', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
     });
 
+    const iconPositionRow = createSpinButtonRow({
+        title: 'Icon position in top panel',
+        subtitle: `Suggested by @thyttan`,
+        value: iconPosition,
+        lower: -100,
+        upper: 100,
+        onSpinButtonCreated: (spinButton) => settings.bind('icon-position', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT),
+    });
+
     const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' });
     appearanceGroup.add(simpleModeRow);
     appearanceGroup.add(coloredModeRow);
     appearanceGroup.add(uppercaseModeRow);
+    appearanceGroup.add(iconPositionRow);
 
     /// Refresh
     const refreshStatusRow = createSpinButtonRow({

@@ -18,12 +18,11 @@ async function fetchUserData(settings, settingsRepository, githubApiRepository, 
 
             const login = user['login'];
 
-            
             /// Simple Mode
             const minutes = await githubApiRepository.fetchUserBillingActionsMinutes(login);
             const packages = await githubApiRepository.fetchUserBillingPackages(login);
             const sharedStorage = await githubApiRepository.fetchUserBillingSharedStorage(login);
-            
+
             /// Hidden Mode
             const { owner, repo } = settingsRepository.ownerAndRepo(settings);
             const isStarred = await githubApiRepository.checkIsRepoStarred(owner, repo);
@@ -36,7 +35,7 @@ async function fetchUserData(settings, settingsRepository, githubApiRepository, 
                     "packages": packages,
                     "sharedStorage": sharedStorage,
                 });
-                
+
                 return;
             }
 
@@ -340,6 +339,7 @@ var ExtensionDataController = class {
         onRepoSetAsWatched,
         onDeleteWorkflowRun,
         onBuildCompleted,
+        onReloadCallback,
     }) {
         this.indicator = indicator;
         this.onRepoSetAsWatched = onRepoSetAsWatched;
@@ -357,7 +357,7 @@ var ExtensionDataController = class {
             this.githubActionsRefreshInterval = setInterval(() => this.refreshGithubActions(), githubActionsRefreshTime);
             this.dataRefreshInterval = setInterval(() => this.refreshData(), dataRefreshTime);
 
-            this.observeSettings(settingsRepository, indicator);
+            this.observeSettings(settingsRepository, indicator, onReloadCallback);
         } catch (error) {
             logError(error);
         }
@@ -375,7 +375,7 @@ var ExtensionDataController = class {
     }
 
     /// Others
-    observeSettings(settingsRepository, indicator) {
+    observeSettings(settingsRepository, indicator, onReloadCallback) {
         this.settings.connect('changed::refresh-time', (settings, key) => {
             this.stopRefreshing();
             this.startRefreshing({
@@ -415,6 +415,10 @@ var ExtensionDataController = class {
             const extendedColoredMode = settingsRepository.fetchExtendedColoredMode(settings);
             this.indicator.setExtendedColoredMode(extendedColoredMode);
         });
+
+        this.settings.connect('changed::icon-position', (settings, key) => {
+            onReloadCallback();
+        });
     }
 
     async logout(indicator) {
@@ -453,12 +457,14 @@ var ExtensionDataController = class {
         const coloredMode = this.settingsRepository.fetchColoredMode();
         const uppercaseMode = this.settingsRepository.fetchUppercaseMode();
         const extendedColoredMode = this.settingsRepository.fetchExtendedColoredMode();
+        const iconPosition = this.settingsRepository.fetchIconPosition();
 
         return {
             "simpleMode": simpleMode,
             "coloredMode": coloredMode,
             "uppercaseMode": uppercaseMode,
             "extendedColoredMode": extendedColoredMode,
+            "iconPosition": iconPosition,
         };
     }
 }
