@@ -44,7 +44,7 @@
 - [ ] ExtendedColoredMode - Transfer border line - status color
 - [ ] Refactor status_bar_indicator.js to callbacks
 - [x] thyttan - "Configure icon position in top panel"
-- [x] makefile - copy from .local extension -> home/...
+- [ ] makefile - copy from .local extension -> home/...
 - [ ] UpperCase mode - Full Popup
 - [ ] Workflow run - cancel/rerun
 - [ ] Performance
