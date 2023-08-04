@@ -41,10 +41,10 @@
 - [x] prefs.js - uppercase status ON/OFF
 - [x] prefs.js - refactor
 - [ ] GitHub logo - copyright allow to change color / remove icon from extension :/
-- [ ] ExtendedColoredMode - Transfer border line - status color
+- [x] ExtendedColoredMode - Transfer border line - status color
 - [ ] Refactor status_bar_indicator.js to callbacks
 - [x] thyttan - "Configure icon position in top panel"
-- [ ] makefile - copy from .local extension -> home/...
+- [x] makefile - copy from .local extension -> home/...
 - [ ] UpperCase mode - Full Popup
 - [ ] Workflow run - cancel/rerun
 - [ ] Performance
