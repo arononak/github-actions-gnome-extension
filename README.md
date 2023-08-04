@@ -76,12 +76,13 @@ graph TD;
     stylesheet.css-->EXTENSION[GNOME EXTENSION]
 ```
 
-| ▶️ Start a gnome session in a window | 🔨 Build gnome-extensions package |
-| ------------------------------------ | --------------------------------- |
-| `make run`                           | `make build`                      |
+| ▶️ Start a gnome session in a window | ➡️ Copying the extension from the system | 🔨 Build gnome-extensions package |
+| ------------------------------------ | ---------------------------------------- | --------------------------------- |
+| `make run`                           | `make copy`                              | `make build`                      |
 
 ## 📝 © 2023 Aron Onak
 
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
 > This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
+

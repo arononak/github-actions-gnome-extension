@@ -12,3 +12,9 @@ build:
 		--force\
 		--extra-source=assets\
 		--extra-source=app
+
+EXTENSION_DIRECTORY := $(HOME)/.local/share/gnome-shell/extensions/github-actions@arononak.github.io
+copy:
+	rm -r -f ./github-actions@arononak.github.io
+	cp -r "$(EXTENSION_DIRECTORY)" ./
+	
