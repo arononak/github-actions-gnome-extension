@@ -220,6 +220,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setStatusColor(coloredMode, extendedColoredMode, appStatusColor) {
+        const darkTheme = isDarkTheme();
         this.icon.gicon = createAppGioIcon(appStatusColor);
 
         this.label.style = extendedColoredMode
@@ -227,11 +228,11 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             : `color: ${AppStatusColor.WHITE};`;
 
         this.networkLabel.style
-            = `margin-left: 8px; margin-top: 2px; margin-right: 2px; color: ${isDarkTheme() ? appStatusColor.textColorDark : appStatusColor.textColor}`;
+            = `margin-left: 8px; margin-top: 2px; margin-right: 2px; color: ${darkTheme ? appStatusColor.textColorDark : appStatusColor.textColor}`;
 
-        this.networkContainer.style = coloredMode && extendedColoredMode
-            ? `background-color: ${appStatusColor.backgroundColor}; border-color: ${appStatusColor.borderColor};`
-            : ``;
+        this.networkContainer.style = !(coloredMode && extendedColoredMode) ? `` :
+            `background-color: ${darkTheme ? appStatusColor.backgroundColorDark : appStatusColor.backgroundColor};` +
+            `border-color: ${darkTheme ? appStatusColor.borderColorDark : appStatusColor.borderColor};`;
     }
 
     refreshGithubIcon() {

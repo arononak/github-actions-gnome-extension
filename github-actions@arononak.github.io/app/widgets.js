@@ -16,6 +16,8 @@ var AppStatusColor = {
         textColorDark: '#FFFFFF',
         backgroundColor: '#F0F0F0',
         borderColor: '#F0F0F0',
+        backgroundColorDark: '#F0F0F0',
+        borderColorDark: '#F0F0F0',
     },
     BLACK: {
         icon: `${extension.path}/assets/github_black.svg`,
@@ -26,6 +28,8 @@ var AppStatusColor = {
         textColorDark: '#FFFFFF',
         backgroundColor: '#999999',
         borderColor: '#F0F0F0',
+        backgroundColorDark: '#999999',
+        borderColorDark: '#F0F0F0',
     },
     GRAY: {
         icon: `${extension.path}/assets/github_gray.svg`,
@@ -36,6 +40,8 @@ var AppStatusColor = {
         textColorDark: '#FFFFFF',
         backgroundColor: '#9E9E9E',
         borderColor: '#9E9E9E',
+        backgroundColorDark: '#9E9E9E',
+        borderColorDark: '#9E9E9E',
     },
     GREEN: {
         icon: `${extension.path}/assets/github_green.svg`,
@@ -44,8 +50,10 @@ var AppStatusColor = {
         color: '#00FF66',
         textColor: '#555555',
         textColorDark: '#FFFFFF',
-        backgroundColor: '#43A047',
-        borderColor: '#2E7D32',
+        backgroundColor: '#60D37A',
+        borderColor: '#2F883A',
+        backgroundColorDark: '#43A047',
+        borderColorDark: '#2E7D32',
     },
     BLUE: {
         icon: `${extension.path}/assets/github_blue.svg`,
@@ -54,8 +62,10 @@ var AppStatusColor = {
         color: '#64B5F6',
         textColor: '#555555',
         textColorDark: '#FFFFFF',
-        backgroundColor: '#2196F3',
-        borderColor: '#0D47A1',
+        backgroundColor: '#64B5F6',
+        borderColor: '#1565C0',
+        backgroundColorDark: '#2196F3',
+        borderColorDark: '#0D47A1',
     },
     RED: {
         icon: `${extension.path}/assets/github_red.svg`,
@@ -64,8 +74,10 @@ var AppStatusColor = {
         color: '#EF5350',
         textColor: '#555555',
         textColorDark: '#FFFFFF',
-        backgroundColor: '#E53935',
-        borderColor: '#C62828',
+        backgroundColor: '#EF6C57',
+        borderColor: '#E57364',
+        backgroundColorDark: '#E53935',
+        borderColorDark: '#C62828',
     },
 }
 

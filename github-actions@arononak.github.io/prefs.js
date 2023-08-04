@@ -134,7 +134,7 @@ function fillPreferencesWindow(window) {
 
     const iconPositionRow = createSpinButtonRow({
         title: 'Icon position in top panel',
-        subtitle: `Suggested by @thyttan`,
+        subtitle: `Suggested by @thyttan (Experimental)\nRestart Gnome after change`,
         value: iconPosition,
         lower: -100,
         upper: 100,
