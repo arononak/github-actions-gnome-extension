@@ -349,10 +349,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
         /// Network transfer
         this.networkLabel = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
-
-        this.networkContainer = new St.BoxLayout({ style_class: 'button github-actions-button-action' });
+        this.networkContainer = new St.BoxLayout({ style_class: 'github-actions-button-action' });
         this.refreshGithubIcon();
-
         this.networkButton = new St.Button();
         this.networkButton.connect('clicked', () => openUrl('https://api.github.com/octocat'));
         this.networkButton.set_child(this.networkContainer);
