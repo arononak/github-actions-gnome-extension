@@ -69,9 +69,11 @@ graph TD;
     stylesheet.css-->EXTENSION[GNOME EXTENSION]
 ```
 
-| ▶️ Start a gnome session in a window | ➡️ Copying the extension from the system | 🔨 Build gnome-extensions package |
-| ------------------------------------ | ---------------------------------------- | --------------------------------- |
-| `make run`                           | `make copy`                              | `make build`                      |
+| Steps                                    | Commands     |
+|:-----------------------------------------|:-------------|
+| ▶️ Start a gnome session in a window     | `make run`   |
+| ➡️ Copying the extension from the system | `make copy`  |
+| 🔨 Build gnome-extensions package        | `make build` |
 
 ## 📝 © 2023 Aron Onak
 
