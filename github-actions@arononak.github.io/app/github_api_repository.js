@@ -3,6 +3,7 @@
 const extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const cliInterface = extension.imports.app.local_cli_interface;
+const { removeWhitespace } = extension.imports.app.utils;
 
 var GithubApiRepository = class {
     constructor() { }
@@ -15,6 +16,17 @@ var GithubApiRepository = class {
 
     logoutUser = async () =>
         cliInterface.logoutUser();
+
+    tokenScopes = async () => {
+        const authStatus = await cliInterface.authStatus();
+        
+        const lastLine = authStatus.substring(authStatus.lastIndexOf('✓'));
+        const scopesLine = lastLine.substring(lastLine.indexOf(':') + 1);
+
+        return scopesLine
+            .removeWhitespace()
+            .split(',');
+    }
 
     fetchUser = async () =>
         cliInterface.executeGithubCliCommand('GET', 'user');

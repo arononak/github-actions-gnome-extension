@@ -10,6 +10,10 @@ function removeWhiteChars(str) {
     return str.replace(/\s+/g, '');
 }
 
+String.prototype.removeWhitespace = function () {
+    return this.replace(/\s+/g, '');
+};
+
 function formatDate(date) {
     return (new Date(date)).toLocaleFormat('%d.%m.%Y');
 }

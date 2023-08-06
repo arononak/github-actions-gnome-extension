@@ -14,12 +14,56 @@ async function logoutUser() {
     return executeCommandAsync(['gh', 'auth', 'logout', '--hostname', 'github.com']);
 }
 
+async function executeCommandAsync(commandArray) {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const proc = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+
+            proc.communicate_utf8_async(null, null, (proc, res) => {
+                const [, stdout] = proc.communicate_utf8_finish(res);
+
+                if (!proc.get_successful()) {
+                    resolve(false);
+                }
+
+                resolve(true);
+            });
+        } catch (e) {
+            logError(e);
+            resolve(false);
+        }
+    });
+}
+
+async function authStatus() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const proc = Gio.Subprocess.new(['gh', 'auth', 'status'], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
+
+            proc.communicate_utf8_async(null, null, (proc, res) => {
+                const [status, stdout, stderr] = proc.communicate_utf8_finish(res);
+
+                if (!proc.get_successful()) {
+                    resolve(null);
+                }
+
+                /// Github CLI put a response in stderr, why ? idk
+                resolve(stderr);
+            });
+        } catch (e) {
+            logError(e);
+            resolve(null);
+        }
+    });
+}
+
 async function downloadArtifactFile(downloadUrl, filename) {
     return new Promise(async (resolve, reject) => {
         try {
             const isInstalledCli = await isGitHubCliInstalled();
             if (isInstalledCli == false) {
-                return false;
+                resolve(false);
+                return;
             }
 
             const logged = await isLogged();
@@ -55,7 +99,8 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
         try {
             const isInstalledCli = await isGitHubCliInstalled();
             if (isInstalledCli == false) {
-                return null;
+                resolve(null);
+                return;
             }
 
             const logged = await isLogged();
@@ -105,27 +150,6 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
         } catch (e) {
             logError(e);
             resolve(null);
-        }
-    });
-}
-
-async function executeCommandAsync(commandArray) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const proc = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE);
-
-            proc.communicate_utf8_async(null, null, (proc, res) => {
-                const [, stdout] = proc.communicate_utf8_finish(res);
-
-                if (!proc.get_successful()) {
-                    resolve(false);
-                }
-
-                resolve(true)
-            });
-        } catch (e) {
-            logError(e);
-            resolve(false);
         }
     });
 }

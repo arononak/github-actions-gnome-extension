@@ -117,6 +117,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         extendedColoredMode = false,
         isInstalledCli = false,
         isLogged = false,
+        tokenScopes = '',
         refreshCallback = () => { },
         logoutCallback = () => { },
         downloadArtifactCallback = (downloadUrl, filename) => { },
@@ -127,6 +128,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.coloredMode = coloredMode;
         this.uppercaseMode = uppercaseMode;
         this.extendedColoredMode = extendedColoredMode;
+
+        this.tokenScopes = tokenScopes;
 
         this.refreshCallback = refreshCallback;
         this.logoutCallback = logoutCallback;
@@ -396,6 +399,10 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         /// User
         this.userMenuItem = new ExpandedMenuItem(null, '');
         this.menu.addMenuItem(this.userMenuItem);
+
+        /// Token Scopes
+        this.tokenScopesItem = new IconPopupMenuItem({ startIconName: 'dialog-password-symbolic', text: `Token scopes: ${this.tokenScopes}` });
+        this.userMenuItem.menuBox.add_actor(this.tokenScopesItem);
 
         /// 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};

@@ -54,6 +54,7 @@ class Extension {
         try {
             const isInstalledCli = await extensionDataController.fetchIsInstalledCli();
             const isLogged = await extensionDataController.fetchIsLogged();
+            const tokenScopes = await extensionDataController.fetchTokenScopes();
 
             const {
                 simpleMode,
@@ -66,6 +67,7 @@ class Extension {
             this.indicator = new StatusBarIndicator({
                 isInstalledCli: isInstalledCli,
                 isLogged: isLogged,
+                tokenScopes: tokenScopes,
                 simpleMode: simpleMode,
                 coloredMode: coloredMode,
                 uppercaseMode: uppercaseMode,

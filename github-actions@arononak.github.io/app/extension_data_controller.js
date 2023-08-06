@@ -291,6 +291,8 @@ var ExtensionDataController = class {
 
     fetchIsLogged = async () => await this.githubApiRepository.isLogged();
 
+    fetchTokenScopes = async () => await this.githubApiRepository.tokenScopes();
+
     /// Main 3 refresh Functions
     refreshState() {
         stateRefresh(
