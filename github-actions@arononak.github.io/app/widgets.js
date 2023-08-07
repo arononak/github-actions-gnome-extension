@@ -123,16 +123,38 @@ var RoundedButton = class extends St.Button {
         GObject.registerClass(this);
     }
 
-    constructor({ icon, iconName }) {
+    constructor({ iconName, text }) {
         super({ style_class: 'button github-actions-button-action' });
 
-        if (icon != null) {
-            this.child = icon;
-        }
+        this.child = new St.BoxLayout();
 
         if (iconName != null) {
-            this.child = new St.Icon({ icon_name: iconName });
+            this.icon = new St.Icon({ icon_name: iconName, icon_size: 20 });
+            this.child.add(this.icon);
         }
+
+        if (text != null) {
+            /// this.label from St.Button is used
+            this.boxLabel = new St.Label({ text: text, y_align: Clutter.ActorAlign.CENTER, y_expand: true });
+            this.child.add(this.boxLabel);
+            this.setTextColor(null);
+        }
+    }
+
+    setColor({ backgroundColor, borderColor }) {
+        this.style = `background-color: ${backgroundColor}; border-color: ${borderColor};`;
+    }
+
+    setTextColor(textColor) {
+        this.boxLabel.style = `margin-left: 8px; margin-top: 2px; margin-right: 2px; color: ${textColor}`;
+    }
+
+    setIcon(icon) {
+        this.icon = icon;
+
+        this.child.remove_all_children();
+        this.child.add(this.icon);
+        this.child.add(this.boxLabel);
     }
 };
 

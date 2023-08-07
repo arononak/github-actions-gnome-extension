@@ -11,9 +11,7 @@
 }
 
 .github-actions-button-action {
-    -st-icon-style: symbolic;
     border-radius: 20px;
-    margin: 0px;
     min-height: 20px;
     min-width: 20px;
     padding: 10px;

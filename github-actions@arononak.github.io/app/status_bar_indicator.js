@@ -230,25 +230,30 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             ? `color: ${appStatusColor.color};`
             : `color: ${AppStatusColor.WHITE};`;
 
-        this.networkLabel.style
-            = `margin-left: 8px; margin-top: 2px; margin-right: 2px; color: ${darkTheme ? appStatusColor.textColorDark : appStatusColor.textColor}`;
+        if (this.networkButton != null) {
+            this.networkButton.setTextColor(darkTheme ? appStatusColor.textColorDark : appStatusColor.textColor);
 
-        this.networkContainer.style = !(coloredMode && extendedColoredMode) ? `` :
-            `background-color: ${darkTheme ? appStatusColor.backgroundColorDark : appStatusColor.backgroundColor};` +
-            `border-color: ${darkTheme ? appStatusColor.borderColorDark : appStatusColor.borderColor};`;
+            if (!(coloredMode && extendedColoredMode)) {
+                this.networkButton.setColor({ backgroundColor: null, borderColor: null });
+            } else {
+                const backgroundColor = darkTheme ? appStatusColor.backgroundColorDark : appStatusColor.backgroundColor;
+                const borderColor = darkTheme ? appStatusColor.borderColorDark : appStatusColor.borderColor;
+
+                this.networkButton.setColor({ backgroundColor: backgroundColor, borderColor: borderColor });
+            }
+        }
     }
 
     refreshGithubIcon() {
         this.networkIcon = new St.Icon({
+            icon_size: 20,
             gicon: this.extendedColoredMode
                 ? createAppGioIconInner(this.state.coloredModeColor)
                 : appIcon()
         });
         this.networkIcon.style = 'margin-left: 2px;';
 
-        this.networkContainer.remove_all_children();
-        this.networkContainer.add(this.networkIcon);
-        this.networkContainer.add(this.networkLabel);
+        this.networkButton.setIcon(this.networkIcon);
     }
 
     refreshState() {
@@ -260,6 +265,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             return;
         }
 
+        this.updateGithubActionsStatus(state);
+
         if (this.state == state && forceUpdate == false) {
             return;
         }
@@ -267,7 +274,6 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.state = state;
         this.menu.removeAll();
         this.initPopupMenu();
-        this.updateGithubActionsStatus(state);
 
         if (this.state == StatusBarState.NOT_INSTALLED_CLI) {
             return;
@@ -312,7 +318,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.sharedStorageItem?.label.set_text(loadingText);
         this.repositoryPrivateItem?.label.set_text(loadingText);
         this.repositoryForkItem?.label.set_text(loadingText);
-        this.networkLabel?.set_text(loadingText);
+        this.networkButton?.boxLabel?.set_text(loadingText);
     }
 
     initPopupMenu() {
@@ -345,20 +351,15 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.box.add(this.leftBox);
         this.box.add(this.rightBox);
 
-        this.bottomItem = new PopupMenu.PopupBaseMenuItem({ reactive: false });
-        this.bottomItem.remove_all_children(); // Remove left margin from non visible PopupMenuItem icon
-        this.bottomItem.actor.add_actor(this.box);
-        this.menu.addMenuItem(this.bottomItem);
+        this.topItems = new PopupMenu.PopupBaseMenuItem({ reactive: false });
+        this.topItems.remove_all_children(); // Remove left margin from non visible PopupMenuItem icon
+        this.topItems.actor.add_actor(this.box);
+        this.menu.addMenuItem(this.topItems);
 
         /// Network transfer
-        this.networkLabel = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
-        this.networkContainer = new St.BoxLayout({ style_class: 'github-actions-button-action' });
-        this.refreshGithubIcon();
-        this.networkButton = new St.Button();
-        this.networkButton.connect('clicked', () => openUrl('https://api.github.com/octocat'));
-        this.networkButton.set_child(this.networkContainer);
-
         if (this.isLogged() && this.state != StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
+            this.networkButton = new RoundedButton({ iconName: 'system-settings-symbolic', text: `` });
+            this.networkButton.connect('clicked', () => openUrl('https://api.github.com/octocat'));
             this.leftBox.add(this.networkButton);
         }
 
@@ -494,7 +495,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setTransferText(text) {
-        this.networkLabel.text = text;
+        this.networkButton.boxLabel.text = text;
     }
 
     /// Setters
@@ -535,7 +536,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.twoFactorEnabled = twoFactorEnabled;
 
         const userLabelText = (userName == null || userEmail == null)
-            ? 'Not logged'
+            ? '...'
             : `${userName} (${userEmail}) \n\nJoined GitHub on: ${formatDate(createdAt)} `;
 
         if (this.userMenuItem != null) {
@@ -546,7 +547,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.twoFactorItem != null) {
-            this.twoFactorItem.label.text = `2FA: ${(twoFactorEnabled == true ? 'Enabled' : 'Disabled')} `;
+            this.twoFactorItem.label.text = twoFactorEnabled == undefined ?
+                '2FA: ...' :
+                `2FA: ${(twoFactorEnabled == true ? 'Enabled' : 'Disabled')}`;
         }
     }
 
@@ -567,15 +570,15 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.minutesItem != null) {
-            this.minutesItem.label.text = parsedMinutes == null ? 'Not logged' : parsedMinutes;
+            this.minutesItem.label.text = parsedMinutes == null ? '...' : parsedMinutes;
         }
 
         if (this.packagesItem != null) {
-            this.packagesItem.label.text = parsedPackages == null ? 'Not logged' : parsedPackages;
+            this.packagesItem.label.text = parsedPackages == null ? '...' : parsedPackages;
         }
 
         if (this.sharedStorageItem != null) {
-            this.sharedStorageItem.label.text = parsedSharedStorage == null ? 'Not logged' : parsedSharedStorage;
+            this.sharedStorageItem.label.text = parsedSharedStorage == null ? '...' : parsedSharedStorage;
         }
     }
 
