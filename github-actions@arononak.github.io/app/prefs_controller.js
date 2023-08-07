@@ -5,7 +5,7 @@ const { VERSION } = extension.imports.app.version;
 const { openUrl } = extension.imports.app.utils;
 const { SettingsRepository } = extension.imports.app.settings_repository;
 
-var PrefsDataController = class {
+var PrefsController = class {
     constructor(settings) {
         this.settings = settings;
         this.settingsRepository = new SettingsRepository(settings);

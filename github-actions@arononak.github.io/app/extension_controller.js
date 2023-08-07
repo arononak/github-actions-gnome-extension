@@ -280,7 +280,7 @@ async function githubActionsRefresh(settings, settingsRepository, indicator, git
     }
 }
 
-var ExtensionDataController = class {
+var ExtensionController = class {
     constructor(settings) {
         this.settings = settings;
         this.githubApiRepository = new GithubApiRepository(settings);

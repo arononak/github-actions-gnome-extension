@@ -4,7 +4,7 @@ const { Adw, Gio, Gtk, GLib } = imports.gi;
 const ExtensionUtils = imports.misc.extensionUtils;
 
 const extension = imports.misc.extensionUtils.getCurrentExtension();
-const { PrefsDataController } = extension.imports.app.prefs_data_controller;
+const { PrefsController } = extension.imports.app.prefs_controller;
 
 function init() { }
 
@@ -75,7 +75,7 @@ function createToggleRow({ title, subtitle, value, onSwitchButtonCreated }) {
 
 function fillPreferencesWindow(window) {
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
-    const prefsDataController = new PrefsDataController(settings);
+    const prefsController = new PrefsController(settings);
     const {
         owner,
         repo,
@@ -93,7 +93,7 @@ function fillPreferencesWindow(window) {
         hiddenMode,
 
         version,
-    } = prefsDataController.fetchData();
+    } = prefsController.fetchData();
 
     window.set_default_size(550, 940);
 
@@ -102,13 +102,13 @@ function fillPreferencesWindow(window) {
     const ownerRow = createEntityRow({
         title: 'Owner',
         text: owner,
-        onChanged: (text) => prefsDataController.updateOwner(text),
+        onChanged: (text) => prefsController.updateOwner(text),
     });
 
     const repoRow = createEntityRow({
         title: 'Repo',
         text: repo,
-        onChanged: (text) => prefsDataController.updateRepo(text),
+        onChanged: (text) => prefsController.updateRepo(text),
     });
 
     /// Appearance
@@ -196,7 +196,7 @@ function fillPreferencesWindow(window) {
         otherGroup.add(extendedColoredMode);
     } else {
         const githubButton = new Gtk.Button({ label: 'Give me a star!' });
-        githubButton.connect('clicked', () => prefsDataController.onStarClicked());
+        githubButton.connect('clicked', () => prefsController.onStarClicked());
         githubButton.margin_top = 8;
         githubButton.margin_bottom = 8;
 

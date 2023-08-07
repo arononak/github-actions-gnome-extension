@@ -29,7 +29,7 @@ const extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const { StatusBarIndicator, StatusBarState } = extension.imports.app.status_bar_indicator;
 const { NotificationController } = extension.imports.app.notification_controller;
-const { ExtensionDataController } = extension.imports.app.extension_data_controller;
+const { ExtensionController } = extension.imports.app.extension_controller;
 
 class Extension {
     constructor(uuid) {
@@ -39,22 +39,22 @@ class Extension {
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
-        this.extensionDataController = new ExtensionDataController(this.settings);
-        this.initIndicator(this.extensionDataController);
+        this.extensionController = new ExtensionController(this.settings);
+        this.initIndicator(this.extensionController);
     }
 
     disable() {
-        this.extensionDataController.stopRefreshing();
+        this.extensionController.stopRefreshing();
         this.disposeIndicator();
-        this.extensionDataController = null;
+        this.extensionController = null;
         this.settings = null;
     }
 
-    async initIndicator(extensionDataController) {
+    async initIndicator(extensionController) {
         try {
-            const isInstalledCli = await extensionDataController.fetchIsInstalledCli();
-            const isLogged = await extensionDataController.fetchIsLogged();
-            const tokenScopes = await extensionDataController.fetchTokenScopes();
+            const isInstalledCli = await extensionController.fetchIsInstalledCli();
+            const isLogged = await extensionController.fetchIsLogged();
+            const tokenScopes = await extensionController.fetchTokenScopes();
 
             const {
                 simpleMode,
@@ -62,7 +62,7 @@ class Extension {
                 uppercaseMode,
                 extendedColoredMode,
                 iconPosition,
-            } = extensionDataController.fetchAppearanceSettings();
+            } = extensionController.fetchAppearanceSettings();
 
             this.indicator = new StatusBarIndicator({
                 isInstalledCli: isInstalledCli,
@@ -73,30 +73,30 @@ class Extension {
                 uppercaseMode: uppercaseMode,
                 extendedColoredMode: extendedColoredMode,
                 refreshCallback: () => {
-                    extensionDataController.refresh();
+                    extensionController.refresh();
                 },
                 downloadArtifactCallback: (downloadUrl, filename) => {
-                    extensionDataController.downloadArtifact({
+                    extensionController.downloadArtifact({
                         downloadUrl: downloadUrl,
                         filename: filename,
                         onFinishCallback: (success, filename) => NotificationController.showDownloadArtifact(success, filename),
                     });
                 },
                 logoutCallback: () => {
-                    extensionDataController.logout(this.indicator);
+                    extensionController.logout(this.indicator);
                 },
             });
 
             Main.panel.addToStatusArea(this._uuid, this.indicator, iconPosition);
 
-            this.extensionDataController.startRefreshing({
+            this.extensionController.startRefreshing({
                 indicator: this.indicator,
                 onRepoSetAsWatched: (owner, repo) => NotificationController.showSetAsWatched(owner, repo),
                 onDeleteWorkflowRun: (success, runName) => NotificationController.showDeleteWorkflowRun(success, runName),
                 onBuildCompleted: (owner, repo, conclusion) => NotificationController.showCompletedBuild(owner, repo, conclusion),
                 onReloadCallback: () => {
                     this.disposeIndicator();
-                    this.initIndicator(this.extensionDataController);
+                    this.initIndicator(this.extensionController);
                 }
             });
         } catch (error) {
