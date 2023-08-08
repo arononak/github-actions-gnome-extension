@@ -536,7 +536,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.twoFactorEnabled = twoFactorEnabled;
 
         const userLabelText = (userName == null || userEmail == null)
-            ? '...'
+            ? 'No permissions'
             : `${userName} (${userEmail}) \n\nJoined GitHub on: ${formatDate(createdAt)} `;
 
         if (this.userMenuItem != null) {
@@ -548,7 +548,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
         if (this.twoFactorItem != null) {
             this.twoFactorItem.label.text = twoFactorEnabled == undefined ?
-                '2FA: ...' :
+                '2FA: No permissions' :
                 `2FA: ${(twoFactorEnabled == true ? 'Enabled' : 'Disabled')}`;
         }
     }
@@ -570,15 +570,15 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.minutesItem != null) {
-            this.minutesItem.label.text = parsedMinutes == null ? '...' : parsedMinutes;
+            this.minutesItem.label.text = parsedMinutes == null ? 'No permissions' : parsedMinutes;
         }
 
         if (this.packagesItem != null) {
-            this.packagesItem.label.text = parsedPackages == null ? '...' : parsedPackages;
+            this.packagesItem.label.text = parsedPackages == null ? 'No permissions' : parsedPackages;
         }
 
         if (this.sharedStorageItem != null) {
-            this.sharedStorageItem.label.text = parsedSharedStorage == null ? '...' : parsedSharedStorage;
+            this.sharedStorageItem.label.text = parsedSharedStorage == null ? 'No permissions' : parsedSharedStorage;
         }
     }
 
