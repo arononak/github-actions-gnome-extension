@@ -8,7 +8,7 @@ const { GithubApiRepository } = extension.imports.app.github_api_repository;
 const { SettingsRepository } = extension.imports.app.settings_repository;
 const { StatusBarState } = extension.imports.app.status_bar_indicator;
 
-async function fetchUserData(settings, settingsRepository, githubApiRepository, simpleMode) {
+async function fetchUserData(settingsRepository, githubApiRepository, simpleMode) {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await githubApiRepository.fetchUser();
@@ -24,7 +24,7 @@ async function fetchUserData(settings, settingsRepository, githubApiRepository, 
             const sharedStorage = await githubApiRepository.fetchUserBillingSharedStorage(login);
 
             /// Hidden Mode
-            const { owner, repo } = settingsRepository.ownerAndRepo(settings);
+            const { owner, repo } = settingsRepository.ownerAndRepo();
             const isStarred = await githubApiRepository.checkIsRepoStarred(owner, repo);
             settingsRepository.updateHiddenMode(isStarred === 'success');
 
@@ -39,7 +39,7 @@ async function fetchUserData(settings, settingsRepository, githubApiRepository, 
                 return;
             }
 
-            const pagination = settingsRepository.fetchPagination(settings);
+            const pagination = settingsRepository.fetchPagination();
 
             /// Full Mode
             const starredList = await githubApiRepository.fetchUserStarred(login, pagination);
@@ -65,11 +65,11 @@ async function fetchUserData(settings, settingsRepository, githubApiRepository, 
     });
 }
 
-async function fetchRepoData(settings, settingsRepository, githubApiRepository, simpleMode) {
+async function fetchRepoData(settingsRepository, githubApiRepository, simpleMode) {
     return new Promise(async (resolve, reject) => {
         try {
-            const { owner, repo } = settingsRepository.ownerAndRepo(settings);
-            const pagination = settingsRepository.fetchPagination(settings);
+            const { owner, repo } = settingsRepository.ownerAndRepo();
+            const pagination = settingsRepository.fetchPagination();
 
             /// Simple Mode
             const runs = await githubApiRepository.fetchWorkflowRuns(owner, repo, pagination);
@@ -111,7 +111,7 @@ async function fetchRepoData(settings, settingsRepository, githubApiRepository, 
 }
 
 /// Main 3 refresh Functions ----------------------------------------------------------------------
-async function stateRefresh(settings, settingsRepository, indicator, githubApiRepository) {
+async function stateRefresh(settingsRepository, indicator, githubApiRepository) {
     try {
         indicator.refreshGithubIcon();
 
@@ -127,7 +127,7 @@ async function stateRefresh(settings, settingsRepository, indicator, githubApiRe
             return;
         }
 
-        if (!settingsRepository.isRepositoryEntered(settings)) {
+        if (!settingsRepository.isRepositoryEntered()) {
             indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO });
             return;
         }
@@ -136,13 +136,13 @@ async function stateRefresh(settings, settingsRepository, indicator, githubApiRe
     }
 }
 
-async function dataRefresh(settings, settingsRepository, indicator, githubApiRepository, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
+async function dataRefresh(settingsRepository, indicator, githubApiRepository, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
     try {
         if (indicator.isLogged == false) {
             return;
         }
 
-        const simpleMode = settingsRepository.fetchSimpleMode(settings);
+        const simpleMode = settingsRepository.fetchSimpleMode();
 
         const {
             user,
@@ -153,7 +153,7 @@ async function dataRefresh(settings, settingsRepository, indicator, githubApiRep
             followers,
             following,
             repos,
-        } = await fetchUserData(settings, settingsRepository, githubApiRepository, simpleMode);
+        } = await fetchUserData(settingsRepository, githubApiRepository, simpleMode);
 
         const userObjects = [
             user,
@@ -174,8 +174,8 @@ async function dataRefresh(settings, settingsRepository, indicator, githubApiRep
         indicator.setUserRepos(repos, (owner, repo) => {
             onRepoSetAsWatched(owner, repo);
 
-            settingsRepository.updateOwner(settings, owner);
-            settingsRepository.updateRepo(settings, repo);
+            settingsRepository.updateOwner(owner);
+            settingsRepository.updateRepo(repo);
 
             refreshCallback();
         });
@@ -194,7 +194,7 @@ async function dataRefresh(settings, settingsRepository, indicator, githubApiRep
             releases,
             branches,
             tags,
-        } = await fetchRepoData(settings, settingsRepository, githubApiRepository, simpleMode);
+        } = await fetchRepoData(settingsRepository, githubApiRepository, simpleMode);
 
         const repoObjects = [
             userRepo,
@@ -224,7 +224,7 @@ async function dataRefresh(settings, settingsRepository, indicator, githubApiRep
     }
 }
 
-async function githubActionsRefresh(settings, settingsRepository, indicator, githubApiRepository, onBuildCompleted) {
+async function githubActionsRefresh(settingsRepository, indicator, githubApiRepository, onBuildCompleted) {
     try {
         const isLogged = await githubApiRepository.isLogged();
         if (isLogged == false) {
@@ -234,11 +234,11 @@ async function githubActionsRefresh(settings, settingsRepository, indicator, git
         const transferTerxt = settingsRepository.fullDataConsumptionPerHour();
         indicator.setTransferText(transferTerxt);
 
-        if (!settingsRepository.isRepositoryEntered(settings)) {
+        if (!settingsRepository.isRepositoryEntered()) {
             return;
         }
 
-        const { owner, repo } = settingsRepository.ownerAndRepo(settings);
+        const { owner, repo } = settingsRepository.ownerAndRepo();
 
         const workflowRunsResponse = await githubApiRepository.fetchWorkflowRuns(owner, repo, 1);
         if (workflowRunsResponse == null) {
@@ -296,7 +296,6 @@ var ExtensionController = class {
     /// Main 3 refresh Functions
     refreshState() {
         stateRefresh(
-            this.settings,
             this.settingsRepository,
             this.indicator,
             this.githubApiRepository,
@@ -305,7 +304,6 @@ var ExtensionController = class {
 
     refreshGithubActions() {
         githubActionsRefresh(
-            this.settings,
             this.settingsRepository,
             this.indicator,
             this.githubApiRepository,
@@ -315,7 +313,6 @@ var ExtensionController = class {
 
     refreshData() {
         dataRefresh(
-            this.settings,
             this.settingsRepository,
             this.indicator,
             this.githubApiRepository,
@@ -352,8 +349,8 @@ var ExtensionController = class {
 
         try {
             const stateRefreshTime = 1 * 1000;
-            const githubActionsRefreshTime = settingsRepository.fetchRefreshTime(this.settings) * 1000;
-            const dataRefreshTime = settingsRepository.fetchRefreshFullUpdateTime(this.settings) * 60 * 1000;
+            const githubActionsRefreshTime = settingsRepository.fetchRefreshTime() * 1000;
+            const dataRefreshTime = settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000;
 
             this.stateRefreshInterval = setInterval(() => this.refreshState(), stateRefreshTime);
             this.githubActionsRefreshInterval = setInterval(() => this.refreshGithubActions(), githubActionsRefreshTime);
@@ -399,22 +396,22 @@ var ExtensionController = class {
         });
 
         this.settings.connect('changed::simple-mode', (settings, key) => {
-            const simpleMode = settingsRepository.fetchSimpleMode(settings);
+            const simpleMode = settingsRepository.fetchSimpleMode();
             this.indicator.setSimpleMode(simpleMode);
         });
 
         this.settings.connect('changed::colored-mode', (settings, key) => {
-            const coloredMode = settingsRepository.fetchColoredMode(settings);
+            const coloredMode = settingsRepository.fetchColoredMode();
             this.indicator.setColoredMode(coloredMode);
         });
 
         this.settings.connect('changed::uppercase-mode', (settings, key) => {
-            const uppercaseMode = settingsRepository.fetchUppercaseMode(settings);
+            const uppercaseMode = settingsRepository.fetchUppercaseMode();
             this.indicator.setUppercaseMode(uppercaseMode);
         });
 
         this.settings.connect('changed::extended-colored-mode', (settings, key) => {
-            const extendedColoredMode = settingsRepository.fetchExtendedColoredMode(settings);
+            const extendedColoredMode = settingsRepository.fetchExtendedColoredMode();
             this.indicator.setExtendedColoredMode(extendedColoredMode);
         });
 
@@ -439,7 +436,7 @@ var ExtensionController = class {
 
     async removeWorkflowRun(runId, runName) {
         try {
-            const { owner, repo } = this.settingsRepository.ownerAndRepo(this.settings);
+            const { owner, repo } = this.settingsRepository.ownerAndRepo();
 
             const status = await this.githubApiRepository.deleteWorkflowRun(owner, repo, runId);
 
