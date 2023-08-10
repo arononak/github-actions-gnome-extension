@@ -287,11 +287,31 @@ var ExtensionController = class {
         this.settingsRepository = new SettingsRepository(settings);
     }
 
-    fetchIsInstalledCli = async () => await this.githubApiRepository.isInstalledCli();
+    async fetchSettings() {
+        const {
+            simpleMode,
+            coloredMode,
+            uppercaseMode,
+            extendedColoredMode,
+            iconPosition,
+        } = this.settingsRepository.fetchAppearanceSettings();
 
-    fetchIsLogged = async () => await this.githubApiRepository.isLogged();
+        const isInstalledCli = await this.githubApiRepository.isInstalledCli();
+        const isLogged = await this.githubApiRepository.isLogged();
+        const tokenScopes = await this.githubApiRepository.tokenScopes();
 
-    fetchTokenScopes = async () => await this.githubApiRepository.tokenScopes();
+        return {
+            "isInstalledCli": isInstalledCli,
+            "isLogged": isLogged,
+            "tokenScopes": tokenScopes,
+
+            "simpleMode": simpleMode,
+            "coloredMode": coloredMode,
+            "uppercaseMode": uppercaseMode,
+            "extendedColoredMode": extendedColoredMode,
+            "iconPosition": iconPosition,
+        };
+    }
 
     /// Main 3 refresh Functions
     refreshState() {
@@ -449,9 +469,5 @@ var ExtensionController = class {
         } catch (error) {
             logError(error);
         }
-    }
-
-    fetchAppearanceSettings() {
-        return this.settingsRepository.fetchAppearanceSettings();
     }
 }

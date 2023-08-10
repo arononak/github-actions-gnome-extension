@@ -52,17 +52,17 @@ class Extension {
 
     async initIndicator(extensionController) {
         try {
-            const isInstalledCli = await extensionController.fetchIsInstalledCli();
-            const isLogged = await extensionController.fetchIsLogged();
-            const tokenScopes = await extensionController.fetchTokenScopes();
-
             const {
+                isInstalledCli,
+                isLogged,
+                tokenScopes,
+
                 simpleMode,
                 coloredMode,
                 uppercaseMode,
                 extendedColoredMode,
                 iconPosition,
-            } = extensionController.fetchAppearanceSettings();
+            } = await extensionController.fetchSettings();
 
             this.indicator = new StatusBarIndicator({
                 isInstalledCli: isInstalledCli,
@@ -91,9 +91,15 @@ class Extension {
 
             this.extensionController.startRefreshing({
                 indicator: this.indicator,
-                onRepoSetAsWatched: (owner, repo) => NotificationController.showSetAsWatched(owner, repo),
-                onDeleteWorkflowRun: (success, runName) => NotificationController.showDeleteWorkflowRun(success, runName),
-                onBuildCompleted: (owner, repo, conclusion) => NotificationController.showCompletedBuild(owner, repo, conclusion),
+                onRepoSetAsWatched: (owner, repo) => {
+                    NotificationController.showSetAsWatched(owner, repo);
+                },
+                onDeleteWorkflowRun: (success, runName) => {
+                    NotificationController.showDeleteWorkflowRun(success, runName);
+                },
+                onBuildCompleted: (owner, repo, conclusion) => {
+                    NotificationController.showCompletedBuild(owner, repo, conclusion);
+                },
                 onReloadCallback: () => {
                     this.disposeIndicator();
                     this.initIndicator(this.extensionController);
