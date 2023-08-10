@@ -48,6 +48,22 @@ var SettingsRepository = class {
         };
     }
 
+    fetchAppearanceSettings() {
+        const simpleMode = this.fetchSimpleMode();
+        const coloredMode = this.fetchColoredMode();
+        const uppercaseMode = this.fetchUppercaseMode();
+        const extendedColoredMode = this.fetchExtendedColoredMode();
+        const iconPosition = this.fetchIconPosition();
+
+        return {
+            "simpleMode": simpleMode,
+            "coloredMode": coloredMode,
+            "uppercaseMode": uppercaseMode,
+            "extendedColoredMode": extendedColoredMode,
+            "iconPosition": iconPosition,
+        };
+    }
+
     isRepositoryEntered() {
         const { owner, repo } = this.ownerAndRepo(this.settings);
 

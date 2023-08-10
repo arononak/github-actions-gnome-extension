@@ -111,7 +111,7 @@ async function fetchRepoData(settingsRepository, githubApiRepository, simpleMode
 }
 
 /// Main 3 refresh Functions ----------------------------------------------------------------------
-async function stateRefresh(settingsRepository, indicator, githubApiRepository) {
+async function stateRefresh(indicator, settingsRepository, githubApiRepository) {
     try {
         indicator.refreshGithubIcon();
 
@@ -136,7 +136,7 @@ async function stateRefresh(settingsRepository, indicator, githubApiRepository) 
     }
 }
 
-async function dataRefresh(settingsRepository, indicator, githubApiRepository, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
+async function dataRefresh(indicator, settingsRepository, githubApiRepository, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
     try {
         if (indicator.isLogged == false) {
             return;
@@ -224,7 +224,7 @@ async function dataRefresh(settingsRepository, indicator, githubApiRepository, o
     }
 }
 
-async function githubActionsRefresh(settingsRepository, indicator, githubApiRepository, onBuildCompleted) {
+async function githubActionsRefresh(indicator, settingsRepository, githubApiRepository, onBuildCompleted) {
     try {
         const isLogged = await githubApiRepository.isLogged();
         if (isLogged == false) {
@@ -296,16 +296,16 @@ var ExtensionController = class {
     /// Main 3 refresh Functions
     refreshState() {
         stateRefresh(
-            this.settingsRepository,
             this.indicator,
+            this.settingsRepository,
             this.githubApiRepository,
         );
     }
 
     refreshGithubActions() {
         githubActionsRefresh(
-            this.settingsRepository,
             this.indicator,
+            this.settingsRepository,
             this.githubApiRepository,
             (owner, repo, conclusion) => this.onBuildCompleted(owner, repo, conclusion),
         );
@@ -313,8 +313,8 @@ var ExtensionController = class {
 
     refreshData() {
         dataRefresh(
-            this.settingsRepository,
             this.indicator,
+            this.settingsRepository,
             this.githubApiRepository,
             this.onRepoSetAsWatched,
             (runId, runName) => this.removeWorkflowRun(runId, runName),
@@ -356,7 +356,7 @@ var ExtensionController = class {
             this.githubActionsRefreshInterval = setInterval(() => this.refreshGithubActions(), githubActionsRefreshTime);
             this.dataRefreshInterval = setInterval(() => this.refreshData(), dataRefreshTime);
 
-            this.observeSettings(settingsRepository, indicator, onReloadCallback);
+            this.observeSettings(indicator, settingsRepository, onReloadCallback);
         } catch (error) {
             logError(error);
         }
@@ -374,7 +374,7 @@ var ExtensionController = class {
     }
 
     /// Others
-    observeSettings(settingsRepository, indicator, onReloadCallback) {
+    observeSettings(indicator, settingsRepository, onReloadCallback) {
         this.settings.connect('changed::refresh-time', (settings, key) => {
             this.stopRefreshing();
             this.startRefreshing({
@@ -452,18 +452,6 @@ var ExtensionController = class {
     }
 
     fetchAppearanceSettings() {
-        const simpleMode = this.settingsRepository.fetchSimpleMode();
-        const coloredMode = this.settingsRepository.fetchColoredMode();
-        const uppercaseMode = this.settingsRepository.fetchUppercaseMode();
-        const extendedColoredMode = this.settingsRepository.fetchExtendedColoredMode();
-        const iconPosition = this.settingsRepository.fetchIconPosition();
-
-        return {
-            "simpleMode": simpleMode,
-            "coloredMode": coloredMode,
-            "uppercaseMode": uppercaseMode,
-            "extendedColoredMode": extendedColoredMode,
-            "iconPosition": iconPosition,
-        };
+        return this.settingsRepository.fetchAppearanceSettings();
     }
 }
