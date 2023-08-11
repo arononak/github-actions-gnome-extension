@@ -715,7 +715,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
     }
 
-    setWorkflowRuns({ runs, onDeleteWorkflowRun }) {
+    setWorkflowRuns({ runs, onDeleteWorkflowRun, onCancelWorkflowRun, onRerunWorkflowRun }) {
         if (runs === null || runs === undefined) return;
 
         function toItem(e) {
@@ -732,12 +732,29 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
             const iconName = conclusionIconName(conclusion);
 
+            let showDelete;
+            let showCancel;
+
+            if (conclusion == 'success') {
+                showDelete = true;
+                showCancel = false;
+            } else if (conclusion == 'failure') {
+                showDelete = true;
+                showCancel = false;
+            } else if (conclusion == 'cancelled') {
+                showDelete = true;
+                showCancel = false;
+            } else {
+                showDelete = false;
+                showCancel = true;
+            }
+
             return {
                 "iconName": iconName,
                 "text": text,
                 "callback": () => openUrl(htmlUrl),
-                "endIconName": 'application-exit-symbolic',
-                "endIconCallback": () => {
+                "endIconName": showDelete === true ? 'application-exit-symbolic' : null,
+                "endIconCallback": showDelete === true ? () => {
                     showConfirmDialog({
                         title: 'Workflow run deletion',
                         description: 'Are you sure you want to delete this workflow run?',
@@ -746,7 +763,18 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                         iconName: iconName,
                         onConfirm: () => onDeleteWorkflowRun(id, `${displayTitle} ${name} `),
                     });
-                }
+                } : null,
+                "endButtonText": showCancel === true ? 'Cancel' : null,
+                "endButtonCallback": showCancel === true ? () => {
+                    showConfirmDialog({
+                        title: 'Canceling a workflow run',
+                        description: 'Are you sure you want to cancel this workflow run?',
+                        itemTitle: `${date} - ${displayTitle} `,
+                        itemDescription: name,
+                        iconName: iconName,
+                        onConfirm: () => onCancelWorkflowRun(id, `${displayTitle} ${name} `),
+                    });
+                } : null,
             };
         }
 

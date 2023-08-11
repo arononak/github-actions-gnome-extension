@@ -128,7 +128,7 @@ async function executeGithubCliCommand(method, command, pagination = 100) {
                 /// stderr: gh: Not Found (HTTP 404)
 
                 if (proc.get_successful()) {
-                    if (status === true && stdout.length === 0 && stderr.length === 0) {
+                    if (status === true && stdout.length <= 2 && stderr.length <= 2) {
                         resolve('success');
                         return;
                     }

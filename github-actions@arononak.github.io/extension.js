@@ -97,6 +97,9 @@ class Extension {
                 onDeleteWorkflowRun: (success, runName) => {
                     NotificationController.showDeleteWorkflowRun(success, runName);
                 },
+                onCancelWorkflowRun: (success, runName) => {
+                    NotificationController.showCancelWorkflowRun(success, runName);
+                },
                 onBuildCompleted: (owner, repo, conclusion) => {
                     NotificationController.showCompletedBuild(owner, repo, conclusion);
                 },

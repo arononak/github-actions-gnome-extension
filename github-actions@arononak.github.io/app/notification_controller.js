@@ -24,6 +24,14 @@ var NotificationController = class {
             showNotification('Something went wrong :/', false);
         }
     }
+
+    static showCancelWorkflowRun(success, runName) {
+        if (success === true) {
+            showNotification(`The Workflow run was successfully cancelled.\n\n${runName}`, true);
+        } else {
+            showNotification('Something went wrong :/', false);
+        }
+    }
     
     static showCompletedBuild(owner, repo, conclusion) {
         switch (conclusion) {

@@ -19,7 +19,7 @@ var GithubApiRepository = class {
 
     tokenScopes = async () => {
         const authStatus = await cliInterface.authStatus();
-        
+
         const lastLine = authStatus.substring(authStatus.lastIndexOf('✓'));
         const scopesLine = lastLine.substring(lastLine.indexOf(':') + 1);
 
@@ -65,9 +65,6 @@ var GithubApiRepository = class {
     fetchWorkflows = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand('GET', `repos/${owner}/${repo}/actions/workflows`, pagination);
 
-    fetchWorkflowRuns = async (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand('GET', `repos/${owner}/${repo}/actions/runs`, pagination);
-
     fetchArtifacts = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand('GET', `repos/${owner}/${repo}/actions/artifacts`, pagination);
 
@@ -83,7 +80,13 @@ var GithubApiRepository = class {
     fetchTags = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand('GET', `repos/${owner}/${repo}/tags`, pagination);
 
-    /// Delete
+    /// Workflow Run
+    fetchWorkflowRuns = async (owner, repo, pagination) =>
+        cliInterface.executeGithubCliCommand('GET', `repos/${owner}/${repo}/actions/runs`, pagination);
+
+    cancelWorkflowRun = async (owner, repo, runId) =>
+        cliInterface.executeGithubCliCommand('POST', `repos/${owner}/${repo}/actions/runs/${runId}/cancel`);
+
     deleteWorkflowRun = async (owner, repo, runId) =>
         cliInterface.executeGithubCliCommand('DELETE', `repos/${owner}/${repo}/actions/runs/${runId}`);
 }

@@ -8,7 +8,11 @@ const { GithubApiRepository } = extension.imports.app.github_api_repository;
 const { SettingsRepository } = extension.imports.app.settings_repository;
 const { StatusBarState } = extension.imports.app.status_bar_indicator;
 
-async function fetchUserData(settingsRepository, githubApiRepository, simpleMode) {
+async function fetchUserData(
+    settingsRepository,
+    githubApiRepository,
+    simpleMode,
+) {
     return new Promise(async (resolve, reject) => {
         try {
             const user = await githubApiRepository.fetchUser();
@@ -65,7 +69,11 @@ async function fetchUserData(settingsRepository, githubApiRepository, simpleMode
     });
 }
 
-async function fetchRepoData(settingsRepository, githubApiRepository, simpleMode) {
+async function fetchRepoData(
+    settingsRepository,
+    githubApiRepository,
+    simpleMode,
+) {
     return new Promise(async (resolve, reject) => {
         try {
             const { owner, repo } = settingsRepository.ownerAndRepo();
@@ -111,7 +119,11 @@ async function fetchRepoData(settingsRepository, githubApiRepository, simpleMode
 }
 
 /// Main 3 refresh Functions ----------------------------------------------------------------------
-async function stateRefresh(indicator, settingsRepository, githubApiRepository) {
+async function stateRefresh(
+    indicator,
+    settingsRepository,
+    githubApiRepository,
+) {
     try {
         indicator.refreshGithubIcon();
 
@@ -136,7 +148,15 @@ async function stateRefresh(indicator, settingsRepository, githubApiRepository) 
     }
 }
 
-async function dataRefresh(indicator, settingsRepository, githubApiRepository, onRepoSetAsWatched, onDeleteWorkflowRun, refreshCallback) {
+async function dataRefresh(
+    indicator,
+    settingsRepository,
+    githubApiRepository,
+    onRepoSetAsWatched,
+    onDeleteWorkflowRun,
+    onCancelWorkflowRun,
+    refreshCallback,
+) {
     try {
         if (indicator.isLogged == false) {
             return;
@@ -214,7 +234,12 @@ async function dataRefresh(indicator, settingsRepository, githubApiRepository, o
         indicator.setStargazers(stargazers);
         indicator.setWorkflowRuns({
             runs: runs['workflow_runs'],
-            onDeleteWorkflowRun: (runId, runName) => onDeleteWorkflowRun(runId, runName),
+            onDeleteWorkflowRun: (runId, runName) => {
+                onDeleteWorkflowRun(runId, runName);
+            },
+            onCancelWorkflowRun: (runId, runName) => {
+                onCancelWorkflowRun(runId, runName);
+            },
         });
         indicator.setReleases(releases);
         indicator.setBranches(branches);
@@ -224,7 +249,12 @@ async function dataRefresh(indicator, settingsRepository, githubApiRepository, o
     }
 }
 
-async function githubActionsRefresh(indicator, settingsRepository, githubApiRepository, onBuildCompleted) {
+async function githubActionsRefresh(
+    indicator,
+    settingsRepository,
+    githubApiRepository,
+    onBuildCompleted,
+) {
     try {
         const isLogged = await githubApiRepository.isLogged();
         if (isLogged == false) {
@@ -314,7 +344,7 @@ var ExtensionController = class {
     }
 
     /// Main 3 refresh Functions
-    refreshState() {
+    _stateRefresh() {
         stateRefresh(
             this.indicator,
             this.settingsRepository,
@@ -322,7 +352,7 @@ var ExtensionController = class {
         );
     }
 
-    refreshGithubActions() {
+    _githubActionsRefresh() {
         githubActionsRefresh(
             this.indicator,
             this.settingsRepository,
@@ -331,22 +361,23 @@ var ExtensionController = class {
         );
     }
 
-    refreshData() {
+    _dataRefresh() {
         dataRefresh(
             this.indicator,
             this.settingsRepository,
             this.githubApiRepository,
             this.onRepoSetAsWatched,
-            (runId, runName) => this.removeWorkflowRun(runId, runName),
+            (runId, runName) => this.deleteWorkflowRun(runId, runName),
+            (runId, runName) => this.cancelWorkflowRun(runId, runName),
             () => this.refresh(),
         );
     }
 
     refresh() {
         try {
-            this.refreshState();
-            this.refreshGithubActions();
-            this.refreshData();
+            this._stateRefresh();
+            this._githubActionsRefresh();
+            this._dataRefresh();
         } catch (error) {
             logError(error);
         }
@@ -357,12 +388,14 @@ var ExtensionController = class {
         indicator,
         onRepoSetAsWatched,
         onDeleteWorkflowRun,
+        onCancelWorkflowRun,
         onBuildCompleted,
         onReloadCallback,
     }) {
         this.indicator = indicator;
         this.onRepoSetAsWatched = onRepoSetAsWatched;
         this.onDeleteWorkflowRun = onDeleteWorkflowRun;
+        this.onCancelWorkflowRun = onCancelWorkflowRun;
         this.onBuildCompleted = onBuildCompleted;
 
         const settingsRepository = this.settingsRepository;
@@ -372,9 +405,9 @@ var ExtensionController = class {
             const githubActionsRefreshTime = settingsRepository.fetchRefreshTime() * 1000;
             const dataRefreshTime = settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000;
 
-            this.stateRefreshInterval = setInterval(() => this.refreshState(), stateRefreshTime);
-            this.githubActionsRefreshInterval = setInterval(() => this.refreshGithubActions(), githubActionsRefreshTime);
-            this.dataRefreshInterval = setInterval(() => this.refreshData(), dataRefreshTime);
+            this.stateRefreshInterval = setInterval(() => this._stateRefresh(), stateRefreshTime);
+            this.githubActionsRefreshInterval = setInterval(() => this._githubActionsRefresh(), githubActionsRefreshTime);
+            this.dataRefreshInterval = setInterval(() => this._dataRefresh(), dataRefreshTime);
 
             this.observeSettings(indicator, settingsRepository, onReloadCallback);
         } catch (error) {
@@ -401,6 +434,7 @@ var ExtensionController = class {
                 indicator: indicator,
                 onRepoSetAsWatched: onRepoSetAsWatched,
                 onDeleteWorkflowRun: onDeleteWorkflowRun,
+                onCancelWorkflowRun: onCancelWorkflowRun,
                 onBuildCompleted: onBuildCompleted,
             });
         });
@@ -411,6 +445,7 @@ var ExtensionController = class {
                 indicator: indicator,
                 onRepoSetAsWatched: onRepoSetAsWatched,
                 onDeleteWorkflowRun: onDeleteWorkflowRun,
+                onCancelWorkflowRun: onCancelWorkflowRun,
                 onBuildCompleted: onBuildCompleted,
             });
         });
@@ -454,7 +489,7 @@ var ExtensionController = class {
         onFinishCallback(success, filename);
     }
 
-    async removeWorkflowRun(runId, runName) {
+    async deleteWorkflowRun(runId, runName) {
         try {
             const { owner, repo } = this.settingsRepository.ownerAndRepo();
 
@@ -462,9 +497,26 @@ var ExtensionController = class {
 
             if (status == 'success') {
                 this.onDeleteWorkflowRun(true, runName);
-                this.refreshData();
+                this._dataRefresh();
             } else {
                 this.onDeleteWorkflowRun(false, runName);
+            }
+        } catch (error) {
+            logError(error);
+        }
+    }
+
+    async cancelWorkflowRun(runId, runName) {
+        try {
+            const { owner, repo } = this.settingsRepository.ownerAndRepo();
+
+            const status = await this.githubApiRepository.cancelWorkflowRun(owner, repo, runId);
+
+            if (status == 'success') {
+                this.onCancelWorkflowRun(true, runName);
+                this._dataRefresh();
+            } else {
+                this.onCancelWorkflowRun(false, runName);
             }
         } catch (error) {
             logError(error);

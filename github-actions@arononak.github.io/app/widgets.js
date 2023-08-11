@@ -98,6 +98,8 @@ function conclusionIconName(conclusion) {
         return 'emblem-default';
     } else if (conclusion == 'failure') {
         return 'emblem-unreadable';
+    } else if (conclusion == 'cancelled') {
+        return 'emblem-unreadable';
     } else {
         return 'emblem-synchronizing-symbolic';
     }
