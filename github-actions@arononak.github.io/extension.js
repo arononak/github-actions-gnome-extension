@@ -79,11 +79,14 @@ class Extension {
                     extensionController.downloadArtifact({
                         downloadUrl: downloadUrl,
                         filename: filename,
-                        onFinishCallback: (success, filename) => NotificationController.showDownloadArtifact(success, filename),
+                        onFinishCallback: (success, filename) => {
+                            NotificationController.showDownloadArtifact(success, filename);
+                        },
                     });
                 },
                 logoutCallback: () => {
-                    extensionController.logout(this.indicator);
+                    extensionController.logout();
+                    this.indicator.setState({ state: StatusBarState.NOT_LOGGED });
                 },
             });
 

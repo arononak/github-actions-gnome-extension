@@ -11,7 +11,6 @@ const { StatusBarState } = extension.imports.app.status_bar_indicator;
 async function fetchUserData(
     settingsRepository,
     githubApiRepository,
-    simpleMode,
 ) {
     return new Promise(async (resolve, reject) => {
         try {
@@ -28,6 +27,7 @@ async function fetchUserData(
             const sharedStorage = await githubApiRepository.fetchUserBillingSharedStorage(login);
 
             /// Hidden Mode
+            const simpleMode = settingsRepository.fetchSimpleMode();
             const { owner, repo } = settingsRepository.ownerAndRepo();
             const isStarred = await githubApiRepository.checkIsRepoStarred(owner, repo);
             settingsRepository.updateHiddenMode(isStarred === 'success');
@@ -72,12 +72,12 @@ async function fetchUserData(
 async function fetchRepoData(
     settingsRepository,
     githubApiRepository,
-    simpleMode,
 ) {
     return new Promise(async (resolve, reject) => {
         try {
             const { owner, repo } = settingsRepository.ownerAndRepo();
             const pagination = settingsRepository.fetchPagination();
+            const simpleMode = settingsRepository.fetchSimpleMode();
 
             /// Simple Mode
             const runs = await githubApiRepository.fetchWorkflowRuns(owner, repo, pagination);
@@ -173,7 +173,7 @@ async function dataRefresh(
             followers,
             following,
             repos,
-        } = await fetchUserData(settingsRepository, githubApiRepository, simpleMode);
+        } = await fetchUserData(settingsRepository, githubApiRepository);
 
         const userObjects = [
             user,
@@ -214,7 +214,7 @@ async function dataRefresh(
             releases,
             branches,
             tags,
-        } = await fetchRepoData(settingsRepository, githubApiRepository, simpleMode);
+        } = await fetchRepoData(settingsRepository, githubApiRepository);
 
         const repoObjects = [
             userRepo,
@@ -271,12 +271,13 @@ async function githubActionsRefresh(
         const { owner, repo } = settingsRepository.ownerAndRepo();
 
         const workflowRunsResponse = await githubApiRepository.fetchWorkflowRuns(owner, repo, 1);
-        if (workflowRunsResponse == null) {
-            indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY });
-            return;
-        } else if (workflowRunsResponse == 'no-internet-connection') {
-            indicator.setState({ state: StatusBarState.LOGGED_NO_INTERNET_CONNECTION });
-            return;
+        switch (workflowRunsResponse) {
+            case null:
+                indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY });
+                return;
+            case 'no-internet-connection':
+                indicator.setState({ state: StatusBarState.LOGGED_NO_INTERNET_CONNECTION });
+                return;
         }
 
         settingsRepository.updatePackageSize(workflowRunsResponse['_size_']);
@@ -475,12 +476,8 @@ var ExtensionController = class {
         });
     }
 
-    async logout(indicator) {
-        const isLogged = await this.githubApiRepository.logoutUser();
-
-        if (isLogged == true) {
-            indicator.setState({ state: StatusBarState.NOT_LOGGED });
-        }
+    async logout() {
+        await this.githubApiRepository.logoutUser();
     }
 
     async downloadArtifact({ downloadUrl, filename, onFinishCallback }) {
