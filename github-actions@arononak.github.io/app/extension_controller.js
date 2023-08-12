@@ -162,8 +162,6 @@ async function dataRefresh(
             return;
         }
 
-        const simpleMode = settingsRepository.fetchSimpleMode();
-
         const {
             user,
             minutes,

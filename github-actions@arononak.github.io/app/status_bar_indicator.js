@@ -253,7 +253,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         });
         this.networkIcon.style = 'margin-left: 2px;';
 
-        this.networkButton.setIcon(this.networkIcon);
+        if (this.networkButton) {
+            this.networkButton.setIcon(this.networkIcon);
+        }
     }
 
     refreshState() {
@@ -495,7 +497,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     setTransferText(text) {
-        this.networkButton.boxLabel.text = text;
+        if (this.networkButton != null) {
+            this.networkButton.boxLabel.text = text;
+        }
     }
 
     /// Setters

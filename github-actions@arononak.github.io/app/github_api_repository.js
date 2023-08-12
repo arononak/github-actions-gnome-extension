@@ -20,6 +20,10 @@ var GithubApiRepository = class {
     tokenScopes = async () => {
         const authStatus = await cliInterface.authStatus();
 
+        if (authStatus == null) {
+            return '';
+        }
+
         const lastLine = authStatus.substring(authStatus.lastIndexOf('✓'));
         const scopesLine = lastLine.substring(lastLine.indexOf(':') + 1);
 
