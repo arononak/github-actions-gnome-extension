@@ -91,6 +91,9 @@ var GithubApiRepository = class {
     cancelWorkflowRun = async (owner, repo, runId) =>
         cliInterface.executeGithubCliCommand('POST', `repos/${owner}/${repo}/actions/runs/${runId}/cancel`);
 
+    rerunWorkflowRun = async (owner, repo, runId) =>
+        cliInterface.executeGithubCliCommand('POST', `repos/${owner}/${repo}/actions/runs/${runId}/rerun`);
+
     deleteWorkflowRun = async (owner, repo, runId) =>
         cliInterface.executeGithubCliCommand('DELETE', `repos/${owner}/${repo}/actions/runs/${runId}`);
 }

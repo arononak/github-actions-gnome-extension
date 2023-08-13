@@ -165,12 +165,12 @@ var IconButton = class extends St.Button {
         GObject.registerClass(this);
     }
 
-    constructor(iconName, callback) {
-        super();
+    constructor({ iconName, iconSize = null, callback }) {
+        super({ style_class: 'button github-actions-icon-button' });
 
         this.connect('clicked', callback);
         this.set_can_focus(true);
-        this.set_child(new St.Icon({ style_class: 'popup-menu-icon', iconName }));
+        this.set_child(new St.Icon({ style_class: 'popup-menu-icon', iconName, icon_size: iconSize }));
     }
 
     setIcon(icon) {
@@ -198,11 +198,16 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
         this.setStartIcon({ iconName: startIconName });
 
         if (endIconName != null) {
-            const endIcon = new IconButton(endIconName, () => endIconCallback())
+            const endIcon = new IconButton({
+                iconName: endIconName,
+                callback: () => endIconCallback(),
+            });
+
             const box = new St.BoxLayout({
                 style_class: 'github-actions-top-box',
                 vertical: false,
                 x_expand: true,
+                y_expand: true,
                 x_align: Clutter.ActorAlign.END,
                 y_align: Clutter.ActorAlign.CENTER,
             });
@@ -266,32 +271,34 @@ var IconPopupMenuItem = class extends PopupMenu.PopupImageMenuItem {
 
         this.connect('activate', () => itemCallback());
 
-        if (endIconName != null) {
-            const icon = new IconButton(endIconName, () => endIconCallback());
-
+        if (endIconName != null || endButtonText != null) {
             const box = this.createEndAlignBox();
             this.insert_child_at_index(box, 100);
-            box.add(icon);
 
-            return;
-        }
+            if (endButtonText != null) {
+                const button = new St.Button({ style_class: 'button github-actions-text-button', label: endButtonText });
+                button.connect('clicked', endButtonCallback);
+                box.add(button);
+            }
 
-        if (endButtonText != null) {
-            const button = new St.Button({ label: endButtonText });
-            button.connect('clicked', endButtonCallback);
+            if (endIconName != null) {
+                const icon = new IconButton({
+                    iconName: endIconName,
+                    iconSize: 20,
+                    callback: () => endIconCallback()
+                });
 
-            const box = this.createEndAlignBox();
-            this.insert_child_at_index(box, 100);
-            box.add(button);
-
-            return;
+                box.add(icon);
+            }
         }
     }
 
     createEndAlignBox() {
         return new St.BoxLayout({
+            style_class: 'github-actions-popup-box',
             vertical: false,
             x_expand: true,
+            y_expand: true,
             x_align: Clutter.ActorAlign.END,
             y_align: Clutter.ActorAlign.CENTER,
         });

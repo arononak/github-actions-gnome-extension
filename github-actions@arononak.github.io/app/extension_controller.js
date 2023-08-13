@@ -155,6 +155,7 @@ async function dataRefresh(
     onRepoSetAsWatched,
     onDeleteWorkflowRun,
     onCancelWorkflowRun,
+    onRerunWorkflowRun,
     refreshCallback,
 ) {
     try {
@@ -237,6 +238,9 @@ async function dataRefresh(
             },
             onCancelWorkflowRun: (runId, runName) => {
                 onCancelWorkflowRun(runId, runName);
+            },
+            onRerunWorkflowRun: (runId, runName) => {
+                onRerunWorkflowRun(runId, runName);
             },
         });
         indicator.setReleases(releases);
@@ -368,6 +372,7 @@ var ExtensionController = class {
             this.onRepoSetAsWatched,
             (runId, runName) => this.deleteWorkflowRun(runId, runName),
             (runId, runName) => this.cancelWorkflowRun(runId, runName),
+            (runId, runName) => this.rerunWorkflowRun(runId, runName),
             () => this.refresh(),
         );
     }
@@ -388,6 +393,7 @@ var ExtensionController = class {
         onRepoSetAsWatched,
         onDeleteWorkflowRun,
         onCancelWorkflowRun,
+        onRerunWorkflowRun,
         onBuildCompleted,
         onReloadCallback,
     }) {
@@ -395,6 +401,7 @@ var ExtensionController = class {
         this.onRepoSetAsWatched = onRepoSetAsWatched;
         this.onDeleteWorkflowRun = onDeleteWorkflowRun;
         this.onCancelWorkflowRun = onCancelWorkflowRun;
+        this.onRerunWorkflowRun = onRerunWorkflowRun;
         this.onBuildCompleted = onBuildCompleted;
 
         const settingsRepository = this.settingsRepository;
@@ -434,6 +441,7 @@ var ExtensionController = class {
                 onRepoSetAsWatched: onRepoSetAsWatched,
                 onDeleteWorkflowRun: onDeleteWorkflowRun,
                 onCancelWorkflowRun: onCancelWorkflowRun,
+                onRerunWorkflowRun: onRerunWorkflowRun,
                 onBuildCompleted: onBuildCompleted,
             });
         });
@@ -445,6 +453,7 @@ var ExtensionController = class {
                 onRepoSetAsWatched: onRepoSetAsWatched,
                 onDeleteWorkflowRun: onDeleteWorkflowRun,
                 onCancelWorkflowRun: onCancelWorkflowRun,
+                onRerunWorkflowRun: onRerunWorkflowRun,
                 onBuildCompleted: onBuildCompleted,
             });
         });
@@ -512,6 +521,23 @@ var ExtensionController = class {
                 this._dataRefresh();
             } else {
                 this.onCancelWorkflowRun(false, runName);
+            }
+        } catch (error) {
+            logError(error);
+        }
+    }
+
+    async rerunWorkflowRun(runId, runName) {
+        try {
+            const { owner, repo } = this.settingsRepository.ownerAndRepo();
+
+            const status = await this.githubApiRepository.rerunWorkflowRun(owner, repo, runId);
+
+            if (status == 'success') {
+                this.onRerunWorkflowRun(true, runName);
+                this._dataRefresh();
+            } else {
+                this.onRerunWorkflowRun(false, runName);
             }
         } catch (error) {
             logError(error);

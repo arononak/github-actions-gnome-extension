@@ -42,11 +42,10 @@
 - [x] prefs.js - refactor
 - [ ] GitHub logo - copyright allow to change color / remove icon from extension :/
 - [x] ExtendedColoredMode - Transfer border line - status color
-- [ ] Refactor status_bar_indicator.js to callbacks
+- [x] Refactor status_bar_indicator.js to callbacks
 - [x] thyttan - "Configure icon position in top panel"
 - [x] makefile - copy from .local extension -> home/...
-- [ ] UpperCase mode - Full Popup
-- [ ] Workflow run - cancel/rerun
+- [x] Workflow run - cancel/rerun
 - [ ] Performance
 - [ ] Missing scopes - information in the extension
 - [ ] QuickSettings status icon - tint

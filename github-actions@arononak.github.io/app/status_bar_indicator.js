@@ -738,19 +738,55 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
             let showDelete;
             let showCancel;
+            let showRerun;
 
             if (conclusion == 'success') {
                 showDelete = true;
+                showRerun = true;
                 showCancel = false;
             } else if (conclusion == 'failure') {
                 showDelete = true;
+                showRerun = true;
                 showCancel = false;
             } else if (conclusion == 'cancelled') {
                 showDelete = true;
+                showRerun = true;
                 showCancel = false;
             } else {
                 showDelete = false;
+                showRerun = false;
                 showCancel = true;
+            }
+
+            let endButtonText;
+            let endButtonCallback;
+
+            if (showRerun === true) {
+                endButtonText = 'Re-run';
+                endButtonCallback = () => {
+                    showConfirmDialog({
+                        title: 'Re-run a workflow run',
+                        description: 'Are you sure you want to rerun this workflow run?',
+                        itemTitle: `${date} - ${displayTitle} `,
+                        itemDescription: name,
+                        iconName: iconName,
+                        onConfirm: () => onRerunWorkflowRun(id, `${displayTitle} ${name} `),
+                    });
+                };
+            }
+
+            if (showCancel === true) {
+                endButtonText = 'Cancel';
+                endButtonCallback = () => {
+                    showConfirmDialog({
+                        title: 'Canceling a workflow run',
+                        description: 'Are you sure you want to cancel this workflow run?',
+                        itemTitle: `${date} - ${displayTitle} `,
+                        itemDescription: name,
+                        iconName: iconName,
+                        onConfirm: () => onCancelWorkflowRun(id, `${displayTitle} ${name} `),
+                    });
+                };
             }
 
             return {
@@ -768,17 +804,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                         onConfirm: () => onDeleteWorkflowRun(id, `${displayTitle} ${name} `),
                     });
                 } : null,
-                "endButtonText": showCancel === true ? 'Cancel' : null,
-                "endButtonCallback": showCancel === true ? () => {
-                    showConfirmDialog({
-                        title: 'Canceling a workflow run',
-                        description: 'Are you sure you want to cancel this workflow run?',
-                        itemTitle: `${date} - ${displayTitle} `,
-                        itemDescription: name,
-                        iconName: iconName,
-                        onConfirm: () => onCancelWorkflowRun(id, `${displayTitle} ${name} `),
-                    });
-                } : null,
+                "endButtonText": endButtonText,
+                "endButtonCallback": endButtonCallback,
             };
         }
 

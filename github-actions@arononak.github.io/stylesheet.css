@@ -10,13 +10,37 @@
     flex: 1;
 }
 
+.github-actions-popup-box {
+    spacing: 8px;
+    height: 24px;
+}
+
 .github-actions-button-action {
     border-radius: 20px;
     min-height: 20px;
     min-width: 20px;
-    padding: 10px;
     font-size: 100%;
     border: 1px solid;
+    padding: 10px;
+}
+
+.github-actions-text-button {
+    border-radius: 20px;
+    min-height: 20px;
+    min-width: 20px;
+    font-size: 100%;
+    border: 1px solid;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.github-actions-icon-button {
+    border-radius: 24px;
+    height: 24px;
+    width: 24px;
+    font-size: 100%;
+    border: 1px solid;
+    padding: 0px;
 }
 
 .github-actions-button-action:hover,

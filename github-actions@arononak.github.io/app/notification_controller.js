@@ -12,11 +12,11 @@ var NotificationController = class {
             showNotification('Something went wrong :/', false);
         }
     }
-    
+
     static showSetAsWatched(owner, repo) {
         showNotification(`${owner}/${repo} - set as watched !`, true);
     }
-    
+
     static showDeleteWorkflowRun(success, runName) {
         if (success === true) {
             showNotification(`The Workflow run was successfully deleted.\n\n${runName}`, true);
@@ -32,7 +32,15 @@ var NotificationController = class {
             showNotification('Something went wrong :/', false);
         }
     }
-    
+
+    static showRerunWorkflowRun(success, runName) {
+        if (success === true) {
+            showNotification(`The Workflow run was successfully re-runed.\n\n${runName}`, true);
+        } else {
+            showNotification('Something went wrong :/', false);
+        }
+    }
+
     static showCompletedBuild(owner, repo, conclusion) {
         switch (conclusion) {
             case 'success':
