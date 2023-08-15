@@ -30,70 +30,39 @@ const extension = imports.misc.extensionUtils.getCurrentExtension();
 const { StatusBarIndicator, StatusBarState } = extension.imports.app.status_bar_indicator;
 const { NotificationController } = extension.imports.app.notification_controller;
 const { ExtensionController } = extension.imports.app.extension_controller;
+const { EnabledIndicator } = extension.imports.app.quick_settings_controller;
 
 class Extension {
     constructor(uuid) {
         this._uuid = uuid;
         ExtensionUtils.initTranslations(GETTEXT_DOMAIN);
+
+        this.quickSettingsIndicator = null;
     }
 
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
         this.extensionController = new ExtensionController(this.settings);
-        this.initIndicator(this.extensionController);
+        this.initExtension(this.extensionController);
+
+        this.quickSettingsIndicator = new EnabledIndicator();
     }
 
     disable() {
-        this.extensionController.stopRefreshing();
-        this.disposeIndicator();
+        this.disposeExtension();
         this.extensionController = null;
         this.settings = null;
+
+        this.quickSettingsIndicator.destroy();
+        this.quickSettingsIndicator = null;
     }
 
-    async initIndicator(extensionController) {
+    /// -------------------------------------------------------------------------------------------
+    async initExtension() {
         try {
-            const {
-                isInstalledCli,
-                isLogged,
-                tokenScopes,
+            const { enabledExtension } = await this.extensionController.fetchSettings();
 
-                simpleMode,
-                coloredMode,
-                uppercaseMode,
-                extendedColoredMode,
-                iconPosition,
-            } = await extensionController.fetchSettings();
-
-            this.indicator = new StatusBarIndicator({
-                isInstalledCli: isInstalledCli,
-                isLogged: isLogged,
-                tokenScopes: tokenScopes,
-                simpleMode: simpleMode,
-                coloredMode: coloredMode,
-                uppercaseMode: uppercaseMode,
-                extendedColoredMode: extendedColoredMode,
-                refreshCallback: () => {
-                    extensionController.refresh();
-                },
-                downloadArtifactCallback: (downloadUrl, filename) => {
-                    extensionController.downloadArtifact({
-                        downloadUrl: downloadUrl,
-                        filename: filename,
-                        onFinishCallback: (success, filename) => {
-                            NotificationController.showDownloadArtifact(success, filename);
-                        },
-                    });
-                },
-                logoutCallback: () => {
-                    extensionController.logout();
-                    this.indicator.setState({ state: StatusBarState.NOT_LOGGED });
-                },
-            });
-
-            Main.panel.addToStatusArea(this._uuid, this.indicator, iconPosition);
-
-            this.extensionController.startRefreshing({
-                indicator: this.indicator,
+            this.extensionController.attachCallbacks({
                 onRepoSetAsWatched: (owner, repo) => {
                     NotificationController.showSetAsWatched(owner, repo);
                 },
@@ -110,16 +79,89 @@ class Extension {
                     NotificationController.showCompletedBuild(owner, repo, conclusion);
                 },
                 onReloadCallback: () => {
-                    this.disposeIndicator();
-                    this.initIndicator(this.extensionController);
-                }
+                    this.disposeExtension();
+                    this.initExtension(this.extensionController);
+                },
+                onEnableCallback: async () => {
+                    this.indicator = await this.createStatusBarIndicator();
+                    this.extensionController.attachIndicator(this.indicator);
+                    this.extensionController.startRefreshing();
+
+                },
+                onDisableCallback: () => {
+                    this.extensionController.stopRefreshing();
+                    this.removeStatusBarIndicator();
+                },
             });
+
+            if (enabledExtension) {
+                this.indicator = await this.createStatusBarIndicator();
+                this.extensionController.attachIndicator(this.indicator);
+                this.extensionController.startRefreshing();
+            }
         } catch (error) {
             logError(error);
         }
     }
 
-    disposeIndicator() {
+    disposeExtension() {
+        this.extensionController.stopRefreshing();
+        this.removeStatusBarIndicator();
+    }
+
+    /// -------------------------------------------------------------------------------------------
+    async createStatusBarIndicator() {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const {
+                    isInstalledCli,
+                    isLogged,
+                    tokenScopes,
+
+                    simpleMode,
+                    coloredMode,
+                    uppercaseMode,
+                    extendedColoredMode,
+                    iconPosition,
+                } = await this.extensionController.fetchSettings();
+
+                const indicator = new StatusBarIndicator({
+                    isInstalledCli: isInstalledCli,
+                    isLogged: isLogged,
+                    tokenScopes: tokenScopes,
+                    simpleMode: simpleMode,
+                    coloredMode: coloredMode,
+                    uppercaseMode: uppercaseMode,
+                    extendedColoredMode: extendedColoredMode,
+                    refreshCallback: () => {
+                        this.extensionController.refresh();
+                    },
+                    downloadArtifactCallback: (downloadUrl, filename) => {
+                        this.extensionController.downloadArtifact({
+                            downloadUrl: downloadUrl,
+                            filename: filename,
+                            onFinishCallback: (success, filename) => {
+                                NotificationController.showDownloadArtifact(success, filename);
+                            },
+                        });
+                    },
+                    logoutCallback: () => {
+                        this.extensionController.logout();
+                        this.indicator.setState({ state: StatusBarState.NOT_LOGGED });
+                    },
+                });
+
+                Main.panel.addToStatusArea(this._uuid, indicator, iconPosition);
+
+                resolve(indicator);
+            } catch (error) {
+                logError(error);
+                resolve(null);
+            }
+        });
+    }
+
+    removeStatusBarIndicator() {
         this.indicator.destroy();
         this.indicator.menu = null;
         this.indicator = null;

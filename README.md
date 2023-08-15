@@ -14,6 +14,8 @@
 |:-----------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------:|
 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_full.png?raw=true) | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_simple.png?raw=true) |
 
+![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/quick_settings.png?raw=true)
+
 ## [🔨 Installation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) and Configuration
 
 | Steps                | Commands                                      |
@@ -38,6 +40,8 @@ graph TD;
     notification_controller.js-->extension.js;
     status_bar_indicator.js-->extension.js;
     settings_repository.js-->extension_controller.js;
+    quick_settings_controller.js-->extension.js;
+    widgets.js-->quick_settings_controller.js;
     extension_controller.js-->extension.js;
     utils.js-->status_bar_indicator.js;
     utils.js-->settings_repository.js;
@@ -64,4 +68,5 @@ graph TD;
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
 > This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
+
 

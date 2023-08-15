@@ -77,6 +77,8 @@ function fillPreferencesWindow(window) {
     const settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
     const prefsController = new PrefsController(settings);
     const {
+        enabledExtension,
+
         owner,
         repo,
         refreshTime,
@@ -95,8 +97,22 @@ function fillPreferencesWindow(window) {
         version,
     } = prefsController.fetchData();
 
-    window.set_default_size(550, 940);
+    window.set_default_size(550, 1060);
 
+    const enabledRow = createToggleRow({
+        title: 'Enabled',
+        value: enabledExtension,
+        onSwitchButtonCreated: (switchButton) => settings.bind('extension-enabled', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
+    });
+
+    const iconPositionRow = createSpinButtonRow({
+        title: 'Icon position in top panel',
+        subtitle: `Suggested by @thyttan`,
+        value: iconPosition,
+        lower: -100,
+        upper: 100,
+        onSpinButtonCreated: (spinButton) => settings.bind('icon-position', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT),
+    });
 
     /// Repository
     const ownerRow = createEntityRow({
@@ -132,20 +148,10 @@ function fillPreferencesWindow(window) {
         onSwitchButtonCreated: (switchButton) => settings.bind('uppercase-mode', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
     });
 
-    const iconPositionRow = createSpinButtonRow({
-        title: 'Icon position in top panel (Experimental)',
-        subtitle: `Suggested by @thyttan\nRestart Gnome after change`,
-        value: iconPosition,
-        lower: -100,
-        upper: 100,
-        onSpinButtonCreated: (spinButton) => settings.bind('icon-position', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT),
-    });
-
     const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' });
     appearanceGroup.add(simpleModeRow);
     appearanceGroup.add(coloredModeRow);
     appearanceGroup.add(uppercaseModeRow);
-    appearanceGroup.add(iconPositionRow);
 
     /// Refresh
     const refreshStatusRow = createSpinButtonRow({
@@ -174,9 +180,13 @@ function fillPreferencesWindow(window) {
         onSpinButtonCreated: (spinButton) => settings.bind('pagination', spinButton, 'value', Gio.SettingsBindFlags.DEFAULT),
     });
 
-    const generalGroup = new Adw.PreferencesGroup({ title: 'Watched repository' });
-    generalGroup.add(ownerRow);
-    generalGroup.add(repoRow);
+    const generalGroup = new Adw.PreferencesGroup({ title: 'General' });
+    generalGroup.add(enabledRow);
+    generalGroup.add(iconPositionRow);
+
+    const watchedGroup = new Adw.PreferencesGroup({ title: 'Watched repository' });
+    watchedGroup.add(ownerRow);
+    watchedGroup.add(repoRow);
 
     const refreshStatusGroup = new Adw.PreferencesGroup({ title: 'Refresh settings' });
     refreshStatusGroup.add(refreshStatusRow);
@@ -211,8 +221,9 @@ function fillPreferencesWindow(window) {
 
     const page = new Adw.PreferencesPage();
     page.add(generalGroup);
-    page.add(appearanceGroup);
+    page.add(watchedGroup);
     page.add(refreshStatusGroup);
+    page.add(appearanceGroup);
     page.add(otherGroup);
 
     window.add(page);
