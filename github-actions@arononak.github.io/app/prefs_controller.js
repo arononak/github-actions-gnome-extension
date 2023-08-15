@@ -12,6 +12,8 @@ var PrefsController = class {
     }
 
     fetchData() {
+        const enabledExtension = this.settingsRepository.fetchEnabledExtension();
+
         const owner = this.settingsRepository.fetchOwner();
         const repo = this.settingsRepository.fetchRepo();
         const refreshTime = this.settingsRepository.fetchRefreshTime();
@@ -28,6 +30,8 @@ var PrefsController = class {
         const hiddenMode = this.settingsRepository.fetchHiddenMode();
 
         return {
+            "enabledExtension": enabledExtension,
+            
             "owner": owner,
             "repo": repo,
             "refreshTime": refreshTime,

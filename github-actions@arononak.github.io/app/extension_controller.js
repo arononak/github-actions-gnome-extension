@@ -320,7 +320,33 @@ var ExtensionController = class {
         this.settingsRepository = new SettingsRepository(settings);
     }
 
+    attachCallbacks({
+        onRepoSetAsWatched,
+        onDeleteWorkflowRun,
+        onCancelWorkflowRun,
+        onRerunWorkflowRun,
+        onBuildCompleted,
+        onReloadCallback,
+        onEnableCallback,
+        onDisableCallback,
+    }) {
+        this.onRepoSetAsWatched = onRepoSetAsWatched;
+        this.onDeleteWorkflowRun = onDeleteWorkflowRun;
+        this.onCancelWorkflowRun = onCancelWorkflowRun;
+        this.onRerunWorkflowRun = onRerunWorkflowRun;
+        this.onBuildCompleted = onBuildCompleted;
+        this.onReloadCallback = onReloadCallback;
+        this.onEnableCallback = onEnableCallback;
+        this.onDisableCallback = onDisableCallback;
+    }
+
+    attachIndicator(indicator) {
+        this.indicator = indicator;
+    }
+
     async fetchSettings() {
+        const enabledExtension = this.settingsRepository.fetchEnabledExtension();
+
         const {
             simpleMode,
             coloredMode,
@@ -334,6 +360,8 @@ var ExtensionController = class {
         const tokenScopes = await this.githubApiRepository.tokenScopes();
 
         return {
+            "enabledExtension": enabledExtension,
+
             "isInstalledCli": isInstalledCli,
             "isLogged": isLogged,
             "tokenScopes": tokenScopes,
@@ -387,35 +415,26 @@ var ExtensionController = class {
         }
     }
 
-    /// Start / Stop
-    startRefreshing({
-        indicator,
-        onRepoSetAsWatched,
-        onDeleteWorkflowRun,
-        onCancelWorkflowRun,
-        onRerunWorkflowRun,
-        onBuildCompleted,
-        onReloadCallback,
-    }) {
-        this.indicator = indicator;
-        this.onRepoSetAsWatched = onRepoSetAsWatched;
-        this.onDeleteWorkflowRun = onDeleteWorkflowRun;
-        this.onCancelWorkflowRun = onCancelWorkflowRun;
-        this.onRerunWorkflowRun = onRerunWorkflowRun;
-        this.onBuildCompleted = onBuildCompleted;
-
+    startRefreshing() {
         const settingsRepository = this.settingsRepository;
 
         try {
-            const stateRefreshTime = 1 * 1000;
-            const githubActionsRefreshTime = settingsRepository.fetchRefreshTime() * 1000;
-            const dataRefreshTime = settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000;
+            this.stateRefreshInterval = setInterval(
+                () => this._stateRefresh(),
+                1 * 1000,
+            );
 
-            this.stateRefreshInterval = setInterval(() => this._stateRefresh(), stateRefreshTime);
-            this.githubActionsRefreshInterval = setInterval(() => this._githubActionsRefresh(), githubActionsRefreshTime);
-            this.dataRefreshInterval = setInterval(() => this._dataRefresh(), dataRefreshTime);
+            this.githubActionsRefreshInterval = setInterval(
+                () => this._githubActionsRefresh(),
+                settingsRepository.fetchRefreshTime() * 1000,
+            );
 
-            this.observeSettings(indicator, settingsRepository, onReloadCallback);
+            this.dataRefreshInterval = setInterval(
+                () => this._dataRefresh(),
+                settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000,
+            );
+
+            this.observeSettings(settingsRepository);
         } catch (error) {
             logError(error);
         }
@@ -432,30 +451,15 @@ var ExtensionController = class {
         this.dataRefreshInterval = null;
     }
 
-    /// Others
-    observeSettings(indicator, settingsRepository, onReloadCallback) {
+    observeSettings(settingsRepository) {
         this.settings.connect('changed::refresh-time', (settings, key) => {
             this.stopRefreshing();
-            this.startRefreshing({
-                indicator: indicator,
-                onRepoSetAsWatched: onRepoSetAsWatched,
-                onDeleteWorkflowRun: onDeleteWorkflowRun,
-                onCancelWorkflowRun: onCancelWorkflowRun,
-                onRerunWorkflowRun: onRerunWorkflowRun,
-                onBuildCompleted: onBuildCompleted,
-            });
+            this.startRefreshing();
         });
 
         this.settings.connect('changed::full-refresh-time', (settings, key) => {
             this.stopRefreshing();
-            this.startRefreshing({
-                indicator: indicator,
-                onRepoSetAsWatched: onRepoSetAsWatched,
-                onDeleteWorkflowRun: onDeleteWorkflowRun,
-                onCancelWorkflowRun: onCancelWorkflowRun,
-                onRerunWorkflowRun: onRerunWorkflowRun,
-                onBuildCompleted: onBuildCompleted,
-            });
+            this.startRefreshing();
         });
 
         this.settings.connect('changed::simple-mode', (settings, key) => {
@@ -479,7 +483,19 @@ var ExtensionController = class {
         });
 
         this.settings.connect('changed::icon-position', (settings, key) => {
-            onReloadCallback();
+            this.onReloadCallback();
+        });
+
+        this.settings.connect('changed::extension-enabled', (settings, key) => {
+            const enabled = settingsRepository.fetchEnabledExtension();
+
+            if (enabled) {
+                this.startRefreshing();
+                this.onEnableCallback();
+            } else {
+                this.stopRefreshing();
+                this.onDisableCallback();
+            }
         });
     }
 

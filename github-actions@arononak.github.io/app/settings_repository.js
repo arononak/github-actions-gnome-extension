@@ -8,6 +8,8 @@ var SettingsRepository = class {
         this.settings = settings;
     }
 
+    fetchEnabledExtension = () => this.settings.get_boolean('extension-enabled');
+
     fetchOwner = () => this.settings.get_string('owner');
     updateOwner = (owner) => this.settings.set_string('owner', owner);
 

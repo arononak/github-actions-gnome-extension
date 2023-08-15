@@ -48,7 +48,7 @@
 - [x] Workflow run - cancel/rerun
 - [ ] Performance
 - [ ] Missing scopes - information in the extension
-- [ ] QuickSettings status icon - tint
+- [x] QuickSettings status icon - tint
 - [ ] README.md gif preview
 - [ ] async operation - progress bar or something else
 - [ ] Memory allocations - check memory leaks
@@ -59,6 +59,7 @@
 - [ ] More notifications
 - [ ] gists
 - [ ] --paginate
+- [ ] position in top panel (right | center | left)
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 - [ ] Multirepo
