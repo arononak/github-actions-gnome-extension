@@ -43,7 +43,7 @@ class Extension {
     enable() {
         this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions');
         this.extensionController = new ExtensionController(this.settings);
-        this.initExtension(this.extensionController);
+        this.initExtension();
 
         this.quickSettingsIndicator = new EnabledIndicator();
     }
