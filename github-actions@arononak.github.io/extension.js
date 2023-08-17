@@ -30,7 +30,7 @@ const extension = imports.misc.extensionUtils.getCurrentExtension();
 const { StatusBarIndicator, StatusBarState } = extension.imports.app.status_bar_indicator;
 const { NotificationController } = extension.imports.app.notification_controller;
 const { ExtensionController } = extension.imports.app.extension_controller;
-const { EnabledIndicator } = extension.imports.app.quick_settings_controller;
+const { QuickSettingsIndicator } = extension.imports.app.quick_settings_controller;
 
 class Extension {
     constructor(uuid) {
@@ -45,7 +45,7 @@ class Extension {
         this.extensionController = new ExtensionController(this.settings);
         this.initExtension();
 
-        this.quickSettingsIndicator = new EnabledIndicator();
+        this.quickSettingsIndicator = new QuickSettingsIndicator();
     }
 
     disable() {
@@ -57,7 +57,6 @@ class Extension {
         this.quickSettingsIndicator = null;
     }
 
-    /// -------------------------------------------------------------------------------------------
     async initExtension() {
         try {
             const { enabledExtension } = await this.extensionController.fetchSettings();
@@ -80,24 +79,18 @@ class Extension {
                 },
                 onReloadCallback: () => {
                     this.disposeExtension();
-                    this.initExtension(this.extensionController);
+                    this.initExtension();
                 },
                 onEnableCallback: async () => {
-                    this.indicator = await this.createStatusBarIndicator();
-                    this.extensionController.attachIndicator(this.indicator);
-                    this.extensionController.startRefreshing();
-
+                    this.createStatusBarIndicator();
                 },
                 onDisableCallback: () => {
-                    this.extensionController.stopRefreshing();
-                    this.removeStatusBarIndicator();
+                    this.disposeExtension();
                 },
             });
 
             if (enabledExtension) {
-                this.indicator = await this.createStatusBarIndicator();
-                this.extensionController.attachIndicator(this.indicator);
-                this.extensionController.startRefreshing();
+                this.createStatusBarIndicator();
             }
         } catch (error) {
             logError(error);
@@ -109,7 +102,6 @@ class Extension {
         this.removeStatusBarIndicator();
     }
 
-    /// -------------------------------------------------------------------------------------------
     async createStatusBarIndicator() {
         return new Promise(async (resolve, reject) => {
             try {
@@ -124,8 +116,8 @@ class Extension {
                     extendedColoredMode,
                     iconPosition,
                 } = await this.extensionController.fetchSettings();
-
-                const indicator = new StatusBarIndicator({
+                
+                this.indicator = new StatusBarIndicator({
                     isInstalledCli: isInstalledCli,
                     isLogged: isLogged,
                     tokenScopes: tokenScopes,
@@ -151,12 +143,15 @@ class Extension {
                     },
                 });
 
-                Main.panel.addToStatusArea(this._uuid, indicator, iconPosition);
+                Main.panel.addToStatusArea(this._uuid, this.indicator, iconPosition);
 
-                resolve(indicator);
+                this.extensionController.attachIndicator(this.indicator);
+                this.extensionController.startRefreshing();
+
+                resolve(true);
             } catch (error) {
                 logError(error);
-                resolve(null);
+                resolve(false);
             }
         });
     }

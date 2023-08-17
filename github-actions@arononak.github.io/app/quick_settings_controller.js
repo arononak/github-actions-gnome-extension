@@ -7,7 +7,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const extension = ExtensionUtils.getCurrentExtension();
 const { appIcon } = extension.imports.app.widgets;
 
-var EnabledToggle = class extends QuickSettings.QuickToggle {
+var EnabledExtensionToggle = class extends QuickSettings.QuickToggle {
     static {
         GObject.registerClass(this);
     }
@@ -31,7 +31,7 @@ var EnabledToggle = class extends QuickSettings.QuickToggle {
     }
 }
 
-var EnabledIndicator = class extends QuickSettings.SystemIndicator {
+var QuickSettingsIndicator = class extends QuickSettings.SystemIndicator {
     static {
         GObject.registerClass(this);
     }
@@ -39,7 +39,7 @@ var EnabledIndicator = class extends QuickSettings.SystemIndicator {
     _init() {
         super._init();
 
-        this.quickSettingsItems.push(new EnabledToggle());
+        this.quickSettingsItems.push(new EnabledExtensionToggle());
         this.connect('destroy', () => {
             this.quickSettingsItems.forEach(item => item.destroy());
         });
