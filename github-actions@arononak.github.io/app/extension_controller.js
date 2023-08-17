@@ -125,8 +125,6 @@ async function stateRefresh(
     githubApiRepository,
 ) {
     try {
-        indicator.refreshGithubIcon();
-
         const isInstalledCli = await githubApiRepository.isInstalledCli();
         if (isInstalledCli == false) {
             indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI });

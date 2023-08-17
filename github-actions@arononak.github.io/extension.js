@@ -127,6 +127,11 @@ class Extension {
                     extendedColoredMode: extendedColoredMode,
                     refreshCallback: () => {
                         this.extensionController.refresh();
+                        this.indicator.refreshGithubIcon();
+
+                        this.quickSettingsIndicator.destroy();
+                        this.quickSettingsIndicator = null;
+                        this.quickSettingsIndicator = new QuickSettingsIndicator();
                     },
                     downloadArtifactCallback: (downloadUrl, filename) => {
                         this.extensionController.downloadArtifact({
