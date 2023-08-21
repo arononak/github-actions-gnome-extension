@@ -32,7 +32,7 @@ var AppStatusColor = {
         borderColorDark: '#F0F0F0',
     },
     GRAY: {
-        icon: `${extension.path}/assets/github_gray.svg`,
+        icon: `${extension.path}/assets/github_white.svg`,
         innerIcon: `${extension.path}/assets/github_black.svg`,
         innerIconDark: `${extension.path}/assets/github_white.svg`,
         color: '#757575',
@@ -44,7 +44,7 @@ var AppStatusColor = {
         borderColorDark: '#9E9E9E',
     },
     GREEN: {
-        icon: `${extension.path}/assets/github_green.svg`,
+        icon: `${extension.path}/assets/github_white.svg`,
         innerIcon: `${extension.path}/assets/github_black.svg`,
         innerIconDark: `${extension.path}/assets/github_white.svg`,
         color: '#00FF66',
@@ -56,7 +56,7 @@ var AppStatusColor = {
         borderColorDark: '#2E7D32',
     },
     BLUE: {
-        icon: `${extension.path}/assets/github_blue.svg`,
+        icon: `${extension.path}/assets/github_white.svg`,
         innerIcon: `${extension.path}/assets/github_black.svg`,
         innerIconDark: `${extension.path}/assets/github_white.svg`,
         color: '#64B5F6',
@@ -68,7 +68,7 @@ var AppStatusColor = {
         borderColorDark: '#0D47A1',
     },
     RED: {
-        icon: `${extension.path}/assets/github_red.svg`,
+        icon: `${extension.path}/assets/github_white.svg`,
         innerIcon: `${extension.path}/assets/github_black.svg`,
         innerIconDark: `${extension.path}/assets/github_white.svg`,
         color: '#EF5350',

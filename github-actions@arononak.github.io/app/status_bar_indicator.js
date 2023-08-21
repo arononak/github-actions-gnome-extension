@@ -107,7 +107,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     _init() {
-        super._init(0.0, 'Github Action button', false);
+        super._init(0.0, 'Github Action StatusBarButton', false);
     }
 
     constructor({
@@ -198,7 +198,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
     initStatusBarIndicator() {
         this.label = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
+        
         this.icon = new St.Icon({ style_class: 'system-status-icon' });
+        this.icon.gicon = createAppGioIcon(AppStatusColor.WHITE);
 
         this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
         this.topBox.add_child(this.icon);
@@ -224,22 +226,20 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
     setStatusColor(coloredMode, extendedColoredMode, appStatusColor) {
         const darkTheme = isDarkTheme();
-        this.icon.gicon = createAppGioIcon(appStatusColor);
 
-        this.label.style = extendedColoredMode
+        this.label.style = coloredMode
             ? `color: ${appStatusColor.color};`
             : `color: ${AppStatusColor.WHITE};`;
 
         if (this.networkButton != null) {
             this.networkButton.setTextColor(darkTheme ? appStatusColor.textColorDark : appStatusColor.textColor);
 
-            if (!(coloredMode && extendedColoredMode)) {
-                this.networkButton.setColor({ backgroundColor: null, borderColor: null });
-            } else {
+            if (extendedColoredMode) {
                 const backgroundColor = darkTheme ? appStatusColor.backgroundColorDark : appStatusColor.backgroundColor;
                 const borderColor = darkTheme ? appStatusColor.borderColorDark : appStatusColor.borderColor;
-
                 this.networkButton.setColor({ backgroundColor: backgroundColor, borderColor: borderColor });
+            } else {
+                this.networkButton.setColor({ backgroundColor: null, borderColor: null });
             }
         }
     }
