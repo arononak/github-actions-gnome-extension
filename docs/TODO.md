@@ -40,7 +40,7 @@
 - [x] No workflow run - status resolve
 - [x] prefs.js - uppercase status ON/OFF
 - [x] prefs.js - refactor
-- [ ] GitHub logo - copyright allow to change color / remove icon from extension :/
+- [ ] Remove icon from extension :/
 - [x] ExtendedColoredMode - Transfer border line - status color
 - [x] Refactor status_bar_indicator.js to callbacks
 - [x] thyttan - "Configure icon position in top panel"
@@ -62,6 +62,8 @@
 - [ ] workflow run - rerun 2 endpoints
 - [ ] commit list
 - [ ] position in top panel (right | center | left)
+- [ ] Refresh - interupt promise's
+- [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 - [ ] Multirepo
