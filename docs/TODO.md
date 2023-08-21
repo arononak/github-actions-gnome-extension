@@ -49,6 +49,7 @@
 - [ ] Performance
 - [ ] Missing scopes - information in the extension
 - [x] QuickSettings status icon - tint
+- [ ] Gnome 45 update
 - [ ] README.md gif preview
 - [ ] async operation - progress bar or something else
 - [ ] Memory allocations - check memory leaks
