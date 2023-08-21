@@ -40,7 +40,7 @@
 - [x] No workflow run - status resolve
 - [x] prefs.js - uppercase status ON/OFF
 - [x] prefs.js - refactor
-- [ ] Remove icon from extension :/
+- [x] Remove icon from extension :/
 - [x] ExtendedColoredMode - Transfer border line - status color
 - [x] Refactor status_bar_indicator.js to callbacks
 - [x] thyttan - "Configure icon position in top panel"
