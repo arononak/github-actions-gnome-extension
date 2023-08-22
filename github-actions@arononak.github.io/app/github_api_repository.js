@@ -4,6 +4,7 @@ const extension = imports.misc.extensionUtils.getCurrentExtension();
 
 const cliInterface = extension.imports.app.local_cli_interface;
 const { removeWhitespace } = extension.imports.app.utils;
+const { TokenScopes } = extension.imports.app.token_scopes;
 
 var GithubApiRepository = class {
     constructor() { }
@@ -27,9 +28,11 @@ var GithubApiRepository = class {
         const lastLine = authStatus.substring(authStatus.lastIndexOf('✓'));
         const scopesLine = lastLine.substring(lastLine.indexOf(':') + 1);
 
-        return scopesLine
+        const scopesArray = scopesLine
             .removeWhitespace()
             .split(',');
+
+        return new TokenScopes(scopesArray);
     }
 
     fetchUser = async () =>

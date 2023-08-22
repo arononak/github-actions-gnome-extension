@@ -36,6 +36,7 @@
 ```mermaid
 graph TD;
     local_cli_interface.js-->github_api_repository.js;
+    token_scopes.js-->github_api_repository.js;
     github_api_repository.js-->extension_controller.js;
     widgets.js-->status_bar_indicator.js;
     widgets.js-->notification_controller.js;

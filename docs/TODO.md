@@ -47,7 +47,7 @@
 - [x] makefile - copy from .local extension -> home/...
 - [x] Workflow run - cancel/rerun
 - [ ] Performance
-- [ ] Missing scopes - information in the extension
+- [x] Missing scopes - information in the extension
 - [x] QuickSettings status icon - tint
 - [ ] Gnome 45 update
 - [ ] README.md gif preview

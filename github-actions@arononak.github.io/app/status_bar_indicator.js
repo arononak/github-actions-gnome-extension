@@ -198,7 +198,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
     initStatusBarIndicator() {
         this.label = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
-        
+
         this.icon = new St.Icon({ style_class: 'system-status-icon' });
         this.icon.gicon = createAppGioIcon(AppStatusColor.WHITE);
 
@@ -404,7 +404,11 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.menu.addMenuItem(this.userMenuItem);
 
         /// Token Scopes
-        this.tokenScopesItem = new IconPopupMenuItem({ startIconName: 'dialog-password-symbolic', text: `Token scopes: ${this.tokenScopes}` });
+        const missingScopes = this.tokenScopes.missingScopes();
+        this.tokenScopesItem = new IconPopupMenuItem({
+            startIconName: 'dialog-password-symbolic',
+            text: `Token scopes: ${this.tokenScopes.toString()}` + (missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`),
+        });
         this.userMenuItem.menuBox.add_actor(this.tokenScopesItem);
 
         /// 2 FA
