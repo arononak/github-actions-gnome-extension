@@ -58,7 +58,8 @@
 - [ ] Lint
 - [ ] Adjust to Github Enterprice
 - [ ] More notifications
-- [ ] gists
+- [x] gists
+- [x] gists/starred
 - [ ] --paginate
 - [ ] workflow run - rerun 2 endpoints
 - [ ] commit list

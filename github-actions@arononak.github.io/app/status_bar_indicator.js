@@ -306,6 +306,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.followersMenuItem?.setHeaderItemText(loadingText);
         this.followingMenuItem?.setHeaderItemText(loadingText);
         this.reposMenuItem?.setHeaderItemText(loadingText);
+        this.gistsMenuItem?.setHeaderItemText(loadingText);
         this.repositoryMenuItem?.setHeaderItemText(loadingText);
         this.stargazersMenuItem?.setHeaderItemText(loadingText);
         this.workflowsMenuItem?.setHeaderItemText(loadingText);
@@ -447,6 +448,10 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             /// Repos
             this.reposMenuItem = new ExpandedMenuItem('folder-symbolic', '');
             this.menu.addMenuItem(this.reposMenuItem);
+
+            /// Gists
+            this.gistsMenuItem = new ExpandedMenuItem('utilities-terminal-symbolic', '');
+            this.menu.addMenuItem(this.gistsMenuItem);
         }
 
         if (!this.isCorrectState()) {
@@ -663,6 +668,29 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length} `);
             this.reposMenuItem.submitItems(
                 repos
+                    .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
+                    .map(e => toItem(e)));
+        }
+    }
+
+    setUserGists(gists) {
+        if (gists === null || gists === undefined) return;
+
+        function toItem(e) {
+            const createdAt = formatDate(e['created_at']);
+            const description = e['description'];
+
+            return {
+                "iconName": 'utilities-terminal-symbolic',
+                "text": `${createdAt}` + (description.length !== 0 ? ` - ${description.replace(/\n/g, '')} ` : ''),
+                "callback": () => openUrl(e['html_url']),
+            };
+        }
+
+        if (this.gistsMenuItem != null) {
+            this.gistsMenuItem.setHeaderItemText(`Gists: ${gists.length} `);
+            this.gistsMenuItem.submitItems(
+                gists
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
                     .map(e => toItem(e)));
         }

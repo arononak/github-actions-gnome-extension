@@ -50,6 +50,7 @@ async function fetchUserData(
             const followers = await githubApiRepository.fetchUserFollowers(pagination);
             const following = await githubApiRepository.fetchUserFollowing(pagination);
             const repos = await githubApiRepository.fetchUserRepos(pagination);
+            const gists = await githubApiRepository.fetchUserGists(pagination);
 
             resolve({
                 "user": user,
@@ -61,6 +62,7 @@ async function fetchUserData(
                 "followers": followers,
                 "following": following,
                 "repos": repos,
+                "gists": gists,
             });
         } catch (error) {
             logError(error);
@@ -170,6 +172,7 @@ async function dataRefresh(
             followers,
             following,
             repos,
+            gists,
         } = await fetchUserData(settingsRepository, githubApiRepository);
 
         const userObjects = [
@@ -181,6 +184,7 @@ async function dataRefresh(
             followers,
             following,
             repos,
+            gists,
         ];
 
         indicator.setUser(user);
@@ -196,6 +200,7 @@ async function dataRefresh(
 
             refreshCallback();
         });
+        indicator.setUserGists(gists);
 
         if (!indicator.isCorrectState()) {
             settingsRepository.updateTransfer(userObjects);

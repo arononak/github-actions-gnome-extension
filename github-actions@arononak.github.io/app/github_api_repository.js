@@ -60,6 +60,9 @@ var GithubApiRepository = class {
     fetchUserRepos = async (pagination) =>
         cliInterface.executeGithubCliCommand('GET', 'user/repos', pagination);
 
+    fetchUserGists = async (pagination) =>
+        cliInterface.executeGithubCliCommand('GET', 'gists', pagination);
+
     fetchUserStarred = async (username, pagination) =>
         cliInterface.executeGithubCliCommand('GET', `users/${username}/starred`, pagination);
 
