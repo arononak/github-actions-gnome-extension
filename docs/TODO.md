@@ -65,6 +65,7 @@
 - [ ] position in top panel (right | center | left)
 - [ ] Refresh - interupt promise's
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
+- [ ] ColoredMode / ExtendedColoredMode - fix
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 - [ ] Multirepo
