@@ -59,7 +59,7 @@
 - [ ] Adjust to Github Enterprice
 - [ ] More notifications
 - [x] gists
-- [x] gists/starred
+- [ ] gists/starred
 - [ ] --paginate
 - [ ] workflow run - rerun 2 endpoints
 - [ ] commit list
