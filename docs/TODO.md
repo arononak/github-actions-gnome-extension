@@ -46,9 +46,10 @@
 - [x] thyttan - "Configure icon position in top panel"
 - [x] makefile - copy from .local extension -> home/...
 - [x] Workflow run - cancel/rerun
-- [ ] Performance
 - [x] Missing scopes - information in the extension
 - [x] QuickSettings status icon - tint
+- [x] gists
+- [x] show statusbar icon
 - [ ] Gnome 45 update
 - [ ] README.md gif preview
 - [ ] async operation - progress bar or something else
@@ -58,7 +59,7 @@
 - [ ] Lint
 - [ ] Adjust to Github Enterprice
 - [ ] More notifications
-- [x] gists
+- [ ] Performance
 - [ ] gists/starred
 - [ ] --paginate
 - [ ] workflow run - rerun 2 endpoints
@@ -68,7 +69,6 @@
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
 - [ ] ColoredMode / ExtendedColoredMode - fix
 - [ ] Missing scopes - relogin
-- [ ] show icon
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 - [ ] Multirepo
