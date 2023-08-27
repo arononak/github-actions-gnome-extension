@@ -36,6 +36,7 @@ var SettingsRepository = class {
     fetchUppercaseMode = () => this.settings.get_boolean('uppercase-mode');
     fetchExtendedColoredMode = () => this.settings.get_boolean('extended-colored-mode');
     fetchIconPosition = () => this.settings.get_int('icon-position');
+    fetchShowIcon = () => this.settings.get_boolean('show-icon');
 
     fetchHiddenMode = () => this.settings.get_boolean('hidden-mode');
     updateHiddenMode = (mode) => this.settings.set_boolean('hidden-mode', mode);
@@ -56,6 +57,7 @@ var SettingsRepository = class {
         const uppercaseMode = this.fetchUppercaseMode();
         const extendedColoredMode = this.fetchExtendedColoredMode();
         const iconPosition = this.fetchIconPosition();
+        const showIcon = this.fetchShowIcon();
 
         return {
             "simpleMode": simpleMode,
@@ -63,6 +65,7 @@ var SettingsRepository = class {
             "uppercaseMode": uppercaseMode,
             "extendedColoredMode": extendedColoredMode,
             "iconPosition": iconPosition,
+            "showIcon": showIcon,
         };
     }
 

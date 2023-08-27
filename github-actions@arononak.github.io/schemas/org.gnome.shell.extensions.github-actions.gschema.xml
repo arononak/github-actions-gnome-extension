@@ -43,5 +43,8 @@
     <key name="extension-enabled" type="b">
       <default>true</default>
     </key>
+    <key name="show-icon" type="b">
+      <default>true</default>
+    </key>
   </schema>
 </schemalist>

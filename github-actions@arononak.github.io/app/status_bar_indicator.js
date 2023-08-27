@@ -115,6 +115,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         coloredMode = false,
         uppercaseMode = false,
         extendedColoredMode = false,
+        showIcon = true,
         isInstalledCli = false,
         isLogged = false,
         tokenScopes = '',
@@ -128,6 +129,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.coloredMode = coloredMode;
         this.uppercaseMode = uppercaseMode;
         this.extendedColoredMode = extendedColoredMode;
+        this.showIcon = showIcon;
 
         this.tokenScopes = tokenScopes;
 
@@ -165,6 +167,11 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.refreshState();
     };
 
+    setShowIcon = (showIcon) => {
+        this.showIcon = showIcon;
+        this.refreshState();
+    };
+
     isCorrectState = () => {
         return this.state == StatusBarState.IN_PROGRESS
             || this.state == StatusBarState.REPO_WITHOUT_ACTIONS
@@ -197,13 +204,15 @@ var StatusBarIndicator = class extends PanelMenu.Button {
     }
 
     initStatusBarIndicator() {
-        this.label = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
-
-        this.icon = new St.Icon({ style_class: 'system-status-icon' });
-        this.icon.gicon = createAppGioIcon(AppStatusColor.WHITE);
-
         this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
-        this.topBox.add_child(this.icon);
+
+        if (this.showIcon === true) {
+            this.icon = new St.Icon({ style_class: 'system-status-icon' });
+            this.icon.gicon = createAppGioIcon(AppStatusColor.WHITE);
+            this.topBox.add_child(this.icon);
+        }
+
+        this.label = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
         this.topBox.add_child(this.label);
         this.add_child(this.topBox);
     }

@@ -115,6 +115,7 @@ class Extension {
                     uppercaseMode,
                     extendedColoredMode,
                     iconPosition,
+                    showIcon,
                 } = await this.extensionController.fetchSettings();
                 
                 this.indicator = new StatusBarIndicator({
@@ -125,6 +126,7 @@ class Extension {
                     coloredMode: coloredMode,
                     uppercaseMode: uppercaseMode,
                     extendedColoredMode: extendedColoredMode,
+                    showIcon: showIcon,
                     refreshCallback: () => {
                         this.extensionController.refresh();
                         this.indicator.refreshGithubIcon();

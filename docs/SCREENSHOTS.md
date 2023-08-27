@@ -23,7 +23,5 @@
 | Workflow run - deleted | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_run_deleted.png?raw=true)               |
 | Workflow run - success | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_run_success.png?raw=true)               |
 
-# Screenshots
-
 ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/settings.png?raw=true)
 

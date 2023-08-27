@@ -356,6 +356,7 @@ var ExtensionController = class {
             uppercaseMode,
             extendedColoredMode,
             iconPosition,
+            showIcon,
         } = this.settingsRepository.fetchAppearanceSettings();
 
         const isInstalledCli = await this.githubApiRepository.isInstalledCli();
@@ -374,6 +375,7 @@ var ExtensionController = class {
             "uppercaseMode": uppercaseMode,
             "extendedColoredMode": extendedColoredMode,
             "iconPosition": iconPosition,
+            "showIcon": showIcon,
         };
     }
 
@@ -483,6 +485,10 @@ var ExtensionController = class {
         this.settings.connect('changed::extended-colored-mode', (settings, key) => {
             const extendedColoredMode = settingsRepository.fetchExtendedColoredMode();
             this.indicator.setExtendedColoredMode(extendedColoredMode);
+        });
+
+        this.settings.connect('changed::show-icon', (settings, key) => {
+            this.onReloadCallback();
         });
 
         this.settings.connect('changed::icon-position', (settings, key) => {

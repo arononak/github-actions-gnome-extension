@@ -91,13 +91,14 @@ function fillPreferencesWindow(window) {
         coloredMode,
         uppercaseMode,
         iconPosition,
+        showIcon,
 
         hiddenMode,
 
         version,
     } = prefsController.fetchData();
 
-    window.set_default_size(550, 1060);
+    window.set_default_size(550, 1110);
 
     const enabledRow = createToggleRow({
         title: 'Enabled',
@@ -148,10 +149,18 @@ function fillPreferencesWindow(window) {
         onSwitchButtonCreated: (switchButton) => settings.bind('uppercase-mode', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
     });
 
+    const showIconRow = createToggleRow({
+        title: 'Show icon',
+        subtitle: 'Show github icon on system indicator',
+        value: showIcon,
+        onSwitchButtonCreated: (switchButton) => settings.bind('show-icon', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
+    });
+
     const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' });
     appearanceGroup.add(simpleModeRow);
     appearanceGroup.add(coloredModeRow);
     appearanceGroup.add(uppercaseModeRow);
+    appearanceGroup.add(showIconRow);
 
     /// Refresh
     const refreshStatusRow = createSpinButtonRow({
