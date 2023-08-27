@@ -68,6 +68,7 @@
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
 - [ ] ColoredMode / ExtendedColoredMode - fix
 - [ ] Missing scopes - relogin
+- [ ] show icon
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 - [ ] Multirepo
