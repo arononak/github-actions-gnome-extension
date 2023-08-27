@@ -50,6 +50,7 @@
 - [x] QuickSettings status icon - tint
 - [x] gists
 - [x] show statusbar icon
+- [ ] Block refresh
 - [ ] Gnome 45 update
 - [ ] README.md gif preview
 - [ ] async operation - progress bar or something else
@@ -68,7 +69,7 @@
 - [ ] Refresh - interupt promise's
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
 - [ ] ColoredMode / ExtendedColoredMode - fix
-- [ ] Missing scopes - relogin
+- [ ] Missing scopes - relogi
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 - [ ] Multirepo
