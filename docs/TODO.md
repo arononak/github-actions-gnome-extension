@@ -50,26 +50,27 @@
 - [x] QuickSettings status icon - tint
 - [x] gists
 - [x] show statusbar icon
-- [ ] Block refresh
-- [ ] Gnome 45 update
-- [ ] README.md gif preview
+- [ ] Suspend bug
 - [ ] async operation - progress bar or something else
-- [ ] Memory allocations - check memory leaks
-- [ ] Organization billings
-- [ ] EN / PL - translations
-- [ ] Lint
-- [ ] Adjust to Github Enterprice
-- [ ] More notifications
-- [ ] Performance
-- [ ] gists/starred
-- [ ] --paginate
-- [ ] workflow run - rerun 2 endpoints
-- [ ] commit list
+- [ ] ColoredMode / ExtendedColoredMode - fix
+- [ ] Missing scopes - relogin
+- [ ] Block refresh
+- [ ] TESTING.md - manual test workflow steps before deploy
 - [ ] position in top panel (right | center | left)
 - [ ] Refresh - interupt promise's
+- [ ] README.md gif preview
+- [ ] Gnome 45 update
+- [ ] gists/starred
+- [ ] Organization billings
+- [ ] commit list
+- [ ] EN / PL - translations
+- [ ] Memory allocations - check memory leaks
+- [ ] Lint
+- [ ] Adjust to Github Enterprice
+- [ ] Performance
+- [ ] --paginate
+- [ ] workflow run - rerun 2 endpoints
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
-- [ ] ColoredMode / ExtendedColoredMode - fix
-- [ ] Missing scopes - relogi
 
 ## 🎯 Version 3 - Multirepo config & WebHooks
 - [ ] Multirepo
