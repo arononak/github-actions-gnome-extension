@@ -99,6 +99,18 @@ var StatusBarState = {
         color: AppStatusColor.WHITE,
         coloredModeColor: AppStatusColor.GREEN,
     },
+    LONG_OPERATION_PLEASE_WAIT: {
+        text: () => 'Please wait...',
+        simpleModeShowText: true,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
+    },
+}
+
+function isCompleted(state) {
+    return state === StatusBarState.COMPLETED_SUCCESS
+        || state === StatusBarState.COMPLETED_FAILURE
+        || state === StatusBarState.COMPLETED_CANCELLED;
 }
 
 var StatusBarIndicator = class extends PanelMenu.Button {
@@ -144,7 +156,19 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             return;
         }
 
-        this.setState({ state: isLogged ? StatusBarState.LOADING : StatusBarState.NOT_LOGGED });
+        if (isLogged) {
+            this.setState({ state: StatusBarState.LOADING, forceUpdate: false });
+        } else {
+            this.setState({ state: StatusBarState.NOT_LOGGED, forceUpdate: false });
+        }
+
+        this.initMenu();
+    }
+
+    initMenu() {
+        this.menu.removeAll();
+        this.initPopupMenu();
+        this.setLoadingTexts();
     }
 
     setSimpleMode = (mode) => {
@@ -172,16 +196,14 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.refreshState();
     };
 
-    isCorrectState = () => {
-        return this.state == StatusBarState.IN_PROGRESS
-            || this.state == StatusBarState.REPO_WITHOUT_ACTIONS
-            || this.state == StatusBarState.COMPLETED_CANCELLED
-            || this.state == StatusBarState.COMPLETED_FAILURE
-            || this.state == StatusBarState.COMPLETED_SUCCESS;
-    }
+    showRepositoryMenu = () => (this.state === StatusBarState.IN_PROGRESS || isCompleted(this.state));
 
-    isInstalledCli = () => {
-        return this.state != StatusBarState.NOT_INSTALLED_CLI;
+    isInstalledCli = () => this.state != StatusBarState.NOT_INSTALLED_CLI;
+
+    isLongOperation = () => this.state == StatusBarState.LONG_OPERATION_PLEASE_WAIT;
+
+    shouldShowCompletedNotification(previousState, currentState) {
+        return previousState === StatusBarState.IN_PROGRESS && isCompleted(currentState);
     }
 
     isLogged = () => {
@@ -196,11 +218,67 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         return true;
     }
 
-    shouldShowCompletedNotification(previousState, currentState) {
-        return previousState === StatusBarState.IN_PROGRESS
-            && (currentState === StatusBarState.COMPLETED_SUCCESS
-                || currentState === StatusBarState.COMPLETED_FAILURE
-                || currentState === StatusBarState.COMPLETED_CANCELLED);
+    getState = () => this.state;
+
+    refreshState() {
+        this.setState({ state: this.state, forceUpdate: true });
+    }
+
+    setState({ state, forceUpdate = false }) {
+        if (state === null || state === undefined) {
+            return;
+        }
+
+        const previousState = this.state;
+        this.state = state;
+        this.updateGithubActionsStatus(state);
+
+        if (previousState === state) {
+            return;
+        }
+
+        if (previousState === StatusBarState.LONG_OPERATION_PLEASE_WAIT) {
+            return;
+        }
+
+        if (isCompleted(this.state)) {
+            this.initMenu();
+            this.refreshCallback();
+            return;
+        }
+
+        if (forceUpdate === false) {
+            return;
+        }
+
+        this.initMenu();
+        this.refreshCallback();
+    }
+
+    setLoadingTexts() {
+        const loadingText = StatusBarState.LOADING.text();
+
+        this.userMenuItem?.setHeaderItemText(loadingText)
+        this.starredMenuItem?.setHeaderItemText(loadingText)
+        this.followersMenuItem?.setHeaderItemText(loadingText);
+        this.followingMenuItem?.setHeaderItemText(loadingText);
+        this.reposMenuItem?.setHeaderItemText(loadingText);
+        this.gistsMenuItem?.setHeaderItemText(loadingText);
+        this.repositoryMenuItem?.setHeaderItemText(loadingText);
+        this.stargazersMenuItem?.setHeaderItemText(loadingText);
+        this.workflowsMenuItem?.setHeaderItemText(loadingText);
+        this.runsMenuItem?.setHeaderItemText(loadingText);
+        this.releasesMenuItem?.setHeaderItemText(loadingText);
+        this.branchesMenuItem?.setHeaderItemText(loadingText);
+        this.tagsMenuItem?.setHeaderItemText(loadingText);
+        this.artifactsMenuItem?.setHeaderItemText(loadingText);
+        this.twoFactorItem?.label.set_text(loadingText);
+        this.minutesItem?.label.set_text(loadingText);
+        this.packagesItem?.label.set_text(loadingText);
+        this.sharedStorageItem?.label.set_text(loadingText);
+        this.repositoryPrivateItem?.label.set_text(loadingText);
+        this.repositoryForkItem?.label.set_text(loadingText);
+        this.networkButton?.boxLabel?.set_text(loadingText);
     }
 
     initStatusBarIndicator() {
@@ -265,72 +343,6 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         if (this.networkButton) {
             this.networkButton.setIcon(this.networkIcon);
         }
-    }
-
-    refreshState() {
-        this.setState({ state: this.state, forceUpdate: true });
-    }
-
-    setState({ state, forceUpdate = false }) {
-        if (state == null || state == undefined) {
-            return;
-        }
-
-        this.updateGithubActionsStatus(state);
-
-        if (this.state == state && forceUpdate == false) {
-            return;
-        }
-
-        this.state = state;
-        this.menu.removeAll();
-        this.initPopupMenu();
-
-        if (this.state == StatusBarState.NOT_INSTALLED_CLI) {
-            return;
-        }
-
-        if (this.state == StatusBarState.NOT_LOGGED) {
-            return;
-        }
-
-        if (this.state == StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
-            return;
-        }
-
-        this.setLoadingTexts();
-
-        if (this.state == StatusBarState.LOADING) {
-            return;
-        }
-
-        this.refreshCallback();
-    }
-
-    setLoadingTexts() {
-        const loadingText = StatusBarState.LOADING.text();
-
-        this.userMenuItem?.setHeaderItemText(loadingText)
-        this.starredMenuItem?.setHeaderItemText(loadingText)
-        this.followersMenuItem?.setHeaderItemText(loadingText);
-        this.followingMenuItem?.setHeaderItemText(loadingText);
-        this.reposMenuItem?.setHeaderItemText(loadingText);
-        this.gistsMenuItem?.setHeaderItemText(loadingText);
-        this.repositoryMenuItem?.setHeaderItemText(loadingText);
-        this.stargazersMenuItem?.setHeaderItemText(loadingText);
-        this.workflowsMenuItem?.setHeaderItemText(loadingText);
-        this.runsMenuItem?.setHeaderItemText(loadingText);
-        this.releasesMenuItem?.setHeaderItemText(loadingText);
-        this.branchesMenuItem?.setHeaderItemText(loadingText);
-        this.tagsMenuItem?.setHeaderItemText(loadingText);
-        this.artifactsMenuItem?.setHeaderItemText(loadingText);
-        this.twoFactorItem?.label.set_text(loadingText);
-        this.minutesItem?.label.set_text(loadingText);
-        this.packagesItem?.label.set_text(loadingText);
-        this.sharedStorageItem?.label.set_text(loadingText);
-        this.repositoryPrivateItem?.label.set_text(loadingText);
-        this.repositoryForkItem?.label.set_text(loadingText);
-        this.networkButton?.boxLabel?.set_text(loadingText);
     }
 
     initPopupMenu() {
@@ -463,7 +475,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             this.menu.addMenuItem(this.gistsMenuItem);
         }
 
-        if (!this.isCorrectState()) {
+        if (!this.showRepositoryMenu()) {
             return;
         }
 

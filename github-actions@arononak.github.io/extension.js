@@ -117,7 +117,7 @@ class Extension {
                     iconPosition,
                     showIcon,
                 } = await this.extensionController.fetchSettings();
-                
+
                 this.indicator = new StatusBarIndicator({
                     isInstalledCli: isInstalledCli,
                     isLogged: isLogged,
@@ -137,6 +137,7 @@ class Extension {
                     },
                     downloadArtifactCallback: (downloadUrl, filename) => {
                         this.extensionController.downloadArtifact({
+                            indicator: this.indicator,
                             downloadUrl: downloadUrl,
                             filename: filename,
                             onFinishCallback: (success, filename) => {

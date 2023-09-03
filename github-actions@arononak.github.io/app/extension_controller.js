@@ -8,139 +8,30 @@ const { GithubApiRepository } = extension.imports.app.github_api_repository;
 const { SettingsRepository } = extension.imports.app.settings_repository;
 const { StatusBarState } = extension.imports.app.status_bar_indicator;
 
-async function fetchUserData(
-    settingsRepository,
-    githubApiRepository,
-) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const user = await githubApiRepository.fetchUser();
-            if (user == null) {
-                return;
-            }
-
-            const login = user['login'];
-
-            /// Simple Mode
-            const minutes = await githubApiRepository.fetchUserBillingActionsMinutes(login);
-            const packages = await githubApiRepository.fetchUserBillingPackages(login);
-            const sharedStorage = await githubApiRepository.fetchUserBillingSharedStorage(login);
-
-            /// Hidden Mode
-            const simpleMode = settingsRepository.fetchSimpleMode();
-            const { owner, repo } = settingsRepository.ownerAndRepo();
-            const isStarred = await githubApiRepository.checkIsRepoStarred(owner, repo);
-            settingsRepository.updateHiddenMode(isStarred === 'success');
-
-            if (simpleMode) {
-                resolve({
-                    "user": user,
-                    "minutes": minutes,
-                    "packages": packages,
-                    "sharedStorage": sharedStorage,
-                });
-
-                return;
-            }
-
-            const pagination = settingsRepository.fetchPagination();
-
-            /// Full Mode
-            const starredList = await githubApiRepository.fetchUserStarred(login, pagination);
-            const followers = await githubApiRepository.fetchUserFollowers(pagination);
-            const following = await githubApiRepository.fetchUserFollowing(pagination);
-            const repos = await githubApiRepository.fetchUserRepos(pagination);
-            const gists = await githubApiRepository.fetchUserGists(pagination);
-
-            resolve({
-                "user": user,
-                "minutes": minutes,
-                "packages": packages,
-                "sharedStorage": sharedStorage,
-
-                "starredList": starredList,
-                "followers": followers,
-                "following": following,
-                "repos": repos,
-                "gists": gists,
-            });
-        } catch (error) {
-            logError(error);
-            resolve(null);
-        }
-    });
-}
-
-async function fetchRepoData(
-    settingsRepository,
-    githubApiRepository,
-) {
-    return new Promise(async (resolve, reject) => {
-        try {
-            const { owner, repo } = settingsRepository.ownerAndRepo();
-            const pagination = settingsRepository.fetchPagination();
-            const simpleMode = settingsRepository.fetchSimpleMode();
-
-            /// Simple Mode
-            const runs = await githubApiRepository.fetchWorkflowRuns(owner, repo, pagination);
-            const artifacts = await githubApiRepository.fetchArtifacts(owner, repo, pagination);
-
-            if (simpleMode) {
-                resolve({
-                    "runs": runs,
-                    "artifacts": artifacts,
-                });
-
-                return;
-            }
-
-            /// Full Mode
-            const userRepo = await githubApiRepository.fetchUserRepo(owner, repo);
-            const workflows = await githubApiRepository.fetchWorkflows(owner, repo, pagination);
-            const stargazers = await githubApiRepository.fetchStargazers(owner, repo, pagination);
-            const releases = await githubApiRepository.fetchReleases(owner, repo, pagination);
-            const branches = await githubApiRepository.fetchBranches(owner, repo, pagination);
-            const tags = await githubApiRepository.fetchTags(owner, repo, pagination);
-
-            resolve({
-                "runs": runs,
-                "artifacts": artifacts,
-
-                "userRepo": userRepo,
-                "workflows": workflows,
-                "stargazers": stargazers,
-                "releases": releases,
-                "branches": branches,
-                "tags": tags,
-            });
-        } catch (error) {
-            logError(error);
-            resolve(null);
-        }
-    });
-}
-
-/// Main 3 refresh Functions ----------------------------------------------------------------------
 async function stateRefresh(
     indicator,
     settingsRepository,
     githubApiRepository,
 ) {
     try {
+        if (indicator.isLongOperation()) {
+            return;
+        }
+
         const isInstalledCli = await githubApiRepository.isInstalledCli();
         if (isInstalledCli == false) {
-            indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI });
+            indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI, forceUpdate: true });
             return;
         }
 
         const isLogged = await githubApiRepository.isLogged();
         if (isLogged == false) {
-            indicator.setState({ state: StatusBarState.NOT_LOGGED });
+            indicator.setState({ state: StatusBarState.NOT_LOGGED, forceUpdate: true });
             return;
         }
 
         if (!settingsRepository.isRepositoryEntered()) {
-            indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO });
+            indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true });
             return;
         }
     } catch (error) {
@@ -157,9 +48,146 @@ async function dataRefresh(
     onCancelWorkflowRun,
     onRerunWorkflowRun,
     refreshCallback,
+    onlyWorkflowRuns,
 ) {
+    async function fetchUserData(
+        settingsRepository,
+        githubApiRepository,
+    ) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const user = await githubApiRepository.fetchUser();
+                if (user == null) {
+                    return;
+                }
+
+                const login = user['login'];
+
+                /// Simple Mode
+                const minutes = await githubApiRepository.fetchUserBillingActionsMinutes(login);
+                const packages = await githubApiRepository.fetchUserBillingPackages(login);
+                const sharedStorage = await githubApiRepository.fetchUserBillingSharedStorage(login);
+
+                /// Hidden Mode
+                const simpleMode = settingsRepository.fetchSimpleMode();
+                const { owner, repo } = settingsRepository.ownerAndRepo();
+                const isStarred = await githubApiRepository.checkIsRepoStarred(owner, repo);
+                settingsRepository.updateHiddenMode(isStarred === 'success');
+
+                if (simpleMode) {
+                    resolve({
+                        "user": user,
+                        "minutes": minutes,
+                        "packages": packages,
+                        "sharedStorage": sharedStorage,
+                    });
+
+                    return;
+                }
+
+                const pagination = settingsRepository.fetchPagination();
+
+                /// Full Mode
+                const starredList = await githubApiRepository.fetchUserStarred(login, pagination);
+                const followers = await githubApiRepository.fetchUserFollowers(pagination);
+                const following = await githubApiRepository.fetchUserFollowing(pagination);
+                const repos = await githubApiRepository.fetchUserRepos(pagination);
+                const gists = await githubApiRepository.fetchUserGists(pagination);
+
+                resolve({
+                    "user": user,
+                    "minutes": minutes,
+                    "packages": packages,
+                    "sharedStorage": sharedStorage,
+
+                    "starredList": starredList,
+                    "followers": followers,
+                    "following": following,
+                    "repos": repos,
+                    "gists": gists,
+                });
+            } catch (error) {
+                logError(error);
+                resolve(null);
+            }
+        });
+    }
+
+    async function fetchRepoData(
+        settingsRepository,
+        githubApiRepository,
+        onlyWorkflowRuns = false,
+    ) {
+        return new Promise(async (resolve, reject) => {
+            try {
+                const { owner, repo } = settingsRepository.ownerAndRepo();
+                const pagination = settingsRepository.fetchPagination();
+                
+                const runs = await githubApiRepository.fetchWorkflowRuns(owner, repo, pagination);
+                
+                if (onlyWorkflowRuns === true) {
+                    resolve({ "runs": runs });
+                    return;
+                }
+                
+                const simpleMode = settingsRepository.fetchSimpleMode();
+                const artifacts = await githubApiRepository.fetchArtifacts(owner, repo, pagination);
+
+                if (simpleMode) {
+                    resolve({ "runs": runs, "artifacts": artifacts });
+                    return;
+                }
+
+                const userRepo = await githubApiRepository.fetchUserRepo(owner, repo);
+                const workflows = await githubApiRepository.fetchWorkflows(owner, repo, pagination);
+                const stargazers = await githubApiRepository.fetchStargazers(owner, repo, pagination);
+                const releases = await githubApiRepository.fetchReleases(owner, repo, pagination);
+                const branches = await githubApiRepository.fetchBranches(owner, repo, pagination);
+                const tags = await githubApiRepository.fetchTags(owner, repo, pagination);
+
+                resolve({
+                    "runs": runs,
+                    "artifacts": artifacts,
+
+                    "userRepo": userRepo,
+                    "workflows": workflows,
+                    "stargazers": stargazers,
+                    "releases": releases,
+                    "branches": branches,
+                    "tags": tags,
+                });
+            } catch (error) {
+                logError(error);
+                resolve(null);
+            }
+        });
+    }
+
     try {
+        if (indicator.isLongOperation()) {
+            return;
+        }
+
         if (indicator.isLogged == false) {
+            return;
+        }
+
+        if (onlyWorkflowRuns === true) {
+            const { runs } = await fetchRepoData(settingsRepository, githubApiRepository, onlyWorkflowRuns);
+
+            indicator.setWorkflowRuns({
+                runs: runs['workflow_runs'],
+                onDeleteWorkflowRun: (runId, runName) => {
+                    onDeleteWorkflowRun(runId, runName);
+                },
+                onCancelWorkflowRun: (runId, runName) => {
+                    onCancelWorkflowRun(runId, runName);
+                },
+                onRerunWorkflowRun: (runId, runName) => {
+                    onRerunWorkflowRun(runId, runName);
+                },
+            });
+
             return;
         }
 
@@ -202,7 +230,7 @@ async function dataRefresh(
         });
         indicator.setUserGists(gists);
 
-        if (!indicator.isCorrectState()) {
+        if (!indicator.showRepositoryMenu()) {
             settingsRepository.updateTransfer(userObjects);
             return;
         }
@@ -231,8 +259,8 @@ async function dataRefresh(
         settingsRepository.updateTransfer([...userObjects, ...repoObjects]);
 
         indicator.setWatchedRepo(userRepo);
-        indicator.setWorkflows(workflows === undefined ? null : workflows['workflows']);
-        indicator.setArtifacts(artifacts === undefined ? null : artifacts['artifacts']);
+        indicator.setWorkflows(workflows === undefined ? [] : workflows['workflows']);
+        indicator.setArtifacts(artifacts === undefined ? [] : artifacts['artifacts']);
         indicator.setStargazers(stargazers);
         indicator.setWorkflowRuns({
             runs: runs['workflow_runs'],
@@ -261,6 +289,10 @@ async function githubActionsRefresh(
     onBuildCompleted,
 ) {
     try {
+        if (indicator.isLongOperation()) {
+            return;
+        }
+
         const isLogged = await githubApiRepository.isLogged();
         if (isLogged == false) {
             return;
@@ -278,7 +310,7 @@ async function githubActionsRefresh(
         const workflowRunsResponse = await githubApiRepository.fetchWorkflowRuns(owner, repo, 1);
         switch (workflowRunsResponse) {
             case null:
-                indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY });
+                indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY, forceUpdate: true });
                 return;
             case 'no-internet-connection':
                 indicator.setState({ state: StatusBarState.LOGGED_NO_INTERNET_CONNECTION });
@@ -289,7 +321,7 @@ async function githubActionsRefresh(
 
         const workflowRuns = workflowRunsResponse['workflow_runs'];
         if (workflowRuns.length == 0) {
-            indicator.setState({ state: StatusBarState.REPO_WITHOUT_ACTIONS });
+            indicator.setState({ state: StatusBarState.REPO_WITHOUT_ACTIONS, forceUpdate: true });
             return;
         }
 
@@ -397,20 +429,22 @@ var ExtensionController = class {
         );
     }
 
-    _dataRefresh() {
+    _dataRefresh(onlyWorkflowRuns = false) {
         dataRefresh(
             this.indicator,
             this.settingsRepository,
             this.githubApiRepository,
             this.onRepoSetAsWatched,
-            (runId, runName) => this.deleteWorkflowRun(runId, runName),
-            (runId, runName) => this.cancelWorkflowRun(runId, runName),
-            (runId, runName) => this.rerunWorkflowRun(runId, runName),
+            (runId, runName) => this.deleteWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName }),
+            (runId, runName) => this.cancelWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName }),
+            (runId, runName) => this.rerunWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName }),
             () => this.refresh(),
+            onlyWorkflowRuns,
         );
     }
 
     refresh() {
+        this.indicator.initMenu();
         try {
             this._stateRefresh();
             this._githubActionsRefresh();
@@ -422,6 +456,8 @@ var ExtensionController = class {
 
     startRefreshing() {
         const settingsRepository = this.settingsRepository;
+
+        this.refresh();
 
         try {
             this.stateRefreshInterval = setInterval(
@@ -512,21 +548,31 @@ var ExtensionController = class {
         await this.githubApiRepository.logoutUser();
     }
 
-    async downloadArtifact({ downloadUrl, filename, onFinishCallback }) {
-        const success = await this.githubApiRepository.downloadArtifactFile(downloadUrl, filename);
+    async downloadArtifact({ indicator, downloadUrl, filename, onFinishCallback }) {
+        try {
+            const state = indicator.getState();
+            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT });
+            const success = await this.githubApiRepository.downloadArtifactFile(downloadUrl, filename);
+            indicator.setState({ state: state });
 
-        onFinishCallback(success, filename);
+            onFinishCallback(success, filename);
+        } catch (error) {
+            logError(error);
+        }
     }
 
-    async deleteWorkflowRun(runId, runName) {
+    async deleteWorkflowRun({ indicator, runId, runName }) {
         try {
             const { owner, repo } = this.settingsRepository.ownerAndRepo();
 
+            const state = indicator.getState();
+            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT });
             const status = await this.githubApiRepository.deleteWorkflowRun(owner, repo, runId);
+            indicator.setState({ state: state });
 
             if (status == 'success') {
                 this.onDeleteWorkflowRun(true, runName);
-                this._dataRefresh();
+                this._dataRefresh(true);
             } else {
                 this.onDeleteWorkflowRun(false, runName);
             }
@@ -535,15 +581,18 @@ var ExtensionController = class {
         }
     }
 
-    async cancelWorkflowRun(runId, runName) {
+    async cancelWorkflowRun({ indicator, runId, runName }) {
         try {
             const { owner, repo } = this.settingsRepository.ownerAndRepo();
 
+            const state = indicator.getState();
+            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT });
             const status = await this.githubApiRepository.cancelWorkflowRun(owner, repo, runId);
+            indicator.setState({ state: state });
 
             if (status == 'success') {
                 this.onCancelWorkflowRun(true, runName);
-                this._dataRefresh();
+                this._dataRefresh(true);
             } else {
                 this.onCancelWorkflowRun(false, runName);
             }
@@ -552,15 +601,18 @@ var ExtensionController = class {
         }
     }
 
-    async rerunWorkflowRun(runId, runName) {
+    async rerunWorkflowRun({ indicator, runId, runName }) {
         try {
             const { owner, repo } = this.settingsRepository.ownerAndRepo();
 
+            const state = indicator.getState();
+            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT });
             const status = await this.githubApiRepository.rerunWorkflowRun(owner, repo, runId);
+            indicator.setState({ state: state });
 
             if (status == 'success') {
                 this.onRerunWorkflowRun(true, runName);
-                this._dataRefresh();
+                this._dataRefresh(true);
             } else {
                 this.onRerunWorkflowRun(false, runName);
             }
