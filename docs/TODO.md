@@ -52,7 +52,9 @@
 - [x] show statusbar icon
 - [ ] Expired artifacts
 - [ ] Expired workflow rerun
-- [ ] Logs crashes
+- [ ] Logs - crashes
+- [ ] Tags list - download button border
+- [ ] Double confirm dialogs
 - [ ] Suspend bug
 - [ ] async operation - progress bar or something else
 - [ ] ColoredMode / ExtendedColoredMode - fix
