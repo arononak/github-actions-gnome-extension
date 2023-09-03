@@ -25,7 +25,7 @@ We want to ensure that our application works flawlessly before deployment. Below
 
 • Check completed notification,
 
-## 3. Check status label:
+## 3. 🧮 Check status label:
 
 • 🧮 Repo states: LOGGED_NOT_CHOOSED_REPO, REPO_WITHOUT_ACTIONS, INCORRECT_REPOSITORY,
 
