@@ -55,6 +55,8 @@
 - [ ] Logs - crashes
 - [ ] Tags list - download button border
 - [ ] Double confirm dialogs
+- [ ] ConfirmDialog - icon margin
+- [ ] NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [ ] Suspend bug
 - [ ] Settings - repo text fields - dont remove last char
 - [ ] async operation - progress bar or something else
