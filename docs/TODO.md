@@ -50,6 +50,7 @@
 - [x] QuickSettings status icon - tint
 - [x] gists
 - [x] show statusbar icon
+- [x] async operation - progress bar or something else
 - [ ] Expired artifacts
 - [ ] Expired workflow rerun
 - [ ] Logs - crashes
@@ -59,7 +60,7 @@
 - [ ] NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [ ] Suspend bug
 - [ ] Settings - repo text fields - dont remove last char
-- [ ] async operation - progress bar or something else
+- [ ] extension_controller.js -> extract to 2 classes
 - [ ] ColoredMode / ExtendedColoredMode - fix
 - [ ] Missing scopes - relogin
 - [ ] Block refresh
