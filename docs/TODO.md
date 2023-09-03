@@ -56,6 +56,7 @@
 - [ ] Tags list - download button border
 - [ ] Double confirm dialogs
 - [ ] Suspend bug
+- [ ] Settings - repo text fields - dont remove last char
 - [ ] async operation - progress bar or something else
 - [ ] ColoredMode / ExtendedColoredMode - fix
 - [ ] Missing scopes - relogin
