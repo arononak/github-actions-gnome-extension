@@ -50,6 +50,9 @@
 - [x] QuickSettings status icon - tint
 - [x] gists
 - [x] show statusbar icon
+- [ ] Expired artifacts
+- [ ] Expired workflow rerun
+- [ ] Logs crashes
 - [ ] Suspend bug
 - [ ] async operation - progress bar or something else
 - [ ] ColoredMode / ExtendedColoredMode - fix
