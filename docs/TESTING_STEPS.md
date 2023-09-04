@@ -2,7 +2,7 @@
 
 We want to ensure that our application works flawlessly before deployment. Below, you will find steps to test it to make sure everything is working as intended. 😊
 
-## 1. 🌐 Connect to the repository and check the data is being downloaded:
+## 🌐 Connect to the repository and check the data is being downloaded:
 • Select a repository that does not contain a github actions workflow - UserData,
 
 • Select the repository containing the github actions workflow        - UserData + RepoData,
@@ -19,13 +19,13 @@ We want to ensure that our application works flawlessly before deployment. Below
 
 • Watch repo & notification,
 
-## 2. ▶️ Launch the workflow:
+## ▶️ Launch the workflow:
 
 • Check changing status: SUCCESS/FAILURE -> IN_PROGRESS -> SUCCESS/FAILURE,
 
 • Check completed notification,
 
-## 3. 🧮 Check status label:
+## 🧮 Check status label:
 
 • 🧮 Repo states: LOGGED_NOT_CHOOSED_REPO, REPO_WITHOUT_ACTIONS, INCORRECT_REPOSITORY,
 
@@ -35,6 +35,6 @@ We want to ensure that our application works flawlessly before deployment. Below
 
 • 🧩 No CLI,
 
-## 4. ⚙️ Settings:
+## ⚙️ Settings:
 
 • All settings,
