@@ -54,6 +54,7 @@
 - [ ] Expired artifacts
 - [ ] Expired workflow rerun
 - [ ] Logs - crashes
+- [ ] Settings - display token
 - [ ] Tags list - download button border
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin
