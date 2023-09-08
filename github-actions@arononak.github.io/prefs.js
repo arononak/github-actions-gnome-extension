@@ -5,6 +5,7 @@ const ExtensionUtils = imports.misc.extensionUtils
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
 const { PrefsController } = extension.imports.app.prefs_controller
+const { openExtensionFolder } = extension.imports.app.utils
 
 function init() { }
 
@@ -98,7 +99,7 @@ function fillPreferencesWindow(window) {
         version,
     } = prefsController.fetchData()
 
-    window.set_default_size(550, 1110)
+    window.set_default_size(550, 1160)
 
     const enabledRow = createToggleRow({
         title: 'Enabled',
@@ -156,11 +157,23 @@ function fillPreferencesWindow(window) {
         onSwitchButtonCreated: (switchButton) => settings.bind('show-icon', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
     })
 
+    const changeIconButton = new Gtk.Button({ label: 'Change' })
+    changeIconButton.connect('clicked', () => openExtensionFolder())
+    changeIconButton.margin_top = 8
+    changeIconButton.margin_bottom = 8
+
+    const changeIconRow = new Adw.ActionRow({
+        title: 'Change icon',
+        subtitle: 'Don\'t open it in gedit and don\'t change the color :D',
+    })
+    changeIconRow.add_suffix(changeIconButton)
+
     const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' })
     appearanceGroup.add(simpleModeRow)
     appearanceGroup.add(coloredModeRow)
     appearanceGroup.add(uppercaseModeRow)
     appearanceGroup.add(showIconRow)
+    appearanceGroup.add(changeIconRow)
 
     /// Refresh
     const refreshStatusRow = createSpinButtonRow({

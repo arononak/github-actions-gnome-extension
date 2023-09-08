@@ -1,6 +1,7 @@
 'use strict'
 
 const { GLib, Gio } = imports.gi
+const extension = imports.misc.extensionUtils.getCurrentExtension()
 
 function isEmpty(str) {
     return (!str || str.length === 0)
@@ -37,6 +38,10 @@ function openUrl(url) {
 
 function openInstallCliScreen() {
     openUrl('https://github.com/cli/cli/blob/trunk/docs/install_linux.md')
+}
+
+function openExtensionFolder() {
+    openUrl(`${extension.path}/assets`)
 }
 
 function openAuthScreen() {
