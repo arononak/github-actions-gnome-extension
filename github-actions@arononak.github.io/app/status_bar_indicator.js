@@ -317,8 +317,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         const darkTheme = isDarkTheme()
 
         this.label.style = coloredMode
-            ? `color: ${appStatusColor.color}`
-            : `color: ${AppStatusColor.WHITE}`
+            ? `color: ${appStatusColor.color};`
+            : `color: ${AppStatusColor.WHITE};`
 
         if (this.networkButton != null) {
             this.networkButton.setTextColor(darkTheme ? appStatusColor.textColorDark : appStatusColor.textColor)
@@ -340,7 +340,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                 ? createAppGioIconInner(this.state.coloredModeColor)
                 : appIcon()
         })
-        this.networkIcon.style = 'margin-left: 2px'
+        this.networkIcon.style = 'margin-left: 2px;'
 
         if (this.networkButton) {
             this.networkButton.setIcon(this.networkIcon)
@@ -583,7 +583,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl))
             this.userMenuItem.icon.icon_size = 54
             this.userMenuItem.label.text = userLabelText
-            this.userMenuItem.label.style = 'margin-left: 4px'
+            this.userMenuItem.label.style = 'margin-left: 4px;'
         }
 
         if (this.twoFactorItem != null) {
@@ -729,7 +729,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         if (repo === null || repo === undefined) return
 
         if (this.repositoryMenuItem != null) {
-            this.repositoryMenuItem.label.style = 'margin-left: 4px'
+            this.repositoryMenuItem.label.style = 'margin-left: 4px;'
             this.repositoryMenuItem.label.text = `${repo['full_name']} \n\nCreated at: ${formatDate(repo['created_at'])} `
 
             this.repositoryUrl = repo['html_url']

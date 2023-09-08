@@ -144,11 +144,11 @@ var RoundedButton = class extends St.Button {
     }
 
     setColor({ backgroundColor, borderColor }) {
-        this.style = `background-color: ${backgroundColor} border-color: ${borderColor}`
+        this.style = `background-color: ${backgroundColor}; border-color: ${borderColor};`
     }
 
     setTextColor(textColor) {
-        this.boxLabel.style = `margin-left: 8px margin-top: 2px margin-right: 2px color: ${textColor}`
+        this.boxLabel.style = `margin-left: 8px; margin-top: 2px; margin-right: 2px; color: ${textColor};`
     }
 
     setIcon(icon) {
