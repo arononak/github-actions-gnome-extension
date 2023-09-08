@@ -122,14 +122,14 @@ async function dataRefresh(
             try {
                 const { owner, repo } = settingsRepository.ownerAndRepo()
                 const pagination = settingsRepository.fetchPagination()
-                
+
                 const runs = await githubApiRepository.fetchWorkflowRuns(owner, repo, pagination)
-                
+
                 if (onlyWorkflowRuns === true) {
                     resolve({ "runs": runs })
                     return
                 }
-                
+
                 const simpleMode = settingsRepository.fetchSimpleMode()
                 const artifacts = await githubApiRepository.fetchArtifacts(owner, repo, pagination)
 
@@ -354,6 +354,8 @@ var ExtensionController = class {
         this.githubApiRepository = new GithubApiRepository(settings)
         this.settingsRepository = new SettingsRepository(settings)
         this.isStarted = false
+
+        this.observeSettings(this.settingsRepository)
     }
 
     attachCallbacks({
@@ -471,8 +473,6 @@ var ExtensionController = class {
             this.stateRefreshInterval = setInterval(() => this._stateRefresh(), 1 * 1000)
             this.githubActionsRefreshInterval = setInterval(() => this._githubActionsRefresh(), settingsRepository.fetchRefreshTime() * 1000)
             this.dataRefreshInterval = setInterval(() => this._dataRefresh(), settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000)
-
-            this.observeSettings(settingsRepository)
         } catch (error) {
             logError(error)
         }
@@ -483,7 +483,7 @@ var ExtensionController = class {
             return
         }
         this.isStarted = false
-        
+
         clearInterval(this.stateRefreshInterval)
         this.stateRefreshInterval = null
 
@@ -496,41 +496,65 @@ var ExtensionController = class {
 
     observeSettings(settingsRepository) {
         this.settings.connect('changed::refresh-time', (settings, key) => {
-            this.stopRefreshing()
-            this.startRefreshing()
+            const enabled = settingsRepository.fetchEnabledExtension()
+
+            if (enabled) {
+                this.stopRefreshing()
+                this.startRefreshing()
+            }
         })
 
         this.settings.connect('changed::full-refresh-time', (settings, key) => {
-            this.stopRefreshing()
-            this.startRefreshing()
+            const enabled = settingsRepository.fetchEnabledExtension()
+
+            if (enabled) {
+                this.stopRefreshing()
+                this.startRefreshing()
+            }
         })
 
         this.settings.connect('changed::simple-mode', (settings, key) => {
             const simpleMode = settingsRepository.fetchSimpleMode()
-            this.indicator.setSimpleMode(simpleMode)
+            if (this.indicator != null && this.indicator != undefined) {
+                this.indicator.setSimpleMode(simpleMode)
+            }
         })
 
         this.settings.connect('changed::colored-mode', (settings, key) => {
             const coloredMode = settingsRepository.fetchColoredMode()
-            this.indicator.setColoredMode(coloredMode)
+            if (this.indicator != null && this.indicator != undefined) {
+                this.indicator.setColoredMode(coloredMode)
+            }
         })
 
         this.settings.connect('changed::uppercase-mode', (settings, key) => {
             const uppercaseMode = settingsRepository.fetchUppercaseMode()
-            this.indicator.setUppercaseMode(uppercaseMode)
+            if (this.indicator != null && this.indicator != undefined) {
+                this.indicator.setUppercaseMode(uppercaseMode)
+            }
         })
 
         this.settings.connect('changed::extended-colored-mode', (settings, key) => {
             const extendedColoredMode = settingsRepository.fetchExtendedColoredMode()
-            this.indicator.setExtendedColoredMode(extendedColoredMode)
+            if (this.indicator != null && this.indicator != undefined) {
+                this.indicator.setExtendedColoredMode(extendedColoredMode)
+            }
         })
 
         this.settings.connect('changed::show-icon', (settings, key) => {
-            this.onReloadCallback()
+            const enabled = settingsRepository.fetchEnabledExtension()
+
+            if (enabled) {
+                this.onReloadCallback()
+            }
         })
 
         this.settings.connect('changed::icon-position', (settings, key) => {
-            this.onReloadCallback()
+            const enabled = settingsRepository.fetchEnabledExtension()
+
+            if (enabled) {
+                this.onReloadCallback()
+            }
         })
 
         this.settings.connect('changed::extension-enabled', (settings, key) => {
