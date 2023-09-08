@@ -1,53 +1,53 @@
 .github-actions-top-box {
-    padding: 0px;
-    spacing: 8px;
-    flex: 1;
+    padding: 0px
+    spacing: 8px
+    flex: 1
 }
 
 .github-actions-button-box {
-    padding: 0px;
-    spacing: 8px;
-    flex: 1;
+    padding: 0px
+    spacing: 8px
+    flex: 1
 }
 
 .github-actions-popup-box {
-    spacing: 8px;
-    height: 24px;
+    spacing: 8px
+    height: 24px
 }
 
 .github-actions-button-action {
-    border-radius: 20px;
-    min-height: 20px;
-    min-width: 20px;
-    font-size: 100%;
-    border: 1px solid;
-    padding: 10px;
+    border-radius: 20px
+    min-height: 20px
+    min-width: 20px
+    font-size: 100%
+    border: 1px solid
+    padding: 10px
 }
 
 .github-actions-text-button {
-    border-radius: 20px;
-    min-height: 20px;
-    min-width: 20px;
-    font-size: 100%;
-    border: 1px solid;
-    padding-left: 10px;
-    padding-right: 10px;
+    border-radius: 20px
+    min-height: 20px
+    min-width: 20px
+    font-size: 100%
+    border: 1px solid
+    padding-left: 10px
+    padding-right: 10px
 }
 
 .github-actions-icon-button {
-    border-radius: 24px;
-    height: 24px;
-    width: 24px;
-    font-size: 100%;
-    border: 1px solid;
-    padding: 0px;
+    border-radius: 24px
+    height: 24px
+    width: 24px
+    font-size: 100%
+    border: 1px solid
+    padding: 0px
 }
 
 .github-actions-button-action:hover,
 .github-actions-button-action:focus {
-    border-color: #777;
+    border-color: #777
 }
 
 .github-actions-button-action>StIcon {
-    icon-size: 20px;
+    icon-size: 20px
 }

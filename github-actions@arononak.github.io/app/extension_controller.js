@@ -1,12 +1,12 @@
-const { GObject } = imports.gi;
-const Main = imports.ui.main;
-const GETTEXT_DOMAIN = 'github-actions-extension';
+const { GObject } = imports.gi
+const Main = imports.ui.main
+const GETTEXT_DOMAIN = 'github-actions-extension'
 
-const extension = imports.misc.extensionUtils.getCurrentExtension();
+const extension = imports.misc.extensionUtils.getCurrentExtension()
 
-const { GithubApiRepository } = extension.imports.app.github_api_repository;
-const { SettingsRepository } = extension.imports.app.settings_repository;
-const { StatusBarState } = extension.imports.app.status_bar_indicator;
+const { GithubApiRepository } = extension.imports.app.github_api_repository
+const { SettingsRepository } = extension.imports.app.settings_repository
+const { StatusBarState } = extension.imports.app.status_bar_indicator
 
 async function stateRefresh(
     indicator,
@@ -15,27 +15,27 @@ async function stateRefresh(
 ) {
     try {
         if (indicator.isLongOperation()) {
-            return;
+            return
         }
 
-        const isInstalledCli = await githubApiRepository.isInstalledCli();
+        const isInstalledCli = await githubApiRepository.isInstalledCli()
         if (isInstalledCli == false) {
-            indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI, forceUpdate: true });
-            return;
+            indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI, forceUpdate: true })
+            return
         }
 
-        const isLogged = await githubApiRepository.isLogged();
+        const isLogged = await githubApiRepository.isLogged()
         if (isLogged == false) {
-            indicator.setState({ state: StatusBarState.NOT_LOGGED, forceUpdate: true });
-            return;
+            indicator.setState({ state: StatusBarState.NOT_LOGGED, forceUpdate: true })
+            return
         }
 
         if (!settingsRepository.isRepositoryEntered()) {
-            indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true });
-            return;
+            indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
+            return
         }
     } catch (error) {
-        logError(error);
+        logError(error)
     }
 }
 
@@ -56,23 +56,23 @@ async function dataRefresh(
     ) {
         return new Promise(async (resolve, reject) => {
             try {
-                const user = await githubApiRepository.fetchUser();
+                const user = await githubApiRepository.fetchUser()
                 if (user == null) {
-                    return;
+                    return
                 }
 
-                const login = user['login'];
+                const login = user['login']
 
                 /// Simple Mode
-                const minutes = await githubApiRepository.fetchUserBillingActionsMinutes(login);
-                const packages = await githubApiRepository.fetchUserBillingPackages(login);
-                const sharedStorage = await githubApiRepository.fetchUserBillingSharedStorage(login);
+                const minutes = await githubApiRepository.fetchUserBillingActionsMinutes(login)
+                const packages = await githubApiRepository.fetchUserBillingPackages(login)
+                const sharedStorage = await githubApiRepository.fetchUserBillingSharedStorage(login)
 
                 /// Hidden Mode
-                const simpleMode = settingsRepository.fetchSimpleMode();
-                const { owner, repo } = settingsRepository.ownerAndRepo();
-                const isStarred = await githubApiRepository.checkIsRepoStarred(owner, repo);
-                settingsRepository.updateHiddenMode(isStarred === 'success');
+                const simpleMode = settingsRepository.fetchSimpleMode()
+                const { owner, repo } = settingsRepository.ownerAndRepo()
+                const isStarred = await githubApiRepository.checkIsRepoStarred(owner, repo)
+                settingsRepository.updateHiddenMode(isStarred === 'success')
 
                 if (simpleMode) {
                     resolve({
@@ -80,19 +80,19 @@ async function dataRefresh(
                         "minutes": minutes,
                         "packages": packages,
                         "sharedStorage": sharedStorage,
-                    });
+                    })
 
-                    return;
+                    return
                 }
 
-                const pagination = settingsRepository.fetchPagination();
+                const pagination = settingsRepository.fetchPagination()
 
                 /// Full Mode
-                const starredList = await githubApiRepository.fetchUserStarred(login, pagination);
-                const followers = await githubApiRepository.fetchUserFollowers(pagination);
-                const following = await githubApiRepository.fetchUserFollowing(pagination);
-                const repos = await githubApiRepository.fetchUserRepos(pagination);
-                const gists = await githubApiRepository.fetchUserGists(pagination);
+                const starredList = await githubApiRepository.fetchUserStarred(login, pagination)
+                const followers = await githubApiRepository.fetchUserFollowers(pagination)
+                const following = await githubApiRepository.fetchUserFollowing(pagination)
+                const repos = await githubApiRepository.fetchUserRepos(pagination)
+                const gists = await githubApiRepository.fetchUserGists(pagination)
 
                 resolve({
                     "user": user,
@@ -105,12 +105,12 @@ async function dataRefresh(
                     "following": following,
                     "repos": repos,
                     "gists": gists,
-                });
+                })
             } catch (error) {
-                logError(error);
-                resolve(null);
+                logError(error)
+                resolve(null)
             }
-        });
+        })
     }
 
     async function fetchRepoData(
@@ -120,30 +120,30 @@ async function dataRefresh(
     ) {
         return new Promise(async (resolve, reject) => {
             try {
-                const { owner, repo } = settingsRepository.ownerAndRepo();
-                const pagination = settingsRepository.fetchPagination();
+                const { owner, repo } = settingsRepository.ownerAndRepo()
+                const pagination = settingsRepository.fetchPagination()
                 
-                const runs = await githubApiRepository.fetchWorkflowRuns(owner, repo, pagination);
+                const runs = await githubApiRepository.fetchWorkflowRuns(owner, repo, pagination)
                 
                 if (onlyWorkflowRuns === true) {
-                    resolve({ "runs": runs });
-                    return;
+                    resolve({ "runs": runs })
+                    return
                 }
                 
-                const simpleMode = settingsRepository.fetchSimpleMode();
-                const artifacts = await githubApiRepository.fetchArtifacts(owner, repo, pagination);
+                const simpleMode = settingsRepository.fetchSimpleMode()
+                const artifacts = await githubApiRepository.fetchArtifacts(owner, repo, pagination)
 
                 if (simpleMode) {
-                    resolve({ "runs": runs, "artifacts": artifacts });
-                    return;
+                    resolve({ "runs": runs, "artifacts": artifacts })
+                    return
                 }
 
-                const userRepo = await githubApiRepository.fetchUserRepo(owner, repo);
-                const workflows = await githubApiRepository.fetchWorkflows(owner, repo, pagination);
-                const stargazers = await githubApiRepository.fetchStargazers(owner, repo, pagination);
-                const releases = await githubApiRepository.fetchReleases(owner, repo, pagination);
-                const branches = await githubApiRepository.fetchBranches(owner, repo, pagination);
-                const tags = await githubApiRepository.fetchTags(owner, repo, pagination);
+                const userRepo = await githubApiRepository.fetchUserRepo(owner, repo)
+                const workflows = await githubApiRepository.fetchWorkflows(owner, repo, pagination)
+                const stargazers = await githubApiRepository.fetchStargazers(owner, repo, pagination)
+                const releases = await githubApiRepository.fetchReleases(owner, repo, pagination)
+                const branches = await githubApiRepository.fetchBranches(owner, repo, pagination)
+                const tags = await githubApiRepository.fetchTags(owner, repo, pagination)
 
                 resolve({
                     "runs": runs,
@@ -155,40 +155,40 @@ async function dataRefresh(
                     "releases": releases,
                     "branches": branches,
                     "tags": tags,
-                });
+                })
             } catch (error) {
-                logError(error);
-                resolve(null);
+                logError(error)
+                resolve(null)
             }
-        });
+        })
     }
 
     try {
         if (indicator.isLongOperation()) {
-            return;
+            return
         }
 
         if (indicator.isLogged == false) {
-            return;
+            return
         }
 
         if (onlyWorkflowRuns === true) {
-            const { runs } = await fetchRepoData(settingsRepository, githubApiRepository, onlyWorkflowRuns);
+            const { runs } = await fetchRepoData(settingsRepository, githubApiRepository, onlyWorkflowRuns)
 
             indicator.setWorkflowRuns({
                 runs: runs['workflow_runs'],
                 onDeleteWorkflowRun: (runId, runName) => {
-                    onDeleteWorkflowRun(runId, runName);
+                    onDeleteWorkflowRun(runId, runName)
                 },
                 onCancelWorkflowRun: (runId, runName) => {
-                    onCancelWorkflowRun(runId, runName);
+                    onCancelWorkflowRun(runId, runName)
                 },
                 onRerunWorkflowRun: (runId, runName) => {
-                    onRerunWorkflowRun(runId, runName);
+                    onRerunWorkflowRun(runId, runName)
                 },
-            });
+            })
 
-            return;
+            return
         }
 
         const {
@@ -201,7 +201,7 @@ async function dataRefresh(
             following,
             repos,
             gists,
-        } = await fetchUserData(settingsRepository, githubApiRepository);
+        } = await fetchUserData(settingsRepository, githubApiRepository)
 
         const userObjects = [
             user,
@@ -213,26 +213,26 @@ async function dataRefresh(
             following,
             repos,
             gists,
-        ];
+        ]
 
-        indicator.setUser(user);
-        indicator.setUserBilling(minutes, packages, sharedStorage);
-        indicator.setUserStarred(starredList);
-        indicator.setUserFollowers(followers);
-        indicator.setUserFollowing(following);
+        indicator.setUser(user)
+        indicator.setUserBilling(minutes, packages, sharedStorage)
+        indicator.setUserStarred(starredList)
+        indicator.setUserFollowers(followers)
+        indicator.setUserFollowing(following)
         indicator.setUserRepos(repos, (owner, repo) => {
-            onRepoSetAsWatched(owner, repo);
+            onRepoSetAsWatched(owner, repo)
 
-            settingsRepository.updateOwner(owner);
-            settingsRepository.updateRepo(repo);
+            settingsRepository.updateOwner(owner)
+            settingsRepository.updateRepo(repo)
 
-            refreshCallback();
-        });
-        indicator.setUserGists(gists);
+            refreshCallback()
+        })
+        indicator.setUserGists(gists)
 
         if (!indicator.showRepositoryMenu()) {
-            settingsRepository.updateTransfer(userObjects);
-            return;
+            settingsRepository.updateTransfer(userObjects)
+            return
         }
 
         const {
@@ -244,7 +244,7 @@ async function dataRefresh(
             releases,
             branches,
             tags,
-        } = await fetchRepoData(settingsRepository, githubApiRepository);
+        } = await fetchRepoData(settingsRepository, githubApiRepository)
 
         const repoObjects = [
             userRepo,
@@ -254,31 +254,31 @@ async function dataRefresh(
             runs,
             releases,
             branches,
-        ];
+        ]
 
-        settingsRepository.updateTransfer([...userObjects, ...repoObjects]);
+        settingsRepository.updateTransfer([...userObjects, ...repoObjects])
 
-        indicator.setWatchedRepo(userRepo);
-        indicator.setWorkflows(workflows === undefined ? [] : workflows['workflows']);
-        indicator.setArtifacts(artifacts === undefined ? [] : artifacts['artifacts']);
-        indicator.setStargazers(stargazers);
+        indicator.setWatchedRepo(userRepo)
+        indicator.setWorkflows(workflows === undefined ? [] : workflows['workflows'])
+        indicator.setArtifacts(artifacts === undefined ? [] : artifacts['artifacts'])
+        indicator.setStargazers(stargazers)
         indicator.setWorkflowRuns({
             runs: runs['workflow_runs'],
             onDeleteWorkflowRun: (runId, runName) => {
-                onDeleteWorkflowRun(runId, runName);
+                onDeleteWorkflowRun(runId, runName)
             },
             onCancelWorkflowRun: (runId, runName) => {
-                onCancelWorkflowRun(runId, runName);
+                onCancelWorkflowRun(runId, runName)
             },
             onRerunWorkflowRun: (runId, runName) => {
-                onRerunWorkflowRun(runId, runName);
+                onRerunWorkflowRun(runId, runName)
             },
-        });
-        indicator.setReleases(releases);
-        indicator.setBranches(branches);
-        indicator.setTags(tags);
+        })
+        indicator.setReleases(releases)
+        indicator.setBranches(branches)
+        indicator.setTags(tags)
     } catch (error) {
-        logError(error);
+        logError(error)
     }
 }
 
@@ -290,69 +290,70 @@ async function githubActionsRefresh(
 ) {
     try {
         if (indicator.isLongOperation()) {
-            return;
+            return
         }
 
-        const isLogged = await githubApiRepository.isLogged();
+        const isLogged = await githubApiRepository.isLogged()
         if (isLogged == false) {
-            return;
+            return
         }
 
-        const transferTerxt = settingsRepository.fullDataConsumptionPerHour();
-        indicator.setTransferText(transferTerxt);
+        const transferTerxt = settingsRepository.fullDataConsumptionPerHour()
+        indicator.setTransferText(transferTerxt)
 
         if (!settingsRepository.isRepositoryEntered()) {
-            return;
+            return
         }
 
-        const { owner, repo } = settingsRepository.ownerAndRepo();
+        const { owner, repo } = settingsRepository.ownerAndRepo()
 
-        const workflowRunsResponse = await githubApiRepository.fetchWorkflowRuns(owner, repo, 1);
+        const workflowRunsResponse = await githubApiRepository.fetchWorkflowRuns(owner, repo, 1)
         switch (workflowRunsResponse) {
             case null:
-                indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY, forceUpdate: true });
-                return;
+                indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY, forceUpdate: true })
+                return
             case 'no-internet-connection':
-                indicator.setState({ state: StatusBarState.LOGGED_NO_INTERNET_CONNECTION });
-                return;
+                indicator.setState({ state: StatusBarState.LOGGED_NO_INTERNET_CONNECTION })
+                return
         }
 
-        settingsRepository.updatePackageSize(workflowRunsResponse['_size_']);
+        settingsRepository.updatePackageSize(workflowRunsResponse['_size_'])
 
-        const workflowRuns = workflowRunsResponse['workflow_runs'];
+        const workflowRuns = workflowRunsResponse['workflow_runs']
         if (workflowRuns.length == 0) {
-            indicator.setState({ state: StatusBarState.REPO_WITHOUT_ACTIONS, forceUpdate: true });
-            return;
+            indicator.setState({ state: StatusBarState.REPO_WITHOUT_ACTIONS, forceUpdate: true })
+            return
         }
 
         /// Notification
-        const previousState = indicator.state;
-        indicator.setLatestWorkflowRun(workflowRuns[0]);
-        const currentState = indicator.state;
+        const previousState = indicator.state
+        indicator.setLatestWorkflowRun(workflowRuns[0])
+        const currentState = indicator.state
 
         if (indicator.shouldShowCompletedNotification(previousState, currentState)) {
             switch (currentState) {
                 case StatusBarState.COMPLETED_SUCCESS:
-                    onBuildCompleted(owner, repo, 'success');
-                    break;
+                    onBuildCompleted(owner, repo, 'success')
+                    break
                 case StatusBarState.COMPLETED_FAILURE:
-                    onBuildCompleted(owner, repo, 'failure');
-                    break;
+                    onBuildCompleted(owner, repo, 'failure')
+                    break
                 case StatusBarState.COMPLETED_CANCELLED:
-                    onBuildCompleted(owner, repo, 'cancelled');
-                    break;
+                    onBuildCompleted(owner, repo, 'cancelled')
+                    break
             }
         }
     } catch (error) {
-        logError(error);
+        logError(error)
     }
 }
 
 var ExtensionController = class {
     constructor(settings) {
-        this.settings = settings;
-        this.githubApiRepository = new GithubApiRepository(settings);
-        this.settingsRepository = new SettingsRepository(settings);
+        this.settings = settings
+        this.githubApiRepository = new GithubApiRepository(settings)
+        this.settingsRepository = new SettingsRepository(settings)
+        this.isStarted = false
     }
 
     attachCallbacks({
@@ -365,22 +366,22 @@ var ExtensionController = class {
         onEnableCallback,
         onDisableCallback,
     }) {
-        this.onRepoSetAsWatched = onRepoSetAsWatched;
-        this.onDeleteWorkflowRun = onDeleteWorkflowRun;
-        this.onCancelWorkflowRun = onCancelWorkflowRun;
-        this.onRerunWorkflowRun = onRerunWorkflowRun;
-        this.onBuildCompleted = onBuildCompleted;
-        this.onReloadCallback = onReloadCallback;
-        this.onEnableCallback = onEnableCallback;
-        this.onDisableCallback = onDisableCallback;
+        this.onRepoSetAsWatched = onRepoSetAsWatched
+        this.onDeleteWorkflowRun = onDeleteWorkflowRun
+        this.onCancelWorkflowRun = onCancelWorkflowRun
+        this.onRerunWorkflowRun = onRerunWorkflowRun
+        this.onBuildCompleted = onBuildCompleted
+        this.onReloadCallback = onReloadCallback
+        this.onEnableCallback = onEnableCallback
+        this.onDisableCallback = onDisableCallback
     }
 
     attachIndicator(indicator) {
-        this.indicator = indicator;
+        this.indicator = indicator
     }
 
     async fetchSettings() {
-        const enabledExtension = this.settingsRepository.fetchEnabledExtension();
+        const enabledExtension = this.settingsRepository.fetchEnabledExtension()
 
         const {
             simpleMode,
@@ -389,11 +390,11 @@ var ExtensionController = class {
             extendedColoredMode,
             iconPosition,
             showIcon,
-        } = this.settingsRepository.fetchAppearanceSettings();
+        } = this.settingsRepository.fetchAppearanceSettings()
 
-        const isInstalledCli = await this.githubApiRepository.isInstalledCli();
-        const isLogged = await this.githubApiRepository.isLogged();
-        const tokenScopes = await this.githubApiRepository.tokenScopes();
+        const isInstalledCli = await this.githubApiRepository.isInstalledCli()
+        const isLogged = await this.githubApiRepository.isLogged()
+        const tokenScopes = await this.githubApiRepository.tokenScopes()
 
         return {
             "enabledExtension": enabledExtension,
@@ -408,7 +409,7 @@ var ExtensionController = class {
             "extendedColoredMode": extendedColoredMode,
             "iconPosition": iconPosition,
             "showIcon": showIcon,
-        };
+        }
     }
 
     /// Main 3 refresh Functions
@@ -417,7 +418,7 @@ var ExtensionController = class {
             this.indicator,
             this.settingsRepository,
             this.githubApiRepository,
-        );
+        )
     }
 
     _githubActionsRefresh() {
@@ -426,7 +427,7 @@ var ExtensionController = class {
             this.settingsRepository,
             this.githubApiRepository,
             (owner, repo, conclusion) => this.onBuildCompleted(owner, repo, conclusion),
-        );
+        )
     }
 
     _dataRefresh(onlyWorkflowRuns = false) {
@@ -440,184 +441,185 @@ var ExtensionController = class {
             (runId, runName) => this.rerunWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName }),
             () => this.refresh(),
             onlyWorkflowRuns,
-        );
+        )
     }
 
     refresh() {
-        this.indicator.initMenu();
+        if (this.indicator === null || this.indicator === undefined) {
+            return
+        }
+        this.indicator.initMenu()
         try {
-            this._stateRefresh();
-            this._githubActionsRefresh();
-            this._dataRefresh();
+            this._stateRefresh()
+            this._githubActionsRefresh()
+            this._dataRefresh()
         } catch (error) {
-            logError(error);
+            logError(error)
         }
     }
 
     startRefreshing() {
-        const settingsRepository = this.settingsRepository;
-
-        this.refresh();
+        if (this.isStarted === true) {
+            return
+        }
+        this.isStarted = true
 
         try {
-            this.stateRefreshInterval = setInterval(
-                () => this._stateRefresh(),
-                1 * 1000,
-            );
+            const settingsRepository = this.settingsRepository
+            this.refresh()
 
-            this.githubActionsRefreshInterval = setInterval(
-                () => this._githubActionsRefresh(),
-                settingsRepository.fetchRefreshTime() * 1000,
-            );
+            this.stateRefreshInterval = setInterval(() => this._stateRefresh(), 1 * 1000)
+            this.githubActionsRefreshInterval = setInterval(() => this._githubActionsRefresh(), settingsRepository.fetchRefreshTime() * 1000)
+            this.dataRefreshInterval = setInterval(() => this._dataRefresh(), settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000)
 
-            this.dataRefreshInterval = setInterval(
-                () => this._dataRefresh(),
-                settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000,
-            );
-
-            this.observeSettings(settingsRepository);
+            this.observeSettings(settingsRepository)
         } catch (error) {
-            logError(error);
+            logError(error)
         }
     }
 
     stopRefreshing() {
-        clearInterval(this.stateRefreshInterval);
-        this.stateRefreshInterval = null;
+        if (this.isStarted === false) {
+            return
+        }
+        this.isStarted = false
+        
+        clearInterval(this.stateRefreshInterval)
+        this.stateRefreshInterval = null
 
-        clearInterval(this.githubActionsRefreshInterval);
-        this.githubActionsRefreshInterval = null;
+        clearInterval(this.githubActionsRefreshInterval)
+        this.githubActionsRefreshInterval = null
 
-        clearInterval(this.dataRefreshInterval);
-        this.dataRefreshInterval = null;
+        clearInterval(this.dataRefreshInterval)
+        this.dataRefreshInterval = null
     }
 
     observeSettings(settingsRepository) {
         this.settings.connect('changed::refresh-time', (settings, key) => {
-            this.stopRefreshing();
-            this.startRefreshing();
-        });
+            this.stopRefreshing()
+            this.startRefreshing()
+        })
 
         this.settings.connect('changed::full-refresh-time', (settings, key) => {
-            this.stopRefreshing();
-            this.startRefreshing();
-        });
+            this.stopRefreshing()
+            this.startRefreshing()
+        })
 
         this.settings.connect('changed::simple-mode', (settings, key) => {
-            const simpleMode = settingsRepository.fetchSimpleMode();
-            this.indicator.setSimpleMode(simpleMode);
-        });
+            const simpleMode = settingsRepository.fetchSimpleMode()
+            this.indicator.setSimpleMode(simpleMode)
+        })
 
         this.settings.connect('changed::colored-mode', (settings, key) => {
-            const coloredMode = settingsRepository.fetchColoredMode();
-            this.indicator.setColoredMode(coloredMode);
-        });
+            const coloredMode = settingsRepository.fetchColoredMode()
+            this.indicator.setColoredMode(coloredMode)
+        })
 
         this.settings.connect('changed::uppercase-mode', (settings, key) => {
-            const uppercaseMode = settingsRepository.fetchUppercaseMode();
-            this.indicator.setUppercaseMode(uppercaseMode);
-        });
+            const uppercaseMode = settingsRepository.fetchUppercaseMode()
+            this.indicator.setUppercaseMode(uppercaseMode)
+        })
 
         this.settings.connect('changed::extended-colored-mode', (settings, key) => {
-            const extendedColoredMode = settingsRepository.fetchExtendedColoredMode();
-            this.indicator.setExtendedColoredMode(extendedColoredMode);
-        });
+            const extendedColoredMode = settingsRepository.fetchExtendedColoredMode()
+            this.indicator.setExtendedColoredMode(extendedColoredMode)
+        })
 
         this.settings.connect('changed::show-icon', (settings, key) => {
-            this.onReloadCallback();
-        });
+            this.onReloadCallback()
+        })
 
         this.settings.connect('changed::icon-position', (settings, key) => {
-            this.onReloadCallback();
-        });
+            this.onReloadCallback()
+        })
 
         this.settings.connect('changed::extension-enabled', (settings, key) => {
-            const enabled = settingsRepository.fetchEnabledExtension();
+            const enabled = settingsRepository.fetchEnabledExtension()
 
             if (enabled) {
-                this.startRefreshing();
-                this.onEnableCallback();
+                this.startRefreshing()
+                this.onEnableCallback()
             } else {
-                this.stopRefreshing();
-                this.onDisableCallback();
+                this.stopRefreshing()
+                this.onDisableCallback()
             }
-        });
+        })
     }
 
     async logout() {
-        await this.githubApiRepository.logoutUser();
+        await this.githubApiRepository.logoutUser()
     }
 
     async downloadArtifact({ indicator, downloadUrl, filename, onFinishCallback }) {
         try {
-            const state = indicator.getState();
-            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT });
-            const success = await this.githubApiRepository.downloadArtifactFile(downloadUrl, filename);
-            indicator.setState({ state: state });
+            const state = indicator.getState()
+            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT })
+            const success = await this.githubApiRepository.downloadArtifactFile(downloadUrl, filename)
+            indicator.setState({ state: state })
 
-            onFinishCallback(success, filename);
+            onFinishCallback(success, filename)
         } catch (error) {
-            logError(error);
+            logError(error)
         }
     }
 
     async deleteWorkflowRun({ indicator, runId, runName }) {
         try {
-            const { owner, repo } = this.settingsRepository.ownerAndRepo();
+            const { owner, repo } = this.settingsRepository.ownerAndRepo()
 
-            const state = indicator.getState();
-            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT });
-            const status = await this.githubApiRepository.deleteWorkflowRun(owner, repo, runId);
-            indicator.setState({ state: state });
+            const state = indicator.getState()
+            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT })
+            const status = await this.githubApiRepository.deleteWorkflowRun(owner, repo, runId)
+            indicator.setState({ state: state })
 
             if (status == 'success') {
-                this.onDeleteWorkflowRun(true, runName);
-                this._dataRefresh(true);
+                this.onDeleteWorkflowRun(true, runName)
+                this._dataRefresh(true)
             } else {
-                this.onDeleteWorkflowRun(false, runName);
+                this.onDeleteWorkflowRun(false, runName)
             }
         } catch (error) {
-            logError(error);
+            logError(error)
         }
     }
 
     async cancelWorkflowRun({ indicator, runId, runName }) {
         try {
-            const { owner, repo } = this.settingsRepository.ownerAndRepo();
+            const { owner, repo } = this.settingsRepository.ownerAndRepo()
 
-            const state = indicator.getState();
-            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT });
-            const status = await this.githubApiRepository.cancelWorkflowRun(owner, repo, runId);
-            indicator.setState({ state: state });
+            const state = indicator.getState()
+            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT })
+            const status = await this.githubApiRepository.cancelWorkflowRun(owner, repo, runId)
+            indicator.setState({ state: state })
 
             if (status == 'success') {
-                this.onCancelWorkflowRun(true, runName);
-                this._dataRefresh(true);
+                this.onCancelWorkflowRun(true, runName)
+                this._dataRefresh(true)
             } else {
-                this.onCancelWorkflowRun(false, runName);
+                this.onCancelWorkflowRun(false, runName)
             }
         } catch (error) {
-            logError(error);
+            logError(error)
         }
     }
 
     async rerunWorkflowRun({ indicator, runId, runName }) {
         try {
-            const { owner, repo } = this.settingsRepository.ownerAndRepo();
+            const { owner, repo } = this.settingsRepository.ownerAndRepo()
 
-            const state = indicator.getState();
-            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT });
-            const status = await this.githubApiRepository.rerunWorkflowRun(owner, repo, runId);
-            indicator.setState({ state: state });
+            const state = indicator.getState()
+            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT })
+            const status = await this.githubApiRepository.rerunWorkflowRun(owner, repo, runId)
+            indicator.setState({ state: state })
 
             if (status == 'success') {
-                this.onRerunWorkflowRun(true, runName);
-                this._dataRefresh(true);
+                this.onRerunWorkflowRun(true, runName)
+                this._dataRefresh(true)
             } else {
-                this.onRerunWorkflowRun(false, runName);
+                this.onRerunWorkflowRun(false, runName)
             }
         } catch (error) {
-            logError(error);
+            logError(error)
         }
     }
 }

@@ -1,10 +1,10 @@
-'use strict';
+'use strict'
 
-const { Clutter, GObject, St, Gio, GLib } = imports.gi;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
+const { Clutter, GObject, St, Gio, GLib } = imports.gi
+const PanelMenu = imports.ui.panelMenu
+const PopupMenu = imports.ui.popupMenu
 
-const extension = imports.misc.extensionUtils.getCurrentExtension();
+const extension = imports.misc.extensionUtils.getCurrentExtension()
 
 var AppStatusColor = {
     WHITE: {
@@ -82,126 +82,126 @@ var AppStatusColor = {
 }
 
 function createAppGioIcon(appStatusColor) {
-    return Gio.icon_new_for_string(appStatusColor.icon);
+    return Gio.icon_new_for_string(appStatusColor.icon)
 }
 
 function createAppGioIconInner(appStatusColor) {
-    const darkTheme = isDarkTheme();
+    const darkTheme = isDarkTheme()
 
     return darkTheme
         ? Gio.icon_new_for_string(appStatusColor.innerIconDark)
-        : Gio.icon_new_for_string(appStatusColor.innerIcon);
+        : Gio.icon_new_for_string(appStatusColor.innerIcon)
 }
 
 function conclusionIconName(conclusion) {
     if (conclusion == 'success') {
-        return 'emblem-default';
+        return 'emblem-default'
     } else if (conclusion == 'failure') {
-        return 'emblem-unreadable';
+        return 'emblem-unreadable'
     } else if (conclusion == 'cancelled') {
-        return 'emblem-unreadable';
+        return 'emblem-unreadable'
     } else {
-        return 'emblem-synchronizing-symbolic';
+        return 'emblem-synchronizing-symbolic'
     }
 }
 
 function isDarkTheme() {
-    const settings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' });
-    const theme = settings.get_string('gtk-theme');
+    const settings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' })
+    const theme = settings.get_string('gtk-theme')
 
-    return theme.replace(/'/g, "").trim().includes("dark");
+    return theme.replace(/'/g, "").trim().includes("dark")
 }
 
 function appIcon() {
-    const darkTheme = isDarkTheme();
+    const darkTheme = isDarkTheme()
 
     return darkTheme
         ? createAppGioIcon(AppStatusColor.WHITE)
-        : createAppGioIcon(AppStatusColor.BLACK);
+        : createAppGioIcon(AppStatusColor.BLACK)
 }
 
 var RoundedButton = class extends St.Button {
     static {
-        GObject.registerClass(this);
+        GObject.registerClass(this)
     }
 
     constructor({ iconName, text }) {
-        super({ style_class: 'button github-actions-button-action' });
+        super({ style_class: 'button github-actions-button-action' })
 
-        this.child = new St.BoxLayout();
+        this.child = new St.BoxLayout()
 
         if (iconName != null) {
-            this.icon = new St.Icon({ icon_name: iconName, icon_size: 20 });
-            this.child.add(this.icon);
+            this.icon = new St.Icon({ icon_name: iconName, icon_size: 20 })
+            this.child.add(this.icon)
         }
 
         if (text != null) {
             /// this.label from St.Button is used
-            this.boxLabel = new St.Label({ text: text, y_align: Clutter.ActorAlign.CENTER, y_expand: true });
-            this.child.add(this.boxLabel);
-            this.setTextColor(null);
+            this.boxLabel = new St.Label({ text: text, y_align: Clutter.ActorAlign.CENTER, y_expand: true })
+            this.child.add(this.boxLabel)
+            this.setTextColor(null)
         }
     }
 
     setColor({ backgroundColor, borderColor }) {
-        this.style = `background-color: ${backgroundColor}; border-color: ${borderColor};`;
+        this.style = `background-color: ${backgroundColor} border-color: ${borderColor}`
     }
 
     setTextColor(textColor) {
-        this.boxLabel.style = `margin-left: 8px; margin-top: 2px; margin-right: 2px; color: ${textColor}`;
+        this.boxLabel.style = `margin-left: 8px margin-top: 2px margin-right: 2px color: ${textColor}`
     }
 
     setIcon(icon) {
-        this.icon = icon;
+        this.icon = icon
 
-        this.child.remove_all_children();
-        this.child.add(this.icon);
-        this.child.add(this.boxLabel);
+        this.child.remove_all_children()
+        this.child.add(this.icon)
+        this.child.add(this.boxLabel)
     }
-};
+}
 
 var IconButton = class extends St.Button {
     static {
-        GObject.registerClass(this);
+        GObject.registerClass(this)
     }
 
     constructor({ iconName, iconSize = null, callback }) {
-        super({ style_class: 'button github-actions-icon-button' });
+        super({ style_class: 'button github-actions-icon-button' })
 
-        this.connect('clicked', callback);
-        this.set_can_focus(true);
-        this.set_child(new St.Icon({ style_class: 'popup-menu-icon', iconName, icon_size: iconSize }));
+        this.connect('clicked', callback)
+        this.set_can_focus(true)
+        this.set_child(new St.Icon({ style_class: 'popup-menu-icon', iconName, icon_size: iconSize }))
     }
 
     setIcon(icon) {
-        this.child.set_icon_name(icon);
+        this.child.set_icon_name(icon)
     }
-};
+}
 
 /// Parent item
 var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
     static {
-        GObject.registerClass(this);
+        GObject.registerClass(this)
     }
 
     constructor(startIconName, text, endIconName, endIconCallback) {
-        super('');
+        super('')
 
-        this.menuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' });
-        this.scrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true });
-        this.scrollView.add_actor(this.menuBox);
-        this.menu.box.add_actor(this.scrollView);
+        this.menuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' })
+        this.scrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true })
+        this.scrollView.add_actor(this.menuBox)
+        this.menu.box.add_actor(this.scrollView)
 
-        this.label = new St.Label({ text: text });
-        this.insert_child_at_index(this.label, 0);
+        this.label = new St.Label({ text: text })
+        this.insert_child_at_index(this.label, 0)
 
-        this.setStartIcon({ iconName: startIconName });
+        this.setStartIcon({ iconName: startIconName })
 
         if (endIconName != null) {
             const endIcon = new IconButton({
                 iconName: endIconName,
                 callback: () => endIconCallback(),
-            });
+            })
 
             const box = new St.BoxLayout({
                 style_class: 'github-actions-top-box',
@@ -210,14 +210,14 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
                 y_expand: true,
                 x_align: Clutter.ActorAlign.END,
                 y_align: Clutter.ActorAlign.CENTER,
-            });
-            box.add(endIcon);
-            this.insert_child_at_index(box, 5);
+            })
+            box.add(endIcon)
+            this.insert_child_at_index(box, 5)
         }
     }
 
     submitItems(items) {
-        this.menuBox.remove_all_children();
+        this.menuBox.remove_all_children()
 
         items.forEach((i) => {
             this.menuBox.add_actor(
@@ -230,32 +230,32 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
                     endButtonText: i["endButtonText"],
                     endButtonCallback: i["endButtonCallback"],
                 }),
-            );
-        });
+            )
+        })
     }
 
     setHeaderItemText(text) {
-        this.label.text = text;
+        this.label.text = text
     }
 
     setStartIcon({ iconName }) {
-        this.icon = new St.Icon({ icon_name: iconName, style_class: 'popup-menu-icon' });
+        this.icon = new St.Icon({ icon_name: iconName, style_class: 'popup-menu-icon' })
 
-        const iconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' });
+        const iconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' })
         if (this.iconContainer == null) {
-            this.iconContainer = iconContainer;
-            this.insert_child_at_index(this.iconContainer, 0);
+            this.iconContainer = iconContainer
+            this.insert_child_at_index(this.iconContainer, 0)
         }
 
-        this.iconContainer.remove_all_children();
-        this.iconContainer.add_child(this.icon);
+        this.iconContainer.remove_all_children()
+        this.iconContainer.add_child(this.icon)
     }
 }
 
 /// Child item
 var IconPopupMenuItem = class extends PopupMenu.PopupImageMenuItem {
     static {
-        GObject.registerClass(this);
+        GObject.registerClass(this)
     }
 
     constructor({
@@ -267,18 +267,18 @@ var IconPopupMenuItem = class extends PopupMenu.PopupImageMenuItem {
         endButtonText,
         endButtonCallback,
     }) {
-        super(text, startIconName);
+        super(text, startIconName)
 
-        this.connect('activate', () => itemCallback());
+        this.connect('activate', () => itemCallback())
 
         if (endIconName != null || endButtonText != null) {
-            const box = this.createEndAlignBox();
-            this.insert_child_at_index(box, 100);
+            const box = this.createEndAlignBox()
+            this.insert_child_at_index(box, 100)
 
             if (endButtonText != null) {
-                const button = new St.Button({ style_class: 'button github-actions-text-button', label: endButtonText });
-                button.connect('clicked', endButtonCallback);
-                box.add(button);
+                const button = new St.Button({ style_class: 'button github-actions-text-button', label: endButtonText })
+                button.connect('clicked', endButtonCallback)
+                box.add(button)
             }
 
             if (endIconName != null) {
@@ -286,9 +286,9 @@ var IconPopupMenuItem = class extends PopupMenu.PopupImageMenuItem {
                     iconName: endIconName,
                     iconSize: 20,
                     callback: () => endIconCallback()
-                });
+                })
 
-                box.add(icon);
+                box.add(icon)
             }
         }
     }
@@ -301,38 +301,38 @@ var IconPopupMenuItem = class extends PopupMenu.PopupImageMenuItem {
             y_expand: true,
             x_align: Clutter.ActorAlign.END,
             y_align: Clutter.ActorAlign.CENTER,
-        });
+        })
     }
 }
 
 function showNotification(message, success) {
-    const MessageTray = imports.ui.messageTray;
-    const Main = imports.ui.main;
+    const MessageTray = imports.ui.messageTray
+    const Main = imports.ui.main
 
     const source = new MessageTray.Source(
         'Github Actions',
         success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic',
-    );
+    )
 
-    Main.messageTray.add(source);
+    Main.messageTray.add(source)
 
     const notification = new MessageTray.Notification(
         source,
         success === true ? 'Success!' : 'Error',
         message,
         { gicon: appIcon() },
-    );
+    )
 
-    source.showNotification(notification);
+    source.showNotification(notification)
 
     const file = Gio.File.new_for_path(
         success === true
             ? '/usr/share/sounds/freedesktop/stereo/complete.oga'
             : '/usr/share/sounds/freedesktop/stereo/dialog-warning.oga'
-    );
+    )
 
-    const player = global.display.get_sound_player();
-    player.play_from_file(file, '', null);
+    const player = global.display.get_sound_player()
+    player.play_from_file(file, '', null)
 }
 
 function showConfirmDialog({
@@ -343,50 +343,50 @@ function showConfirmDialog({
     iconName,
     onConfirm
 }) {
-    const Dialog = imports.ui.dialog;
-    const ModalDialog = imports.ui.modalDialog;
-    const { St } = imports.gi;
+    const Dialog = imports.ui.dialog
+    const ModalDialog = imports.ui.modalDialog
+    const { St } = imports.gi
 
-    let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false });
-    let reminderId = null;
+    let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false })
+    let reminderId = null
     let closedId = dialog.connect('closed', (_dialog) => {
         if (!reminderId) {
             reminderId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 60,
                 () => {
-                    dialog.open(global.get_current_time());
-                    reminderId = null;
-                    return GLib.SOURCE_REMOVE;
+                    dialog.open(global.get_current_time())
+                    reminderId = null
+                    return GLib.SOURCE_REMOVE
                 },
-            );
+            )
         }
-    });
+    })
 
     dialog.connect('destroy', (_actor) => {
         if (closedId) {
-            dialog.disconnect(closedId);
-            closedId = null;
+            dialog.disconnect(closedId)
+            closedId = null
         }
 
         if (reminderId) {
-            GLib.Source.remove(id);
-            reminderId = null;
+            GLib.Source.remove(id)
+            reminderId = null
         }
 
-        dialog = null;
-    });
+        dialog = null
+    })
 
     const content = new Dialog.MessageDialogContent({
         title: title,
         description: description,
-    });
-    dialog.contentLayout.add_child(content);
+    })
+    dialog.contentLayout.add_child(content)
 
     const item = new Dialog.ListSectionItem({
         icon_actor: new St.Icon({ icon_name: iconName }),
         title: itemTitle,
         description: itemDescription,
-    });
-    content.add_child(item);
+    })
+    content.add_child(item)
 
     dialog.setButtons([
         {
@@ -396,11 +396,11 @@ function showConfirmDialog({
         {
             label: 'Confirm',
             action: () => {
-                dialog.close(global.get_current_time());
-                onConfirm();
+                dialog.close(global.get_current_time())
+                onConfirm()
             }
         },
-    ]);
+    ])
 
-    dialog.open();
+    dialog.open()
 }

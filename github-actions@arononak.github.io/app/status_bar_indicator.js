@@ -1,14 +1,14 @@
-'use strict';
+'use strict'
 
-const { Clutter, GObject, St, Gio } = imports.gi;
-const PanelMenu = imports.ui.panelMenu;
-const PopupMenu = imports.ui.popupMenu;
+const { Clutter, GObject, St, Gio } = imports.gi
+const PanelMenu = imports.ui.panelMenu
+const PopupMenu = imports.ui.popupMenu
 
-const ExtensionUtils = imports.misc.extensionUtils;
-const Me = ExtensionUtils.getCurrentExtension();
-const _ = ExtensionUtils.gettext;
+const ExtensionUtils = imports.misc.extensionUtils
+const Me = ExtensionUtils.getCurrentExtension()
+const _ = ExtensionUtils.gettext
 
-const extension = imports.misc.extensionUtils.getCurrentExtension();
+const extension = imports.misc.extensionUtils.getCurrentExtension()
 
 const {
     isEmpty,
@@ -17,7 +17,7 @@ const {
     openAuthScreen,
     bytesToString,
     formatDate,
-} = extension.imports.app.utils;
+} = extension.imports.app.utils
 
 const {
     AppStatusColor,
@@ -30,7 +30,7 @@ const {
     showConfirmDialog,
     conclusionIconName,
     isDarkTheme,
-} = extension.imports.app.widgets;
+} = extension.imports.app.widgets
 
 var StatusBarState = {
     NOT_INSTALLED_CLI: {
@@ -110,16 +110,16 @@ var StatusBarState = {
 function isCompleted(state) {
     return state === StatusBarState.COMPLETED_SUCCESS
         || state === StatusBarState.COMPLETED_FAILURE
-        || state === StatusBarState.COMPLETED_CANCELLED;
+        || state === StatusBarState.COMPLETED_CANCELLED
 }
 
 var StatusBarIndicator = class extends PanelMenu.Button {
     static {
-        GObject.registerClass(this);
+        GObject.registerClass(this)
     }
 
     _init() {
-        super._init(0.0, 'Github Action StatusBarButton', false);
+        super._init(0.0, 'Github Action StatusBarButton', false)
     }
 
     constructor({
@@ -135,198 +135,200 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         logoutCallback = () => { },
         downloadArtifactCallback = (downloadUrl, filename) => { },
     }) {
-        super();
+        super()
 
-        this.simpleMode = simpleMode;
-        this.coloredMode = coloredMode;
-        this.uppercaseMode = uppercaseMode;
-        this.extendedColoredMode = extendedColoredMode;
-        this.showIcon = showIcon;
+        this.simpleMode = simpleMode
+        this.coloredMode = coloredMode
+        this.uppercaseMode = uppercaseMode
+        this.extendedColoredMode = extendedColoredMode
+        this.showIcon = showIcon
 
-        this.tokenScopes = tokenScopes;
+        this.tokenScopes = tokenScopes
 
-        this.refreshCallback = refreshCallback;
-        this.logoutCallback = logoutCallback;
-        this.downloadArtifactCallback = downloadArtifactCallback;
+        this.refreshCallback = refreshCallback
+        this.logoutCallback = logoutCallback
+        this.downloadArtifactCallback = downloadArtifactCallback
 
-        this.initStatusBarIndicator();
+        this.initStatusBarIndicator()
 
         if (isInstalledCli == false) {
-            this.setState({ state: StatusBarState.NOT_INSTALLED_CLI });
-            return;
+            this.setState({ state: StatusBarState.NOT_INSTALLED_CLI })
+            return
         }
 
         if (isLogged) {
-            this.setState({ state: StatusBarState.LOADING, forceUpdate: false });
+            this.setState({ state: StatusBarState.LOADING, forceUpdate: false })
         } else {
-            this.setState({ state: StatusBarState.NOT_LOGGED, forceUpdate: false });
+            this.setState({ state: StatusBarState.NOT_LOGGED, forceUpdate: false })
         }
 
-        this.initMenu();
+        this.initMenu()
     }
 
     initMenu() {
-        this.menu.removeAll();
-        this.initPopupMenu();
-        this.setLoadingTexts();
+        if (this.menu !== null && this.menu !== undefined) {
+            this.menu.removeAll()
+        }
+        this.initPopupMenu()
+        this.setLoadingTexts()
     }
 
     setSimpleMode = (mode) => {
-        this.simpleMode = mode;
-        this.refreshState();
-    };
+        this.simpleMode = mode
+        this.refreshState()
+    }
 
     setColoredMode = (mode) => {
-        this.coloredMode = mode;
-        this.refreshState();
-    };
+        this.coloredMode = mode
+        this.refreshState()
+    }
 
     setUppercaseMode = (mode) => {
-        this.uppercaseMode = mode;
-        this.refreshState();
-    };
+        this.uppercaseMode = mode
+        this.refreshState()
+    }
 
     setExtendedColoredMode = (mode) => {
-        this.extendedColoredMode = mode;
-        this.refreshState();
-    };
+        this.extendedColoredMode = mode
+        this.refreshState()
+    }
 
     setShowIcon = (showIcon) => {
-        this.showIcon = showIcon;
-        this.refreshState();
-    };
+        this.showIcon = showIcon
+        this.refreshState()
+    }
 
-    showRepositoryMenu = () => (this.state === StatusBarState.IN_PROGRESS || isCompleted(this.state));
+    showRepositoryMenu = () => (this.state === StatusBarState.IN_PROGRESS || isCompleted(this.state))
 
-    isInstalledCli = () => this.state != StatusBarState.NOT_INSTALLED_CLI;
+    isInstalledCli = () => this.state != StatusBarState.NOT_INSTALLED_CLI
 
-    isLongOperation = () => this.state == StatusBarState.LONG_OPERATION_PLEASE_WAIT;
+    isLongOperation = () => this.state == StatusBarState.LONG_OPERATION_PLEASE_WAIT
 
     shouldShowCompletedNotification(previousState, currentState) {
-        return previousState === StatusBarState.IN_PROGRESS && isCompleted(currentState);
+        return previousState === StatusBarState.IN_PROGRESS && isCompleted(currentState)
     }
 
     isLogged = () => {
         if (this.state == StatusBarState.NOT_INSTALLED_CLI) {
-            return false;
-        };
+            return false
+        }
 
         if (this.state == StatusBarState.NOT_LOGGED) {
-            return false;
-        };
+            return false
+        }
 
-        return true;
+        return true
     }
 
-    getState = () => this.state;
+    getState = () => this.state
 
     refreshState() {
-        this.setState({ state: this.state, forceUpdate: true });
+        this.setState({ state: this.state, forceUpdate: true })
     }
 
     setState({ state, forceUpdate = false }) {
         if (state === null || state === undefined) {
-            return;
+            return
         }
 
-        const previousState = this.state;
-        this.state = state;
-        this.updateGithubActionsStatus(state);
+        const previousState = this.state
+        this.state = state
+        this.updateGithubActionsStatus(state)
 
         if (previousState === state) {
-            return;
+            return
         }
 
         if (previousState === StatusBarState.LONG_OPERATION_PLEASE_WAIT) {
-            return;
+            return
         }
 
         if (isCompleted(this.state)) {
-            this.initMenu();
-            this.refreshCallback();
-            return;
+            this.initMenu()
+            this.refreshCallback()
+            return
         }
 
         if (forceUpdate === false) {
-            return;
+            return
         }
 
-        this.initMenu();
-        this.refreshCallback();
+        this.initMenu()
+        this.refreshCallback()
     }
 
     setLoadingTexts() {
-        const loadingText = StatusBarState.LOADING.text();
+        const loadingText = StatusBarState.LOADING.text()
 
         this.userMenuItem?.setHeaderItemText(loadingText)
         this.starredMenuItem?.setHeaderItemText(loadingText)
-        this.followersMenuItem?.setHeaderItemText(loadingText);
-        this.followingMenuItem?.setHeaderItemText(loadingText);
-        this.reposMenuItem?.setHeaderItemText(loadingText);
-        this.gistsMenuItem?.setHeaderItemText(loadingText);
-        this.repositoryMenuItem?.setHeaderItemText(loadingText);
-        this.stargazersMenuItem?.setHeaderItemText(loadingText);
-        this.workflowsMenuItem?.setHeaderItemText(loadingText);
-        this.runsMenuItem?.setHeaderItemText(loadingText);
-        this.releasesMenuItem?.setHeaderItemText(loadingText);
-        this.branchesMenuItem?.setHeaderItemText(loadingText);
-        this.tagsMenuItem?.setHeaderItemText(loadingText);
-        this.artifactsMenuItem?.setHeaderItemText(loadingText);
-        this.twoFactorItem?.label.set_text(loadingText);
-        this.minutesItem?.label.set_text(loadingText);
-        this.packagesItem?.label.set_text(loadingText);
-        this.sharedStorageItem?.label.set_text(loadingText);
-        this.repositoryPrivateItem?.label.set_text(loadingText);
-        this.repositoryForkItem?.label.set_text(loadingText);
-        this.networkButton?.boxLabel?.set_text(loadingText);
+        this.followersMenuItem?.setHeaderItemText(loadingText)
+        this.followingMenuItem?.setHeaderItemText(loadingText)
+        this.reposMenuItem?.setHeaderItemText(loadingText)
+        this.gistsMenuItem?.setHeaderItemText(loadingText)
+        this.repositoryMenuItem?.setHeaderItemText(loadingText)
+        this.stargazersMenuItem?.setHeaderItemText(loadingText)
+        this.workflowsMenuItem?.setHeaderItemText(loadingText)
+        this.runsMenuItem?.setHeaderItemText(loadingText)
+        this.releasesMenuItem?.setHeaderItemText(loadingText)
+        this.branchesMenuItem?.setHeaderItemText(loadingText)
+        this.tagsMenuItem?.setHeaderItemText(loadingText)
+        this.artifactsMenuItem?.setHeaderItemText(loadingText)
+        this.twoFactorItem?.label.set_text(loadingText)
+        this.minutesItem?.label.set_text(loadingText)
+        this.packagesItem?.label.set_text(loadingText)
+        this.sharedStorageItem?.label.set_text(loadingText)
+        this.repositoryPrivateItem?.label.set_text(loadingText)
+        this.repositoryForkItem?.label.set_text(loadingText)
+        this.networkButton?.boxLabel?.set_text(loadingText)
     }
 
     initStatusBarIndicator() {
-        this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' });
+        this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
 
         if (this.showIcon === true) {
-            this.icon = new St.Icon({ style_class: 'system-status-icon' });
-            this.icon.gicon = createAppGioIcon(AppStatusColor.WHITE);
-            this.topBox.add_child(this.icon);
+            this.icon = new St.Icon({ style_class: 'system-status-icon' })
+            this.icon.gicon = createAppGioIcon(AppStatusColor.WHITE)
+            this.topBox.add_child(this.icon)
         }
 
-        this.label = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true });
-        this.topBox.add_child(this.label);
-        this.add_child(this.topBox);
+        this.label = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true })
+        this.topBox.add_child(this.label)
+        this.add_child(this.topBox)
     }
 
     updateGithubActionsStatus(statusBarState) {
         if (this.simpleMode == true && statusBarState.simpleModeShowText == false) {
-            this.label.text = '';
+            this.label.text = ''
         } else {
             this.label.text = this.uppercaseMode == true
                 ? statusBarState.text().toUpperCase()
-                : statusBarState.text();
+                : statusBarState.text()
         }
 
         this.setStatusColor(
             this.coloredMode,
             this.extendedColoredMode,
             this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color,
-        );
+        )
     }
 
     setStatusColor(coloredMode, extendedColoredMode, appStatusColor) {
-        const darkTheme = isDarkTheme();
+        const darkTheme = isDarkTheme()
 
         this.label.style = coloredMode
-            ? `color: ${appStatusColor.color};`
-            : `color: ${AppStatusColor.WHITE};`;
+            ? `color: ${appStatusColor.color}`
+            : `color: ${AppStatusColor.WHITE}`
 
         if (this.networkButton != null) {
-            this.networkButton.setTextColor(darkTheme ? appStatusColor.textColorDark : appStatusColor.textColor);
+            this.networkButton.setTextColor(darkTheme ? appStatusColor.textColorDark : appStatusColor.textColor)
 
             if (extendedColoredMode) {
-                const backgroundColor = darkTheme ? appStatusColor.backgroundColorDark : appStatusColor.backgroundColor;
-                const borderColor = darkTheme ? appStatusColor.borderColorDark : appStatusColor.borderColor;
-                this.networkButton.setColor({ backgroundColor: backgroundColor, borderColor: borderColor });
+                const backgroundColor = darkTheme ? appStatusColor.backgroundColorDark : appStatusColor.backgroundColor
+                const borderColor = darkTheme ? appStatusColor.borderColorDark : appStatusColor.borderColor
+                this.networkButton.setColor({ backgroundColor: backgroundColor, borderColor: borderColor })
             } else {
-                this.networkButton.setColor({ backgroundColor: null, borderColor: null });
+                this.networkButton.setColor({ backgroundColor: null, borderColor: null })
             }
         }
     }
@@ -337,22 +339,26 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             gicon: this.extendedColoredMode
                 ? createAppGioIconInner(this.state.coloredModeColor)
                 : appIcon()
-        });
-        this.networkIcon.style = 'margin-left: 2px;';
+        })
+        this.networkIcon.style = 'margin-left: 2px'
 
         if (this.networkButton) {
-            this.networkButton.setIcon(this.networkIcon);
+            this.networkButton.setIcon(this.networkIcon)
         }
     }
 
     initPopupMenu() {
+        if (this.menu === null || this.menu === undefined) {
+            return
+        }
+
         this.box = new St.BoxLayout({
             style_class: 'github-actions-top-box',
             vertical: false,
             x_expand: true,
             x_align: Clutter.ActorAlign.FILL,
             y_align: Clutter.ActorAlign.CENTER,
-        });
+        })
 
         this.leftBox = new St.BoxLayout({
             style_class: 'github-actions-top-box',
@@ -360,7 +366,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             x_expand: true,
             x_align: Clutter.ActorAlign.FILL,
             y_align: Clutter.ActorAlign.CENTER,
-        });
+        })
 
         this.rightBox = new St.BoxLayout({
             style_class: 'github-actions-button-box',
@@ -370,311 +376,311 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             reactive: true,
             pack_start: false,
             vertical: false
-        });
+        })
 
-        this.box.add(this.leftBox);
-        this.box.add(this.rightBox);
+        this.box.add(this.leftBox)
+        this.box.add(this.rightBox)
 
-        this.topItems = new PopupMenu.PopupBaseMenuItem({ reactive: false });
-        this.topItems.remove_all_children(); // Remove left margin from non visible PopupMenuItem icon
-        this.topItems.actor.add_actor(this.box);
-        this.menu.addMenuItem(this.topItems);
+        this.topItems = new PopupMenu.PopupBaseMenuItem({ reactive: false })
+        this.topItems.remove_all_children() // Remove left margin from non visible PopupMenuItem icon
+        this.topItems.actor.add_actor(this.box)
+        this.menu.addMenuItem(this.topItems)
 
         /// Network transfer
         if (this.isLogged() && this.state != StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
-            this.networkButton = new RoundedButton({ iconName: 'system-settings-symbolic', text: `` });
-            this.networkButton.connect('clicked', () => openUrl('https://api.github.com/octocat'));
-            this.leftBox.add(this.networkButton);
+            this.networkButton = new RoundedButton({ iconName: 'system-settings-symbolic', text: `` })
+            this.networkButton.connect('clicked', () => openUrl('https://api.github.com/octocat'))
+            this.leftBox.add(this.networkButton)
         }
 
         /// Settings
-        this.settingsItem = new RoundedButton({ iconName: 'system-settings-symbolic' });
-        this.settingsItem.connect('clicked', () => ExtensionUtils.openPrefs());
-        this.rightBox.add_actor(this.settingsItem);
+        this.settingsItem = new RoundedButton({ iconName: 'system-settings-symbolic' })
+        this.settingsItem.connect('clicked', () => ExtensionUtils.openPrefs())
+        this.rightBox.add_actor(this.settingsItem)
 
         if (this.isInstalledCli() == false) {
-            this.installButton = new RoundedButton({ iconName: 'application-x-addon-symbolic' });
-            this.installButton.connect('clicked', () => openInstallCliScreen());
-            this.rightBox.add_actor(this.installButton);
+            this.installButton = new RoundedButton({ iconName: 'application-x-addon-symbolic' })
+            this.installButton.connect('clicked', () => openInstallCliScreen())
+            this.rightBox.add_actor(this.installButton)
         } else if (this.isLogged()) {
             /// Refresh
-            this.refreshButton = new RoundedButton({ iconName: 'view-refresh-symbolic' });
-            this.refreshButton.connect('clicked', () => this.refreshCallback());
-            this.rightBox.add_actor(this.refreshButton);
+            this.refreshButton = new RoundedButton({ iconName: 'view-refresh-symbolic' })
+            this.refreshButton.connect('clicked', () => this.refreshCallback())
+            this.rightBox.add_actor(this.refreshButton)
 
             /// Logout
-            this.logoutButton = new RoundedButton({ iconName: 'system-log-out-symbolic' });
-            this.logoutButton.connect('clicked', async () => this.logoutCallback());
-            this.rightBox.add_actor(this.logoutButton);
+            this.logoutButton = new RoundedButton({ iconName: 'system-log-out-symbolic' })
+            this.logoutButton.connect('clicked', async () => this.logoutCallback())
+            this.rightBox.add_actor(this.logoutButton)
         } else {
             /// Login
-            this.loginButton = new RoundedButton({ iconName: 'avatar-default-symbolic' });
-            this.loginButton.connect('clicked', () => openAuthScreen());
-            this.rightBox.add_actor(this.loginButton);
+            this.loginButton = new RoundedButton({ iconName: 'avatar-default-symbolic' })
+            this.loginButton.connect('clicked', () => openAuthScreen())
+            this.rightBox.add_actor(this.loginButton)
         }
 
         /// Logged Menu
         if (this.isLogged() && this.state != StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
-            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
-            this.initLoggedMenu();
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
+            this.initLoggedMenu()
         }
     }
 
     initLoggedMenu() {
         /// User
-        this.userMenuItem = new ExpandedMenuItem(null, '');
-        this.menu.addMenuItem(this.userMenuItem);
+        this.userMenuItem = new ExpandedMenuItem(null, '')
+        this.menu.addMenuItem(this.userMenuItem)
 
         /// Token Scopes
-        const missingScopes = this.tokenScopes.missingScopes();
+        const missingScopes = this.tokenScopes.missingScopes()
         this.tokenScopesItem = new IconPopupMenuItem({
             startIconName: 'dialog-password-symbolic',
             text: `Token scopes: ${this.tokenScopes.toString()}` + (missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`),
-        });
-        this.userMenuItem.menuBox.add_actor(this.tokenScopesItem);
+        })
+        this.userMenuItem.menuBox.add_actor(this.tokenScopesItem)
 
         /// 2 FA
-        this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {};
+        this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {}
         this.twoFactorItem = new IconPopupMenuItem({
             startIconName: 'security-medium-symbolic',
             itemCallback: this.twoFactorCallback,
-        });
-        this.userMenuItem.menuBox.add_actor(this.twoFactorItem);
+        })
+        this.userMenuItem.menuBox.add_actor(this.twoFactorItem)
 
         /// Minutes
-        this.minutesItem = new IconPopupMenuItem({ startIconName: 'alarm-symbolic' });
-        this.userMenuItem.menuBox.add_actor(this.minutesItem);
+        this.minutesItem = new IconPopupMenuItem({ startIconName: 'alarm-symbolic' })
+        this.userMenuItem.menuBox.add_actor(this.minutesItem)
 
         /// Packages
-        this.packagesItem = new IconPopupMenuItem({ startIconName: 'network-transmit-receive-symbolic' });
-        this.userMenuItem.menuBox.add_actor(this.packagesItem);
+        this.packagesItem = new IconPopupMenuItem({ startIconName: 'network-transmit-receive-symbolic' })
+        this.userMenuItem.menuBox.add_actor(this.packagesItem)
 
         /// Shared Storage
-        this.sharedStorageItem = new IconPopupMenuItem({ startIconName: 'network-server-symbolic' });
-        this.userMenuItem.menuBox.add_actor(this.sharedStorageItem);
+        this.sharedStorageItem = new IconPopupMenuItem({ startIconName: 'network-server-symbolic' })
+        this.userMenuItem.menuBox.add_actor(this.sharedStorageItem)
 
         if (this.simpleMode === false) {
             /// Starred
-            this.starredMenuItem = new ExpandedMenuItem('starred-symbolic', '');
-            this.menu.addMenuItem(this.starredMenuItem);
+            this.starredMenuItem = new ExpandedMenuItem('starred-symbolic', '')
+            this.menu.addMenuItem(this.starredMenuItem)
 
             /// Followers            
-            this.followersMenuItem = new ExpandedMenuItem('system-users-symbolic', '');
-            this.menu.addMenuItem(this.followersMenuItem);
+            this.followersMenuItem = new ExpandedMenuItem('system-users-symbolic', '')
+            this.menu.addMenuItem(this.followersMenuItem)
 
             /// Following
-            this.followingMenuItem = new ExpandedMenuItem('system-users-symbolic', '');
-            this.menu.addMenuItem(this.followingMenuItem);
+            this.followingMenuItem = new ExpandedMenuItem('system-users-symbolic', '')
+            this.menu.addMenuItem(this.followingMenuItem)
 
             /// Repos
-            this.reposMenuItem = new ExpandedMenuItem('folder-symbolic', '');
-            this.menu.addMenuItem(this.reposMenuItem);
+            this.reposMenuItem = new ExpandedMenuItem('folder-symbolic', '')
+            this.menu.addMenuItem(this.reposMenuItem)
 
             /// Gists
-            this.gistsMenuItem = new ExpandedMenuItem('utilities-terminal-symbolic', '');
-            this.menu.addMenuItem(this.gistsMenuItem);
+            this.gistsMenuItem = new ExpandedMenuItem('utilities-terminal-symbolic', '')
+            this.menu.addMenuItem(this.gistsMenuItem)
         }
 
         if (!this.showRepositoryMenu()) {
-            return;
+            return
         }
 
-        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem());
+        this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
 
         if (this.simpleMode === false) {
             /// Repository
-            this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => openUrl(this.repositoryUrl));
-            this.menu.addMenuItem(this.repositoryMenuItem);
+            this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => openUrl(this.repositoryUrl))
+            this.menu.addMenuItem(this.repositoryMenuItem)
 
             /// Repository isPrivate
-            this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: 'changes-prevent-symbolic' });
-            this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem);
+            this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: 'changes-prevent-symbolic' })
+            this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
 
             /// Repository isFork
-            this.repositoryForkItem = new IconPopupMenuItem({ startIconName: 'folder-remote-symbolic' });
-            this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem);
+            this.repositoryForkItem = new IconPopupMenuItem({ startIconName: 'folder-remote-symbolic' })
+            this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
 
             /// Branches
-            this.branchesMenuItem = new ExpandedMenuItem('media-playlist-consecutive-symbolic', '');
-            this.menu.addMenuItem(this.branchesMenuItem);
+            this.branchesMenuItem = new ExpandedMenuItem('media-playlist-consecutive-symbolic', '')
+            this.menu.addMenuItem(this.branchesMenuItem)
 
             /// Tags
-            this.tagsMenuItem = new ExpandedMenuItem('edit-clear-symbolic', '');
-            this.menu.addMenuItem(this.tagsMenuItem);
+            this.tagsMenuItem = new ExpandedMenuItem('edit-clear-symbolic', '')
+            this.menu.addMenuItem(this.tagsMenuItem)
 
             /// Stargazers
-            this.stargazersMenuItem = new ExpandedMenuItem('starred-symbolic', '');
-            this.menu.addMenuItem(this.stargazersMenuItem);
+            this.stargazersMenuItem = new ExpandedMenuItem('starred-symbolic', '')
+            this.menu.addMenuItem(this.stargazersMenuItem)
 
             /// Workflows
-            this.workflowsMenuItem = new ExpandedMenuItem('mail-send-receive-symbolic', '');
-            this.menu.addMenuItem(this.workflowsMenuItem);
+            this.workflowsMenuItem = new ExpandedMenuItem('mail-send-receive-symbolic', '')
+            this.menu.addMenuItem(this.workflowsMenuItem)
         }
 
         /// WorkflowRuns
-        this.runsMenuItem = new ExpandedMenuItem('media-playback-start-symbolic', '');
-        this.menu.addMenuItem(this.runsMenuItem);
+        this.runsMenuItem = new ExpandedMenuItem('media-playback-start-symbolic', '')
+        this.menu.addMenuItem(this.runsMenuItem)
 
         if (this.simpleMode === false) {
             /// Releases
-            this.releasesMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '');
-            this.menu.addMenuItem(this.releasesMenuItem);
+            this.releasesMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '')
+            this.menu.addMenuItem(this.releasesMenuItem)
         }
 
         /// Artifacts
-        this.artifactsMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '');
-        this.menu.addMenuItem(this.artifactsMenuItem);
+        this.artifactsMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '')
+        this.menu.addMenuItem(this.artifactsMenuItem)
     }
 
     setTransferText(text) {
         if (this.networkButton != null) {
-            this.networkButton.boxLabel.text = text;
+            this.networkButton.boxLabel.text = text
         }
     }
 
     /// Setters
     setLatestWorkflowRun(run) {
-        if (run === null || run === undefined) return;
+        if (run === null || run === undefined) return
 
-        const conclusion = run["conclusion"];
+        const conclusion = run["conclusion"]
 
         if (conclusion == 'success') {
-            this.setState({ state: StatusBarState.COMPLETED_SUCCESS });
+            this.setState({ state: StatusBarState.COMPLETED_SUCCESS })
         } else if (conclusion == 'failure') {
-            this.setState({ state: StatusBarState.COMPLETED_FAILURE });
+            this.setState({ state: StatusBarState.COMPLETED_FAILURE })
         } else if (conclusion == 'cancelled') {
-            this.setState({ state: StatusBarState.COMPLETED_CANCELLED });
+            this.setState({ state: StatusBarState.COMPLETED_CANCELLED })
         } else {
-            this.setState({ state: StatusBarState.IN_PROGRESS });
+            this.setState({ state: StatusBarState.IN_PROGRESS })
         }
 
         if (this.repositoryMenuItem != null) {
-            this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName(conclusion) });
-            this.repositoryMenuItem.icon.icon_size = 22;
+            this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName(conclusion) })
+            this.repositoryMenuItem.icon.icon_size = 22
         }
     }
 
     /// User ------------------------------------------------------------
 
     setUser(user) {
-        if (user === null || user === undefined) return;
+        if (user === null || user === undefined) return
 
-        const userEmail = user['email'];
-        const userName = user['name'];
-        const createdAt = user['created_at'];
-        const userUrl = user['html_url'];
-        const avatarUrl = user['avatar_url'];
-        const twoFactorEnabled = user['two_factor_authentication'];
+        const userEmail = user['email']
+        const userName = user['name']
+        const createdAt = user['created_at']
+        const userUrl = user['html_url']
+        const avatarUrl = user['avatar_url']
+        const twoFactorEnabled = user['two_factor_authentication']
 
-        this.userUrl = userUrl;
-        this.twoFactorEnabled = twoFactorEnabled;
+        this.userUrl = userUrl
+        this.twoFactorEnabled = twoFactorEnabled
 
         const userLabelText = (userName == null || userEmail == null)
             ? 'No permissions'
-            : `${userName} (${userEmail}) \n\nJoined GitHub on: ${formatDate(createdAt)} `;
+            : `${userName} (${userEmail}) \n\nJoined GitHub on: ${formatDate(createdAt)} `
 
         if (this.userMenuItem != null) {
-            this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl));
-            this.userMenuItem.icon.icon_size = 54;
-            this.userMenuItem.label.text = userLabelText;
-            this.userMenuItem.label.style = 'margin-left: 4px';
+            this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl))
+            this.userMenuItem.icon.icon_size = 54
+            this.userMenuItem.label.text = userLabelText
+            this.userMenuItem.label.style = 'margin-left: 4px'
         }
 
         if (this.twoFactorItem != null) {
             this.twoFactorItem.label.text = twoFactorEnabled == undefined ?
                 '2FA: No permissions' :
-                `2FA: ${(twoFactorEnabled == true ? 'Enabled' : 'Disabled')}`;
+                `2FA: ${(twoFactorEnabled == true ? 'Enabled' : 'Disabled')}`
         }
     }
 
     setUserBilling(minutes, packages, sharedStorage) {
-        let parsedMinutes;
+        let parsedMinutes
         if (minutes != null) {
-            parsedMinutes = `Usage minutes: ${minutes['total_minutes_used']} of ${minutes['included_minutes']}, ${minutes['total_paid_minutes_used']} paid`;
+            parsedMinutes = `Usage minutes: ${minutes['total_minutes_used']} of ${minutes['included_minutes']}, ${minutes['total_paid_minutes_used']} paid`
         }
 
-        let parsedPackages;
+        let parsedPackages
         if (packages != null) {
-            parsedPackages = `Data transfer out: ${packages['total_gigabytes_bandwidth_used']} GB of ${packages['included_gigabytes_bandwidth']} GB, ${packages['total_paid_gigabytes_bandwidth_used']} GB paid`;
+            parsedPackages = `Data transfer out: ${packages['total_gigabytes_bandwidth_used']} GB of ${packages['included_gigabytes_bandwidth']} GB, ${packages['total_paid_gigabytes_bandwidth_used']} GB paid`
         }
 
-        let parsedSharedStorage;
+        let parsedSharedStorage
         if (sharedStorage != null) {
-            parsedSharedStorage = `Storage for month: ${sharedStorage['estimated_storage_for_month']} GB, ${sharedStorage['estimated_paid_storage_for_month']} GB paid`;
+            parsedSharedStorage = `Storage for month: ${sharedStorage['estimated_storage_for_month']} GB, ${sharedStorage['estimated_paid_storage_for_month']} GB paid`
         }
 
         if (this.minutesItem != null) {
-            this.minutesItem.label.text = parsedMinutes == null ? 'No permissions' : parsedMinutes;
+            this.minutesItem.label.text = parsedMinutes == null ? 'No permissions' : parsedMinutes
         }
 
         if (this.packagesItem != null) {
-            this.packagesItem.label.text = parsedPackages == null ? 'No permissions' : parsedPackages;
+            this.packagesItem.label.text = parsedPackages == null ? 'No permissions' : parsedPackages
         }
 
         if (this.sharedStorageItem != null) {
-            this.sharedStorageItem.label.text = parsedSharedStorage == null ? 'No permissions' : parsedSharedStorage;
+            this.sharedStorageItem.label.text = parsedSharedStorage == null ? 'No permissions' : parsedSharedStorage
         }
     }
 
     setUserStarred(starred) {
-        if (starred === null || starred === undefined) return;
+        if (starred === null || starred === undefined) return
 
         function toItem(e) {
             return {
                 "iconName": 'starred-symbolic',
                 "text": e['full_name'],
                 "callback": () => openUrl(e['html_url']),
-            };
+            }
         }
 
         if (this.starredMenuItem != null) {
-            this.starredMenuItem.setHeaderItemText(`Starred: ${starred.length} `);
-            this.starredMenuItem.submitItems(starred.map(e => toItem(e)));
+            this.starredMenuItem.setHeaderItemText(`Starred: ${starred.length} `)
+            this.starredMenuItem.submitItems(starred.map(e => toItem(e)))
         }
     }
 
     setUserFollowers(followers) {
-        if (followers === null || followers === undefined) return;
+        if (followers === null || followers === undefined) return
 
         function toItem(e) {
             return {
                 "iconName": 'system-users-symbolic',
                 "text": e['login'],
                 "callback": () => openUrl(e['html_url']),
-            };
+            }
         }
 
         if (this.followersMenuItem != null) {
-            this.followersMenuItem.setHeaderItemText(`Followers: ${followers.length} `);
-            this.followersMenuItem.submitItems(followers.map(e => toItem(e)));
+            this.followersMenuItem.setHeaderItemText(`Followers: ${followers.length} `)
+            this.followersMenuItem.submitItems(followers.map(e => toItem(e)))
         }
     }
 
     setUserFollowing(following) {
-        if (following === null || following === undefined) return;
+        if (following === null || following === undefined) return
 
         function toItem(e) {
             return {
                 "iconName": 'system-users-symbolic',
                 "text": e['login'],
                 "callback": () => openUrl(e['html_url']),
-            };
+            }
         }
 
         if (this.followingMenuItem != null) {
-            this.followingMenuItem.setHeaderItemText(`Following: ${following.length} `);
-            this.followingMenuItem.submitItems(following.map(e => toItem(e)));
+            this.followingMenuItem.setHeaderItemText(`Following: ${following.length} `)
+            this.followingMenuItem.submitItems(following.map(e => toItem(e)))
         }
     }
 
     setUserRepos(repos, onWatchCallback) {
-        if (repos === null || repos === undefined) return;
+        if (repos === null || repos === undefined) return
 
         function toItem(e) {
-            const visibility = e['visibility'];
-            const createdAt = formatDate(e['created_at']);
-            const name = e['name'];
-            const owner = e['owner']['login'];
+            const visibility = e['visibility']
+            const createdAt = formatDate(e['created_at'])
+            const name = e['name']
+            const owner = e['owner']['login']
 
             return {
                 "iconName": 'folder-symbolic',
@@ -682,140 +688,140 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                 "callback": () => openUrl(e['html_url']),
                 "endButtonText": 'Watch',
                 "endButtonCallback": () => onWatchCallback(owner, name),
-            };
+            }
         }
 
         if (this.reposMenuItem != null) {
-            this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length} `);
+            this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length} `)
             this.reposMenuItem.submitItems(
                 repos
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
-                    .map(e => toItem(e)));
+                    .map(e => toItem(e)))
         }
     }
 
     setUserGists(gists) {
-        if (gists === null || gists === undefined) return;
+        if (gists === null || gists === undefined) return
 
         function toItem(e) {
-            const createdAt = formatDate(e['created_at']);
-            const description = e['description'];
+            const createdAt = formatDate(e['created_at'])
+            const description = e['description']
 
             return {
                 "iconName": 'utilities-terminal-symbolic',
                 "text": `${createdAt}` + (description.length !== 0 ? ` - ${description.replace(/\n/g, '')} ` : ''),
                 "callback": () => openUrl(e['html_url']),
-            };
+            }
         }
 
         if (this.gistsMenuItem != null) {
-            this.gistsMenuItem.setHeaderItemText(`Gists: ${gists.length} `);
+            this.gistsMenuItem.setHeaderItemText(`Gists: ${gists.length} `)
             this.gistsMenuItem.submitItems(
                 gists
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
-                    .map(e => toItem(e)));
+                    .map(e => toItem(e)))
         }
     }
 
     /// Separator ------------------------------------------------------
 
     setWatchedRepo(repo) {
-        if (repo === null || repo === undefined) return;
+        if (repo === null || repo === undefined) return
 
         if (this.repositoryMenuItem != null) {
-            this.repositoryMenuItem.label.style = 'margin-left: 4px';
-            this.repositoryMenuItem.label.text = `${repo['full_name']} \n\nCreated at: ${formatDate(repo['created_at'])} `;
+            this.repositoryMenuItem.label.style = 'margin-left: 4px'
+            this.repositoryMenuItem.label.text = `${repo['full_name']} \n\nCreated at: ${formatDate(repo['created_at'])} `
 
-            this.repositoryUrl = repo['html_url'];
+            this.repositoryUrl = repo['html_url']
         }
 
         if (this.repositoryPrivateItem != null) {
-            this.repositoryPrivateItem.label.text = `Private: ${(repo["private"] == true).toString()} `;
+            this.repositoryPrivateItem.label.text = `Private: ${(repo["private"] == true).toString()} `
         }
 
         if (this.repositoryForkItem != null) {
-            this.repositoryForkItem.label.text = `Fork: ${(repo["fork"] == true).toString()} `;
+            this.repositoryForkItem.label.text = `Fork: ${(repo["fork"] == true).toString()} `
         }
     }
 
     setStargazers(stargazers) {
-        if (stargazers === null || stargazers === undefined) return;
+        if (stargazers === null || stargazers === undefined) return
 
         function toItem(e) {
             return {
                 "iconName": 'starred-symbolic',
                 "text": e['login'],
                 "callback": () => openUrl(e['html_url']),
-            };
+            }
         }
 
         if (this.stargazersMenuItem != null) {
-            this.stargazersMenuItem.setHeaderItemText(`Stargazers: ${stargazers.length} `);
-            this.stargazersMenuItem.submitItems(stargazers.map(e => toItem(e)));
+            this.stargazersMenuItem.setHeaderItemText(`Stargazers: ${stargazers.length} `)
+            this.stargazersMenuItem.submitItems(stargazers.map(e => toItem(e)))
         }
     }
 
     setWorkflows(workflows) {
-        if (workflows === null || workflows === undefined) return;
+        if (workflows === null || workflows === undefined) return
 
         function toItem(e) {
             return {
                 "iconName": 'mail-send-receive-symbolic',
                 "text": e['name'],
                 "callback": () => openUrl(e['html_url']),
-            };
+            }
         }
 
         if (this.workflowsMenuItem != null) {
-            this.workflowsMenuItem.setHeaderItemText(`Workflows: ${workflows.length} `);
-            this.workflowsMenuItem.submitItems(workflows.map(e => toItem(e)));
+            this.workflowsMenuItem.setHeaderItemText(`Workflows: ${workflows.length} `)
+            this.workflowsMenuItem.submitItems(workflows.map(e => toItem(e)))
         }
     }
 
     setWorkflowRuns({ runs, onDeleteWorkflowRun, onCancelWorkflowRun, onRerunWorkflowRun }) {
-        if (runs === null || runs === undefined) return;
+        if (runs === null || runs === undefined) return
 
         function toItem(e) {
-            const conclusion = e['conclusion'];
-            const id = e['id'];
-            const runNumber = e["run_number"];
-            const updatedAt = e["updated_at"];
-            const displayTitle = e["display_title"];
-            const name = e["name"];
-            const htmlUrl = e['html_url'];
+            const conclusion = e['conclusion']
+            const id = e['id']
+            const runNumber = e["run_number"]
+            const updatedAt = e["updated_at"]
+            const displayTitle = e["display_title"]
+            const name = e["name"]
+            const htmlUrl = e['html_url']
 
-            const date = formatDate(updatedAt);
-            const text = `(#${runNumber}) - ${date} - ${displayTitle} `;
+            const date = formatDate(updatedAt)
+            const text = `(#${runNumber}) - ${date} - ${displayTitle} `
 
-            const iconName = conclusionIconName(conclusion);
+            const iconName = conclusionIconName(conclusion)
 
-            let showDelete;
-            let showCancel;
-            let showRerun;
+            let showDelete
+            let showCancel
+            let showRerun
 
             if (conclusion == 'success') {
-                showDelete = true;
-                showRerun = true;
-                showCancel = false;
+                showDelete = true
+                showRerun = true
+                showCancel = false
             } else if (conclusion == 'failure') {
-                showDelete = true;
-                showRerun = true;
-                showCancel = false;
+                showDelete = true
+                showRerun = true
+                showCancel = false
             } else if (conclusion == 'cancelled') {
-                showDelete = true;
-                showRerun = true;
-                showCancel = false;
+                showDelete = true
+                showRerun = true
+                showCancel = false
             } else {
-                showDelete = false;
-                showRerun = false;
-                showCancel = true;
+                showDelete = false
+                showRerun = false
+                showCancel = true
             }
 
-            let endButtonText;
-            let endButtonCallback;
+            let endButtonText
+            let endButtonCallback
 
             if (showRerun === true) {
-                endButtonText = 'Re-run';
+                endButtonText = 'Re-run'
                 endButtonCallback = () => {
                     showConfirmDialog({
                         title: 'Re-run a workflow run',
@@ -824,12 +830,12 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                         itemDescription: name,
                         iconName: iconName,
                         onConfirm: () => onRerunWorkflowRun(id, `${displayTitle} ${name} `),
-                    });
-                };
+                    })
+                }
             }
 
             if (showCancel === true) {
-                endButtonText = 'Cancel';
+                endButtonText = 'Cancel'
                 endButtonCallback = () => {
                     showConfirmDialog({
                         title: 'Canceling a workflow run',
@@ -838,8 +844,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                         itemDescription: name,
                         iconName: iconName,
                         onConfirm: () => onCancelWorkflowRun(id, `${displayTitle} ${name} `),
-                    });
-                };
+                    })
+                }
             }
 
             return {
@@ -855,65 +861,65 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                         itemDescription: name,
                         iconName: iconName,
                         onConfirm: () => onDeleteWorkflowRun(id, `${displayTitle} ${name} `),
-                    });
+                    })
                 } : null,
                 "endButtonText": endButtonText,
                 "endButtonCallback": endButtonCallback,
-            };
+            }
         }
 
         if (this.runsMenuItem != null) {
-            this.runsMenuItem.setHeaderItemText(`Workflow runs: ${runs.length} `);
-            this.runsMenuItem.submitItems(runs.map(e => toItem(e)));
+            this.runsMenuItem.setHeaderItemText(`Workflow runs: ${runs.length} `)
+            this.runsMenuItem.submitItems(runs.map(e => toItem(e)))
         }
     }
 
     setReleases(releases) {
-        if (releases === null || releases === undefined) return;
+        if (releases === null || releases === undefined) return
 
         function toItem(e) {
             return {
                 "iconName": 'folder-visiting-symbolic',
                 "text": e['name'],
                 "callback": () => openUrl(e['html_url']),
-            };
+            }
         }
 
         if (this.releasesMenuItem != null) {
-            this.releasesMenuItem.setHeaderItemText(`Releases: ${releases.length} `);
-            this.releasesMenuItem.submitItems(releases.map(e => toItem(e)));
+            this.releasesMenuItem.setHeaderItemText(`Releases: ${releases.length} `)
+            this.releasesMenuItem.submitItems(releases.map(e => toItem(e)))
         }
     }
 
     setArtifacts(artifacts) {
-        if (artifacts === null || artifacts === undefined) return;
+        if (artifacts === null || artifacts === undefined) return
 
-        const self = this;
+        const self = this
 
         function toItem(e) {
-            const createdAt = e['created_at'];
-            const size = bytesToString(e['size_in_bytes']);
-            const filename = e['name'];
-            const downloadUrl = e['archive_download_url'];
-            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${(e['expired'] == true ? ' - expired' : '')} `;
+            const createdAt = e['created_at']
+            const size = bytesToString(e['size_in_bytes'])
+            const filename = e['name']
+            const downloadUrl = e['archive_download_url']
+            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${(e['expired'] == true ? ' - expired' : '')} `
 
             return {
                 "iconName": 'folder-visiting-symbolic',
                 "text": labelName,
                 "callback": () => self.downloadArtifactCallback(downloadUrl, filename),
-            };
+            }
         }
 
         if (this.artifactsMenuItem != null) {
-            this.artifactsMenuItem.setHeaderItemText(`Artifacts: ${artifacts.length} `);
-            this.artifactsMenuItem.submitItems(artifacts.map(e => toItem(e)));
+            this.artifactsMenuItem.setHeaderItemText(`Artifacts: ${artifacts.length} `)
+            this.artifactsMenuItem.submitItems(artifacts.map(e => toItem(e)))
         }
     }
 
     setBranches(branches) {
-        if (branches === null || branches === undefined) return;
+        if (branches === null || branches === undefined) return
 
-        const repositoryUrl = this.repositoryUrl;
+        const repositoryUrl = this.repositoryUrl
 
         function toItem(e) {
             return {
@@ -921,17 +927,17 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                 "text": e['name'],
                 "callback": () => openUrl(repositoryUrl),
                 "endIconName": e['protected'] ? 'changes-prevent-symbolic' : null,
-            };
+            }
         }
 
         if (this.branchesMenuItem != null) {
-            this.branchesMenuItem.setHeaderItemText(`Branches: ${branches.length} `);
-            this.branchesMenuItem.submitItems(branches.map(e => toItem(e)));
+            this.branchesMenuItem.setHeaderItemText(`Branches: ${branches.length} `)
+            this.branchesMenuItem.submitItems(branches.map(e => toItem(e)))
         }
     }
 
     setTags(tags) {
-        if (tags === null || tags === undefined) return;
+        if (tags === null || tags === undefined) return
 
         function toItem(e) {
             return {
@@ -940,12 +946,12 @@ var StatusBarIndicator = class extends PanelMenu.Button {
                 "callback": () => openUrl(e['commit']['url']),
                 "endIconName": 'folder-download-symbolic',
                 "endIconCallback": () => openUrl(e['zipball_url'])
-            };
+            }
         }
 
         if (this.tagsMenuItem != null) {
-            this.tagsMenuItem.setHeaderItemText(`Tags: ${tags.length} `);
-            this.tagsMenuItem.submitItems(tags.map(e => toItem(e)));
+            this.tagsMenuItem.setHeaderItemText(`Tags: ${tags.length} `)
+            this.tagsMenuItem.submitItems(tags.map(e => toItem(e)))
         }
     }
-};
+}

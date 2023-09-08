@@ -1,13 +1,13 @@
 
 
 var TokenScopes = class {
-    static requiredScopes = ['repo', 'user', 'workflow'];
+    static requiredScopes = ['repo', 'user', 'workflow']
     
     constructor(scopes) {
-        this.scopes = scopes;
+        this.scopes = scopes
     }
 
-    missingScopes = () => TokenScopes.requiredScopes.filter(e => !this.scopes.includes(e));
+    missingScopes = () => TokenScopes.requiredScopes.filter(e => !this.scopes.includes(e))
 
-    toString = () => this.scopes;
+    toString = () => this.scopes
 }
