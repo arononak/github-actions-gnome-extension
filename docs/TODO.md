@@ -66,6 +66,7 @@
 - [ ] ColoredMode / ExtendedColoredMode - fix
 - [ ] Missing scopes - relogin
 - [ ] Block refresh
+- [ ] Settings tabs
 - [ ] TESTING.md - manual test workflow steps before deploy
 - [ ] position in top panel (right | center | left)
 - [ ] Refresh - interupt promise's
@@ -79,7 +80,7 @@
 - [ ] Lint
 - [ ] Adjust to Github Enterprice
 - [ ] Performance
-- [ ] --paginate
+- [ ] --paginat
 - [ ] workflow run - rerun 2 endpoints
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
 
