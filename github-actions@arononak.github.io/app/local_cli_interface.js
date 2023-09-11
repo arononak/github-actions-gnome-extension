@@ -57,6 +57,27 @@ async function authStatus() {
     })
 }
 
+async function token() {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const proc = Gio.Subprocess.new(['gh', 'auth', 'token'], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
+
+            proc.communicate_utf8_async(null, null, (proc, res) => {
+                const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
+
+                if (!proc.get_successful()) {
+                    resolve(null)
+                }
+
+                resolve(stdout)
+            })
+        } catch (e) {
+            logError(e)
+            resolve(null)
+        }
+    })
+}
+
 async function downloadArtifactFile(downloadUrl, filename) {
     return new Promise(async (resolve, reject) => {
         try {

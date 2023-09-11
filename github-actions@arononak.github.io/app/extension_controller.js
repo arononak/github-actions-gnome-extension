@@ -574,6 +574,10 @@ var ExtensionController = class {
         await this.githubApiRepository.logoutUser()
     }
 
+    async fetchToken() {
+        return await this.githubApiRepository.token()
+    }
+
     async downloadArtifact({ indicator, downloadUrl, filename, onFinishCallback }) {
         try {
             const state = indicator.getState()

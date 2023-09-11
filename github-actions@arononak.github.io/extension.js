@@ -149,6 +149,15 @@ class Extension {
                             },
                         })
                     },
+                    copyTokenCallback: async () => {
+                        const token = await this.extensionController.fetchToken()
+
+                        const St = imports.gi.St
+                        const clipboard = St.Clipboard.get_default();
+                        clipboard.set_text(St.ClipboardType.CLIPBOARD, token);
+
+                        Main.notify('Copied !', token)
+                    },
                     logoutCallback: () => {
                         this.extensionController.logout()
                         this.indicator.setState({ state: StatusBarState.NOT_LOGGED })

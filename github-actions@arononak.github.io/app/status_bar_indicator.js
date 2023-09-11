@@ -132,8 +132,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         isLogged = false,
         tokenScopes = '',
         refreshCallback = () => { },
-        logoutCallback = () => { },
         downloadArtifactCallback = (downloadUrl, filename) => { },
+        copyTokenCallback = () => { },
+        logoutCallback = () => { },
     }) {
         super()
 
@@ -146,8 +147,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.tokenScopes = tokenScopes
 
         this.refreshCallback = refreshCallback
-        this.logoutCallback = logoutCallback
         this.downloadArtifactCallback = downloadArtifactCallback
+        this.copyTokenCallback = copyTokenCallback
+        this.logoutCallback = logoutCallback
 
         this.initStatusBarIndicator()
 
@@ -436,6 +438,8 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.tokenScopesItem = new IconPopupMenuItem({
             startIconName: 'dialog-password-symbolic',
             text: `Token scopes: ${this.tokenScopes.toString()}` + (missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`),
+            endIconName: 'edit-copy-symbolic',
+            endIconCallback: this.copyTokenCallback,
         })
         this.userMenuItem.menuBox.add_actor(this.tokenScopesItem)
 

@@ -18,6 +18,9 @@ var GithubApiRepository = class {
     logoutUser = async () =>
         cliInterface.logoutUser()
 
+    token = async () =>
+        cliInterface.token()
+
     tokenScopes = async () => {
         const authStatus = await cliInterface.authStatus()
 
