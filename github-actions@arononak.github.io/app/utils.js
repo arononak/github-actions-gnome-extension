@@ -40,6 +40,10 @@ function openInstallCliScreen() {
     openUrl('https://github.com/cli/cli/blob/trunk/docs/install_linux.md')
 }
 
+function openExtensionGithubIssuesPage() {
+    openUrl('https://github.com/arononak/github-actions-gnome-extension/issues')
+}
+
 function openExtensionFolder() {
     openUrl(`${extension.path}/assets`)
 }

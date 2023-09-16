@@ -5,9 +5,25 @@ const ExtensionUtils = imports.misc.extensionUtils
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
 const { PrefsController } = extension.imports.app.prefs_controller
-const { openExtensionFolder } = extension.imports.app.utils
+const { openExtensionFolder, openExtensionGithubIssuesPage } = extension.imports.app.utils
 
 function init() { }
+
+function createButtonRow({ title, subtitle, buttonLabel, onButtonPressed }) {
+    const button = new Gtk.Button({ label: buttonLabel })
+    button.connect('clicked', onButtonPressed)
+    button.margin_top = 8
+    button.margin_bottom = 8
+
+    const row = new Adw.ActionRow({
+        title: title == undefined ? null : title,
+        subtitle: subtitle == undefined ? null : subtitle,
+    })
+
+    row.add_suffix(button)
+
+    return row
+}
 
 function createEntityRow({ title, text, onChanged }) {
     const entry = new Gtk.Entry({
@@ -99,7 +115,7 @@ function fillPreferencesWindow(window) {
         version,
     } = prefsController.fetchData()
 
-    window.set_default_size(550, 1160)
+    window.set_default_size(600, 1240)
 
     const enabledRow = createToggleRow({
         title: 'Enabled',
@@ -108,7 +124,7 @@ function fillPreferencesWindow(window) {
     })
 
     const iconPositionRow = createSpinButtonRow({
-        title: 'Icon position in top panel',
+        title: 'Position in top panel',
         subtitle: `Suggested by @thyttan`,
         value: iconPosition,
         lower: -100,
@@ -157,16 +173,12 @@ function fillPreferencesWindow(window) {
         onSwitchButtonCreated: (switchButton) => settings.bind('show-icon', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
     })
 
-    const changeIconButton = new Gtk.Button({ label: 'Change' })
-    changeIconButton.connect('clicked', () => openExtensionFolder())
-    changeIconButton.margin_top = 8
-    changeIconButton.margin_bottom = 8
-
-    const changeIconRow = new Adw.ActionRow({
+    const changeIconRow = createButtonRow({
         title: 'Change icon',
         subtitle: 'Don\'t open it in gedit and don\'t change the color :D',
+        buttonLabel: 'Change',
+        onButtonPressed: () => openExtensionFolder(),
     })
-    changeIconRow.add_suffix(changeIconButton)
 
     const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' })
     appearanceGroup.add(simpleModeRow)
@@ -227,15 +239,22 @@ function fillPreferencesWindow(window) {
 
         otherGroup.add(extendedColoredMode)
     } else {
-        const githubButton = new Gtk.Button({ label: 'Give me a star!' })
-        githubButton.connect('clicked', () => prefsController.onStarClicked())
-        githubButton.margin_top = 8
-        githubButton.margin_bottom = 8
+        const starRow = createButtonRow({
+            title: 'Unlock hidden features',
+            buttonLabel: 'Give me a star!',
+            onButtonPressed: () => prefsController.onStarClicked(),
+        })
 
-        const starRow = new Adw.ActionRow({ title: 'Unlock hidden features' })
-        starRow.add_suffix(githubButton)
         otherGroup.add(starRow)
     }
+
+    const bugBountyRow = createButtonRow({
+        title: 'Bug Bounty program',
+        subtitle: 'If you find an error in the application and it is corrected in the next version, your login and email will be on the honor list in the extension',
+        buttonLabel: 'Report !',
+        onButtonPressed: () => openExtensionGithubIssuesPage(),
+    })
+    otherGroup.add(bugBountyRow)
 
     const versionRow = new Adw.ActionRow({ title: 'Version:' })
     versionRow.add_suffix(new Gtk.Label({ label: version, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }))
