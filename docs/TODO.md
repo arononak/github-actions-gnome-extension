@@ -54,8 +54,8 @@
 - [ ] Expired artifacts
 - [ ] Expired workflow rerun
 - [ ] Logs - crashes
-- [ ] bug Bounty program
-- [ ] Settings - display token
+- [x] bug Bounty program
+- [x] copy token
 - [ ] Tags list - download button border
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin
@@ -67,7 +67,7 @@
 - [ ] Missing scopes - relogin
 - [ ] Block refresh
 - [ ] Settings tabs
-- [ ] TESTING.md - manual test workflow steps before deploy
+- [x] TESTING.md - manual test workflow steps before deploy
 - [ ] position in top panel (right | center | left)
 - [ ] Refresh - interupt promise's
 - [ ] README.md gif preview
