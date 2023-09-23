@@ -696,7 +696,9 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         }
 
         if (this.reposMenuItem != null) {
-            this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length} `)
+            const privateRepoCount = repos.filter((e) => e['private'] == true).length
+
+            this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length} • (private: ${privateRepoCount})`)
             this.reposMenuItem.submitItems(
                 repos
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
