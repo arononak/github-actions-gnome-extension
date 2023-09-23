@@ -5,7 +5,6 @@ const ExtensionUtils = imports.misc.extensionUtils
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
 const { PrefsController } = extension.imports.app.prefs_controller
-const { openExtensionFolder, openExtensionGithubIssuesPage } = extension.imports.app.utils
 
 function init() { }
 
@@ -177,7 +176,7 @@ function fillPreferencesWindow(window) {
         title: 'Change icon',
         subtitle: 'Don\'t open it in gedit and don\'t change the color :D',
         buttonLabel: 'Change',
-        onButtonPressed: () => openExtensionFolder(),
+        onButtonPressed: () => prefsController.onOpenExtensionFolderClicked(),
     })
 
     const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' })
@@ -252,7 +251,7 @@ function fillPreferencesWindow(window) {
         title: 'Bug Bounty program',
         subtitle: 'If you find an error in the application and it is corrected in the next version, your login and email will be on the honor list in the extension',
         buttonLabel: 'Report !',
-        onButtonPressed: () => openExtensionGithubIssuesPage(),
+        onButtonPressed: () => prefsController.onOpenExtensionGithubIssuesPageClicked(),
     })
     otherGroup.add(bugBountyRow)
 

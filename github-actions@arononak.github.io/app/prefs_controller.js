@@ -2,7 +2,7 @@
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
 const { VERSION } = extension.imports.app.version
-const { openUrl } = extension.imports.app.utils
+const { openUrl, openExtensionFolder, openExtensionGithubIssuesPage } = extension.imports.app.utils
 const { SettingsRepository } = extension.imports.app.settings_repository
 
 var PrefsController = class {
@@ -63,5 +63,13 @@ var PrefsController = class {
 
     onStarClicked() {
         openUrl('https://github.com/arononak/github-actions-gnome-extension')
+    }
+
+    onOpenExtensionFolderClicked() {
+        openExtensionFolder()
+    }
+
+    onOpenExtensionGithubIssuesPageClicked() {
+        openExtensionGithubIssuesPage()
     }
 }
