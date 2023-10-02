@@ -72,7 +72,7 @@
 - [ ] Refresh - interupt promise's
 - [ ] README.md gif preview
 - [ ] Gnome 45 update
-- [ ] gists/starred
+- [x] gists/starred
 - [ ] Organization billings
 - [ ] commit list
 - [ ] EN / PL - translations
