@@ -268,6 +268,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         this.followingMenuItem?.setHeaderItemText(loadingText)
         this.reposMenuItem?.setHeaderItemText(loadingText)
         this.gistsMenuItem?.setHeaderItemText(loadingText)
+        this.starredGistsMenuItem?.setHeaderItemText(loadingText)
         this.repositoryMenuItem?.setHeaderItemText(loadingText)
         this.stargazersMenuItem?.setHeaderItemText(loadingText)
         this.workflowsMenuItem?.setHeaderItemText(loadingText)
@@ -437,7 +438,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         const missingScopes = this.tokenScopes.missingScopes()
         this.tokenScopesItem = new IconPopupMenuItem({
             startIconName: 'dialog-password-symbolic',
-            text: `Token (${this.tokenScopes.toString()})` + (missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`),
+            text: `Token scopes: ${this.tokenScopes.toString()}` + (missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`),
             endIconName: 'edit-copy-symbolic',
             endIconCallback: this.copyTokenCallback,
         })
@@ -483,6 +484,10 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             /// Gists
             this.gistsMenuItem = new ExpandedMenuItem('utilities-terminal-symbolic', '')
             this.menu.addMenuItem(this.gistsMenuItem)
+
+            /// Starred gists
+            this.starredGistsMenuItem = new ExpandedMenuItem('starred-symbolic', '')
+            this.menu.addMenuItem(this.starredGistsMenuItem)
         }
 
         if (!this.showRepositoryMenu()) {
@@ -724,6 +729,29 @@ var StatusBarIndicator = class extends PanelMenu.Button {
             this.gistsMenuItem.setHeaderItemText(`Gists: ${gists.length} `)
             this.gistsMenuItem.submitItems(
                 gists
+                    .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
+                    .map(e => toItem(e)))
+        }
+    }
+
+    setUserStarredGists(starredGists) {
+        if (starredGists === null || starredGists === undefined) return
+
+        function toItem(e) {
+            const createdAt = formatDate(e['created_at'])
+            const description = e['description']
+
+            return {
+                "iconName": 'starred-symbolic',
+                "text": `${createdAt}` + (description.length !== 0 ? ` - ${description.replace(/\n/g, '')} ` : ''),
+                "callback": () => openUrl(e['html_url']),
+            }
+        }
+
+        if (this.starredGistsMenuItem != null) {
+            this.starredGistsMenuItem.setHeaderItemText(`Gists: ${starredGists.length} `)
+            this.starredGistsMenuItem.submitItems(
+                starredGists
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
                     .map(e => toItem(e)))
         }

@@ -93,6 +93,7 @@ async function dataRefresh(
                 const following = await githubApiRepository.fetchUserFollowing(pagination)
                 const repos = await githubApiRepository.fetchUserRepos(pagination)
                 const gists = await githubApiRepository.fetchUserGists(pagination)
+                const starredGists = await githubApiRepository.fetchUserStarredGists(pagination)
 
                 resolve({
                     "user": user,
@@ -105,6 +106,7 @@ async function dataRefresh(
                     "following": following,
                     "repos": repos,
                     "gists": gists,
+                    "starredGists": starredGists,
                 })
             } catch (error) {
                 logError(error)
@@ -201,6 +203,7 @@ async function dataRefresh(
             following,
             repos,
             gists,
+            starredGists,
         } = await fetchUserData(settingsRepository, githubApiRepository)
 
         const userObjects = [
@@ -213,6 +216,7 @@ async function dataRefresh(
             following,
             repos,
             gists,
+            starredGists,
         ]
 
         indicator.setUser(user)
@@ -229,6 +233,7 @@ async function dataRefresh(
             refreshCallback()
         })
         indicator.setUserGists(gists)
+        indicator.setUserStarredGists(starredGists)
 
         if (!indicator.showRepositoryMenu()) {
             settingsRepository.updateTransfer(userObjects)
@@ -254,6 +259,7 @@ async function dataRefresh(
             runs,
             releases,
             branches,
+            tags,
         ]
 
         settingsRepository.updateTransfer([...userObjects, ...repoObjects])
