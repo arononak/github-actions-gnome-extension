@@ -4,7 +4,7 @@ const { Adw, Gio, Gtk, GLib } = imports.gi
 const ExtensionUtils = imports.misc.extensionUtils
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
-const { PrefsController } = extension.imports.app.prefs_controller
+const { PrefsController } = extension.imports.lib.prefs_controller
 
 function init() { }
 

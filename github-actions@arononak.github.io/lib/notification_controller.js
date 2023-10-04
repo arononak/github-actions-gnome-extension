@@ -2,7 +2,7 @@
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
 
-const { showNotification } = extension.imports.app.widgets
+const { showNotification } = extension.imports.lib.widgets
 
 var NotificationController = class {
     static showDownloadArtifact(success, filename) {

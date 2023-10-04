@@ -27,10 +27,10 @@ const Me = ExtensionUtils.getCurrentExtension()
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
 
-const { StatusBarIndicator, StatusBarState } = extension.imports.app.status_bar_indicator
-const { NotificationController } = extension.imports.app.notification_controller
-const { ExtensionController } = extension.imports.app.extension_controller
-const { QuickSettingsIndicator } = extension.imports.app.quick_settings_controller
+const { StatusBarIndicator, StatusBarState } = extension.imports.lib.status_bar_indicator
+const { NotificationController } = extension.imports.lib.notification_controller
+const { ExtensionController } = extension.imports.lib.extension_controller
+const { QuickSettingsIndicator } = extension.imports.lib.quick_settings_controller
 
 class Extension {
     constructor(uuid) {

@@ -5,7 +5,7 @@ const QuickSettings = imports.ui.quickSettings
 const QuickSettingsMenu = imports.ui.main.panel.statusArea.quickSettings
 const ExtensionUtils = imports.misc.extensionUtils
 const extension = ExtensionUtils.getCurrentExtension()
-const { appIcon } = extension.imports.app.widgets
+const { appIcon } = extension.imports.lib.widgets
 
 var EnabledExtensionToggle = class extends QuickSettings.QuickToggle {
     static {

@@ -4,9 +4,9 @@ const GETTEXT_DOMAIN = 'github-actions-extension'
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
 
-const { GithubApiRepository } = extension.imports.app.github_api_repository
-const { SettingsRepository } = extension.imports.app.settings_repository
-const { StatusBarState } = extension.imports.app.status_bar_indicator
+const { GithubApiRepository } = extension.imports.lib.github_api_repository
+const { SettingsRepository } = extension.imports.lib.settings_repository
+const { StatusBarState } = extension.imports.lib.status_bar_indicator
 
 async function stateRefresh(
     indicator,

@@ -17,7 +17,7 @@ const {
     openAuthScreen,
     bytesToString,
     formatDate,
-} = extension.imports.app.utils
+} = extension.imports.lib.utils
 
 const {
     AppStatusColor,
@@ -30,7 +30,7 @@ const {
     showConfirmDialog,
     conclusionIconName,
     isDarkTheme,
-} = extension.imports.app.widgets
+} = extension.imports.lib.widgets
 
 var StatusBarState = {
     NOT_INSTALLED_CLI: {

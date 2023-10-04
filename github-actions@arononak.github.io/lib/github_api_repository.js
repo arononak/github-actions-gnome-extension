@@ -2,9 +2,9 @@
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
 
-const cliInterface = extension.imports.app.local_cli_interface
-const { removeWhitespace } = extension.imports.app.utils
-const { TokenScopes } = extension.imports.app.token_scopes
+const cliInterface = extension.imports.lib.local_cli_interface
+const { removeWhitespace } = extension.imports.lib.utils
+const { TokenScopes } = extension.imports.lib.token_scopes
 
 var GithubApiRepository = class {
     constructor() { }

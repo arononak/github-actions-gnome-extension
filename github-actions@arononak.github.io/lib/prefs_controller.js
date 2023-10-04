@@ -1,9 +1,9 @@
 'use strict'
 
 const extension = imports.misc.extensionUtils.getCurrentExtension()
-const { VERSION } = extension.imports.app.version
-const { openUrl, openExtensionFolder, openExtensionGithubIssuesPage } = extension.imports.app.utils
-const { SettingsRepository } = extension.imports.app.settings_repository
+const { VERSION } = extension.imports.lib.version
+const { openUrl, openExtensionFolder, openExtensionGithubIssuesPage } = extension.imports.lib.utils
+const { SettingsRepository } = extension.imports.lib.settings_repository
 
 var PrefsController = class {
     constructor(settings) {
