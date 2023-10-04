@@ -438,7 +438,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
         const missingScopes = this.tokenScopes.missingScopes()
         this.tokenScopesItem = new IconPopupMenuItem({
             startIconName: 'dialog-password-symbolic',
-            text: `Token scopes: ${this.tokenScopes.toString()}` + (missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`),
+            text: `Token: ${this.tokenScopes.toString()}` + (missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`),
             endIconName: 'edit-copy-symbolic',
             endIconCallback: this.copyTokenCallback,
         })
