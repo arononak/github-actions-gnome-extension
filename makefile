@@ -4,14 +4,14 @@ run:
 
 GIT_TAG := $(shell git describe --tags --abbrev=0)
 build:
-	@echo 'var VERSION = "$(GIT_TAG)";' > github-actions@arononak.github.io/app/version.js
+	@echo 'var VERSION = "$(GIT_TAG)";' > github-actions@arononak.github.io/lib/version.js
 	cd github-actions@arononak.github.io &&\
 	glib-compile-schemas schemas/ &&\
 	gnome-extensions pack\
 		--out-dir=../\
 		--force\
 		--extra-source=assets\
-		--extra-source=app
+		--extra-source=lib
 
 EXTENSION_DIRECTORY := $(HOME)/.local/share/gnome-shell/extensions/github-actions@arononak.github.io
 copy:
