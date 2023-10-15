@@ -5,7 +5,6 @@ import GObject from 'gi://GObject'
 import St from 'gi://St'
 import Gio from 'gi://Gio'
 import GLib from 'gi://GLib'
-
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
 import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js';

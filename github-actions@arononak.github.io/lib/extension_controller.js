@@ -1,4 +1,4 @@
-import GObject from 'gi://GObject'
+'use strict'
 
 import { GithubApiRepository } from './github_api_repository.js'
 import { SettingsRepository }  from './settings_repository.js'
