@@ -1,10 +1,8 @@
 'use strict'
 
-const extension = imports.misc.extensionUtils.getCurrentExtension()
+import { showNotification } from './widgets.js'
 
-const { showNotification } = extension.imports.lib.widgets
-
-var NotificationController = class {
+export var NotificationController = class {
     static showDownloadArtifact(success, filename) {
         if (success === true) {
             showNotification(`The artifact has been downloaded, check your home directory.\n\n${filename}`, true)

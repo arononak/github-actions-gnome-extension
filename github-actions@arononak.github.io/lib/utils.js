@@ -1,30 +1,31 @@
 'use strict'
 
-const { GLib, Gio } = imports.gi
-const extension = imports.misc.extensionUtils.getCurrentExtension()
+import GLib from 'gi://GLib'
 
-function isEmpty(str) {
+export function isEmpty(str) {
     return (!str || str.length === 0)
 }
 
-function removeWhiteChars(str) {
+export function removeWhiteChars(str) {
     return str.replace(/\s+/g, '')
 }
 
-String.prototype.removeWhitespace = function () {
-    return this.replace(/\s+/g, '')
+export function formatDate(date) {
+    const options = {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric'
+      };
+
+    return (new Date(date)).toLocaleDateString('en-GB', options)
 }
 
-function formatDate(date) {
-    return (new Date(date)).toLocaleFormat('%d.%m.%Y')
-}
-
-function bytesToString(size) {
+export function bytesToString(size) {
     var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
     return (size / Math.pow(1024, i)).toFixed(2) * 1 + ' ' + ['B', 'KB', 'MB'][i]
 }
 
-function exec(command) {
+export function exec(command) {
     try {
         GLib.spawn_command_line_async(command)
     } catch (e) {
@@ -32,22 +33,18 @@ function exec(command) {
     }
 }
 
-function openUrl(url) {
+export function openUrl(url) {
     exec(`xdg-open ${url}`)
 }
 
-function openInstallCliScreen() {
+export function openInstallCliScreen() {
     openUrl('https://github.com/cli/cli/blob/trunk/docs/install_linux.md')
 }
 
-function openExtensionGithubIssuesPage() {
+export function openExtensionGithubIssuesPage() {
     openUrl('https://github.com/arononak/github-actions-gnome-extension/issues')
 }
 
-function openExtensionFolder() {
-    openUrl(`${extension.path}/assets`)
-}
-
-function openAuthScreen() {
+export function openAuthScreen() {
     exec('gnome-terminal -- bash -c "gh auth login --scopes user,repo,workflow"')
 }

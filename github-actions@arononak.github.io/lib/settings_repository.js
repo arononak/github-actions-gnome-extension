@@ -1,9 +1,8 @@
 'use strict'
 
-const extension = imports.misc.extensionUtils.getCurrentExtension()
-const { removeWhiteChars, isEmpty, bytesToString } = extension.imports.lib.utils
+import { removeWhiteChars, isEmpty, bytesToString } from './utils.js'
 
-var SettingsRepository = class {
+export class SettingsRepository {
     constructor(settings) {
         this.settings = settings
     }

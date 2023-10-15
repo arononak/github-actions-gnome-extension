@@ -1,16 +1,23 @@
 'use strict'
 
-const { Clutter, GObject, St, Gio, GLib } = imports.gi
-const PanelMenu = imports.ui.panelMenu
-const PopupMenu = imports.ui.popupMenu
+import Clutter from 'gi://Clutter'
+import GObject from 'gi://GObject'
+import St from 'gi://St'
+import Gio from 'gi://Gio'
+import GLib from 'gi://GLib'
 
-const extension = imports.misc.extensionUtils.getCurrentExtension()
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
+import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js';
+import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
+import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
-var AppStatusColor = {
+export const AppStatusColor = {
     WHITE: {
-        icon: `${extension.path}/assets/github_white.svg`,
-        innerIcon: `${extension.path}/assets/github_white.svg`,
-        innerIconDark: `${extension.path}/assets/github_black.svg`,
+        icon: '/assets/github_white.svg',
+        innerIcon: '/assets/github_white.svg',
+        innerIconDark: '/assets/github_black.svg',
         color: '#FFFFFF',
         textColor: '#555555',
         textColorDark: '#FFFFFF',
@@ -20,9 +27,9 @@ var AppStatusColor = {
         borderColorDark: '#F0F0F0',
     },
     BLACK: {
-        icon: `${extension.path}/assets/github_black.svg`,
-        innerIcon: `${extension.path}/assets/github_black.svg`,
-        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        icon: '/assets/github_black.svg',
+        innerIcon: '/assets/github_black.svg',
+        innerIconDark: '/assets/github_white.svg',
         color: '#555555',
         textColor: '#555555',
         textColorDark: '#FFFFFF',
@@ -32,9 +39,9 @@ var AppStatusColor = {
         borderColorDark: '#F0F0F0',
     },
     GRAY: {
-        icon: `${extension.path}/assets/github_white.svg`,
-        innerIcon: `${extension.path}/assets/github_black.svg`,
-        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        icon: '/assets/github_white.svg',
+        innerIcon: '/assets/github_black.svg',
+        innerIconDark: '/assets/github_white.svg',
         color: '#757575',
         textColor: '#555555',
         textColorDark: '#FFFFFF',
@@ -44,9 +51,9 @@ var AppStatusColor = {
         borderColorDark: '#9E9E9E',
     },
     GREEN: {
-        icon: `${extension.path}/assets/github_white.svg`,
-        innerIcon: `${extension.path}/assets/github_black.svg`,
-        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        icon: '/assets/github_white.svg',
+        innerIcon: '/assets/github_black.svg',
+        innerIconDark: '/assets/github_white.svg',
         color: '#00FF66',
         textColor: '#555555',
         textColorDark: '#FFFFFF',
@@ -56,9 +63,9 @@ var AppStatusColor = {
         borderColorDark: '#2E7D32',
     },
     BLUE: {
-        icon: `${extension.path}/assets/github_white.svg`,
-        innerIcon: `${extension.path}/assets/github_black.svg`,
-        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        icon: '/assets/github_white.svg',
+        innerIcon: '/assets/github_black.svg',
+        innerIconDark: '/assets/github_white.svg',
         color: '#64B5F6',
         textColor: '#555555',
         textColorDark: '#FFFFFF',
@@ -68,9 +75,9 @@ var AppStatusColor = {
         borderColorDark: '#0D47A1',
     },
     RED: {
-        icon: `${extension.path}/assets/github_white.svg`,
-        innerIcon: `${extension.path}/assets/github_black.svg`,
-        innerIconDark: `${extension.path}/assets/github_white.svg`,
+        icon: '/assets/github_white.svg',
+        innerIcon: '/assets/github_black.svg',
+        innerIconDark: '/assets/github_white.svg',
         color: '#EF5350',
         textColor: '#555555',
         textColorDark: '#FFFFFF',
@@ -81,19 +88,23 @@ var AppStatusColor = {
     },
 }
 
-function createAppGioIcon(appStatusColor) {
-    return Gio.icon_new_for_string(appStatusColor.icon)
+export function createAppGioIcon(appStatusColor) {
+    const extension = Extension.lookupByUUID('github-actions@arononak.github.io')
+
+    return Gio.icon_new_for_string(extension.path + appStatusColor.icon)
 }
 
-function createAppGioIconInner(appStatusColor) {
+export function createAppGioIconInner(appStatusColor) {
+    const extension = Extension.lookupByUUID('github-actions@arononak.github.io')
+
     const darkTheme = isDarkTheme()
 
     return darkTheme
-        ? Gio.icon_new_for_string(appStatusColor.innerIconDark)
-        : Gio.icon_new_for_string(appStatusColor.innerIcon)
+        ? Gio.icon_new_for_string(extension.path + appStatusColor.innerIconDark)
+        : Gio.icon_new_for_string(extension.path + appStatusColor.innerIcon)
 }
 
-function conclusionIconName(conclusion) {
+export function conclusionIconName(conclusion) {
     if (conclusion == 'success') {
         return 'emblem-default'
     } else if (conclusion == 'failure') {
@@ -105,14 +116,14 @@ function conclusionIconName(conclusion) {
     }
 }
 
-function isDarkTheme() {
+export function isDarkTheme() {
     const settings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' })
     const theme = settings.get_string('gtk-theme')
 
     return theme.replace(/'/g, "").trim().includes("dark")
 }
 
-function appIcon() {
+export function appIcon() {
     const darkTheme = isDarkTheme()
 
     return darkTheme
@@ -120,7 +131,7 @@ function appIcon() {
         : createAppGioIcon(AppStatusColor.BLACK)
 }
 
-var RoundedButton = class extends St.Button {
+export class RoundedButton extends St.Button {
     static {
         GObject.registerClass(this)
     }
@@ -160,7 +171,7 @@ var RoundedButton = class extends St.Button {
     }
 }
 
-var IconButton = class extends St.Button {
+export class IconButton extends St.Button {
     static {
         GObject.registerClass(this)
     }
@@ -179,7 +190,7 @@ var IconButton = class extends St.Button {
 }
 
 /// Parent item
-var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
+export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
     static {
         GObject.registerClass(this)
     }
@@ -253,7 +264,7 @@ var ExpandedMenuItem = class extends PopupMenu.PopupSubMenuMenuItem {
 }
 
 /// Child item
-var IconPopupMenuItem = class extends PopupMenu.PopupImageMenuItem {
+export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
     static {
         GObject.registerClass(this)
     }
@@ -305,10 +316,7 @@ var IconPopupMenuItem = class extends PopupMenu.PopupImageMenuItem {
     }
 }
 
-function showNotification(message, success) {
-    const MessageTray = imports.ui.messageTray
-    const Main = imports.ui.main
-
+export function showNotification(message, success) {
     const source = new MessageTray.Source(
         'Github Actions',
         success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic',
@@ -335,7 +343,7 @@ function showNotification(message, success) {
     player.play_from_file(file, '', null)
 }
 
-function showConfirmDialog({
+export function showConfirmDialog({
     title,
     description,
     itemTitle,
@@ -343,10 +351,6 @@ function showConfirmDialog({
     iconName,
     onConfirm
 }) {
-    const Dialog = imports.ui.dialog
-    const ModalDialog = imports.ui.modalDialog
-    const { St } = imports.gi
-
     let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false })
     let reminderId = null
     let closedId = dialog.connect('closed', (_dialog) => {

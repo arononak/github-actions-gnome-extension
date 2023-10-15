@@ -18,41 +18,34 @@
 
 'use strict'
 
-const { GObject } = imports.gi
-const Main = imports.ui.main
+import { StatusBarIndicator, StatusBarState } from './lib/status_bar_indicator.js'
+import { NotificationController } from './lib/notification_controller.js'
+import { ExtensionController } from './lib/extension_controller.js'
+import { QuickSettingsIndicator } from './lib/quick_settings_controller.js'
 
-const GETTEXT_DOMAIN = 'github-actions-extension'
-const ExtensionUtils = imports.misc.extensionUtils
-const Me = ExtensionUtils.getCurrentExtension()
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
+import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
-const extension = imports.misc.extensionUtils.getCurrentExtension()
-
-const { StatusBarIndicator, StatusBarState } = extension.imports.lib.status_bar_indicator
-const { NotificationController } = extension.imports.lib.notification_controller
-const { ExtensionController } = extension.imports.lib.extension_controller
-const { QuickSettingsIndicator } = extension.imports.lib.quick_settings_controller
-
-class Extension {
-    constructor(uuid) {
-        this._uuid = uuid
-        ExtensionUtils.initTranslations(GETTEXT_DOMAIN)
-
-        this.quickSettingsIndicator = null
-    }
-
+export default class GithubActionsExtension extends Extension {
     enable() {
-        this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions')
+        this.settings = this.getSettings()
         this.extensionController = new ExtensionController(this.settings)
+        this.createQuickSettings()
         this.initExtension()
-        
-        this.quickSettingsIndicator = new QuickSettingsIndicator()
     }
 
     disable() {
         this.disposeExtension()
         this.extensionController = null
         this.settings = null
+        this.destroyQuickSettings()
+    }
 
+    createQuickSettings() {
+        this.quickSettingsIndicator = new QuickSettingsIndicator()
+    }
+
+    destroyQuickSettings() {
         this.quickSettingsIndicator.destroy()
         this.quickSettingsIndicator = null
     }
@@ -84,10 +77,16 @@ class Extension {
                     this.extensionController.startRefreshing()
                 },
                 onEnableCallback: async () => {
+                    this.destroyQuickSettings()
+                    this.createQuickSettings()
+
                     await this.createStatusBarIndicator()
                     this.extensionController.startRefreshing()
                 },
                 onDisableCallback: () => {
+                    this.destroyQuickSettings()
+                    this.createQuickSettings()
+                    
                     this.extensionController.stopRefreshing()
                     this.disposeExtension()
                 },
@@ -135,9 +134,8 @@ class Extension {
                         this.extensionController.refresh()
                         this.indicator.refreshGithubIcon()
 
-                        this.quickSettingsIndicator.destroy()
-                        this.quickSettingsIndicator = null
-                        this.quickSettingsIndicator = new QuickSettingsIndicator()
+                        this.destroyQuickSettings()
+                        this.createQuickSettings()
                     },
                     downloadArtifactCallback: (downloadUrl, filename) => {
                         this.extensionController.downloadArtifact({
@@ -183,8 +181,4 @@ class Extension {
             this.indicator = null
         }
     }
-}
-
-function init(meta) {
-    return new Extension(meta.uuid)
 }

@@ -1,12 +1,10 @@
 'use strict'
 
-const extension = imports.misc.extensionUtils.getCurrentExtension()
+import { removeWhiteChars } from './utils.js'
+import { TokenScopes } from './token_scopes.js'
+import * as cliInterface from './local_cli_interface.js'
 
-const cliInterface = extension.imports.lib.local_cli_interface
-const { removeWhitespace } = extension.imports.lib.utils
-const { TokenScopes } = extension.imports.lib.token_scopes
-
-var GithubApiRepository = class {
+export class GithubApiRepository {
     constructor() { }
 
     isInstalledCli = async () =>
@@ -31,9 +29,7 @@ var GithubApiRepository = class {
         const lastLine = authStatus.substring(authStatus.lastIndexOf('✓'))
         const scopesLine = lastLine.substring(lastLine.indexOf(':') + 1)
 
-        const scopesArray = scopesLine
-            .removeWhitespace()
-            .split(',')
+        const scopesArray = removeWhiteChars(scopesLine).split(',')
 
         return new TokenScopes(scopesArray)
     }

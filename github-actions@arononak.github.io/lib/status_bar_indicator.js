@@ -1,25 +1,14 @@
 'use strict'
 
-const { Clutter, GObject, St, Gio } = imports.gi
-const PanelMenu = imports.ui.panelMenu
-const PopupMenu = imports.ui.popupMenu
-
-const ExtensionUtils = imports.misc.extensionUtils
-const Me = ExtensionUtils.getCurrentExtension()
-const _ = ExtensionUtils.gettext
-
-const extension = imports.misc.extensionUtils.getCurrentExtension()
-
-const {
-    isEmpty,
+import {
     openUrl,
     openInstallCliScreen,
     openAuthScreen,
     bytesToString,
-    formatDate,
-} = extension.imports.lib.utils
+    formatDate
+} from './utils.js'
 
-const {
+import {
     AppStatusColor,
     appIcon,
     createAppGioIcon,
@@ -29,10 +18,18 @@ const {
     IconPopupMenuItem,
     showConfirmDialog,
     conclusionIconName,
-    isDarkTheme,
-} = extension.imports.lib.widgets
+    isDarkTheme
+} from './widgets.js'
 
-var StatusBarState = {
+import Clutter from 'gi://Clutter'
+import GObject from 'gi://GObject'
+import St from 'gi://St'
+import Gio from 'gi://Gio'
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
+
+export const StatusBarState = {
     NOT_INSTALLED_CLI: {
         text: () => 'Not installed CLI',
         simpleModeShowText: true,
@@ -107,13 +104,18 @@ var StatusBarState = {
     },
 }
 
-function isCompleted(state) {
+function openSettings() {
+    const extension = Extension.lookupByUUID('github-actions@arononak.github.io')
+    extension.openPreferences()
+}
+
+export function isCompleted(state) {
     return state === StatusBarState.COMPLETED_SUCCESS
         || state === StatusBarState.COMPLETED_FAILURE
         || state === StatusBarState.COMPLETED_CANCELLED
 }
 
-var StatusBarIndicator = class extends PanelMenu.Button {
+export class StatusBarIndicator extends PanelMenu.Button {
     static {
         GObject.registerClass(this)
     }
@@ -398,7 +400,7 @@ var StatusBarIndicator = class extends PanelMenu.Button {
 
         /// Settings
         this.settingsItem = new RoundedButton({ iconName: 'system-settings-symbolic' })
-        this.settingsItem.connect('clicked', () => ExtensionUtils.openPrefs())
+        this.settingsItem.connect('clicked', () => openSettings())
         this.rightBox.add_actor(this.settingsItem)
 
         if (this.isInstalledCli() == false) {

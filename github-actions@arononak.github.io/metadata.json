@@ -7,13 +7,9 @@
   ],
   "settings-schema": "org.gnome.shell.extensions.github-actions",
   "shell-version": [
-    "40",
-    "41",
-    "42",
-    "43",
-    "44"
+    "45"
   ],
   "url": "https://github.com/arononak/github-actions-gnome-extension",
   "uuid": "github-actions@arononak.github.io",
-  "version": 94
+  "version": 95
 }

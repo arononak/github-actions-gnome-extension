@@ -1,6 +1,4 @@
-
-
-var TokenScopes = class {
+export class TokenScopes {
     static requiredScopes = ['repo', 'user', 'workflow']
     
     constructor(scopes) {

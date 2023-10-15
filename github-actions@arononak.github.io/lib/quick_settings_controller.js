@@ -1,13 +1,27 @@
 'use strict'
 
-const { Gio, GObject } = imports.gi
-const QuickSettings = imports.ui.quickSettings
-const QuickSettingsMenu = imports.ui.main.panel.statusArea.quickSettings
-const ExtensionUtils = imports.misc.extensionUtils
-const extension = ExtensionUtils.getCurrentExtension()
-const { appIcon } = extension.imports.lib.widgets
+import { createAppGioIcon, isDarkTheme, AppStatusColor } from './widgets.js'
+import { SettingsRepository } from './settings_repository.js'
 
-var EnabledExtensionToggle = class extends QuickSettings.QuickToggle {
+import GObject from 'gi://GObject'
+import Gio from 'gi://Gio'
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
+import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js'
+import * as Main from 'resource:///org/gnome/shell/ui/main.js'
+
+function createIconColor(isDarkMode, isEnabled) {
+    if (isDarkMode === true && isEnabled === true) {
+        return AppStatusColor.WHITE
+    } else if (isDarkMode === true && isEnabled === false) {
+        return AppStatusColor.WHITE
+    } else if (isDarkMode === false && isEnabled === true) {
+        return AppStatusColor.WHITE
+    } else if (isDarkMode === false && isEnabled === false) {
+        return AppStatusColor.BLACK
+    }
+}
+
+export class EnabledExtensionToggle extends QuickSettings.QuickToggle {
     static {
         GObject.registerClass(this)
     }
@@ -18,9 +32,15 @@ var EnabledExtensionToggle = class extends QuickSettings.QuickToggle {
             toggleMode: true,
         })
         this.label = 'Github Actions'
-        this.gicon = appIcon()
 
-        this.settings = ExtensionUtils.getSettings('org.gnome.shell.extensions.github-actions')
+        const extension = Extension.lookupByUUID('github-actions@arononak.github.io')
+        this.settings = extension.getSettings('org.gnome.shell.extensions.github-actions')
+        
+        const settingsRepository = new SettingsRepository(this.settings)
+        const enabled = settingsRepository.fetchEnabledExtension()
+        const darkMode = isDarkTheme()
+        const iconColor = createIconColor(darkMode, enabled)
+        this.gicon = createAppGioIcon(iconColor)
 
         this.settings.bind(
             'extension-enabled',
@@ -31,7 +51,7 @@ var EnabledExtensionToggle = class extends QuickSettings.QuickToggle {
     }
 }
 
-var QuickSettingsIndicator = class extends QuickSettings.SystemIndicator {
+export class QuickSettingsIndicator extends QuickSettings.SystemIndicator {
     static {
         GObject.registerClass(this)
     }
@@ -43,8 +63,6 @@ var QuickSettingsIndicator = class extends QuickSettings.SystemIndicator {
         this.connect('destroy', () => {
             this.quickSettingsItems.forEach(item => item.destroy())
         })
-
-        QuickSettingsMenu._indicators.add_child(this)
-        QuickSettingsMenu._addItems(this.quickSettingsItems)
+        Main.panel.statusArea.quickSettings.addExternalIndicator(this, 1);
     }
 }

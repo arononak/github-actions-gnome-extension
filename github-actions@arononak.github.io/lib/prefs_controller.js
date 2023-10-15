@@ -1,11 +1,12 @@
 'use strict'
 
-const extension = imports.misc.extensionUtils.getCurrentExtension()
-const { VERSION } = extension.imports.lib.version
-const { openUrl, openExtensionFolder, openExtensionGithubIssuesPage } = extension.imports.lib.utils
-const { SettingsRepository } = extension.imports.lib.settings_repository
+import { VERSION } from './version.js'
+import { openUrl, openExtensionGithubIssuesPage } from './utils.js'
+import { SettingsRepository } from './settings_repository.js'
 
-var PrefsController = class {
+import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+
+export class PrefsController {
     constructor(settings) {
         this.settings = settings
         this.settingsRepository = new SettingsRepository(settings)
@@ -32,7 +33,7 @@ var PrefsController = class {
 
         return {
             "enabledExtension": enabledExtension,
-            
+
             "owner": owner,
             "repo": repo,
             "refreshTime": refreshTime,
@@ -66,7 +67,8 @@ var PrefsController = class {
     }
 
     onOpenExtensionFolderClicked() {
-        openExtensionFolder()
+        const extension = ExtensionPreferences.lookupByUUID('github-actions@arononak.github.io')
+        openUrl(`${extension.path}/assets`)
     }
 
     onOpenExtensionGithubIssuesPageClicked() {

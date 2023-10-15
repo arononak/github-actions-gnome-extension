@@ -1,16 +1,16 @@
 'use strict'
 
-const { Gio } = imports.gi
+import Gio from 'gi://Gio'
 
-async function isGitHubCliInstalled() {
+export async function isGitHubCliInstalled() {
     return executeCommandAsync(['gh', '--version'])
 }
 
-async function isLogged() {
+export async function isLogged() {
     return executeCommandAsync(['gh', 'auth', 'token'])
 }
 
-async function logoutUser() {
+export async function logoutUser() {
     return executeCommandAsync(['gh', 'auth', 'logout', '--hostname', 'github.com'])
 }
 
@@ -35,7 +35,7 @@ async function executeCommandAsync(commandArray) {
     })
 }
 
-async function authStatus() {
+export async function authStatus() {
     return new Promise(async (resolve, reject) => {
         try {
             const proc = Gio.Subprocess.new(['gh', 'auth', 'status'], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
@@ -57,7 +57,7 @@ async function authStatus() {
     })
 }
 
-async function token() {
+export async function token() {
     return new Promise(async (resolve, reject) => {
         try {
             const proc = Gio.Subprocess.new(['gh', 'auth', 'token'], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
@@ -78,7 +78,7 @@ async function token() {
     })
 }
 
-async function downloadArtifactFile(downloadUrl, filename) {
+export async function downloadArtifactFile(downloadUrl, filename) {
     return new Promise(async (resolve, reject) => {
         try {
             const isInstalledCli = await isGitHubCliInstalled()
@@ -115,7 +115,7 @@ async function downloadArtifactFile(downloadUrl, filename) {
     })
 }
 
-async function executeGithubCliCommand(method, command, pagination = 100) {
+export async function executeGithubCliCommand(method, command, pagination = 100) {
     return new Promise(async (resolve, reject) => {
         try {
             const isInstalledCli = await isGitHubCliInstalled()
