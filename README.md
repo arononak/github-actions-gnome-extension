@@ -14,9 +14,9 @@
 |:-----------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------:|
 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_full.png?raw=true) | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_simple.png?raw=true) |
 
-| Quick Settings                                                                                             |
-|:----------------------------------------------------------------------------------------------------------:|
-| ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/quick_settings.png?raw=true) |
+| Quick Settings - Light                                                                                           | Quick Settings - Dark                                                                                           |
+|:----------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------:|
+| ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/quick_settings_light.png?raw=true) | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/quick_settings_dark.png?raw=true) |
 
 ## [🔨 Installation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) and Configuration
 
