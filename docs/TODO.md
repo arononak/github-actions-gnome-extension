@@ -51,11 +51,13 @@
 - [x] gists
 - [x] show statusbar icon
 - [x] async operation - progress bar or something else
-- [ ] Expired artifacts
-- [ ] Expired workflow rerun
-- [ ] Logs - crashes
 - [x] bug Bounty program
 - [x] copy token
+- [x] TESTING.md - manual test workflow steps before deploy
+- [x] gists/starred
+
+## 🏗️ Version 3 - Extension rebuilding
+- [x] Migration to ESM - Gnome 45
 - [ ] Tags list - download button border
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin
@@ -67,12 +69,12 @@
 - [ ] Missing scopes - relogin
 - [ ] Block refresh
 - [ ] Settings tabs
-- [x] TESTING.md - manual test workflow steps before deploy
 - [ ] position in top panel (right | center | left)
 - [ ] Refresh - interupt promise's
 - [ ] README.md gif preview
-- [ ] Gnome 45 update
-- [x] gists/starred
+- [ ] Expired artifacts
+- [ ] Expired workflow rerun
+- [ ] Logs - crashes
 - [ ] Organization billings
 - [ ] commit list
 - [ ] EN / PL - translations
@@ -82,10 +84,10 @@
 - [ ] Performance
 - [ ] --paginat
 - [ ] workflow run - rerun 2 endpoints
-- [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
 
-## 🎯 Version 3 - Multirepo config & WebHooks
+## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] Multirepo
 - [ ] Data cache
 - [ ] multi workflow runs
 - [ ] DebugMode
+- [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
