@@ -1,11 +1,12 @@
 'use strict'
 
+import { extensionPath } from './utils_extension.js'
+
 import Clutter from 'gi://Clutter'
 import GObject from 'gi://GObject'
 import St from 'gi://St'
 import Gio from 'gi://Gio'
 import GLib from 'gi://GLib'
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
 import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
@@ -88,19 +89,15 @@ export const AppStatusColor = {
 }
 
 export function createAppGioIcon(appStatusColor) {
-    const extension = Extension.lookupByUUID('github-actions@arononak.github.io')
-
-    return Gio.icon_new_for_string(extension.path + appStatusColor.icon)
+    return Gio.icon_new_for_string(extensionPath() + appStatusColor.icon)
 }
 
 export function createAppGioIconInner(appStatusColor) {
-    const extension = Extension.lookupByUUID('github-actions@arononak.github.io')
-
     const darkTheme = isDarkTheme()
 
     return darkTheme
-        ? Gio.icon_new_for_string(extension.path + appStatusColor.innerIconDark)
-        : Gio.icon_new_for_string(extension.path + appStatusColor.innerIcon)
+        ? Gio.icon_new_for_string(extensionPath() + appStatusColor.innerIconDark)
+        : Gio.icon_new_for_string(extensionPath() + appStatusColor.innerIcon)
 }
 
 export function conclusionIconName(conclusion) {

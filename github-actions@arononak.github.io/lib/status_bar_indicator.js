@@ -21,13 +21,14 @@ import {
     isDarkTheme
 } from './widgets.js'
 
+import { extensionOpenPreferences } from './utils_extension.js'
+
 import Clutter from 'gi://Clutter'
 import GObject from 'gi://GObject'
 import St from 'gi://St'
 import Gio from 'gi://Gio'
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
 
 export const StatusBarState = {
     NOT_INSTALLED_CLI: {
@@ -102,11 +103,6 @@ export const StatusBarState = {
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.GRAY,
     },
-}
-
-function openSettings() {
-    const extension = Extension.lookupByUUID('github-actions@arononak.github.io')
-    extension.openPreferences()
 }
 
 export function isCompleted(state) {
@@ -400,7 +396,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         /// Settings
         this.settingsItem = new RoundedButton({ iconName: 'system-settings-symbolic' })
-        this.settingsItem.connect('clicked', () => openSettings())
+        this.settingsItem.connect('clicked', () => extensionOpenPreferences())
         this.rightBox.add_actor(this.settingsItem)
 
         if (this.isInstalledCli() == false) {

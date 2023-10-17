@@ -2,6 +2,7 @@
 
 import { createAppGioIcon, isDarkTheme, AppStatusColor } from './widgets.js'
 import { SettingsRepository } from './settings_repository.js'
+import { extensionSettings } from './utils_extension.js'
 
 import GObject from 'gi://GObject'
 import Gio from 'gi://Gio'
@@ -33,8 +34,7 @@ export class EnabledExtensionToggle extends QuickSettings.QuickToggle {
         })
         this.label = 'Github Actions'
 
-        const extension = Extension.lookupByUUID('github-actions@arononak.github.io')
-        this.settings = extension.getSettings('org.gnome.shell.extensions.github-actions')
+        this.settings = extensionSettings()
         
         const settingsRepository = new SettingsRepository(this.settings)
         const enabled = settingsRepository.fetchEnabledExtension()
