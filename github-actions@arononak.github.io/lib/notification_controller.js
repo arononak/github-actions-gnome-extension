@@ -2,7 +2,7 @@
 
 import { showNotification } from './widgets.js'
 
-export var NotificationController = class {
+export class NotificationController {
     static showDownloadArtifact(success, filename) {
         if (success === true) {
             showNotification(`The artifact has been downloaded, check your home directory.\n\n${filename}`, true)

@@ -4,7 +4,7 @@ run:
 
 GIT_TAG := $(shell git describe --tags --abbrev=0)
 build:
-	@echo 'export var VERSION = "$(GIT_TAG)";' > github-actions@arononak.github.io/lib/version.js
+	@echo 'export const VERSION = "$(GIT_TAG)";' > github-actions@arononak.github.io/lib/version.js
 	cd github-actions@arononak.github.io &&\
 	glib-compile-schemas schemas/ &&\
 	gnome-extensions pack\
