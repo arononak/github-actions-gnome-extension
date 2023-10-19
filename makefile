@@ -17,4 +17,6 @@ EXTENSION_DIRECTORY := $(HOME)/.local/share/gnome-shell/extensions/github-action
 copy:
 	rm -r -f ./github-actions@arononak.github.io
 	cp -r "$(EXTENSION_DIRECTORY)" ./
-	
+
+compile:
+	glib-compile-schemas "$(EXTENSION_DIRECTORY)/schemas/"
