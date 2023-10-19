@@ -104,4 +104,7 @@ export class GithubApiRepository {
 
     deleteWorkflowRun = async (owner, repo, runId) =>
         cliInterface.executeGithubCliCommand('DELETE', `/repos/${owner}/${repo}/actions/runs/${runId}`)
+
+    fetcNewestExtensionRelease = async () =>
+        cliInterface.executeGithubCliCommand('GET', `https://api.github.com/repos/arononak/github-actions-gnome-extension/releases`, 1)
 }

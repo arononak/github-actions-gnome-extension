@@ -11,7 +11,6 @@ export class SettingsRepository {
 
     fetchOwner = () => this.settings.get_string('owner')
     updateOwner = (owner) => this.settings.set_string('owner', owner)
-
     fetchRepo = () => this.settings.get_string('repo')
     updateRepo = (repo) => this.settings.set_string('repo', repo)
 
@@ -39,6 +38,9 @@ export class SettingsRepository {
 
     fetchHiddenMode = () => this.settings.get_boolean('hidden-mode')
     updateHiddenMode = (mode) => this.settings.set_boolean('hidden-mode', mode)
+
+    fetchNewestVersion = () => this.settings.get_string('newest-version')
+    updateNewestVersion = (newestVersion) => this.settings.set_string('newest-version', newestVersion)
 
     ownerAndRepo() {
         const owner = this.fetchOwner(this.settings)

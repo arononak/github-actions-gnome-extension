@@ -1,7 +1,7 @@
 'use strict'
 
 import { VERSION } from './version.js'
-import { openUrl, openExtensionGithubIssuesPage } from './utils.js'
+import { isEmpty, openUrl, openExtensionGithubIssuesPage } from './utils.js'
 import { SettingsRepository } from './settings_repository.js'
 
 import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
@@ -31,6 +31,18 @@ export class PrefsController {
 
         const hiddenMode = this.settingsRepository.fetchHiddenMode()
 
+        const extensionVersion = VERSION
+        const newestVersion = this.settingsRepository.fetchNewestVersion()
+
+        var versionDescription = ''
+        if (isEmpty(newestVersion)) {
+            versionDescription = `${extensionVersion}`
+        } else if (extensionVersion === newestVersion) {
+            versionDescription = `No update available`
+        } else {
+            versionDescription = `New version ${newestVersion} is available`
+        }
+
         return {
             "enabledExtension": enabledExtension,
 
@@ -50,7 +62,8 @@ export class PrefsController {
 
             "hiddenMode": hiddenMode,
 
-            "version": VERSION,
+            "version": extensionVersion,
+            "versionDescription": versionDescription,
         }
     }
 

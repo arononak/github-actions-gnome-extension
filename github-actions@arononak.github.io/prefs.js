@@ -113,6 +113,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             hiddenMode,
 
             version,
+            versionDescription,
         } = prefsController.fetchData()
 
         window.set_default_size(600, 1240)
@@ -256,7 +257,10 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         })
         otherGroup.add(bugBountyRow)
 
-        const versionRow = new Adw.ActionRow({ title: 'Version:' })
+        const versionRow = new Adw.ActionRow({
+            title: 'Version:',
+            subtitle: versionDescription,
+        })
         versionRow.add_suffix(new Gtk.Label({ label: version, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }))
         otherGroup.add(versionRow)
 

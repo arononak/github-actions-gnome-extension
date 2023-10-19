@@ -166,6 +166,12 @@ async function dataRefresh(
             return
         }
 
+        const newestRelease = await githubApiRepository.fetcNewestExtensionRelease()
+        const newestVersion = newestRelease[0]['tag_name']
+        if (newestVersion != undefined) {
+            settingsRepository.updateNewestVersion(newestVersion)
+        }
+
         if (indicator.isLogged == false) {
             return
         }
