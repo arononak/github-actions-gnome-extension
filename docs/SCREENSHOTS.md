@@ -23,5 +23,6 @@
 | Workflow run - deleted | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_run_deleted.png?raw=true)               |
 | Workflow run - success | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/notification/notification_run_success.png?raw=true)               |
 
-![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/settings.png?raw=true)
-
+| No update available                                                                                   | New version is available                                                                              |
+|:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|
+| ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/settings1.png?raw=true) | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/settings2.png?raw=true) |
