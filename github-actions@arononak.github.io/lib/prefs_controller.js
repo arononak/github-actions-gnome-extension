@@ -23,6 +23,7 @@ export class PrefsController {
         const coldPackageSize = this.settingsRepository.fetchColdPackageSize()
         const pagination = this.settingsRepository.fetchPagination()
 
+        const showNotifications = this.settingsRepository.fetchShowNotifications()
         const simpleMode = this.settingsRepository.fetchSimpleMode()
         const coloredMode = this.settingsRepository.fetchColoredMode()
         const uppercaseMode = this.settingsRepository.fetchUppercaseMode()
@@ -54,6 +55,7 @@ export class PrefsController {
             "coldPackageSize": coldPackageSize,
             "pagination": pagination,
 
+            "showNotifications": showNotifications,
             "simpleMode": simpleMode,
             "coloredMode": coloredMode,
             "uppercaseMode": uppercaseMode,

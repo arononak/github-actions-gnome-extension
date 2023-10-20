@@ -104,6 +104,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             coldPackageSize,
             pagination,
 
+            showNotifications,
             simpleMode,
             coloredMode,
             uppercaseMode,
@@ -116,7 +117,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             versionDescription,
         } = prefsController.fetchData()
 
-        window.set_default_size(600, 1240)
+        window.set_default_size(600, 1290)
 
         const enabledRow = createToggleRow({
             title: 'Enabled',
@@ -147,6 +148,13 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         })
 
         /// Appearance
+        const showNotificationsRow = createToggleRow({
+            title: 'Show notifications',
+            subtitle: 'System notifications when the build is completed and others',
+            value: showNotifications,
+            onSwitchButtonCreated: (switchButton) => settings.bind('show-notifications', switchButton, 'active', Gio.SettingsBindFlags.DEFAULT),
+        })
+
         const simpleModeRow = createToggleRow({
             title: 'Simple mode',
             subtitle: 'Mode for minimalists containing the most important functionalities',
@@ -182,6 +190,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         })
 
         const appearanceGroup = new Adw.PreferencesGroup({ title: 'Appearance' })
+        appearanceGroup.add(showNotificationsRow)
         appearanceGroup.add(simpleModeRow)
         appearanceGroup.add(coloredModeRow)
         appearanceGroup.add(uppercaseModeRow)

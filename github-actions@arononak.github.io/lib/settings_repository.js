@@ -42,6 +42,8 @@ export class SettingsRepository {
     fetchNewestVersion = () => this.settings.get_string('newest-version')
     updateNewestVersion = (newestVersion) => this.settings.set_string('newest-version', newestVersion)
 
+    fetchShowNotifications = () => this.settings.get_boolean('show-notifications')
+
     ownerAndRepo() {
         const owner = this.fetchOwner(this.settings)
         const repo = this.fetchRepo(this.settings)

@@ -49,5 +49,8 @@
     <key name="newest-version" type="s">
       <default>''</default>
     </key>
+    <key name="show-notifications" type="b">
+      <default>true</default>
+    </key>
   </schema>
 </schemalist>
