@@ -31,22 +31,21 @@
 
 ```mermaid
 graph TD;
-    utils.js-->utils_extension.js;
-    utils_extension.js-->github_api_repository.js;
-    local_cli_interface.js-->github_api_repository.js;
-    token_scopes.js-->github_api_repository.js;
-    github_api_repository.js-->extension_controller.js;
-    widgets.js-->status_bar_indicator.js;
-    widgets.js-->notification_controller.js;
-    notification_controller.js-->extension.js;
-    status_bar_indicator.js-->extension.js;
-    settings_repository.js-->extension_controller.js;
-    quick_settings_controller.js-->extension.js;
-    widgets.js-->quick_settings_controller.js;
-    extension_controller.js-->extension.js;
-    utils_extension.js-->status_bar_indicator.js;
-    utils_extension.js-->settings_repository.js;
-    settings_repository.js-->prefs_controller.js;
+    utils.js-->utils_extension.js
+    utils_extension.js-->github_api_repository.js
+    local_cli_interface.js-->github_api_repository.js
+    token_scopes.js-->github_api_repository.js
+    github_api_repository.js-->extension_controller.js
+    widgets.js-->status_bar_indicator.js
+    widgets.js-->notification_controller.js
+    notification_controller.js-->extension.js
+    status_bar_indicator.js-->extension.js
+    settings_repository.js-->extension_controller.js
+    quick_settings_controller.js-->extension.js
+    widgets.js-->quick_settings_controller.js
+    extension_controller.js-->extension.js
+    utils_extension.js-->settings_repository.js
+    settings_repository.js-->prefs_controller.js
     utils.js-->utils_prefs.js;
     utils_prefs.js-->prefs_controller.js;
     prefs_controller.js-->prefs.js
