@@ -5,7 +5,8 @@ import {
     openInstallCliScreen,
     openAuthScreen,
     bytesToString,
-    formatDate
+    formatDate,
+    extensionOpenPreferences
 } from './utils_extension.js'
 
 import {
@@ -20,8 +21,6 @@ import {
     conclusionIconName,
     isDarkTheme
 } from './widgets.js'
-
-import { extensionOpenPreferences } from './utils_extension.js'
 
 import Clutter from 'gi://Clutter'
 import GObject from 'gi://GObject'
