@@ -1,6 +1,6 @@
 'use strict'
 
-import { removeWhiteChars, isEmpty, bytesToString } from './utils.js'
+import { removeWhiteChars, isEmpty, bytesToString } from './utils_extension.js'
 
 export class SettingsRepository {
     constructor(settings) {

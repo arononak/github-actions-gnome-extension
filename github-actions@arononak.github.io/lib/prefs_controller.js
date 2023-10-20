@@ -1,7 +1,7 @@
 'use strict'
 
 import { VERSION } from './version.js'
-import { isEmpty, openUrl, openExtensionGithubIssuesPage } from './utils.js'
+import { isEmpty, openUrl, openExtensionGithubIssuesPage } from './utils_prefs.js'
 import { SettingsRepository } from './settings_repository.js'
 
 import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';

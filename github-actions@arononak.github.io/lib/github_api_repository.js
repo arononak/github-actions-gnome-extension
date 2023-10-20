@@ -1,6 +1,6 @@
 'use strict'
 
-import { removeWhiteChars } from './utils.js'
+import { removeWhiteChars } from './utils_extension.js'
 import { TokenScopes } from './token_scopes.js'
 import * as cliInterface from './local_cli_interface.js'
 

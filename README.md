@@ -31,7 +31,8 @@
 
 ```mermaid
 graph TD;
-    utils.js-->github_api_repository.js;
+    utils.js-->utils_extension.js;
+    utils_extension.js-->github_api_repository.js;
     local_cli_interface.js-->github_api_repository.js;
     token_scopes.js-->github_api_repository.js;
     github_api_repository.js-->extension_controller.js;
@@ -43,10 +44,11 @@ graph TD;
     quick_settings_controller.js-->extension.js;
     widgets.js-->quick_settings_controller.js;
     extension_controller.js-->extension.js;
-    utils.js-->status_bar_indicator.js;
-    utils.js-->settings_repository.js;
+    utils_extension.js-->status_bar_indicator.js;
+    utils_extension.js-->settings_repository.js;
     settings_repository.js-->prefs_controller.js;
-    utils.js-->prefs_controller.js;
+    utils.js-->utils_prefs.js;
+    utils_prefs.js-->prefs_controller.js;
     prefs_controller.js-->prefs.js
     utils_extension.js-->widgets.js
     utils_extension.js-->quick_settings_controller.js
@@ -75,6 +77,7 @@ graph TD;
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
 > This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
+
 
 
 

@@ -6,7 +6,7 @@ import {
     openAuthScreen,
     bytesToString,
     formatDate
-} from './utils.js'
+} from './utils_extension.js'
 
 import {
     AppStatusColor,
