@@ -1,7 +1,5 @@
 'use strict'
 
-import { extensionPath } from './utils_extension.js'
-
 import Clutter from 'gi://Clutter'
 import GObject from 'gi://GObject'
 import St from 'gi://St'
@@ -12,6 +10,25 @@ import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
+
+import {
+    extensionPath,
+    extensionSettings as _extensionSettings,
+    openUrl as _openUrl,
+    openInstallCliScreen as _openInstallCliScreen,
+    openAuthScreen as _openAuthScreen,
+    bytesToString as _bytesToString,
+    formatDate as _formatDate,
+    extensionOpenPreferences as _extensionOpenPreferences,
+} from './utils_extension.js'
+
+export function extensionSettings()        { return _extensionSettings() }
+export function openUrl()                  { return _openUrl() }
+export function openInstallCliScreen()     { return _openInstallCliScreen() }
+export function openAuthScreen()           { return _openAuthScreen() }
+export function bytesToString()            { return _bytesToString() }
+export function formatDate()               { return _formatDate() }
+export function extensionOpenPreferences() { return _extensionOpenPreferences() }
 
 export const AppStatusColor = {
     WHITE: {

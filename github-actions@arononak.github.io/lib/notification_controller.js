@@ -1,7 +1,6 @@
 'use strict'
 
-import { showNotification } from './widgets.js'
-import { extensionSettings } from './utils_extension.js'
+import { showNotification, extensionSettings } from './widgets.js'
 import { SettingsRepository } from './settings_repository.js'
 
 export class NotificationController {

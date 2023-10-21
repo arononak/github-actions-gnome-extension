@@ -18,13 +18,13 @@
 
 'use strict'
 
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
+import * as Main from 'resource:///org/gnome/shell/ui/main.js'
+
 import { ExtensionController } from './lib/extension_controller.js'
 import { StatusBarIndicator } from './lib/status_bar_indicator.js'
 import { NotificationController } from './lib/notification_controller.js'
 import { QuickSettingsIndicator } from './lib/quick_settings_controller.js'
-
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
-import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
 export default class GithubActionsExtension extends Extension {
     enable() {

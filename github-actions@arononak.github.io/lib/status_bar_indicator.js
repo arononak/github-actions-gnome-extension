@@ -1,12 +1,11 @@
 'use strict'
 
-import {
-    openUrl,
-    openInstallCliScreen,
-    openAuthScreen,
-    bytesToString,
-    formatDate
-} from './utils_extension.js'
+import Clutter from 'gi://Clutter'
+import GObject from 'gi://GObject'
+import St from 'gi://St'
+import Gio from 'gi://Gio'
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
+import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'
 
 import {
     AppStatusColor,
@@ -18,18 +17,16 @@ import {
     IconPopupMenuItem,
     showConfirmDialog,
     conclusionIconName,
-    isDarkTheme
+    isDarkTheme,
+    openUrl,
+    openInstallCliScreen,
+    openAuthScreen,
+    bytesToString,
+    formatDate,
+    extensionOpenPreferences,
 } from './widgets.js'
 
-import { extensionOpenPreferences } from './utils_extension.js'
 import { ExtensionState } from './extension_controller.js'
-
-import Clutter from 'gi://Clutter'
-import GObject from 'gi://GObject'
-import St from 'gi://St'
-import Gio from 'gi://Gio'
-import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
-import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'
 
 export function isCompleted(state) {
     return state === ExtensionState.COMPLETED_SUCCESS

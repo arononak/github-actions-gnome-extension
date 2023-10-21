@@ -1,11 +1,11 @@
 'use strict'
 
-import { PrefsController } from './lib/prefs_controller.js'
-
 import Gio from 'gi://Gio'
 import Gtk from 'gi://Gtk'
 import Adw from 'gi://Adw'
 import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
+
+import { PrefsController } from './lib/prefs_controller.js'
 
 function createButtonRow({ title, subtitle, buttonLabel, onButtonPressed }) {
     const button = new Gtk.Button({ label: buttonLabel })

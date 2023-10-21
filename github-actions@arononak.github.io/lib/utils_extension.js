@@ -1,3 +1,5 @@
+import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
+
 import {
     removeWhiteChars as _removeWhiteChars,
     openUrl as _openUrl,
@@ -7,8 +9,6 @@ import {
     formatDate as _formatDate,
     isEmpty as _isEmpty,
 } from './utils.js'
-
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
 
 export function extensionSettings() {
     const extension = Extension.lookupByUUID('github-actions@arononak.github.io') 
