@@ -22,6 +22,7 @@ import {
 } from './widgets.js'
 
 import { extensionOpenPreferences } from './utils_extension.js'
+import { ExtensionState } from './extension_controller.js'
 
 import Clutter from 'gi://Clutter'
 import GObject from 'gi://GObject'
@@ -30,85 +31,10 @@ import Gio from 'gi://Gio'
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'
 
-export const StatusBarState = {
-    NOT_INSTALLED_CLI: {
-        text: () => 'Not installed CLI',
-        simpleModeShowText: true,
-        color: AppStatusColor.GRAY,
-        coloredModeColor: AppStatusColor.GRAY,
-    },
-    NOT_LOGGED: {
-        text: () => 'Not logged in',
-        simpleModeShowText: true,
-        color: AppStatusColor.GRAY,
-        coloredModeColor: AppStatusColor.GRAY,
-    },
-    LOGGED_NO_INTERNET_CONNECTION: {
-        text: () => 'No internet connection',
-        simpleModeShowText: true,
-        color: AppStatusColor.GRAY,
-        coloredModeColor: AppStatusColor.GRAY,
-    },
-    LOADING: {
-        text: () => 'Loading',
-        simpleModeShowText: false,
-        color: AppStatusColor.GRAY,
-        coloredModeColor: AppStatusColor.BLUE,
-    },
-    LOGGED_NOT_CHOOSED_REPO: {
-        text: () => 'No repo entered',
-        simpleModeShowText: true,
-        color: AppStatusColor.GRAY,
-        coloredModeColor: AppStatusColor.GRAY,
-    },
-    INCORRECT_REPOSITORY: {
-        text: () => 'Incorrect repository',
-        simpleModeShowText: true,
-        color: AppStatusColor.GRAY,
-        coloredModeColor: AppStatusColor.GRAY,
-    },
-    REPO_WITHOUT_ACTIONS: {
-        text: () => 'Repo without actions',
-        simpleModeShowText: true,
-        color: AppStatusColor.GRAY,
-        coloredModeColor: AppStatusColor.GRAY,
-    },
-    IN_PROGRESS: {
-        text: () => 'In progress',
-        simpleModeShowText: false,
-        color: AppStatusColor.GRAY,
-        coloredModeColor: AppStatusColor.BLUE,
-    },
-    COMPLETED_CANCELLED: {
-        text: () => 'Cancelled',
-        simpleModeShowText: false,
-        color: AppStatusColor.RED,
-        coloredModeColor: AppStatusColor.RED,
-    },
-    COMPLETED_FAILURE: {
-        text: () => 'Failure',
-        simpleModeShowText: false,
-        color: AppStatusColor.RED,
-        coloredModeColor: AppStatusColor.RED,
-    },
-    COMPLETED_SUCCESS: {
-        text: () => 'Success',
-        simpleModeShowText: false,
-        color: AppStatusColor.WHITE,
-        coloredModeColor: AppStatusColor.GREEN,
-    },
-    LONG_OPERATION_PLEASE_WAIT: {
-        text: () => 'Please wait...',
-        simpleModeShowText: true,
-        color: AppStatusColor.GRAY,
-        coloredModeColor: AppStatusColor.GRAY,
-    },
-}
-
 export function isCompleted(state) {
-    return state === StatusBarState.COMPLETED_SUCCESS
-        || state === StatusBarState.COMPLETED_FAILURE
-        || state === StatusBarState.COMPLETED_CANCELLED
+    return state === ExtensionState.COMPLETED_SUCCESS
+        || state === ExtensionState.COMPLETED_FAILURE
+        || state === ExtensionState.COMPLETED_CANCELLED
 }
 
 export class StatusBarIndicator extends PanelMenu.Button {
@@ -152,14 +78,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.initStatusBarIndicator()
 
         if (isInstalledCli == false) {
-            this.setState({ state: StatusBarState.NOT_INSTALLED_CLI })
+            this.setState({ state: ExtensionState.NOT_INSTALLED_CLI })
             return
         }
 
         if (isLogged) {
-            this.setState({ state: StatusBarState.LOADING, forceUpdate: false })
+            this.setState({ state: ExtensionState.LOADING, forceUpdate: false })
         } else {
-            this.setState({ state: StatusBarState.NOT_LOGGED, forceUpdate: false })
+            this.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: false })
         }
 
         this.initMenu()
@@ -198,22 +124,22 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.refreshState()
     }
 
-    showRepositoryMenu = () => (this.state === StatusBarState.IN_PROGRESS || isCompleted(this.state))
+    showRepositoryMenu = () => (this.state === ExtensionState.IN_PROGRESS || isCompleted(this.state))
 
-    isInstalledCli = () => this.state != StatusBarState.NOT_INSTALLED_CLI
+    isInstalledCli = () => this.state != ExtensionState.NOT_INSTALLED_CLI
 
-    isLongOperation = () => this.state == StatusBarState.LONG_OPERATION_PLEASE_WAIT
+    isLongOperation = () => this.state == ExtensionState.LONG_OPERATION_PLEASE_WAIT
 
     shouldShowCompletedNotification(previousState, currentState) {
-        return previousState === StatusBarState.IN_PROGRESS && isCompleted(currentState)
+        return previousState === ExtensionState.IN_PROGRESS && isCompleted(currentState)
     }
 
     isLogged = () => {
-        if (this.state == StatusBarState.NOT_INSTALLED_CLI) {
+        if (this.state == ExtensionState.NOT_INSTALLED_CLI) {
             return false
         }
 
-        if (this.state == StatusBarState.NOT_LOGGED) {
+        if (this.state == ExtensionState.NOT_LOGGED) {
             return false
         }
 
@@ -239,7 +165,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             return
         }
 
-        if (previousState === StatusBarState.LONG_OPERATION_PLEASE_WAIT) {
+        if (previousState === ExtensionState.LONG_OPERATION_PLEASE_WAIT) {
             return
         }
 
@@ -258,7 +184,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
     }
 
     setLoadingTexts() {
-        const loadingText = StatusBarState.LOADING.text()
+        const loadingText = ExtensionState.LOADING.text()
 
         this.userMenuItem?.setHeaderItemText(loadingText)
         this.starredMenuItem?.setHeaderItemText(loadingText)
@@ -298,19 +224,19 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.add_child(this.topBox)
     }
 
-    updateGithubActionsStatus(statusBarState) {
-        if (this.simpleMode == true && statusBarState.simpleModeShowText == false) {
+    updateGithubActionsStatus(extensionState) {
+        if (this.simpleMode == true && extensionState.simpleModeShowText == false) {
             this.label.text = ''
         } else {
             this.label.text = this.uppercaseMode == true
-                ? statusBarState.text().toUpperCase()
-                : statusBarState.text()
+                ? extensionState.text().toUpperCase()
+                : extensionState.text()
         }
 
         this.setStatusColor(
             this.coloredMode,
             this.extendedColoredMode,
-            this.coloredMode ? statusBarState.coloredModeColor : statusBarState.color,
+            this.coloredMode ? extensionState.coloredModeColor : extensionState.color,
         )
     }
 
@@ -388,7 +314,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(this.topItems)
 
         /// Network transfer
-        if (this.isLogged() && this.state != StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
+        if (this.isLogged() && this.state != ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
             this.networkButton = new RoundedButton({ iconName: 'system-settings-symbolic', text: `` })
             this.networkButton.connect('clicked', () => openUrl('https://api.github.com/octocat'))
             this.leftBox.add(this.networkButton)
@@ -421,7 +347,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         /// Logged Menu
-        if (this.isLogged() && this.state != StatusBarState.LOGGED_NO_INTERNET_CONNECTION) {
+        if (this.isLogged() && this.state != ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
             this.initLoggedMenu()
         }
@@ -552,13 +478,13 @@ export class StatusBarIndicator extends PanelMenu.Button {
         const conclusion = run["conclusion"]
 
         if (conclusion == 'success') {
-            this.setState({ state: StatusBarState.COMPLETED_SUCCESS })
+            this.setState({ state: ExtensionState.COMPLETED_SUCCESS })
         } else if (conclusion == 'failure') {
-            this.setState({ state: StatusBarState.COMPLETED_FAILURE })
+            this.setState({ state: ExtensionState.COMPLETED_FAILURE })
         } else if (conclusion == 'cancelled') {
-            this.setState({ state: StatusBarState.COMPLETED_CANCELLED })
+            this.setState({ state: ExtensionState.COMPLETED_CANCELLED })
         } else {
-            this.setState({ state: StatusBarState.IN_PROGRESS })
+            this.setState({ state: ExtensionState.IN_PROGRESS })
         }
 
         if (this.repositoryMenuItem != null) {

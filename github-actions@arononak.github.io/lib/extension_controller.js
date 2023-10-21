@@ -2,7 +2,82 @@
 
 import { GithubApiRepository } from './github_api_repository.js'
 import { SettingsRepository }  from './settings_repository.js'
-import { StatusBarState } from './status_bar_indicator.js'
+import { AppStatusColor } from './widgets.js'
+
+export const ExtensionState = {
+    NOT_INSTALLED_CLI: {
+        text: () => 'Not installed CLI',
+        simpleModeShowText: true,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
+    },
+    NOT_LOGGED: {
+        text: () => 'Not logged in',
+        simpleModeShowText: true,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
+    },
+    LOGGED_NO_INTERNET_CONNECTION: {
+        text: () => 'No internet connection',
+        simpleModeShowText: true,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
+    },
+    LOADING: {
+        text: () => 'Loading',
+        simpleModeShowText: false,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.BLUE,
+    },
+    LOGGED_NOT_CHOOSED_REPO: {
+        text: () => 'No repo entered',
+        simpleModeShowText: true,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
+    },
+    INCORRECT_REPOSITORY: {
+        text: () => 'Incorrect repository',
+        simpleModeShowText: true,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
+    },
+    REPO_WITHOUT_ACTIONS: {
+        text: () => 'Repo without actions',
+        simpleModeShowText: true,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
+    },
+    IN_PROGRESS: {
+        text: () => 'In progress',
+        simpleModeShowText: false,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.BLUE,
+    },
+    COMPLETED_CANCELLED: {
+        text: () => 'Cancelled',
+        simpleModeShowText: false,
+        color: AppStatusColor.RED,
+        coloredModeColor: AppStatusColor.RED,
+    },
+    COMPLETED_FAILURE: {
+        text: () => 'Failure',
+        simpleModeShowText: false,
+        color: AppStatusColor.RED,
+        coloredModeColor: AppStatusColor.RED,
+    },
+    COMPLETED_SUCCESS: {
+        text: () => 'Success',
+        simpleModeShowText: false,
+        color: AppStatusColor.WHITE,
+        coloredModeColor: AppStatusColor.GREEN,
+    },
+    LONG_OPERATION_PLEASE_WAIT: {
+        text: () => 'Please wait...',
+        simpleModeShowText: true,
+        color: AppStatusColor.GRAY,
+        coloredModeColor: AppStatusColor.GRAY,
+    },
+}
 
 async function stateRefresh(
     indicator,
@@ -16,18 +91,18 @@ async function stateRefresh(
 
         const isInstalledCli = await githubApiRepository.isInstalledCli()
         if (isInstalledCli == false) {
-            indicator.setState({ state: StatusBarState.NOT_INSTALLED_CLI, forceUpdate: true })
+            indicator.setState({ state: ExtensionState.NOT_INSTALLED_CLI, forceUpdate: true })
             return
         }
 
         const isLogged = await githubApiRepository.isLogged()
         if (isLogged == false) {
-            indicator.setState({ state: StatusBarState.NOT_LOGGED, forceUpdate: true })
+            indicator.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: true })
             return
         }
 
         if (!settingsRepository.isRepositoryEntered()) {
-            indicator.setState({ state: StatusBarState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
+            indicator.setState({ state: ExtensionState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
             return
         }
     } catch (error) {
@@ -318,10 +393,10 @@ async function githubActionsRefresh(
         const workflowRunsResponse = await githubApiRepository.fetchWorkflowRuns(owner, repo, 1)
         switch (workflowRunsResponse) {
             case null:
-                indicator.setState({ state: StatusBarState.INCORRECT_REPOSITORY, forceUpdate: true })
+                indicator.setState({ state: ExtensionState.INCORRECT_REPOSITORY, forceUpdate: true })
                 return
             case 'no-internet-connection':
-                indicator.setState({ state: StatusBarState.LOGGED_NO_INTERNET_CONNECTION })
+                indicator.setState({ state: ExtensionState.LOGGED_NO_INTERNET_CONNECTION })
                 return
         }
 
@@ -329,7 +404,7 @@ async function githubActionsRefresh(
 
         const workflowRuns = workflowRunsResponse['workflow_runs']
         if (workflowRuns.length == 0) {
-            indicator.setState({ state: StatusBarState.REPO_WITHOUT_ACTIONS, forceUpdate: true })
+            indicator.setState({ state: ExtensionState.REPO_WITHOUT_ACTIONS, forceUpdate: true })
             return
         }
 
@@ -340,13 +415,13 @@ async function githubActionsRefresh(
 
         if (indicator.shouldShowCompletedNotification(previousState, currentState)) {
             switch (currentState) {
-                case StatusBarState.COMPLETED_SUCCESS:
+                case ExtensionState.COMPLETED_SUCCESS:
                     onBuildCompleted(owner, repo, 'success')
                     break
-                case StatusBarState.COMPLETED_FAILURE:
+                case ExtensionState.COMPLETED_FAILURE:
                     onBuildCompleted(owner, repo, 'failure')
                     break
-                case StatusBarState.COMPLETED_CANCELLED:
+                case ExtensionState.COMPLETED_CANCELLED:
                     onBuildCompleted(owner, repo, 'cancelled')
                     break
             }
@@ -589,7 +664,7 @@ export class ExtensionController {
     async downloadArtifact({ indicator, downloadUrl, filename, onFinishCallback }) {
         try {
             const state = indicator.getState()
-            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT })
+            indicator.setState({ state: ExtensionState.LONG_OPERATION_PLEASE_WAIT })
             const success = await this.githubApiRepository.downloadArtifactFile(downloadUrl, filename)
             indicator.setState({ state: state })
 
@@ -604,7 +679,7 @@ export class ExtensionController {
             const { owner, repo } = this.settingsRepository.ownerAndRepo()
 
             const state = indicator.getState()
-            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT })
+            indicator.setState({ state: ExtensionState.LONG_OPERATION_PLEASE_WAIT })
             const status = await this.githubApiRepository.deleteWorkflowRun(owner, repo, runId)
             indicator.setState({ state: state })
 
@@ -624,7 +699,7 @@ export class ExtensionController {
             const { owner, repo } = this.settingsRepository.ownerAndRepo()
 
             const state = indicator.getState()
-            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT })
+            indicator.setState({ state: ExtensionState.LONG_OPERATION_PLEASE_WAIT })
             const status = await this.githubApiRepository.cancelWorkflowRun(owner, repo, runId)
             indicator.setState({ state: state })
 
@@ -644,7 +719,7 @@ export class ExtensionController {
             const { owner, repo } = this.settingsRepository.ownerAndRepo()
 
             const state = indicator.getState()
-            indicator.setState({ state: StatusBarState.LONG_OPERATION_PLEASE_WAIT })
+            indicator.setState({ state: ExtensionState.LONG_OPERATION_PLEASE_WAIT })
             const status = await this.githubApiRepository.rerunWorkflowRun(owner, repo, runId)
             indicator.setState({ state: state })
 

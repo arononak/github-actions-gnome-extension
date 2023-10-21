@@ -35,6 +35,7 @@ graph TD;
     utils_extension.js-->github_api_repository.js
     local_cli_interface.js-->github_api_repository.js
     token_scopes.js-->github_api_repository.js
+    widgets.js-->extension_controller.js
     settings_repository.js-->extension_controller.js
     github_api_repository.js-->extension_controller.js
     widgets.js-->status_bar_indicator.js
@@ -51,6 +52,7 @@ graph TD;
     prefs_controller.js-->prefs.js
     utils_extension.js-->widgets.js
     utils_extension.js-->quick_settings_controller.js
+    settings_repository.js-->quick_settings_controller.js
     utils_extension.js-->status_bar_indicator.js
     utils_extension.js-->notification_controller.js
     settings_repository.js-->notification_controller.js
@@ -65,8 +67,8 @@ graph TD;
 
 | Steps                                       | Commands       |
 |:--------------------------------------------|:---------------|
-| ▶️ Start a gnome session in a window        | `make run`     |
-| ➡️ Copying the extension from the system.   | `make copy`    |
+| ▶️ Start a gnome session in a window         | `make run`     |
+| ➡️ Copying the extension from the system .   | `make copy`    |
 | 🔄 Compile schemas                          | `make compile` |
 | 🔨 Build gnome-extensions package           | `make build`   |
 | [🦍 TESTING STEPS](./docs/TESTING_STEPS.md) |                |

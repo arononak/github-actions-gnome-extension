@@ -6,7 +6,6 @@ import { extensionSettings } from './utils_extension.js'
 
 import GObject from 'gi://GObject'
 import Gio from 'gi://Gio'
-import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
 import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
