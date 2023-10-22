@@ -6,6 +6,13 @@
 [![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/arononak/github-actions-gnome-extension/.github%2Fworkflows%2Fmain.yml)
 [![Commits](https://img.shields.io/github/commit-activity/m/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/graphs/contributors)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arononak/github-actions-gnome-extension)
+![Static Badge](https://img.shields.io/badge/Give_me-a_star-blue?labelColor=orange&color=white)
+
+
+
+
+
 
 ## 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
 
