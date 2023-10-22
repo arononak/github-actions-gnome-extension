@@ -58,6 +58,7 @@ graph TD
     
     extension.js-->EXTENSION((GNOME EXTENSION))
     schemas/-->EXTENSION((GNOME EXTENSION))
+    assets/-->EXTENSION((GNOME EXTENSION))
     metadata.json-->EXTENSION((GNOME EXTENSION))
     stylesheet.css-->EXTENSION((GNOME EXTENSION))
     prefs.js-->EXTENSION((GNOME EXTENSION))
