@@ -1,4 +1,4 @@
-name: Build GNOME Extension
+name: Build
 on:
   release:
     types: [created]
