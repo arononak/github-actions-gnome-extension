@@ -5,6 +5,7 @@
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
 [![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
 [![Build GNOME Extension](https://github.com/arononak/github-actions-gnome-extension/actions/workflows/main.yml/badge.svg)](https://github.com/arononak/github-actions-gnome-extension/actions/workflows/main.yml)
+[![Commits](https://img.shields.io/github/commit-activity/m/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/graphs/contributors)
 
 ## 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
 
