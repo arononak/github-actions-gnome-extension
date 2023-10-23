@@ -77,6 +77,17 @@ graph TD
         local_cli_interface.js
         github_api_repository.js
     end
+
+    subgraph "Core"
+        extension.js
+        extension_controller.js
+        quick_settings_controller.js
+        notification_controller.js
+        status_bar_indicator.js
+        settings_repository.js
+        widgets.js
+        utils_extension.js
+    end
 ```
 
 | Steps                                       | Commands       |
