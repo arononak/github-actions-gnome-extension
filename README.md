@@ -3,10 +3,15 @@
 # Github Actions Gnome Extension 🧩
 
 [![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
+
 [![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
+
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/arononak/github-actions-gnome-extension/.github%2Fworkflows%2Fmain.yml)
+
 [![Commits](https://img.shields.io/github/commit-activity/m/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/graphs/contributors)
+
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arononak/github-actions-gnome-extension)
+
 ![Static Badge](https://img.shields.io/badge/Give_me-a_star-blue?labelColor=orange&color=white)
 
 ## 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
@@ -81,11 +86,12 @@ graph TD
 | 🔨 Build gnome-extensions package           | `make build`   |
 | 🔄 Compile schemas                          | `make compile` |
 | [🦍 TESTING STEPS](./docs/TESTING_STEPS.md) |                |
-
-## [☑️ TODO](./docs/TODO.md) list
+| [✅️ TODO](./docs/TODO.md) list.             |                |
 
 > **Note**<br>
 > If you have any feedback, please contact me at arononak@gmail.com
+
+---
 
 ## 📝 © 2023 Aron Onak
 
