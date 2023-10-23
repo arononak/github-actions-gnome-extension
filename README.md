@@ -14,7 +14,7 @@
 
 ![Static Badge](https://img.shields.io/badge/Give_me-a_star!-blue?labelColor=maroon&color=aqua)
 
-## 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
+# 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
 
 | SimpleMode - OFF                                                                                                 | SimpleMode - ON                                                                                                 |
 |:----------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------:|
@@ -22,7 +22,7 @@
 | Quick Settings - Light                                                                                           | Quick Settings - Dark                                                                                           |
 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/quick_settings_light.png?raw=true) | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/quick_settings_dark.png?raw=true) |
 
-## [🔨 Installation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) and Configuration
+# [🔨 Installation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) and Configuration
 
 | Steps                | Commands                                      |
 |:---------------------|:----------------------------------------------|
@@ -30,7 +30,7 @@
 | 🔓 Check scopes      | `gh auth status`                              |
 | 🔄 If any is missing | `gh auth refresh --scopes user,repo,workflow` |
 
-## 🛠 Development
+# 🛠 Development
 
 ```mermaid
 graph TD
@@ -93,7 +93,7 @@ graph TD
 
 ---
 
-## 📝 © 2023 Aron Onak
+# 📝 © 2023 Aron Onak
 
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
