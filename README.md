@@ -82,11 +82,11 @@ graph TD
 | Steps                                       | Commands       |
 |:--------------------------------------------|:---------------|
 | ▶️ Start a gnome session in a window        | `make run`     |
-| ➡️ Copying the extension from the system .  | `make copy`    |
+| ➡️ Copying the extension from the system    | `make copy`    |
 | 🔨 Build gnome-extensions package           | `make build`   |
 | 🔄 Compile schemas                          | `make compile` |
 | [🦍 TESTING STEPS](./docs/TESTING_STEPS.md) |                |
-| [✅️ TODO](./docs/TODO.md) list.             |                |
+| [✅️ TODO LIST](./docs/TODO.md)              |                |
 
 > **Note**<br>
 > If you have any feedback, please contact me at arononak@gmail.com
