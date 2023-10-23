@@ -26,3 +26,5 @@
 | No update available                                                                                   | New version is available                                                                              |
 |:-----------------------------------------------------------------------------------------------------:|:-----------------------------------------------------------------------------------------------------:|
 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/settings1.png?raw=true) | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/settings2.png?raw=true) |
+| Quick Settings - Light                                                                                           | Quick Settings - Dark                                                                                           |
+| ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/quick_settings_light.png?raw=true) | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/quick_settings_dark.png?raw=true) |
