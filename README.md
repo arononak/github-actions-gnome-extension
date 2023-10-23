@@ -9,11 +9,6 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arononak/github-actions-gnome-extension)
 ![Static Badge](https://img.shields.io/badge/Give_me-a_star-blue?labelColor=orange&color=white)
 
-
-
-
-
-
 ## 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
 
 | SimpleMode - OFF                                                                                                 | SimpleMode - ON                                                                                                 |
@@ -30,19 +25,14 @@
 | 🔓 Check scopes      | `gh auth status`                              |
 | 🔄 If any is missing | `gh auth refresh --scopes user,repo,workflow` |
 
-## [☑️ TODO](./docs/TODO.md) list
-
-> **Note**<br>
-> If you have any feedback, please contact me at arononak@gmail.com
-
 ## 🛠 Development
 
 ```mermaid
 graph TD
-    utils.js-->utils_extension.js
-    utils.js-->github_api_repository.js
-    utils.js-->utils_prefs.js
-    utils.js-->settings_repository.js
+    utils.js---->utils_extension.js
+    utils.js---->github_api_repository.js
+    utils.js---->utils_prefs.js
+    utils.js---->settings_repository.js
     utils_extension.js-->widgets.js
     widgets.js--->status_bar_indicator.js
     widgets.js--->quick_settings_controller.js
@@ -51,7 +41,7 @@ graph TD
     widgets.js-->extension_controller.js
     local_cli_interface.js-->github_api_repository.js
     token_scopes.js-->github_api_repository.js
-    github_api_repository.js-->extension_controller.js
+    github_api_repository.js--->extension_controller.js
     settings_repository.js-->quick_settings_controller.js
     settings_repository.js-->notification_controller.js
     settings_repository.js-->prefs_controller.js
@@ -86,11 +76,16 @@ graph TD
 
 | Steps                                       | Commands       |
 |:--------------------------------------------|:---------------|
-| ▶️ Start a gnome session in a window         | `make run`     |
-| ➡️ Copying the extension from the system .   | `make copy`    |
+| ▶️ Start a gnome session in a window        | `make run`     |
+| ➡️ Copying the extension from the system .  | `make copy`    |
 | 🔨 Build gnome-extensions package           | `make build`   |
 | 🔄 Compile schemas                          | `make compile` |
 | [🦍 TESTING STEPS](./docs/TESTING_STEPS.md) |                |
+
+## [☑️ TODO](./docs/TODO.md) list
+
+> **Note**<br>
+> If you have any feedback, please contact me at arononak@gmail.com
 
 ## 📝 © 2023 Aron Onak
 
