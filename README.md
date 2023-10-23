@@ -2,17 +2,17 @@
 
 # Github Actions Gnome Extension 🧩
 
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg)](https://opensource.org/licenses/)
+[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg?labelColor=orange&color=white)](https://opensource.org/licenses)
 
-[![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
+[![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension?labelColor=fuchsia&color=white)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
 
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/arononak/github-actions-gnome-extension/.github%2Fworkflows%2Fmain.yml)
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/arononak/github-actions-gnome-extension/.github%2Fworkflows%2Fmain.yml?labelColor=olive&color=white)
 
-[![Commits](https://img.shields.io/github/commit-activity/m/arononak/github-actions-gnome-extension)](https://github.com/arononak/github-actions-gnome-extension/graphs/contributors)
+[![Commits](https://img.shields.io/github/commit-activity/m/arononak/github-actions-gnome-extension?labelColor=purple&color=white)](https://github.com/arononak/github-actions-gnome-extension/graphs/contributors)
 
-![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arononak/github-actions-gnome-extension)
+![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arononak/github-actions-gnome-extension?labelColor=yellow&color=white)
 
-![Static Badge](https://img.shields.io/badge/Give_me-a_star-blue?labelColor=orange&color=white)
+![Static Badge](https://img.shields.io/badge/Give_me-a_star!-blue?labelColor=maroon&color=aqua)
 
 ## 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
 
