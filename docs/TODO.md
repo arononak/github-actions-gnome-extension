@@ -59,10 +59,14 @@
 ## 🏗️ Version 3 - Extension rebuilding
 - [x] Migration to ESM - Gnome 45
 - [ ] Tags list - download button border
-- [ ] Commit list
 - [ ] Information from githut raw file
 - [ ] TEST.md refactor
 - [ ] Workflow Run branch
+- [ ] commit list
+- [ ] issues list
+- [ ] label list
+- [ ] org list
+- [ ] pr list
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin
 - [ ] Refresh after completed workflow run
