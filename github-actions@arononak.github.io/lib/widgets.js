@@ -20,7 +20,7 @@ import {
     bytesToString as _bytesToString,
     formatDate as _formatDate,
     extensionOpenPreferences as _extensionOpenPreferences,
-} from './utils_extension.js'
+} from './extension_utils.js'
 
 export function extensionSettings()        { return _extensionSettings() }
 export function openUrl()                  { return _openUrl() }
