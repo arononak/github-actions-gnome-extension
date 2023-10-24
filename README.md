@@ -97,6 +97,8 @@ graph TD
 | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md) |                |
 | ✅️ [TODO LIST](./docs/TODO.md)              |                |
 
+<br>
+
 > **Note**<br>
 > If you have any feedback, please contact me at arononak@gmail.com
 
