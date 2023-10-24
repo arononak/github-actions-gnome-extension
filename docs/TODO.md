@@ -59,8 +59,13 @@
 ## 🏗️ Version 3 - Extension rebuilding
 - [x] Migration to ESM - Gnome 45
 - [ ] Tags list - download button border
+- [ ] Commit list
+- [ ] Information from githut raw file
+- [ ] TEST.md refactor
+- [ ] Workflow Run branch
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin
+- [ ] Refresh after completed workflow run
 - [ ] NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [ ] Suspend bug
 - [ ] Settings - repo text fields - dont remove last char
@@ -84,6 +89,7 @@
 - [ ] Performance
 - [ ] --paginat
 - [ ] workflow run - rerun 2 endpoints
+- [ ] WearOS project attach
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] Multirepo
