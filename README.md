@@ -33,7 +33,7 @@
 ```mermaid
 graph TD
     utils.js---->extension_utils.js
-    utils.js---->github_api_repository.js
+    utils.js---->github_service.js
     utils.js---->prefs_utils.js
     utils.js---->settings_repository.js
     extension_utils.js-->widgets.js
@@ -42,9 +42,10 @@ graph TD
     widgets.js--->notification_controller.js
     settings_repository.js-->extension_controller.js
     widgets.js-->extension_controller.js
-    local_cli_interface.js-->github_api_repository.js
-    token_scopes.js-->github_api_repository.js
-    github_api_repository.js--->extension_controller.js
+    local_cli_interface.js-->github_service.js
+    token_scopes.js-->github_service.js
+    github_service.js-->extension_repository.js
+    extension_repository.js-->extension_controller.js
     settings_repository.js-->quick_settings_controller.js
     settings_repository.js-->notification_controller.js
     settings_repository.js-->prefs_controller.js
@@ -73,7 +74,7 @@ graph TD
     subgraph "Github API"
         token_scopes.js
         local_cli_interface.js
-        github_api_repository.js
+        github_service.js
     end
 
     subgraph "Core"
@@ -85,6 +86,7 @@ graph TD
         settings_repository.js
         widgets.js
         extension_utils.js
+        extension_repository.js
     end
 ```
 
@@ -109,3 +111,4 @@ graph TD
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
 > This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
+

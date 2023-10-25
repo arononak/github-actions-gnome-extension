@@ -4,7 +4,7 @@ import { removeWhiteChars } from './utils.js'
 import { TokenScopes } from './token_scopes.js'
 import * as cliInterface from './local_cli_interface.js'
 
-export class GithubApiRepository {
+export class GithubService {
     constructor() { }
 
     isInstalledCli = async () =>

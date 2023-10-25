@@ -69,6 +69,7 @@
 - [ ] org list
 - [ ] pr list
 - [ ] Super simple mode
+- [ ] extension_repository - refactor to callbacks
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin
 - [ ] Refresh after completed workflow run
