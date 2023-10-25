@@ -68,6 +68,7 @@
 - [ ] label list
 - [ ] org list
 - [ ] pr list
+- [ ] Super simple mode
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin
 - [ ] Refresh after completed workflow run
