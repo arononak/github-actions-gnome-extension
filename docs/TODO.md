@@ -79,6 +79,7 @@
 - [ ] ColoredMode / ExtendedColoredMode - fix
 - [ ] Missing scopes - relogin
 - [ ] Block refresh
+- [ ] dates manager
 - [ ] Settings tabs
 - [ ] position in top panel (right | center | left)
 - [ ] Refresh - interupt promise's
