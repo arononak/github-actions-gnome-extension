@@ -156,21 +156,52 @@ export class ExtensionController {
 
     /// Main 3 refresh Functions
     _stateRefresh() {
-        this.extensionRepository.stateRefresh(
-            this.indicator,
-            this.settingsRepository,
-        )
+        if (this.indicator.isLongOperation()) {
+            return
+        }
+
+        this.extensionRepository.stateRefresh({
+            settingsRepository: this.settingsRepository,
+            onNotInstalledCli: () => {
+                this.indicator.setState({ state: ExtensionState.NOT_INSTALLED_CLI, forceUpdate: true })
+            },
+            onNotLogged: () => {
+                this.indicator.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: true })
+            },
+            onNotChoosedRepo: () => {
+                this.indicator.setState({ state: ExtensionState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
+            },
+        })
     }
 
     _githubActionsRefresh() {
-        this.extensionRepository.githubActionsRefresh(
-            this.indicator,
-            this.settingsRepository,
-            (owner, repo, conclusion) => this.onBuildCompleted(owner, repo, conclusion),
-        )
+        if (this.indicator.isLongOperation()) {
+            return
+        }
+
+        this.extensionRepository.githubActionsRefresh({
+            indicator: this.indicator,
+            settingsRepository: this.settingsRepository,
+            onBuildCompleted: (owner, repo, conclusion) => {
+                this.onBuildCompleted(owner, repo, conclusion)
+            },
+            onIncorrectRepository: () => {
+                this.indicator.setState({ state: ExtensionState.INCORRECT_REPOSITORY, forceUpdate: true })
+            },
+            onNoInternet: () => {
+                this.indicator.setState({ state: ExtensionState.LOGGED_NO_INTERNET_CONNECTION })
+            },
+            onRepoWithoutActions: () => {
+                this.indicator.setState({ state: ExtensionState.REPO_WITHOUT_ACTIONS, forceUpdate: true })
+            },
+        })
     }
 
     _dataRefresh(onlyWorkflowRuns = false) {
+        if (this.indicator.isLongOperation()) {
+            return
+        }
+
         this.extensionRepository.dataRefresh(
             this.indicator,
             this.settingsRepository,
@@ -182,12 +213,15 @@ export class ExtensionController {
             onlyWorkflowRuns,
         )
     }
+    ///////////////////////////////////////////
 
     refresh() {
         if (this.indicator === null || this.indicator === undefined) {
             return
         }
+
         this.indicator.initMenu()
+        
         try {
             this._stateRefresh()
             this._githubActionsRefresh()

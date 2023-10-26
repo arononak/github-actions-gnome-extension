@@ -41,29 +41,27 @@ export class ExtensionRepository {
         await this.githubService.rerunWorkflowRun(owner, repo, runId)
     }
 
-    async stateRefresh(
-        indicator,
+    async stateRefresh({
         settingsRepository,
-    ) {
-        try {
-            if (indicator.isLongOperation()) {
-                return
-            }
-    
+        onNotInstalledCli,
+        onNotLogged,
+        onNotChoosedRepo,
+    }) {
+        try {    
             const isInstalledCli = await this.githubService.isInstalledCli()
             if (isInstalledCli == false) {
-                indicator.setState({ state: ExtensionState.NOT_INSTALLED_CLI, forceUpdate: true })
+                onNotInstalledCli()
                 return
             }
     
             const isLogged = await this.githubService.isLogged()
             if (isLogged == false) {
-                indicator.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: true })
+                onNotLogged()
                 return
             }
     
             if (!settingsRepository.isRepositoryEntered()) {
-                indicator.setState({ state: ExtensionState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
+                onNotChoosedRepo()
                 return
             }
         } catch (error) {
@@ -71,9 +69,7 @@ export class ExtensionRepository {
         }
     }
 
-    async fetchUserData(
-        settingsRepository,
-    ) {
+    async fetchUserData(settingsRepository) {
         return new Promise(async (resolve, reject) => {
             try {
                 const user = await this.githubService.fetchUser()
@@ -135,10 +131,7 @@ export class ExtensionRepository {
         })
     }
 
-    async fetchRepoData(
-        settingsRepository,
-        onlyWorkflowRuns = false,
-    ) {
+    async fetchRepoData(settingsRepository, onlyWorkflowRuns = false) {
         return new Promise(async (resolve, reject) => {
             try {
                 const { owner, repo } = settingsRepository.ownerAndRepo()
@@ -194,11 +187,7 @@ export class ExtensionRepository {
         refreshCallback,
         onlyWorkflowRuns,
     ) {
-        try {
-            if (indicator.isLongOperation()) {
-                return
-            }
-    
+        try {    
             const newestRelease = await this.githubService.fetcNewestExtensionRelease()
             const newestVersion = newestRelease[0]['tag_name']
             if (newestVersion != undefined) {
@@ -323,16 +312,15 @@ export class ExtensionRepository {
         }
     }
     
-    async githubActionsRefresh(
+    async githubActionsRefresh({
         indicator,
         settingsRepository,
         onBuildCompleted,
-    ) {
-        try {
-            if (indicator.isLongOperation()) {
-                return
-            }
-    
+        onIncorrectRepository,
+        onNoInternet,
+        onRepoWithoutActions,
+    }) {
+        try {    
             const isLogged = await this.githubService.isLogged()
             if (isLogged == false) {
                 return
@@ -350,10 +338,10 @@ export class ExtensionRepository {
             const workflowRunsResponse = await this.githubService.fetchWorkflowRuns(owner, repo, 1)
             switch (workflowRunsResponse) {
                 case null:
-                    indicator.setState({ state: ExtensionState.INCORRECT_REPOSITORY, forceUpdate: true })
+                    onIncorrectRepository()
                     return
                 case 'no-internet-connection':
-                    indicator.setState({ state: ExtensionState.LOGGED_NO_INTERNET_CONNECTION })
+                    onNoInternet()
                     return
             }
     
@@ -361,7 +349,7 @@ export class ExtensionRepository {
     
             const workflowRuns = workflowRunsResponse['workflow_runs']
             if (workflowRuns.length == 0) {
-                indicator.setState({ state: ExtensionState.REPO_WITHOUT_ACTIONS, forceUpdate: true })
+                onRepoWithoutActions()
                 return
             }
     
