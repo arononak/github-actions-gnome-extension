@@ -67,7 +67,7 @@
 - [ ] issues list
 - [ ] label list
 - [ ] org list
-- [ ] pr list
+- [x] pr list
 - [ ] Super simple mode
 - [ ] extension_repository - refactor to callbacks
 - [ ] Double confirm dialogs
