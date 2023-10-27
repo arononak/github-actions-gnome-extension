@@ -158,6 +158,7 @@ export class ExtensionRepository {
                 const releases = await this.githubService.fetchReleases(owner, repo, pagination)
                 const branches = await this.githubService.fetchBranches(owner, repo, pagination)
                 const tags = await this.githubService.fetchTags(owner, repo, pagination)
+                const pullRequests = await this.githubService.fetchPullRequests(owner, repo, pagination)
 
                 resolve({
                     "runs": runs,
@@ -169,6 +170,7 @@ export class ExtensionRepository {
                     "releases": releases,
                     "branches": branches,
                     "tags": tags,
+                    "pullRequests": pullRequests,
                 })
             } catch (error) {
                 logError(error)
@@ -273,6 +275,7 @@ export class ExtensionRepository {
                 releases,
                 branches,
                 tags,
+                pullRequests,
             } = await this.fetchRepoData(settingsRepository)
     
             const repoObjects = [
@@ -307,6 +310,7 @@ export class ExtensionRepository {
             indicator.setReleases(releases)
             indicator.setBranches(branches)
             indicator.setTags(tags)
+            indicator.setPullRequests(pullRequests)
         } catch (error) {
             logError(error)
         }

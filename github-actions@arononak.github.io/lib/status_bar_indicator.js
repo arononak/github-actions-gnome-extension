@@ -197,6 +197,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.releasesMenuItem?.setHeaderItemText(loadingText)
         this.branchesMenuItem?.setHeaderItemText(loadingText)
         this.tagsMenuItem?.setHeaderItemText(loadingText)
+        this.pullRequestsMenuItem?.setHeaderItemText(loadingText)
         this.artifactsMenuItem?.setHeaderItemText(loadingText)
         this.twoFactorItem?.label.set_text(loadingText)
         this.minutesItem?.label.set_text(loadingText)
@@ -437,6 +438,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
             /// Tags
             this.tagsMenuItem = new ExpandedMenuItem('edit-clear-symbolic', '')
             this.menu.addMenuItem(this.tagsMenuItem)
+
+            /// Pull requests
+            this.pullRequestsMenuItem = new ExpandedMenuItem('media-optical-symbolic', '')
+            this.menu.addMenuItem(this.pullRequestsMenuItem)
 
             /// Stargazers
             this.stargazersMenuItem = new ExpandedMenuItem('starred-symbolic', '')
@@ -907,6 +912,23 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.tagsMenuItem != null) {
             this.tagsMenuItem.setHeaderItemText(`Tags: ${tags.length} `)
             this.tagsMenuItem.submitItems(tags.map(e => toItem(e)))
+        }
+    }
+
+    setPullRequests(pullRequests) {
+        if (pullRequests === null || pullRequests === undefined) return
+
+        function toItem(e) {
+            return {
+                "iconName": 'media-optical-symbolic',
+                "text": `#${e['number']} ${e['title']}`,
+                "callback": () => openUrl(e['html_url']),
+            }
+        }
+
+        if (this.pullRequestsMenuItem != null) {
+            this.pullRequestsMenuItem.setHeaderItemText(`Pull requests: ${pullRequests.length} `)
+            this.pullRequestsMenuItem.submitItems(pullRequests.map(e => toItem(e)))
         }
     }
 }
