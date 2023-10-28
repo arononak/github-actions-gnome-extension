@@ -12,7 +12,7 @@
 
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arononak/github-actions-gnome-extension?labelColor=yellow&color=white)
 
-![Static Badge](https://img.shields.io/badge/Give_me-a_star!-blue?labelColor=maroon&color=aqua)
+![Static Badge](https://img.shields.io/badge/Give_me-STAR!-blue?labelColor=maroon&color=aqua)
 
 # 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
 
