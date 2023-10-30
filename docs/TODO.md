@@ -58,7 +58,7 @@
 
 ## 🏗️ Version 3 - Extension rebuilding
 - [x] Migration to ESM - Gnome 45
-- [ ] Tags list - download button border
+- [x] Tags list - download button border
 - [ ] Information from githut raw file
 - [ ] TEST.md refactor
 - [ ] Workflow Run branch
