@@ -308,7 +308,7 @@ export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
             if (endIconName != null) {
                 const icon = new IconButton({
                     iconName: endIconName,
-                    iconSize: 20,
+                    iconSize: 14,
                     callback: () => endIconCallback()
                 })
 
