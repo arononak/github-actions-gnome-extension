@@ -106,4 +106,5 @@
 - [ ] Data cache
 - [ ] multi workflow runs
 - [ ] DebugMode
+- [ ] Custom Icons
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
