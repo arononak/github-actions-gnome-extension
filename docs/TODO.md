@@ -59,16 +59,16 @@
 ## 🏗️ Version 3 - Extension rebuilding
 - [x] Migration to ESM - Gnome 45
 - [x] Tags list - download button border
+- [x] pr list
+- [x] issues list
+- [ ] public repo test & fix bugs
 - [ ] Information from githut raw file
 - [ ] TEST.md refactor
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
-- [ ] public repo test & fix bugs
 - [ ] commit list
-- [x] issues list
 - [ ] label list
 - [ ] org list
-- [x] pr list
 - [ ] Super simple mode
 - [ ] extension_repository - refactor to callbacks
 - [ ] Double confirm dialogs
@@ -91,7 +91,6 @@
 - [ ] Expired workflow rerun
 - [ ] Logs - crashes
 - [ ] Organization billings
-- [ ] commit list
 - [ ] EN / PL - translations
 - [ ] Memory allocations - check memory leaks
 - [ ] Lint
