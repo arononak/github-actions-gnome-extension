@@ -65,7 +65,7 @@
 - [ ] Workflow enable/disable
 - [ ] public repo test & fix bugs
 - [ ] commit list
-- [ ] issues list
+- [x] issues list
 - [ ] label list
 - [ ] org list
 - [x] pr list

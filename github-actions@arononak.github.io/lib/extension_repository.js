@@ -69,7 +69,7 @@ export class ExtensionRepository {
         }
     }
 
-    async fetchUserData(settingsRepository) {
+    async fetchUser(settingsRepository) {
         return new Promise(async (resolve, reject) => {
             try {
                 const user = await this.githubService.fetchUser()
@@ -131,7 +131,7 @@ export class ExtensionRepository {
         })
     }
 
-    async fetchRepoData(settingsRepository, onlyWorkflowRuns = false) {
+    async fetchRepo(settingsRepository, onlyWorkflowRuns = false) {
         return new Promise(async (resolve, reject) => {
             try {
                 const { owner, repo } = settingsRepository.ownerAndRepo()
@@ -158,6 +158,7 @@ export class ExtensionRepository {
                 const releases = await this.githubService.fetchReleases(owner, repo, pagination)
                 const branches = await this.githubService.fetchBranches(owner, repo, pagination)
                 const tags = await this.githubService.fetchTags(owner, repo, pagination)
+                const issues = await this.githubService.fetchIssues(owner, repo, pagination)
                 const pullRequests = await this.githubService.fetchPullRequests(owner, repo, pagination)
 
                 resolve({
@@ -170,6 +171,7 @@ export class ExtensionRepository {
                     "releases": releases,
                     "branches": branches,
                     "tags": tags,
+                    "issues": issues,
                     "pullRequests": pullRequests,
                 })
             } catch (error) {
@@ -201,7 +203,7 @@ export class ExtensionRepository {
             }
     
             if (onlyWorkflowRuns === true) {
-                const { runs } = await fetchRepoData(settingsRepository, onlyWorkflowRuns)
+                const { runs } = await fetchRepo(settingsRepository, onlyWorkflowRuns)
     
                 indicator.setWorkflowRuns({
                     runs: runs['workflow_runs'],
@@ -230,7 +232,7 @@ export class ExtensionRepository {
                 repos,
                 gists,
                 starredGists,
-            } = await this.fetchUserData(settingsRepository)
+            } = await this.fetchUser(settingsRepository)
     
             const userObjects = [
                 user,
@@ -275,8 +277,9 @@ export class ExtensionRepository {
                 releases,
                 branches,
                 tags,
+                issues,
                 pullRequests,
-            } = await this.fetchRepoData(settingsRepository)
+            } = await this.fetchRepo(settingsRepository)
     
             const repoObjects = [
                 userRepo,
@@ -287,6 +290,8 @@ export class ExtensionRepository {
                 releases,
                 branches,
                 tags,
+                issues,
+                pullRequests,
             ]
     
             settingsRepository.updateTransfer([...userObjects, ...repoObjects])
@@ -310,6 +315,7 @@ export class ExtensionRepository {
             indicator.setReleases(releases)
             indicator.setBranches(branches)
             indicator.setTags(tags)
+            indicator.setIssues(issues)
             indicator.setPullRequests(pullRequests)
         } catch (error) {
             logError(error)

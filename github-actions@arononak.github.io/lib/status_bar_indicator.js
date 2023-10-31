@@ -197,6 +197,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.releasesMenuItem?.setHeaderItemText(loadingText)
         this.branchesMenuItem?.setHeaderItemText(loadingText)
         this.tagsMenuItem?.setHeaderItemText(loadingText)
+        this.issuesMenuItem?.setHeaderItemText(loadingText)
         this.pullRequestsMenuItem?.setHeaderItemText(loadingText)
         this.artifactsMenuItem?.setHeaderItemText(loadingText)
         this.twoFactorItem?.label.set_text(loadingText)
@@ -439,8 +440,12 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.tagsMenuItem = new ExpandedMenuItem('edit-clear-symbolic', '')
             this.menu.addMenuItem(this.tagsMenuItem)
 
+            /// Issues
+            this.issuesMenuItem = new ExpandedMenuItem('media-optical-symbolic', '')
+            this.menu.addMenuItem(this.issuesMenuItem)
+
             /// Pull requests
-            this.pullRequestsMenuItem = new ExpandedMenuItem('media-optical-symbolic', '')
+            this.pullRequestsMenuItem = new ExpandedMenuItem('view-restore-symbolic', '')
             this.menu.addMenuItem(this.pullRequestsMenuItem)
 
             /// Stargazers
@@ -920,7 +925,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'media-optical-symbolic',
+                "iconName": 'view-restore-symbolic',
                 "text": `#${e['number']} ${e['title']}`,
                 "callback": () => openUrl(e['html_url']),
             }
@@ -929,6 +934,23 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.pullRequestsMenuItem != null) {
             this.pullRequestsMenuItem.setHeaderItemText(`Pull requests: ${pullRequests.length} `)
             this.pullRequestsMenuItem.submitItems(pullRequests.map(e => toItem(e)))
+        }
+    }
+
+    setIssues(issues) {
+        if (issues === null || issues === undefined) return
+
+        function toItem(e) {
+            return {
+                "iconName": 'media-optical-symbolic',
+                "text": `#${e['number']} ${e['title']}`.slice(0, 100),
+                "callback": () => openUrl(e['html_url']),
+            }
+        }
+
+        if (this.issuesMenuItem != null) {
+            this.issuesMenuItem.setHeaderItemText(`Issues: ${issues.length} `)
+            this.issuesMenuItem.submitItems(issues.map(e => toItem(e)))
         }
     }
 }

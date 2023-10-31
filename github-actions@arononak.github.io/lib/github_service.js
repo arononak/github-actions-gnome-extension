@@ -92,6 +92,9 @@ export class GithubService {
     fetchTags = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand('GET', `/repos/${owner}/${repo}/tags`, pagination)
 
+    fetchIssues = async (owner, repo, pagination) =>
+        cliInterface.executeGithubCliCommand('GET', `/repos/${owner}/${repo}/issues`, pagination)
+
     fetchPullRequests = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand('GET', `/repos/${owner}/${repo}/pulls`, pagination)
 
