@@ -75,6 +75,7 @@
 - [ ] ConfirmDialog - icon margin
 - [ ] Refresh after completed workflow run
 - [ ] NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
+- [ ] Item text length limiter
 - [ ] Suspend bug
 - [ ] Settings - repo text fields - dont remove last char
 - [ ] extension_controller.js -> extract to 2 classes
