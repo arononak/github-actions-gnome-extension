@@ -63,6 +63,7 @@
 - [ ] TEST.md refactor
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
+- [ ] public repo test & fix bugs
 - [ ] commit list
 - [ ] issues list
 - [ ] label list
