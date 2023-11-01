@@ -41,11 +41,12 @@ export class ExtensionRepository {
         await this.githubService.rerunWorkflowRun(owner, repo, runId)
     }
 
-    async stateRefresh({
+    async checkErrors({
         settingsRepository,
         onNotInstalledCli,
         onNotLogged,
         onNotChoosedRepo,
+        onSuccess,
     }) {
         try {    
             const isInstalledCli = await this.githubService.isInstalledCli()
@@ -64,12 +65,219 @@ export class ExtensionRepository {
                 onNotChoosedRepo()
                 return
             }
+
+            onSuccess()
         } catch (error) {
             logError(error)
         }
     }
 
-    async fetchUser(settingsRepository) {
+    async fetchStatus({
+        indicator,
+        settingsRepository,
+        onBuildCompleted,
+        onIncorrectRepository,
+        onNoInternet,
+        onRepoWithoutActions,
+    }) {
+        try {    
+            const isLogged = await this.githubService.isLogged()
+            if (isLogged == false) {
+                return
+            }
+    
+            const transferText = settingsRepository.fullDataConsumptionPerHour()
+            indicator.setTransferText(transferText)
+    
+            if (!settingsRepository.isRepositoryEntered()) {
+                return
+            }
+    
+            const { owner, repo } = settingsRepository.ownerAndRepo()
+    
+            const workflowRunsResponse = await this.githubService.fetchWorkflowRuns(owner, repo, 1)
+            switch (workflowRunsResponse) {
+                case null:
+                    onIncorrectRepository()
+                    return
+                case 'no-internet-connection':
+                    onNoInternet()
+                    return
+            }
+    
+            settingsRepository.updatePackageSize(workflowRunsResponse['_size_'])
+    
+            const workflowRuns = workflowRunsResponse['workflow_runs']
+            if (workflowRuns.length == 0) {
+                onRepoWithoutActions()
+                return
+            }
+    
+            /// Notification
+            const previousState = indicator.state
+            indicator.setLatestWorkflowRun(workflowRuns[0])
+            const currentState = indicator.state
+    
+            if (indicator.shouldShowCompletedNotification(previousState, currentState)) {
+                switch (currentState) {
+                    case ExtensionState.COMPLETED_SUCCESS:
+                        onBuildCompleted(owner, repo, 'success')
+                        break
+                    case ExtensionState.COMPLETED_FAILURE:
+                        onBuildCompleted(owner, repo, 'failure')
+                        break
+                    case ExtensionState.COMPLETED_CANCELLED:
+                        onBuildCompleted(owner, repo, 'cancelled')
+                        break
+                }
+            }
+        } catch (error) {
+            logError(error)
+        }
+    }
+    
+    async fetchData(
+        indicator,
+        settingsRepository,
+        onRepoSetAsWatched,
+        onDeleteWorkflowRun,
+        onCancelWorkflowRun,
+        onRerunWorkflowRun,
+        refreshCallback,
+        onlyWorkflowRuns,
+    ) {
+        try {    
+            const newestRelease = await this.githubService.fetcNewestExtensionRelease()
+            const newestVersion = newestRelease[0]['tag_name']
+            if (newestVersion != undefined) {
+                settingsRepository.updateNewestVersion(newestVersion)
+            }
+    
+            if (indicator.isLogged == false) {
+                return
+            }
+    
+            if (onlyWorkflowRuns === true) {
+                const { runs } = await fetchRepo(settingsRepository, onlyWorkflowRuns)
+    
+                indicator.setWorkflowRuns({
+                    runs: runs['workflow_runs'],
+                    onDeleteWorkflowRun: (runId, runName) => {
+                        onDeleteWorkflowRun(runId, runName)
+                    },
+                    onCancelWorkflowRun: (runId, runName) => {
+                        onCancelWorkflowRun(runId, runName)
+                    },
+                    onRerunWorkflowRun: (runId, runName) => {
+                        onRerunWorkflowRun(runId, runName)
+                    },
+                })
+    
+                return
+            }
+    
+            const {
+                user,
+                minutes,
+                packages,
+                sharedStorage,
+                starredList,
+                followers,
+                following,
+                repos,
+                gists,
+                starredGists,
+            } = await this._fetchUser(settingsRepository)
+    
+            const userObjects = [
+                user,
+                minutes,
+                packages,
+                sharedStorage,
+                starredList,
+                followers,
+                following,
+                repos,
+                gists,
+                starredGists,
+            ]
+    
+            indicator.setUser(user)
+            indicator.setUserBilling(minutes, packages, sharedStorage)
+            indicator.setUserStarred(starredList)
+            indicator.setUserFollowers(followers)
+            indicator.setUserFollowing(following)
+            indicator.setUserRepos(repos, (owner, repo) => {
+                onRepoSetAsWatched(owner, repo)
+    
+                settingsRepository.updateOwner(owner)
+                settingsRepository.updateRepo(repo)
+    
+                refreshCallback()
+            })
+            indicator.setUserGists(gists)
+            indicator.setUserStarredGists(starredGists)
+    
+            if (!indicator.showRepositoryMenu()) {
+                settingsRepository.updateTransfer(userObjects)
+                return
+            }
+    
+            const {
+                userRepo,
+                workflows,
+                artifacts,
+                stargazers,
+                runs,
+                releases,
+                branches,
+                tags,
+                issues,
+                pullRequests,
+            } = await this._fetchRepo(settingsRepository)
+    
+            const repoObjects = [
+                userRepo,
+                workflows,
+                artifacts,
+                stargazers,
+                runs,
+                releases,
+                branches,
+                tags,
+                issues,
+                pullRequests,
+            ]
+    
+            settingsRepository.updateTransfer([...userObjects, ...repoObjects])
+    
+            indicator.setWatchedRepo(userRepo)
+            indicator.setWorkflows(workflows === undefined ? [] : workflows['workflows'])
+            indicator.setArtifacts(artifacts === undefined ? [] : artifacts['artifacts'])
+            indicator.setStargazers(stargazers)
+            indicator.setWorkflowRuns({
+                runs: runs['workflow_runs'],
+                onDeleteWorkflowRun: (runId, runName) => {
+                    onDeleteWorkflowRun(runId, runName)
+                },
+                onCancelWorkflowRun: (runId, runName) => {
+                    onCancelWorkflowRun(runId, runName)
+                },
+                onRerunWorkflowRun: (runId, runName) => {
+                    onRerunWorkflowRun(runId, runName)
+                },
+            })
+            indicator.setReleases(releases)
+            indicator.setBranches(branches)
+            indicator.setTags(tags)
+            indicator.setIssues(issues)
+            indicator.setPullRequests(pullRequests)
+        } catch (error) {
+            logError(error)
+        }
+    }
+
+    async _fetchUser(settingsRepository) {
         return new Promise(async (resolve, reject) => {
             try {
                 const user = await this.githubService.fetchUser()
@@ -131,7 +339,7 @@ export class ExtensionRepository {
         })
     }
 
-    async fetchRepo(settingsRepository, onlyWorkflowRuns = false) {
+    async _fetchRepo(settingsRepository, onlyWorkflowRuns = false) {
         return new Promise(async (resolve, reject) => {
             try {
                 const { owner, repo } = settingsRepository.ownerAndRepo()
@@ -179,210 +387,5 @@ export class ExtensionRepository {
                 resolve(null)
             }
         })
-    }
-    
-    async dataRefresh(
-        indicator,
-        settingsRepository,
-        onRepoSetAsWatched,
-        onDeleteWorkflowRun,
-        onCancelWorkflowRun,
-        onRerunWorkflowRun,
-        refreshCallback,
-        onlyWorkflowRuns,
-    ) {
-        try {    
-            const newestRelease = await this.githubService.fetcNewestExtensionRelease()
-            const newestVersion = newestRelease[0]['tag_name']
-            if (newestVersion != undefined) {
-                settingsRepository.updateNewestVersion(newestVersion)
-            }
-    
-            if (indicator.isLogged == false) {
-                return
-            }
-    
-            if (onlyWorkflowRuns === true) {
-                const { runs } = await fetchRepo(settingsRepository, onlyWorkflowRuns)
-    
-                indicator.setWorkflowRuns({
-                    runs: runs['workflow_runs'],
-                    onDeleteWorkflowRun: (runId, runName) => {
-                        onDeleteWorkflowRun(runId, runName)
-                    },
-                    onCancelWorkflowRun: (runId, runName) => {
-                        onCancelWorkflowRun(runId, runName)
-                    },
-                    onRerunWorkflowRun: (runId, runName) => {
-                        onRerunWorkflowRun(runId, runName)
-                    },
-                })
-    
-                return
-            }
-    
-            const {
-                user,
-                minutes,
-                packages,
-                sharedStorage,
-                starredList,
-                followers,
-                following,
-                repos,
-                gists,
-                starredGists,
-            } = await this.fetchUser(settingsRepository)
-    
-            const userObjects = [
-                user,
-                minutes,
-                packages,
-                sharedStorage,
-                starredList,
-                followers,
-                following,
-                repos,
-                gists,
-                starredGists,
-            ]
-    
-            indicator.setUser(user)
-            indicator.setUserBilling(minutes, packages, sharedStorage)
-            indicator.setUserStarred(starredList)
-            indicator.setUserFollowers(followers)
-            indicator.setUserFollowing(following)
-            indicator.setUserRepos(repos, (owner, repo) => {
-                onRepoSetAsWatched(owner, repo)
-    
-                settingsRepository.updateOwner(owner)
-                settingsRepository.updateRepo(repo)
-    
-                refreshCallback()
-            })
-            indicator.setUserGists(gists)
-            indicator.setUserStarredGists(starredGists)
-    
-            if (!indicator.showRepositoryMenu()) {
-                settingsRepository.updateTransfer(userObjects)
-                return
-            }
-    
-            const {
-                userRepo,
-                workflows,
-                artifacts,
-                stargazers,
-                runs,
-                releases,
-                branches,
-                tags,
-                issues,
-                pullRequests,
-            } = await this.fetchRepo(settingsRepository)
-    
-            const repoObjects = [
-                userRepo,
-                workflows,
-                artifacts,
-                stargazers,
-                runs,
-                releases,
-                branches,
-                tags,
-                issues,
-                pullRequests,
-            ]
-    
-            settingsRepository.updateTransfer([...userObjects, ...repoObjects])
-    
-            indicator.setWatchedRepo(userRepo)
-            indicator.setWorkflows(workflows === undefined ? [] : workflows['workflows'])
-            indicator.setArtifacts(artifacts === undefined ? [] : artifacts['artifacts'])
-            indicator.setStargazers(stargazers)
-            indicator.setWorkflowRuns({
-                runs: runs['workflow_runs'],
-                onDeleteWorkflowRun: (runId, runName) => {
-                    onDeleteWorkflowRun(runId, runName)
-                },
-                onCancelWorkflowRun: (runId, runName) => {
-                    onCancelWorkflowRun(runId, runName)
-                },
-                onRerunWorkflowRun: (runId, runName) => {
-                    onRerunWorkflowRun(runId, runName)
-                },
-            })
-            indicator.setReleases(releases)
-            indicator.setBranches(branches)
-            indicator.setTags(tags)
-            indicator.setIssues(issues)
-            indicator.setPullRequests(pullRequests)
-        } catch (error) {
-            logError(error)
-        }
-    }
-    
-    async githubActionsRefresh({
-        indicator,
-        settingsRepository,
-        onBuildCompleted,
-        onIncorrectRepository,
-        onNoInternet,
-        onRepoWithoutActions,
-    }) {
-        try {    
-            const isLogged = await this.githubService.isLogged()
-            if (isLogged == false) {
-                return
-            }
-    
-            const transferTerxt = settingsRepository.fullDataConsumptionPerHour()
-            indicator.setTransferText(transferTerxt)
-    
-            if (!settingsRepository.isRepositoryEntered()) {
-                return
-            }
-    
-            const { owner, repo } = settingsRepository.ownerAndRepo()
-    
-            const workflowRunsResponse = await this.githubService.fetchWorkflowRuns(owner, repo, 1)
-            switch (workflowRunsResponse) {
-                case null:
-                    onIncorrectRepository()
-                    return
-                case 'no-internet-connection':
-                    onNoInternet()
-                    return
-            }
-    
-            settingsRepository.updatePackageSize(workflowRunsResponse['_size_'])
-    
-            const workflowRuns = workflowRunsResponse['workflow_runs']
-            if (workflowRuns.length == 0) {
-                onRepoWithoutActions()
-                return
-            }
-    
-            /// Notification
-            const previousState = indicator.state
-            indicator.setLatestWorkflowRun(workflowRuns[0])
-            const currentState = indicator.state
-    
-            if (indicator.shouldShowCompletedNotification(previousState, currentState)) {
-                switch (currentState) {
-                    case ExtensionState.COMPLETED_SUCCESS:
-                        onBuildCompleted(owner, repo, 'success')
-                        break
-                    case ExtensionState.COMPLETED_FAILURE:
-                        onBuildCompleted(owner, repo, 'failure')
-                        break
-                    case ExtensionState.COMPLETED_CANCELLED:
-                        onBuildCompleted(owner, repo, 'cancelled')
-                        break
-                }
-            }
-        } catch (error) {
-            logError(error)
-        }
     }
 }

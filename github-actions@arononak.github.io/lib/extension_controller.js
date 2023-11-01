@@ -155,12 +155,12 @@ export class ExtensionController {
     }
 
     /// Main 3 refresh Functions
-    _stateRefresh() {
+    _checkErrors() {
         if (this.indicator.isLongOperation()) {
             return
         }
 
-        this.extensionRepository.stateRefresh({
+        this.extensionRepository.checkErrors({
             settingsRepository: this.settingsRepository,
             onNotInstalledCli: () => {
                 this.indicator.setState({ state: ExtensionState.NOT_INSTALLED_CLI, forceUpdate: true })
@@ -171,20 +171,18 @@ export class ExtensionController {
             onNotChoosedRepo: () => {
                 this.indicator.setState({ state: ExtensionState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
             },
+            onSuccess: () => {},
         })
     }
 
-    _githubActionsRefresh() {
+    _fetchStatus() {
         if (this.indicator.isLongOperation()) {
             return
         }
 
-        this.extensionRepository.githubActionsRefresh({
+        this.extensionRepository.fetchStatus({
             indicator: this.indicator,
             settingsRepository: this.settingsRepository,
-            onBuildCompleted: (owner, repo, conclusion) => {
-                this.onBuildCompleted(owner, repo, conclusion)
-            },
             onIncorrectRepository: () => {
                 this.indicator.setState({ state: ExtensionState.INCORRECT_REPOSITORY, forceUpdate: true })
             },
@@ -194,15 +192,18 @@ export class ExtensionController {
             onRepoWithoutActions: () => {
                 this.indicator.setState({ state: ExtensionState.REPO_WITHOUT_ACTIONS, forceUpdate: true })
             },
+            onBuildCompleted: (owner, repo, conclusion) => {
+                this.onBuildCompleted(owner, repo, conclusion)
+            },
         })
     }
 
-    _dataRefresh(onlyWorkflowRuns = false) {
+    _fetchData(onlyWorkflowRuns = false) {
         if (this.indicator.isLongOperation()) {
             return
         }
 
-        this.extensionRepository.dataRefresh(
+        this.extensionRepository.fetchData(
             this.indicator,
             this.settingsRepository,
             this.onRepoSetAsWatched,
@@ -223,9 +224,9 @@ export class ExtensionController {
         this.indicator.initMenu()
         
         try {
-            this._stateRefresh()
-            this._githubActionsRefresh()
-            this._dataRefresh()
+            this._checkErrors()
+            this._fetchStatus()
+            this._fetchData()
         } catch (error) {
             logError(error)
         }
@@ -241,9 +242,9 @@ export class ExtensionController {
             const settingsRepository = this.settingsRepository
             this.refresh()
 
-            this.stateRefreshInterval = setInterval(() => this._stateRefresh(), 1 * 1000)
-            this.githubActionsRefreshInterval = setInterval(() => this._githubActionsRefresh(), settingsRepository.fetchRefreshTime() * 1000)
-            this.dataRefreshInterval = setInterval(() => this._dataRefresh(), settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000)
+            this.stateRefreshInterval = setInterval(() => this._checkErrors(), 1 * 1000)
+            this.githubActionsRefreshInterval = setInterval(() => this._fetchStatus(), settingsRepository.fetchRefreshTime() * 1000)
+            this.dataRefreshInterval = setInterval(() => this._fetchData(), settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000)
         } catch (error) {
             logError(error)
         }
@@ -365,7 +366,7 @@ export class ExtensionController {
 
             if (status == 'success') {
                 this.onDeleteWorkflowRun(true, runName)
-                this._dataRefresh(true)
+                this._fetchData(true)
             } else {
                 this.onDeleteWorkflowRun(false, runName)
             }
@@ -385,7 +386,7 @@ export class ExtensionController {
 
             if (status == 'success') {
                 this.onCancelWorkflowRun(true, runName)
-                this._dataRefresh(true)
+                this._fetchData(true)
             } else {
                 this.onCancelWorkflowRun(false, runName)
             }
@@ -405,7 +406,7 @@ export class ExtensionController {
 
             if (status == 'success') {
                 this.onRerunWorkflowRun(true, runName)
-                this._dataRefresh(true)
+                this._fetchData(true)
             } else {
                 this.onRerunWorkflowRun(false, runName)
             }
