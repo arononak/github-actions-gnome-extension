@@ -1,0 +1,42 @@
+extends:
+ - ./eslintrc-gjs.yml
+ - ./eslintrc-shell.yml
+parserOptions:
+  sourceType: module
+rules:
+  arrow-parens:
+   - warn
+   - always
+  comma-dangle:
+   - warn
+   - never
+  curly:
+   - warn
+   - all
+  jsdoc/require-jsdoc: off
+  prefer-template: off
+  semi: off
+  object-curly-spacing: off
+  quotes: off
+  spaced-comment: off
+  object-shorthand: off
+  eqeqeq: off
+  no-unused-vars: off
+  no-shadow: off
+  eol-last: off
+  no-undef: off
+  max-statements-per-line: off
+  brace-style: off
+  no-extra-parens: off
+  nonblock-statement-body-position: off
+  operator-linebreak: off
+  no-dupe-class-members: off
+  indent: off
+  require-await: off
+  no-useless-constructor: off
+  no-trailing-spaces: off
+  consistent-return: off
+  no-async-promise-executor: off
+  no-implicit-coercion: off
+  no-useless-return: off
+  no-return-await: off

@@ -92,8 +92,9 @@ graph TD
 
 | Steps                                       | Commands       |
 |:--------------------------------------------|:---------------|
-| ▶️ Start a gnome session in a window         | `make run`     |
-| ➡️ Copying the extension from the system     | `make copy`    |
+| ▶️  Start a gnome session in a window        | `make run`     |
+| 🔎️ starts code analysis                     | `make lint`    |
+| ➡️  Copying the extension from the system    | `make copy`    |
 | 🔨 Build gnome-extensions package           | `make build`   |
 | 🔄 Compile schemas                          | `make compile` |
 | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md) |                |
@@ -111,4 +112,5 @@ graph TD
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
 > This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
+
 
