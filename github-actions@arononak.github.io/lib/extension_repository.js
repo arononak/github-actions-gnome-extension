@@ -45,6 +45,7 @@ export class ExtensionRepository {
         settingsRepository,
         onNotInstalledCli,
         onNotLogged,
+        onLoadedDataConsumption,
         onNotChoosedRepo,
         onSuccess,
     }) {
@@ -60,6 +61,9 @@ export class ExtensionRepository {
                 onNotLogged()
                 return
             }
+
+            const transferText = settingsRepository.fullDataConsumptionPerHour()
+            onLoadedDataConsumption(transferText)
     
             if (!settingsRepository.isRepositoryEntered()) {
                 onNotChoosedRepo()
@@ -73,21 +77,17 @@ export class ExtensionRepository {
     }
 
     async fetchStatus({
-        indicator,
         settingsRepository,
-        onBuildCompleted,
         onIncorrectRepository,
         onNoInternet,
         onRepoWithoutActions,
+        onCompleted,
     }) {
         try {    
             const isLogged = await this.githubService.isLogged()
             if (isLogged == false) {
                 return
             }
-    
-            const transferText = settingsRepository.fullDataConsumptionPerHour()
-            indicator.setTransferText(transferText)
     
             if (!settingsRepository.isRepositoryEntered()) {
                 return
@@ -112,31 +112,15 @@ export class ExtensionRepository {
                 onRepoWithoutActions()
                 return
             }
-    
-            /// Notification
-            const previousState = indicator.state
-            indicator.setLatestWorkflowRun(workflowRuns[0])
-            const currentState = indicator.state
-    
-            if (indicator.shouldShowCompletedNotification(previousState, currentState)) {
-                switch (currentState) {
-                    case ExtensionState.COMPLETED_SUCCESS:
-                        onBuildCompleted(owner, repo, 'success')
-                        break
-                    case ExtensionState.COMPLETED_FAILURE:
-                        onBuildCompleted(owner, repo, 'failure')
-                        break
-                    case ExtensionState.COMPLETED_CANCELLED:
-                        onBuildCompleted(owner, repo, 'cancelled')
-                        break
-                }
-            }
+
+            onCompleted(workflowRuns[0])
         } catch (error) {
             logError(error)
         }
     }
     
-    async fetchData(
+    async fetchData({
+        onlyWorkflowRuns,
         indicator,
         settingsRepository,
         onRepoSetAsWatched,
@@ -144,18 +128,19 @@ export class ExtensionRepository {
         onCancelWorkflowRun,
         onRerunWorkflowRun,
         refreshCallback,
-        onlyWorkflowRuns,
-    ) {
-        try {    
+    }) {
+        try {
+            const isLogged = await this.githubService.isLogged()
+            if (isLogged == false) {
+                return
+            }
+
             const newestRelease = await this.githubService.fetcNewestExtensionRelease()
             const newestVersion = newestRelease[0]['tag_name']
             if (newestVersion != undefined) {
                 settingsRepository.updateNewestVersion(newestVersion)
             }
-    
-            if (indicator.isLogged == false) {
-                return
-            }
+
     
             if (onlyWorkflowRuns === true) {
                 const { runs } = await fetchRepo(settingsRepository, onlyWorkflowRuns)

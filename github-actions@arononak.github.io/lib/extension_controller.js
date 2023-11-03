@@ -168,6 +168,9 @@ export class ExtensionController {
             onNotLogged: () => {
                 this.indicator.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: true })
             },
+            onLoadedDataConsumption: (transferText) => {
+                this.indicator.setTransferText(transferText)
+            },
             onNotChoosedRepo: () => {
                 this.indicator.setState({ state: ExtensionState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
             },
@@ -181,7 +184,6 @@ export class ExtensionController {
         }
 
         this.extensionRepository.fetchStatus({
-            indicator: this.indicator,
             settingsRepository: this.settingsRepository,
             onIncorrectRepository: () => {
                 this.indicator.setState({ state: ExtensionState.INCORRECT_REPOSITORY, forceUpdate: true })
@@ -192,9 +194,25 @@ export class ExtensionController {
             onRepoWithoutActions: () => {
                 this.indicator.setState({ state: ExtensionState.REPO_WITHOUT_ACTIONS, forceUpdate: true })
             },
-            onBuildCompleted: (owner, repo, conclusion) => {
-                this.onBuildCompleted(owner, repo, conclusion)
-            },
+            onCompleted: (run) => {
+                const previousState = this.indicator.state
+                this.indicator.setLatestWorkflowRun(run)
+                const currentState = this.indicator.state
+        
+                if (this.indicator.shouldShowCompletedNotification(previousState, currentState)) {
+                    switch (currentState) {
+                        case ExtensionState.COMPLETED_SUCCESS:
+                            this.onBuildCompleted(owner, repo, 'success')
+                            break
+                        case ExtensionState.COMPLETED_FAILURE:
+                            this.onBuildCompleted(owner, repo, 'failure')
+                            break
+                        case ExtensionState.COMPLETED_CANCELLED:
+                            this.onBuildCompleted(owner, repo, 'cancelled')
+                            break
+                    }
+                }
+            }
         })
     }
 
@@ -203,16 +221,24 @@ export class ExtensionController {
             return
         }
 
-        this.extensionRepository.fetchData(
-            this.indicator,
-            this.settingsRepository,
-            this.onRepoSetAsWatched,
-            (runId, runName) => this.deleteWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName }),
-            (runId, runName) => this.cancelWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName }),
-            (runId, runName) => this.rerunWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName }),
-            () => this.refresh(),
-            onlyWorkflowRuns,
-        )
+        this.extensionRepository.fetchData({
+            onlyWorkflowRuns: onlyWorkflowRuns,
+            indicator: this.indicator,
+            settingsRepository: this.settingsRepository,
+            onRepoSetAsWatched: this.onRepoSetAsWatched,
+            onDeleteWorkflowRun: (runId, runName) => {
+                this.deleteWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
+            },
+            onCancelWorkflowRun: (runId, runName) => {
+                this.cancelWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
+            },
+            onRerunWorkflowRun: (runId, runName) => {
+                this.rerunWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
+            },
+            refreshCallback: () => {
+                this.refresh()
+            },
+        })
     }
     ///////////////////////////////////////////
 
