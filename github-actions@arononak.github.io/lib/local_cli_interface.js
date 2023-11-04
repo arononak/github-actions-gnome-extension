@@ -130,8 +130,6 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
                 return
             }
 
-            print(`${method} ${command}`)
-
             const proc = Gio.Subprocess.new(
                 ['gh', 'api', '--method', method, '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', `${command}?per_page=${pagination}`],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
@@ -139,6 +137,8 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
 
             proc.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
+
+                print(`${method} ${command} ${stdout.length} ${stderr.length}`)
 
                 /// [NO_INTERNET_CONNECTION]
                 /// stdout: 
@@ -149,14 +149,13 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
                 /// stderr: gh: Not Found (HTTP 404)
 
                 if (proc.get_successful()) {
-                    if (status === true && stdout.length <= 2 && stderr.length <= 2) {
+                    if (stdout.length == 0 && stderr.length == 0) {
                         resolve('success')
                         return
                     }
 
                     const response = JSON.parse(stdout)
                     response['_size_'] = stdout.length /// Welcome in JS World :D
-
                     resolve(response)
                     return
                 } else {

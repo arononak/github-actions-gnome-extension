@@ -26,19 +26,19 @@ export class ExtensionRepository {
     }
 
     async downloadArtifactFile(downloadUrl, filename) {
-        await this.githubService.downloadArtifactFile(downloadUrl, filename)
+        return await this.githubService.downloadArtifactFile(downloadUrl, filename)
     }
 
     async deleteWorkflowRun(owner, repo, runId) {
-        await this.githubService.deleteWorkflowRun(owner, repo, runId)
+        return await this.githubService.deleteWorkflowRun(owner, repo, runId)
     }
 
     async cancelWorkflowRun(owner, repo, runId) {
-        await this.githubService.cancelWorkflowRun(owner, repo, runId)
+        return await this.githubService.cancelWorkflowRun(owner, repo, runId)
     }
 
     async rerunWorkflowRun(owner, repo, runId) {
-        await this.githubService.rerunWorkflowRun(owner, repo, runId)
+        return await this.githubService.rerunWorkflowRun(owner, repo, runId)
     }
 
     async checkErrors({
@@ -143,7 +143,7 @@ export class ExtensionRepository {
 
     
             if (onlyWorkflowRuns === true) {
-                const { runs } = await fetchRepo(settingsRepository, onlyWorkflowRuns)
+                const { runs } = await _fetchRepo(settingsRepository, onlyWorkflowRuns)
     
                 indicator.setWorkflowRuns({
                     runs: runs['workflow_runs'],
