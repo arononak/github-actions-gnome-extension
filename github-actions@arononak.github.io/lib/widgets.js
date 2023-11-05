@@ -27,7 +27,7 @@ export function openUrl()                  { return _openUrl() }
 export function openInstallCliScreen()     { return _openInstallCliScreen() }
 export function openAuthScreen()           { return _openAuthScreen() }
 export function bytesToString()            { return _bytesToString() }
-export function formatDate()               { return _formatDate() }
+export function formatDate(date)           { return _formatDate(date) }
 export function extensionOpenPreferences() { return _extensionOpenPreferences() }
 
 export const AppStatusColor = {
