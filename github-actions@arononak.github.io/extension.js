@@ -151,8 +151,8 @@ export default class GithubActionsExtension extends Extension {
                         const token = await this.extensionController.fetchToken()
 
                         const St = imports.gi.St
-                        const clipboard = St.Clipboard.get_default();
-                        clipboard.set_text(St.ClipboardType.CLIPBOARD, token);
+                        const clipboard = St.Clipboard.get_default()
+                        clipboard.set_text(St.ClipboardType.CLIPBOARD, token)
 
                         Main.notify('Copied !', token)
                     },

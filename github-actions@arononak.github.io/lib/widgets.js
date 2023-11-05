@@ -6,9 +6,9 @@ import St from 'gi://St'
 import Gio from 'gi://Gio'
 import GLib from 'gi://GLib'
 import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
-import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js';
-import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
-import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js';
+import * as Dialog from 'resource:///org/gnome/shell/ui/dialog.js'
+import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js'
+import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
 import {

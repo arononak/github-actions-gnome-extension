@@ -61,6 +61,6 @@ export class QuickSettingsIndicator extends QuickSettings.SystemIndicator {
         this.connect('destroy', () => {
             this.quickSettingsItems.forEach(item => item.destroy())
         })
-        Main.panel.statusArea.quickSettings.addExternalIndicator(this, 1);
+        Main.panel.statusArea.quickSettings.addExternalIndicator(this, 1)
     }
 }
