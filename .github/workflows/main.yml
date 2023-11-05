@@ -1,8 +1,19 @@
 name: Build
 on:
   release:
-    types: [created]
+    types: [created, edited]
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Install eslint
+        run: |
+          npm install -g eslint eslint-plugin-jsdoc
+      - name: Run lint
+        run: |
+          make lint
   build:
     runs-on: ubuntu-latest
     steps:
