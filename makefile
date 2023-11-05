@@ -6,7 +6,7 @@ run:
 	dbus-run-session -- gnome-shell --nested --wayland
 
 build:
-	@echo 'export const VERSION = "$(GIT_TAG)";' > github-actions@arononak.github.io/lib/version.js
+	@echo 'export const VERSION = "$(GIT_TAG)"' > github-actions@arononak.github.io/lib/version.js
 	cd github-actions@arononak.github.io &&\
 	glib-compile-schemas schemas/ &&\
 	gnome-extensions pack\
