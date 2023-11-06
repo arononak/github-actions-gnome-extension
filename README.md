@@ -28,7 +28,7 @@
 | 🔓 Check scopes      | `gh auth status`                              |
 | 🔄 If any is missing | `gh auth refresh --scopes user,repo,workflow` |
 
-# 🛠 Development
+# 🖥️ Development
 
 ```mermaid
 graph TD
@@ -90,15 +90,17 @@ graph TD
     end
 ```
 
-| Steps                                       | Commands       |
-|:--------------------------------------------|:---------------|
-| ▶️  Start a gnome session in a window        | `make run`     |
-| 🔎️ starts code analysis                     | `make lint`    |
-| ➡️  Copying the extension from the system    | `make copy`    |
-| 🔨 Build gnome-extensions package           | `make build`   |
-| 🔄 Compile schemas                          | `make compile` |
-| 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md) |                |
-| ✅️ [TODO LIST](./docs/TODO.md)              |                |
+| Steps                                                              | Commands       |
+|:-------------------------------------------------------------------|:---------------|
+| ▶️  Starts a gnome session in a window                              | `make run`     |
+| ➡️  Copying the extension from the system                           | `make copy`    |
+| 🔎️ Starts code analysis                                            | `make lint`    |
+| ✏️  Starts ESLint fixing                                            | `make lint-fix`|
+| 🔄 Compiles schemas                                                | `make compile` |
+| 🛠️ Builds gnome-extensions package                                 | `make build`   |
+| 📦 Builds and installs on system, gnome restart required           | `make install` |
+| 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)                        |                |
+| ✅️ [TODO LIST](./docs/TODO.md)                                     |                |
 
 <br>
 
@@ -112,5 +114,6 @@ graph TD
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
 > This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
+
 
 

@@ -1,4 +1,5 @@
 EXTENSION_DIRECTORY := $(HOME)/.local/share/gnome-shell/extensions/github-actions@arononak.github.io
+EXTENSION_PACKAGE := github-actions@arononak.github.io.shell-extension.zip
 GIT_TAG := $(shell git describe --tags --abbrev=0)
 
 run:
@@ -19,9 +20,16 @@ copy:
 	rm -r -f ./github-actions@arononak.github.io
 	cp -r "$(EXTENSION_DIRECTORY)" ./
 
+install: build
+	gnome-extensions install $(EXTENSION_PACKAGE) --force
+	rm -r -f $(EXTENSION_PACKAGE)
+
 compile:
 	glib-compile-schemas "$(EXTENSION_DIRECTORY)/schemas/"
-	
+
 lint:
 	eslint -c ./.lint/.eslintrc.yml github-actions@arononak.github.io/
+
+lint-fix:
+	eslint -c ./.lint/.eslintrc.yml github-actions@arononak.github.io/ --fix
 
