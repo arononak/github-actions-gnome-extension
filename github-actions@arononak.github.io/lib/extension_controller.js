@@ -212,7 +212,7 @@ export class ExtensionController {
                             break
                     }
                 }
-            }
+            },
         })
     }
 

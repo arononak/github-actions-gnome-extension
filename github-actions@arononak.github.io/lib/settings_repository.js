@@ -112,7 +112,7 @@ export class SettingsRepository {
 
     updateTransfer(jsonObjects) {
         const sizeInBytes = jsonObjects
-            .filter(e => e != null)
+            .filter((e) => e != null)
             .reduce((sum, object) => sum + object._size_, 0)
 
         this.updateColdPackageSize(sizeInBytes)

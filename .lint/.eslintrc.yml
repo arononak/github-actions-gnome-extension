@@ -9,10 +9,14 @@ rules:
    - always
   comma-dangle:
    - warn
-   - never
+   - arrays: only-multiline
+     objects: only-multiline
+     imports: only-multiline
+     exports: only-multiline
+     functions: only-multiline
   curly:
    - warn
-   - all
+   - multi-line
   jsdoc/require-jsdoc: off
   prefer-template: off
   semi: off

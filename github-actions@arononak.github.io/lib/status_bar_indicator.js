@@ -575,7 +575,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.starredMenuItem != null) {
             this.starredMenuItem.setHeaderItemText(`Starred: ${starred.length} `)
-            this.starredMenuItem.submitItems(starred.map(e => toItem(e)))
+            this.starredMenuItem.submitItems(starred.map((e) => toItem(e)))
         }
     }
 
@@ -592,7 +592,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.followersMenuItem != null) {
             this.followersMenuItem.setHeaderItemText(`Followers: ${followers.length} `)
-            this.followersMenuItem.submitItems(followers.map(e => toItem(e)))
+            this.followersMenuItem.submitItems(followers.map((e) => toItem(e)))
         }
     }
 
@@ -609,7 +609,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.followingMenuItem != null) {
             this.followingMenuItem.setHeaderItemText(`Following: ${following.length} `)
-            this.followingMenuItem.submitItems(following.map(e => toItem(e)))
+            this.followingMenuItem.submitItems(following.map((e) => toItem(e)))
         }
     }
 
@@ -638,7 +638,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.reposMenuItem.submitItems(
                 repos
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
-                    .map(e => toItem(e)))
+                    .map((e) => toItem(e)))
         }
     }
 
@@ -661,7 +661,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.gistsMenuItem.submitItems(
                 gists
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
-                    .map(e => toItem(e)))
+                    .map((e) => toItem(e)))
         }
     }
 
@@ -684,7 +684,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.starredGistsMenuItem.submitItems(
                 starredGists
                     .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
-                    .map(e => toItem(e)))
+                    .map((e) => toItem(e)))
         }
     }
 
@@ -722,7 +722,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.stargazersMenuItem != null) {
             this.stargazersMenuItem.setHeaderItemText(`Stargazers: ${stargazers.length} `)
-            this.stargazersMenuItem.submitItems(stargazers.map(e => toItem(e)))
+            this.stargazersMenuItem.submitItems(stargazers.map((e) => toItem(e)))
         }
     }
 
@@ -739,7 +739,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.workflowsMenuItem != null) {
             this.workflowsMenuItem.setHeaderItemText(`Workflows: ${workflows.length} `)
-            this.workflowsMenuItem.submitItems(workflows.map(e => toItem(e)))
+            this.workflowsMenuItem.submitItems(workflows.map((e) => toItem(e)))
         }
     }
 
@@ -835,7 +835,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.runsMenuItem != null) {
             this.runsMenuItem.setHeaderItemText(`Workflow runs: ${runs.length} `)
-            this.runsMenuItem.submitItems(runs.map(e => toItem(e)))
+            this.runsMenuItem.submitItems(runs.map((e) => toItem(e)))
         }
     }
 
@@ -852,7 +852,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.releasesMenuItem != null) {
             this.releasesMenuItem.setHeaderItemText(`Releases: ${releases.length} `)
-            this.releasesMenuItem.submitItems(releases.map(e => toItem(e)))
+            this.releasesMenuItem.submitItems(releases.map((e) => toItem(e)))
         }
     }
 
@@ -877,7 +877,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.artifactsMenuItem != null) {
             this.artifactsMenuItem.setHeaderItemText(`Artifacts: ${artifacts.length} `)
-            this.artifactsMenuItem.submitItems(artifacts.map(e => toItem(e)))
+            this.artifactsMenuItem.submitItems(artifacts.map((e) => toItem(e)))
         }
     }
 
@@ -897,7 +897,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.branchesMenuItem != null) {
             this.branchesMenuItem.setHeaderItemText(`Branches: ${branches.length} `)
-            this.branchesMenuItem.submitItems(branches.map(e => toItem(e)))
+            this.branchesMenuItem.submitItems(branches.map((e) => toItem(e)))
         }
     }
 
@@ -916,7 +916,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.tagsMenuItem != null) {
             this.tagsMenuItem.setHeaderItemText(`Tags: ${tags.length} `)
-            this.tagsMenuItem.submitItems(tags.map(e => toItem(e)))
+            this.tagsMenuItem.submitItems(tags.map((e) => toItem(e)))
         }
     }
 
@@ -933,7 +933,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.pullRequestsMenuItem != null) {
             this.pullRequestsMenuItem.setHeaderItemText(`Pull requests: ${pullRequests.length} `)
-            this.pullRequestsMenuItem.submitItems(pullRequests.map(e => toItem(e)))
+            this.pullRequestsMenuItem.submitItems(pullRequests.map((e) => toItem(e)))
         }
     }
 
@@ -950,7 +950,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.issuesMenuItem != null) {
             this.issuesMenuItem.setHeaderItemText(`Issues: ${issues.length} `)
-            this.issuesMenuItem.submitItems(issues.map(e => toItem(e)))
+            this.issuesMenuItem.submitItems(issues.map((e) => toItem(e)))
         }
     }
 }
