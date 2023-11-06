@@ -24,6 +24,7 @@ import {
     bytesToString,
     formatDate,
     extensionOpenPreferences,
+    anvilIcon,
 } from './widgets.js'
 
 import { ExtensionState } from './extension_controller.js'
@@ -206,7 +207,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.sharedStorageItem?.label.set_text(loadingText)
         this.repositoryPrivateItem?.label.set_text(loadingText)
         this.repositoryForkItem?.label.set_text(loadingText)
-        this.networkButton?.boxLabel?.set_text(loadingText)
+
+        this.setTransferText('ACME')
+        this.setTransferIcon(anvilIcon())
     }
 
     initStatusBarIndicator() {
@@ -260,12 +263,15 @@ export class StatusBarIndicator extends PanelMenu.Button {
     }
 
     refreshGithubIcon() {
-        this.networkIcon = new St.Icon({
-            icon_size: 20,
-            gicon: this.extendedColoredMode
-                ? createAppGioIconInner(this.state.coloredModeColor)
-                : appIcon()
-        })
+        const githubIcon = this.extendedColoredMode
+            ? createAppGioIconInner(this.state.coloredModeColor)
+            : appIcon()
+
+        this.setTransferIcon(githubIcon)
+    }
+
+    setTransferIcon(gicon) {
+        this.networkIcon = new St.Icon({ icon_size: 20, gicon: gicon })
         this.networkIcon.style = 'margin-left: 2px;'
 
         if (this.networkButton) {
@@ -314,7 +320,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         /// Network transfer
         if (this.isLogged() && this.state != ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
-            this.networkButton = new RoundedButton({ iconName: 'system-settings-symbolic', text: `` })
+            this.networkButton = new RoundedButton({ iconName: 'system-settings-symbolic', text: '' })
             this.networkButton.connect('clicked', () => openUrl('https://api.github.com/octocat'))
             this.leftBox.add(this.networkButton)
         }
@@ -473,8 +479,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
     }
 
     setTransferText(text) {
-        if (this.networkButton != null) {
-            this.networkButton.boxLabel.text = text
+        if (this.networkButton != null && this.networkButton != undefined) {
+            if (this.networkButton.boxLabel != null && this.networkButton.boxLabel != undefined) {
+                this.networkButton.boxLabel.text = text
+            }
         }
     }
 

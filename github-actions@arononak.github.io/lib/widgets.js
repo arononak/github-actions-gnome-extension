@@ -117,6 +117,22 @@ export function createAppGioIconInner(appStatusColor) {
         : Gio.icon_new_for_string(extensionPath() + appStatusColor.innerIcon)
 }
 
+export function anvilIcon() {
+    const darkTheme = isDarkTheme()
+
+    return darkTheme
+        ? Gio.icon_new_for_string(extensionPath() + '/assets/anvil_white.svg')
+        : Gio.icon_new_for_string(extensionPath() + '/assets/anvil_black.svg')
+}
+
+export function appIcon() {
+    const darkTheme = isDarkTheme()
+
+    return darkTheme
+        ? createAppGioIcon(AppStatusColor.WHITE)
+        : createAppGioIcon(AppStatusColor.BLACK)
+}
+
 export function conclusionIconName(conclusion) {
     if (conclusion == 'success') {
         return 'emblem-default'
@@ -134,14 +150,6 @@ export function isDarkTheme() {
     const theme = settings.get_string('gtk-theme')
 
     return theme.replace(/'/g, "").trim().includes("dark")
-}
-
-export function appIcon() {
-    const darkTheme = isDarkTheme()
-
-    return darkTheme
-        ? createAppGioIcon(AppStatusColor.WHITE)
-        : createAppGioIcon(AppStatusColor.BLACK)
 }
 
 export class RoundedButton extends St.Button {

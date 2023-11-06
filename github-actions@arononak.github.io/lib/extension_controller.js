@@ -169,7 +169,10 @@ export class ExtensionController {
                 this.indicator.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: true })
             },
             onLoadedDataConsumption: (transferText) => {
-                this.indicator.setTransferText(transferText)
+                setTimeout(() => {
+                    this.indicator.setTransferText(transferText)
+                    this.indicator.refreshGithubIcon()
+                }, 5000)
             },
             onNotChoosedRepo: () => {
                 this.indicator.setState({ state: ExtensionState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })

@@ -132,7 +132,6 @@ export default class GithubActionsExtension extends Extension {
                     showIcon: showIcon,
                     refreshCallback: () => {
                         this.extensionController.refresh()
-                        this.indicator.refreshGithubIcon()
 
                         this.destroyQuickSettings()
                         this.createQuickSettings()
