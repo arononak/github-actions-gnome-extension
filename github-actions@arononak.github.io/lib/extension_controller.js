@@ -154,97 +154,6 @@ export class ExtensionController {
         }
     }
 
-    /// Main 3 refresh Functions
-    _checkErrors() {
-        if (this.indicator.isLongOperation()) {
-            return
-        }
-
-        this.extensionRepository.checkErrors({
-            settingsRepository: this.settingsRepository,
-            onNotInstalledCli: () => {
-                this.indicator.setState({ state: ExtensionState.NOT_INSTALLED_CLI, forceUpdate: true })
-            },
-            onNotLogged: () => {
-                this.indicator.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: true })
-            },
-            onLoadedDataConsumption: (transferText) => {
-                setTimeout(() => {
-                    this.indicator.setTransferText(transferText)
-                    this.indicator.refreshGithubIcon()
-                }, 5000)
-            },
-            onNotChoosedRepo: () => {
-                this.indicator.setState({ state: ExtensionState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
-            },
-            onSuccess: () => {},
-        })
-    }
-
-    _fetchStatus() {
-        if (this.indicator.isLongOperation()) {
-            return
-        }
-
-        this.extensionRepository.fetchStatus({
-            settingsRepository: this.settingsRepository,
-            onIncorrectRepository: () => {
-                this.indicator.setState({ state: ExtensionState.INCORRECT_REPOSITORY, forceUpdate: true })
-            },
-            onNoInternet: () => {
-                this.indicator.setState({ state: ExtensionState.LOGGED_NO_INTERNET_CONNECTION })
-            },
-            onRepoWithoutActions: () => {
-                this.indicator.setState({ state: ExtensionState.REPO_WITHOUT_ACTIONS, forceUpdate: true })
-            },
-            onCompleted: (run) => {
-                const previousState = this.indicator.state
-                this.indicator.setLatestWorkflowRun(run)
-                const currentState = this.indicator.state
-        
-                if (this.indicator.shouldShowCompletedNotification(previousState, currentState)) {
-                    switch (currentState) {
-                        case ExtensionState.COMPLETED_SUCCESS:
-                            this.onBuildCompleted(owner, repo, 'success')
-                            break
-                        case ExtensionState.COMPLETED_FAILURE:
-                            this.onBuildCompleted(owner, repo, 'failure')
-                            break
-                        case ExtensionState.COMPLETED_CANCELLED:
-                            this.onBuildCompleted(owner, repo, 'cancelled')
-                            break
-                    }
-                }
-            },
-        })
-    }
-
-    _fetchData(onlyWorkflowRuns = false) {
-        if (this.indicator.isLongOperation()) {
-            return
-        }
-
-        this.extensionRepository.fetchData({
-            onlyWorkflowRuns: onlyWorkflowRuns,
-            indicator: this.indicator,
-            settingsRepository: this.settingsRepository,
-            onRepoSetAsWatched: this.onRepoSetAsWatched,
-            onDeleteWorkflowRun: (runId, runName) => {
-                this.deleteWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
-            },
-            onCancelWorkflowRun: (runId, runName) => {
-                this.cancelWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
-            },
-            onRerunWorkflowRun: (runId, runName) => {
-                this.rerunWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
-            },
-            refreshCallback: () => {
-                this.refresh()
-            },
-        })
-    }
-    ///////////////////////////////////////////
-
     refresh() {
         if (this.indicator === null || this.indicator === undefined) {
             return
@@ -442,5 +351,105 @@ export class ExtensionController {
         } catch (error) {
             logError(error)
         }
+    }
+
+    _checkErrors() {
+        const transferText = this.settingsRepository.fullDataConsumptionPerHour()
+        setTimeout(() => {
+            this.indicator.setTransferText(transferText)
+            this.indicator.refreshGithubIcon()
+        }, 5000)
+
+        if (this.indicator.isLongOperation()) {
+            return
+        }
+
+        if (!this.settingsRepository.isRepositoryEntered()) {
+            this.indicator.setState({ state: ExtensionState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
+            return
+        }
+
+        this.extensionRepository.checkErrors({
+            onNotInstalledCli: () => {
+                this.indicator.setState({ state: ExtensionState.NOT_INSTALLED_CLI, forceUpdate: true })
+            },
+            onNotLogged: () => {
+                this.indicator.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: true })
+            },
+            onSuccess: () => {},
+        })
+    }
+
+    _fetchStatus() {
+        if (this.indicator.isLongOperation()) {
+            return
+        }
+
+        if (!this.settingsRepository.isRepositoryEntered()) {
+            return
+        }
+
+        const { owner, repo } = this.settingsRepository.ownerAndRepo()
+
+        this.extensionRepository.fetchStatus({
+            owner: owner,
+            repo: repo,
+            onNoInternet: () => {
+                this.indicator.setState({ state: ExtensionState.LOGGED_NO_INTERNET_CONNECTION })
+            },
+            onIncorrectRepository: () => {
+                this.indicator.setState({ state: ExtensionState.INCORRECT_REPOSITORY, forceUpdate: true })
+            },
+            onDownloadPackageSize: (size) => {
+                this.settingsRepository.updatePackageSize(size)
+            },
+            onRepoWithoutActions: () => {
+                this.indicator.setState({ state: ExtensionState.REPO_WITHOUT_ACTIONS, forceUpdate: true })
+            },
+            onCompleted: (run) => {
+                const previousState = this.indicator.state
+                this.indicator.setLatestWorkflowRun(run)
+                const currentState = this.indicator.state
+        
+                if (this.indicator.shouldShowCompletedNotification(previousState, currentState)) {
+                    switch (currentState) {
+                        case ExtensionState.COMPLETED_SUCCESS:
+                            this.onBuildCompleted(owner, repo, 'success')
+                            break
+                        case ExtensionState.COMPLETED_FAILURE:
+                            this.onBuildCompleted(owner, repo, 'failure')
+                            break
+                        case ExtensionState.COMPLETED_CANCELLED:
+                            this.onBuildCompleted(owner, repo, 'cancelled')
+                            break
+                    }
+                }
+            },
+        })
+    }
+
+    _fetchData(onlyWorkflowRuns = false) {
+        if (this.indicator.isLongOperation()) {
+            return
+        }
+
+        this.extensionRepository.fetchData({
+            onlyWorkflowRuns: onlyWorkflowRuns,
+            indicator: this.indicator,
+            settingsRepository: this.settingsRepository,
+            onRepoSetAsWatched: this.onRepoSetAsWatched,
+            onDeleteWorkflowRun: (runId, runName) => {
+                this.deleteWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
+            },
+            onCancelWorkflowRun: (runId, runName) => {
+                this.cancelWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
+            },
+            onRerunWorkflowRun: (runId, runName) => {
+                this.rerunWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
+            },
+            refreshCallback: () => {
+                this.refresh()
+            },
+        })
     }
 }

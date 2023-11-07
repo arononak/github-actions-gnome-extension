@@ -42,11 +42,8 @@ export class ExtensionRepository {
     }
 
     async checkErrors({
-        settingsRepository,
         onNotInstalledCli,
         onNotLogged,
-        onLoadedDataConsumption,
-        onNotChoosedRepo,
         onSuccess,
     }) {
         try {    
@@ -62,14 +59,6 @@ export class ExtensionRepository {
                 return
             }
 
-            const transferText = settingsRepository.fullDataConsumptionPerHour()
-            onLoadedDataConsumption(transferText)
-    
-            if (!settingsRepository.isRepositoryEntered()) {
-                onNotChoosedRepo()
-                return
-            }
-
             onSuccess()
         } catch (error) {
             logError(error)
@@ -77,9 +66,11 @@ export class ExtensionRepository {
     }
 
     async fetchStatus({
-        settingsRepository,
-        onIncorrectRepository,
+        owner,
+        repo,
         onNoInternet,
+        onIncorrectRepository,
+        onDownloadPackageSize,
         onRepoWithoutActions,
         onCompleted,
     }) {
@@ -88,12 +79,6 @@ export class ExtensionRepository {
             if (isLogged == false) {
                 return
             }
-    
-            if (!settingsRepository.isRepositoryEntered()) {
-                return
-            }
-    
-            const { owner, repo } = settingsRepository.ownerAndRepo()
     
             const workflowRunsResponse = await this.githubService.fetchWorkflowRuns(owner, repo, 1)
             switch (workflowRunsResponse) {
@@ -105,7 +90,7 @@ export class ExtensionRepository {
                     return
             }
     
-            settingsRepository.updatePackageSize(workflowRunsResponse['_size_'])
+            onDownloadPackageSize(workflowRunsResponse['_size_'])
     
             const workflowRuns = workflowRunsResponse['workflow_runs']
             if (workflowRuns.length == 0) {
