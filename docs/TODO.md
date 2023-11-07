@@ -62,6 +62,8 @@
 - [x] pr list
 - [x] issues list
 - [ ] public repo test & fix bugs
+- [ ] openUrl not works
+- [ ] Refresh icon during changing theme
 - [ ] Information from githut raw file
 - [ ] TEST.md refactor
 - [ ] Workflow Run branch
