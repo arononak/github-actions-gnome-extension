@@ -4,8 +4,6 @@ import {
     openExtensionGithubIssuesPage as _openExtensionGithubIssuesPage,
 } from './utils.js'
 
-export function isEmpty(str) { return _isEmpty(str) }
-
-export function openUrl(str) { return _openUrl(str) }
-
-export function openExtensionGithubIssuesPage(str) { return _openExtensionGithubIssuesPage(str) }
+export function isEmpty(str)                    { return _isEmpty(str) }
+export function openUrl(url)                    { return _openUrl(url) }
+export function openExtensionGithubIssuesPage() { return _openExtensionGithubIssuesPage() }

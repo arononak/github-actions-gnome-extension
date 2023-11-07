@@ -23,10 +23,10 @@ import {
 } from './extension_utils.js'
 
 export function extensionSettings()        { return _extensionSettings() }
-export function openUrl()                  { return _openUrl() }
+export function openUrl(str)               { return _openUrl(str) }
 export function openInstallCliScreen()     { return _openInstallCliScreen() }
 export function openAuthScreen()           { return _openAuthScreen() }
-export function bytesToString()            { return _bytesToString() }
+export function bytesToString(str)         { return _bytesToString(str) }
 export function formatDate(date)           { return _formatDate(date) }
 export function extensionOpenPreferences() { return _extensionOpenPreferences() }
 
