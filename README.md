@@ -30,6 +30,14 @@
 
 # 🖥️ Development
 
+## Cloning and running
+
+```bash
+git clone https://github.com/arononak/github-actions-gnome-extension.git
+cd github-actions-gnome-extension
+make install && make run
+```
+
 ```mermaid
 graph TD
     utils.js---->extension_utils.js
@@ -90,22 +98,17 @@ graph TD
     end
 ```
 
-| Steps                                                              | Commands       |
-|:-------------------------------------------------------------------|:---------------|
-| ▶️  Starts a gnome session in a window                              | `make run`     |
-| ➡️  Copying the extension from the system                           | `make copy`    |
-| 🔎️ Starts code analysis                                            | `make lint`    |
-| ✏️  Starts ESLint fixing                                            | `make lint-fix`|
-| 🔄 Compiles schemas                                                | `make compile` |
-| 🛠️ Builds gnome-extensions package                                 | `make build`   |
-| 📦 Builds and installs on system, gnome restart required           | `make install` |
-| 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)                        |                |
-| ✅️ [TODO LIST](./docs/TODO.md)                                     |                |
-
-<br>
-
-> **Note**<br>
-> If you have any feedback, please contact me at arononak@gmail.com
+| Steps                                                              | Commands                                                          |
+|:-------------------------------------------------------------------|:------------------------------------------------------------------|
+| ▶️  Starts a gnome session in a window                              | `make run`                                                        |
+| ➡️  Copying the extension from the system                           | `make copy`                                                       |
+| 🔎️ Starts code analysis                                            | `make lint`                                                       |
+| ✏️  Starts ESLint fixing                                            | `make lint-fix`                                                   |
+| 🔄 Compiles schemas                                                | `make compile`                                                    |
+| 🛠️ Builds gnome-extensions package                                 | `make build`                                                      |
+| 📦 Builds and installs on system, gnome restart required           | `make install`                                                    |
+| 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)                        |                                                                   |
+| ✅️ [TODO LIST](./docs/TODO.md)                                     | If you have any feedback, please contact me at arononak@gmail.com |
 
 ---
 
