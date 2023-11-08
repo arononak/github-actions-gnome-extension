@@ -63,28 +63,29 @@
 - [x] issues list
 - [x] public repo test & fix bugs
 - [x] openUrl not works
+- [ x commit list
 - [ ] Refresh icon during changing theme
 - [ ] Information from githut raw file
+- [ ] extension_repository - refactor to callbacks
 - [ ] TEST.md refactor
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
-- [ ] commit list
+- [ ] max list item text length from settings
+- [ ] dates manager
+- [ ] Suspend bug
 - [ ] label list
 - [ ] org list
 - [ ] Super simple mode
-- [ ] extension_repository - refactor to callbacks
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin
 - [ ] Refresh after completed workflow run
 - [ ] NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [ ] Item text length limiter
-- [ ] Suspend bug
 - [ ] Settings - repo text fields - dont remove last char
 - [ ] extension_controller.js -> extract to 2 classes
 - [ ] ColoredMode / ExtendedColoredMode - fix
 - [ ] Missing scopes - relogin
 - [ ] Block refresh
-- [ ] dates manager
 - [ ] Settings tabs
 - [ ] position in top panel (right | center | left)
 - [ ] Refresh - interupt promise's

@@ -204,6 +204,7 @@ export class ExtensionRepository {
                 tags,
                 issues,
                 pullRequests,
+                commits,
             } = await this._fetchRepo(settingsRepository)
     
             const repoObjects = [
@@ -217,6 +218,7 @@ export class ExtensionRepository {
                 tags,
                 issues,
                 pullRequests,
+                commits,
             ]
     
             settingsRepository.updateTransfer([...userObjects, ...repoObjects])
@@ -242,6 +244,7 @@ export class ExtensionRepository {
             indicator.setTags(tags)
             indicator.setIssues(issues)
             indicator.setPullRequests(pullRequests)
+            indicator.setCommits(commits)
         } catch (error) {
             logError(error)
         }
@@ -338,6 +341,7 @@ export class ExtensionRepository {
                 const tags = await this.githubService.fetchTags(owner, repo, pagination)
                 const issues = await this.githubService.fetchIssues(owner, repo, pagination)
                 const pullRequests = await this.githubService.fetchPullRequests(owner, repo, pagination)
+                const commits = await this.githubService.fetchCommits(owner, repo, pagination)
 
                 resolve({
                     "runs": runs,
@@ -351,6 +355,7 @@ export class ExtensionRepository {
                     "tags": tags,
                     "issues": issues,
                     "pullRequests": pullRequests,
+                    "commits": commits,
                 })
             } catch (error) {
                 logError(error)

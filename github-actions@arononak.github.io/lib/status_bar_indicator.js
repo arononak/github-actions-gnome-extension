@@ -25,7 +25,7 @@ import {
     formatDate,
     extensionOpenPreferences,
     anvilIcon,
-} from './widgets.js'
+    } from './widgets.js'
 
 import { ExtensionState } from './extension_controller.js'
 
@@ -199,6 +199,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.branchesMenuItem?.setHeaderItemText(loadingText)
         this.tagsMenuItem?.setHeaderItemText(loadingText)
         this.issuesMenuItem?.setHeaderItemText(loadingText)
+        this.commitsMenuItem?.setHeaderItemText(loadingText)
         this.pullRequestsMenuItem?.setHeaderItemText(loadingText)
         this.artifactsMenuItem?.setHeaderItemText(loadingText)
         this.twoFactorItem?.label.set_text(loadingText)
@@ -437,6 +438,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
             /// Repository isFork
             this.repositoryForkItem = new IconPopupMenuItem({ startIconName: 'folder-remote-symbolic' })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
+
+            /// Commits
+            this.commitsMenuItem = new ExpandedMenuItem('media-record-symbolic', '')
+            this.menu.addMenuItem(this.commitsMenuItem)
 
             /// Branches
             this.branchesMenuItem = new ExpandedMenuItem('media-playlist-consecutive-symbolic', '')
@@ -940,7 +945,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         if (this.pullRequestsMenuItem != null) {
-            this.pullRequestsMenuItem.setHeaderItemText(`Pull requests: ${pullRequests.length} `)
+            this.pullRequestsMenuItem.setHeaderItemText(`Pull requests: ${pullRequests.length}`.slice(0, 200))
             this.pullRequestsMenuItem.submitItems(pullRequests.map((e) => toItem(e)))
         }
     }
@@ -951,7 +956,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         function toItem(e) {
             return {
                 "iconName": 'media-optical-symbolic',
-                "text": `#${e['number']} ${e['title']}`.slice(0, 100),
+                "text": `#${e['number']} ${e['title']}`.slice(0, 200),
                 "callback": () => openUrl(e['html_url']),
             }
         }
@@ -959,6 +964,28 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.issuesMenuItem != null) {
             this.issuesMenuItem.setHeaderItemText(`Issues: ${issues.length} `)
             this.issuesMenuItem.submitItems(issues.map((e) => toItem(e)))
+        }
+    }
+
+    setCommits(commits) {
+        if (commits === null || commits === undefined) return
+
+        function toItem(e) {
+            const date = formatDate(e['commit']['author']['date'])
+            const authorName = e['commit']['author']['name']
+            const authorEmail = e['commit']['author']['email']
+            const message = e['commit']['message'].replace(/\s+/g, ' ')
+
+            return {
+                "iconName": 'media-record-symbolic',
+                "text": `${date} - ${authorName} (${authorEmail}) - ${message}`.slice(0, 200),
+                "callback": () => openUrl(e['html_url']),
+            }
+        }
+
+        if (this.commitsMenuItem != null) {
+            this.commitsMenuItem.setHeaderItemText(`Commits: ${commits.length}`)
+            this.commitsMenuItem.submitItems(commits.map((e) => toItem(e)))
         }
     }
 }

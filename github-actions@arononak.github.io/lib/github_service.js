@@ -98,6 +98,9 @@ export class GithubService {
     fetchPullRequests = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand('GET', `/repos/${owner}/${repo}/pulls`, pagination)
 
+    fetchCommits = async (owner, repo, pagination) =>
+        cliInterface.executeGithubCliCommand('GET', `/repos/${owner}/${repo}/commits`, pagination)
+
     /// Workflow Run
     fetchWorkflowRuns = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand('GET', `/repos/${owner}/${repo}/actions/runs`, pagination)
