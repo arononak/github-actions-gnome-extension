@@ -103,7 +103,6 @@ export async function downloadArtifactFile(downloadUrl, filename) {
 
                 if (proc.get_successful()) {
                     resolve(true)
-                    return
                 } else {
                     resolve(null)
                 }
@@ -157,7 +156,6 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
                     const response = JSON.parse(stdout)
                     response[`_size_`] = stdout.length /// Welcome in JS World :D
                     resolve(response)
-                    return
                 } else {
                     if (stdout.length < 2) {
                         resolve(`no-internet-connection`)

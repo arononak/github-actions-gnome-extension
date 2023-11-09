@@ -26,9 +26,8 @@ rules:
   quotes:
    - warn
    - backtick
-  jsdoc/require-jsdoc: off
-  spaced-comment: off
-  object-shorthand: off
+  no-useless-return:
+   - warn
   eqeqeq: off
   no-unused-vars: off
   no-shadow: off
@@ -47,5 +46,7 @@ rules:
   consistent-return: off
   no-async-promise-executor: off
   no-implicit-coercion: off
-  no-useless-return: off
   no-return-await: off
+  object-shorthand: off
+  spaced-comment: off
+  jsdoc/require-jsdoc: off
