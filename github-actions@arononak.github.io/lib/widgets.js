@@ -1,5 +1,8 @@
 'use strict'
 
+/* for 'global' */
+/* eslint-disable no-undef */
+
 import Clutter from 'gi://Clutter'
 import GObject from 'gi://GObject'
 import St from 'gi://St'
@@ -393,7 +396,7 @@ export function showConfirmDialog({
         }
 
         if (reminderId) {
-            GLib.Source.remove(id)
+            GLib.Source.remove(reminderId)
             reminderId = null
         }
 

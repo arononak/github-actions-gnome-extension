@@ -127,7 +127,7 @@ export class ExtensionRepository {
             }
 
             if (onlyWorkflowRuns === true) {
-                const { runs } = await _fetchRepo(settingsRepository, onlyWorkflowRuns)
+                const { runs } = await this._fetchRepo(settingsRepository, onlyWorkflowRuns)
     
                 indicator.setWorkflowRuns({
                     runs: runs[`workflow_runs`],

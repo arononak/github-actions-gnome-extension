@@ -32,4 +32,3 @@ lint:
 
 lint-fix:
 	eslint -c ./.lint/.eslintrc.yml github-actions@arononak.github.io/ --fix
-

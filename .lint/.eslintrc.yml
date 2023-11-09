@@ -28,11 +28,12 @@ rules:
    - backtick
   no-useless-return:
    - warn
-  eqeqeq: off
+  no-undef:
+   - warn
   no-unused-vars: off
+  eqeqeq: off
   no-shadow: off
   eol-last: off
-  no-undef: off
   max-statements-per-line: off
   brace-style: off
   no-extra-parens: off
