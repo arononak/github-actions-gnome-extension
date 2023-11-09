@@ -17,8 +17,9 @@ rules:
   curly:
    - warn
    - multi-line
+  prefer-template:
+   - warn
   jsdoc/require-jsdoc: off
-  prefer-template: off
   semi: off
   object-curly-spacing: off
   quotes: off

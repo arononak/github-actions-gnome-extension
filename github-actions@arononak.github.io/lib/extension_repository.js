@@ -126,7 +126,6 @@ export class ExtensionRepository {
                 settingsRepository.updateNewestVersion(newestVersion)
             }
 
-    
             if (onlyWorkflowRuns === true) {
                 const { runs } = await _fetchRepo(settingsRepository, onlyWorkflowRuns)
     

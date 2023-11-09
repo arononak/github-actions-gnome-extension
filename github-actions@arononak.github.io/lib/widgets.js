@@ -121,8 +121,8 @@ export function anvilIcon() {
     const darkTheme = isDarkTheme()
 
     return darkTheme
-        ? Gio.icon_new_for_string(extensionPath() + '/assets/anvil_white.svg')
-        : Gio.icon_new_for_string(extensionPath() + '/assets/anvil_black.svg')
+        ? Gio.icon_new_for_string(`${extensionPath()}/assets/anvil_white.svg`)
+        : Gio.icon_new_for_string(`${extensionPath()}/assets/anvil_black.svg`)
 }
 
 export function appIcon() {

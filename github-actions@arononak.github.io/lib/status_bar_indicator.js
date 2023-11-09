@@ -368,7 +368,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         const missingScopes = this.tokenScopes.missingScopes()
         this.tokenScopesItem = new IconPopupMenuItem({
             startIconName: 'dialog-password-symbolic',
-            text: `Token: ${this.tokenScopes.toString()}` + (missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`),
+            text: `Token: ${this.tokenScopes.toString()}${missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`}`,
             endIconName: 'edit-copy-symbolic',
             endIconCallback: this.copyTokenCallback,
         })
@@ -664,7 +664,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
             return {
                 "iconName": 'utilities-terminal-symbolic',
-                "text": `${createdAt}` + (description.length !== 0 ? ` - ${description.replace(/\n/g, '')} ` : ''),
+                "text": `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, '')} ` : ''}`,
                 "callback": () => openUrl(e['html_url']),
             }
         }
@@ -687,7 +687,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
             return {
                 "iconName": 'starred-symbolic',
-                "text": `${createdAt}` + (description.length !== 0 ? ` - ${description.replace(/\n/g, '')} ` : ''),
+                "text": `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, '')} ` : ''}`,
                 "callback": () => openUrl(e['html_url']),
             }
         }

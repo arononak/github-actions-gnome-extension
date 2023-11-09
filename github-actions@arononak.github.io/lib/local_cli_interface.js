@@ -94,7 +94,7 @@ export async function downloadArtifactFile(downloadUrl, filename) {
             }
 
             const proc = Gio.Subprocess.new(
-                ['sh', '-c', 'exec gh api ' + downloadUrl + ' > ' + filename],
+                ['sh', '-c', `exec gh api ${downloadUrl} > ${filename}`],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             )
 
