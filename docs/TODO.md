@@ -63,7 +63,7 @@
 - [x] issues list
 - [x] public repo test & fix bugs
 - [x] openUrl not works
-- [ x commit list
+- [x] commit list
 - [ ] Refresh icon during changing theme
 - [ ] Information from githut raw file
 - [ ] extension_repository - refactor to callbacks
