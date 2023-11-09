@@ -85,14 +85,14 @@ export class ExtensionRepository {
                 case null:
                     onIncorrectRepository()
                     return
-                case 'no-internet-connection':
+                case `no-internet-connection`:
                     onNoInternet()
                     return
             }
     
-            onDownloadPackageSize(workflowRunsResponse['_size_'])
+            onDownloadPackageSize(workflowRunsResponse[`_size_`])
     
-            const workflowRuns = workflowRunsResponse['workflow_runs']
+            const workflowRuns = workflowRunsResponse[`workflow_runs`]
             if (workflowRuns.length == 0) {
                 onRepoWithoutActions()
                 return
@@ -121,7 +121,7 @@ export class ExtensionRepository {
             }
 
             const newestRelease = await this.githubService.fetcNewestExtensionRelease()
-            const newestVersion = newestRelease[0]['tag_name']
+            const newestVersion = newestRelease[0][`tag_name`]
             if (newestVersion != undefined) {
                 settingsRepository.updateNewestVersion(newestVersion)
             }
@@ -130,7 +130,7 @@ export class ExtensionRepository {
                 const { runs } = await _fetchRepo(settingsRepository, onlyWorkflowRuns)
     
                 indicator.setWorkflowRuns({
-                    runs: runs['workflow_runs'],
+                    runs: runs[`workflow_runs`],
                     onDeleteWorkflowRun: (runId, runName) => {
                         onDeleteWorkflowRun(runId, runName)
                     },
@@ -223,11 +223,11 @@ export class ExtensionRepository {
             settingsRepository.updateTransfer([...userObjects, ...repoObjects])
     
             indicator.setWatchedRepo(userRepo)
-            indicator.setWorkflows(workflows === undefined ? [] : workflows['workflows'])
-            indicator.setArtifacts(artifacts === undefined ? [] : artifacts['artifacts'])
+            indicator.setWorkflows(workflows === undefined ? [] : workflows[`workflows`])
+            indicator.setArtifacts(artifacts === undefined ? [] : artifacts[`artifacts`])
             indicator.setStargazers(stargazers)
             indicator.setWorkflowRuns({
-                runs: runs['workflow_runs'],
+                runs: runs[`workflow_runs`],
                 onDeleteWorkflowRun: (runId, runName) => {
                     onDeleteWorkflowRun(runId, runName)
                 },
@@ -257,7 +257,7 @@ export class ExtensionRepository {
                     return
                 }
 
-                const login = user['login']
+                const login = user[`login`]
 
                 /// Simple Mode
                 const minutes = await this.githubService.fetchUserBillingActionsMinutes(login)
@@ -268,7 +268,7 @@ export class ExtensionRepository {
                 const simpleMode = settingsRepository.fetchSimpleMode()
                 const { owner, repo } = settingsRepository.ownerAndRepo()
                 const isStarred = await this.githubService.checkIsRepoStarred(owner, repo)
-                settingsRepository.updateHiddenMode(isStarred === 'success')
+                settingsRepository.updateHiddenMode(isStarred === `success`)
 
                 if (simpleMode) {
                     resolve({

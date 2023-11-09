@@ -35,7 +35,7 @@ export class PrefsController {
         const extensionVersion = VERSION
         const newestVersion = this.settingsRepository.fetchNewestVersion()
 
-        var versionDescription = ''
+        var versionDescription = ``
         if (isEmpty(newestVersion)) {
             versionDescription = `${extensionVersion}`
         } else if (extensionVersion === newestVersion) {
@@ -78,11 +78,11 @@ export class PrefsController {
     }
 
     onStarClicked() {
-        openUrl('https://github.com/arononak/github-actions-gnome-extension')
+        openUrl(`https://github.com/arononak/github-actions-gnome-extension`)
     }
 
     onOpenExtensionFolderClicked() {
-        const extension = ExtensionPreferences.lookupByUUID('github-actions@arononak.github.io')
+        const extension = ExtensionPreferences.lookupByUUID(`github-actions@arononak.github.io`)
         openUrl(`${extension.path}/assets`)
     }
 

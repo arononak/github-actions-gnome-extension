@@ -32,76 +32,76 @@ export function extensionOpenPreferences() { return _extensionOpenPreferences() 
 
 export const AppStatusColor = {
     WHITE: {
-        icon: '/assets/github_white.svg',
-        innerIcon: '/assets/github_white.svg',
-        innerIconDark: '/assets/github_black.svg',
-        color: '#FFFFFF',
-        textColor: '#555555',
-        textColorDark: '#FFFFFF',
-        backgroundColor: '#F0F0F0',
-        borderColor: '#F0F0F0',
-        backgroundColorDark: '#F0F0F0',
-        borderColorDark: '#F0F0F0',
+        icon: `/assets/github_white.svg`,
+        innerIcon: `/assets/github_white.svg`,
+        innerIconDark: `/assets/github_black.svg`,
+        color: `#FFFFFF`,
+        textColor: `#555555`,
+        textColorDark: `#FFFFFF`,
+        backgroundColor: `#F0F0F0`,
+        borderColor: `#F0F0F0`,
+        backgroundColorDark: `#F0F0F0`,
+        borderColorDark: `#F0F0F0`,
     },
     BLACK: {
-        icon: '/assets/github_black.svg',
-        innerIcon: '/assets/github_black.svg',
-        innerIconDark: '/assets/github_white.svg',
-        color: '#555555',
-        textColor: '#555555',
-        textColorDark: '#FFFFFF',
-        backgroundColor: '#999999',
-        borderColor: '#F0F0F0',
-        backgroundColorDark: '#999999',
-        borderColorDark: '#F0F0F0',
+        icon: `/assets/github_black.svg`,
+        innerIcon: `/assets/github_black.svg`,
+        innerIconDark: `/assets/github_white.svg`,
+        color: `#555555`,
+        textColor: `#555555`,
+        textColorDark: `#FFFFFF`,
+        backgroundColor: `#999999`,
+        borderColor: `#F0F0F0`,
+        backgroundColorDark: `#999999`,
+        borderColorDark: `#F0F0F0`,
     },
     GRAY: {
-        icon: '/assets/github_white.svg',
-        innerIcon: '/assets/github_black.svg',
-        innerIconDark: '/assets/github_white.svg',
-        color: '#757575',
-        textColor: '#555555',
-        textColorDark: '#FFFFFF',
-        backgroundColor: '#9E9E9E',
-        borderColor: '#9E9E9E',
-        backgroundColorDark: '#9E9E9E',
-        borderColorDark: '#9E9E9E',
+        icon: `/assets/github_white.svg`,
+        innerIcon: `/assets/github_black.svg`,
+        innerIconDark: `/assets/github_white.svg`,
+        color: `#757575`,
+        textColor: `#555555`,
+        textColorDark: `#FFFFFF`,
+        backgroundColor: `#9E9E9E`,
+        borderColor: `#9E9E9E`,
+        backgroundColorDark: `#9E9E9E`,
+        borderColorDark: `#9E9E9E`,
     },
     GREEN: {
-        icon: '/assets/github_white.svg',
-        innerIcon: '/assets/github_black.svg',
-        innerIconDark: '/assets/github_white.svg',
-        color: '#00FF66',
-        textColor: '#555555',
-        textColorDark: '#FFFFFF',
-        backgroundColor: '#60D37A',
-        borderColor: '#2F883A',
-        backgroundColorDark: '#43A047',
-        borderColorDark: '#2E7D32',
+        icon: `/assets/github_white.svg`,
+        innerIcon: `/assets/github_black.svg`,
+        innerIconDark: `/assets/github_white.svg`,
+        color: `#00FF66`,
+        textColor: `#555555`,
+        textColorDark: `#FFFFFF`,
+        backgroundColor: `#60D37A`,
+        borderColor: `#2F883A`,
+        backgroundColorDark: `#43A047`,
+        borderColorDark: `#2E7D32`,
     },
     BLUE: {
-        icon: '/assets/github_white.svg',
-        innerIcon: '/assets/github_black.svg',
-        innerIconDark: '/assets/github_white.svg',
-        color: '#64B5F6',
-        textColor: '#555555',
-        textColorDark: '#FFFFFF',
-        backgroundColor: '#64B5F6',
-        borderColor: '#1565C0',
-        backgroundColorDark: '#2196F3',
-        borderColorDark: '#0D47A1',
+        icon: `/assets/github_white.svg`,
+        innerIcon: `/assets/github_black.svg`,
+        innerIconDark: `/assets/github_white.svg`,
+        color: `#64B5F6`,
+        textColor: `#555555`,
+        textColorDark: `#FFFFFF`,
+        backgroundColor: `#64B5F6`,
+        borderColor: `#1565C0`,
+        backgroundColorDark: `#2196F3`,
+        borderColorDark: `#0D47A1`,
     },
     RED: {
-        icon: '/assets/github_white.svg',
-        innerIcon: '/assets/github_black.svg',
-        innerIconDark: '/assets/github_white.svg',
-        color: '#EF5350',
-        textColor: '#555555',
-        textColorDark: '#FFFFFF',
-        backgroundColor: '#EF6C57',
-        borderColor: '#E57364',
-        backgroundColorDark: '#E53935',
-        borderColorDark: '#C62828',
+        icon: `/assets/github_white.svg`,
+        innerIcon: `/assets/github_black.svg`,
+        innerIconDark: `/assets/github_white.svg`,
+        color: `#EF5350`,
+        textColor: `#555555`,
+        textColorDark: `#FFFFFF`,
+        backgroundColor: `#EF6C57`,
+        borderColor: `#E57364`,
+        backgroundColorDark: `#E53935`,
+        borderColorDark: `#C62828`,
     },
 }
 
@@ -134,22 +134,22 @@ export function appIcon() {
 }
 
 export function conclusionIconName(conclusion) {
-    if (conclusion == 'success') {
-        return 'emblem-default'
-    } else if (conclusion == 'failure') {
-        return 'emblem-unreadable'
-    } else if (conclusion == 'cancelled') {
-        return 'emblem-unreadable'
+    if (conclusion == `success`) {
+        return `emblem-default`
+    } else if (conclusion == `failure`) {
+        return `emblem-unreadable`
+    } else if (conclusion == `cancelled`) {
+        return `emblem-unreadable`
     } else {
-        return 'emblem-synchronizing-symbolic'
+        return `emblem-synchronizing-symbolic`
     }
 }
 
 export function isDarkTheme() {
-    const settings = new Gio.Settings({ schema: 'org.gnome.desktop.interface' })
-    const theme = settings.get_string('gtk-theme')
+    const settings = new Gio.Settings({ schema: `org.gnome.desktop.interface` })
+    const theme = settings.get_string(`gtk-theme`)
 
-    return theme.replace(/'/g, "").trim().includes("dark")
+    return theme.replace(/'/g, ``).trim().includes(`dark`)
 }
 
 export class RoundedButton extends St.Button {
@@ -158,7 +158,7 @@ export class RoundedButton extends St.Button {
     }
 
     constructor({ iconName, text }) {
-        super({ style_class: 'button github-actions-button-action' })
+        super({ style_class: `button github-actions-button-action` })
 
         this.child = new St.BoxLayout()
 
@@ -198,11 +198,11 @@ export class IconButton extends St.Button {
     }
 
     constructor({ iconName, iconSize = null, callback }) {
-        super({ style_class: 'button github-actions-icon-button' })
+        super({ style_class: `button github-actions-icon-button` })
 
-        this.connect('clicked', callback)
+        this.connect(`clicked`, callback)
         this.set_can_focus(true)
-        this.set_child(new St.Icon({ style_class: 'popup-menu-icon', iconName, icon_size: iconSize }))
+        this.set_child(new St.Icon({ style_class: `popup-menu-icon`, iconName, icon_size: iconSize }))
     }
 
     setIcon(icon) {
@@ -217,9 +217,9 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
     }
 
     constructor(startIconName, text, endIconName, endIconCallback) {
-        super('')
+        super(``)
 
-        this.menuBox = new St.BoxLayout({ vertical: true, style_class: 'menu-box' })
+        this.menuBox = new St.BoxLayout({ vertical: true, style_class: `menu-box` })
         this.scrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true })
         this.scrollView.add_actor(this.menuBox)
         this.menu.box.add_actor(this.scrollView)
@@ -236,7 +236,7 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
             })
 
             const box = new St.BoxLayout({
-                style_class: 'github-actions-top-box',
+                style_class: `github-actions-top-box`,
                 vertical: false,
                 x_expand: true,
                 y_expand: true,
@@ -254,13 +254,13 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
         items.forEach((i) => {
             this.menuBox.add_actor(
                 new IconPopupMenuItem({
-                    text: i['text'],
-                    startIconName: i['iconName'],
-                    itemCallback: i['callback'],
-                    endIconName: i["endIconName"],
-                    endIconCallback: i["endIconCallback"],
-                    endButtonText: i["endButtonText"],
-                    endButtonCallback: i["endButtonCallback"],
+                    text: i[`text`],
+                    startIconName: i[`iconName`],
+                    itemCallback: i[`callback`],
+                    endIconName: i[`endIconName`],
+                    endIconCallback: i[`endIconCallback`],
+                    endButtonText: i[`endButtonText`],
+                    endButtonCallback: i[`endButtonCallback`],
                 }),
             )
         })
@@ -271,9 +271,9 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
     }
 
     setStartIcon({ iconName }) {
-        this.icon = new St.Icon({ icon_name: iconName, style_class: 'popup-menu-icon' })
+        this.icon = new St.Icon({ icon_name: iconName, style_class: `popup-menu-icon` })
 
-        const iconContainer = new St.Widget({ style_class: 'popup-menu-icon-container' })
+        const iconContainer = new St.Widget({ style_class: `popup-menu-icon-container` })
         if (this.iconContainer == null) {
             this.iconContainer = iconContainer
             this.insert_child_at_index(this.iconContainer, 0)
@@ -291,7 +291,7 @@ export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
     }
 
     constructor({
-        text = '',
+        text = ``,
         startIconName,
         itemCallback = () => { },
         endIconName,
@@ -301,15 +301,15 @@ export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
     }) {
         super(text, startIconName)
 
-        this.connect('activate', () => itemCallback())
+        this.connect(`activate`, () => itemCallback())
 
         if (endIconName != null || endButtonText != null) {
             const box = this.createEndAlignBox()
             this.insert_child_at_index(box, 100)
 
             if (endButtonText != null) {
-                const button = new St.Button({ style_class: 'button github-actions-text-button', label: endButtonText })
-                button.connect('clicked', endButtonCallback)
+                const button = new St.Button({ style_class: `button github-actions-text-button`, label: endButtonText })
+                button.connect(`clicked`, endButtonCallback)
                 box.add(button)
             }
 
@@ -327,7 +327,7 @@ export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
 
     createEndAlignBox() {
         return new St.BoxLayout({
-            style_class: 'github-actions-popup-box',
+            style_class: `github-actions-popup-box`,
             vertical: false,
             x_expand: true,
             y_expand: true,
@@ -339,15 +339,15 @@ export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
 
 export function showNotification(message, success) {
     const source = new MessageTray.Source(
-        'Github Actions',
-        success === true ? 'emoji-symbols-symbolic' : 'window-close-symbolic',
+        `Github Actions`,
+        success === true ? `emoji-symbols-symbolic` : `window-close-symbolic`,
     )
 
     Main.messageTray.add(source)
 
     const notification = new MessageTray.Notification(
         source,
-        success === true ? 'Success!' : 'Error',
+        success === true ? `Success!` : `Error`,
         message,
         { gicon: appIcon() },
     )
@@ -356,12 +356,12 @@ export function showNotification(message, success) {
 
     const file = Gio.File.new_for_path(
         success === true
-            ? '/usr/share/sounds/freedesktop/stereo/complete.oga'
-            : '/usr/share/sounds/freedesktop/stereo/dialog-warning.oga'
+            ? `/usr/share/sounds/freedesktop/stereo/complete.oga`
+            : `/usr/share/sounds/freedesktop/stereo/dialog-warning.oga`
     )
 
     const player = global.display.get_sound_player()
-    player.play_from_file(file, '', null)
+    player.play_from_file(file, ``, null)
 }
 
 export function showConfirmDialog({
@@ -374,7 +374,7 @@ export function showConfirmDialog({
 }) {
     let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false })
     let reminderId = null
-    let closedId = dialog.connect('closed', (_dialog) => {
+    let closedId = dialog.connect(`closed`, (_dialog) => {
         if (!reminderId) {
             reminderId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 60,
                 () => {
@@ -386,7 +386,7 @@ export function showConfirmDialog({
         }
     })
 
-    dialog.connect('destroy', (_actor) => {
+    dialog.connect(`destroy`, (_actor) => {
         if (closedId) {
             dialog.disconnect(closedId)
             closedId = null
@@ -415,11 +415,11 @@ export function showConfirmDialog({
 
     dialog.setButtons([
         {
-            label: 'Cancel',
+            label: `Cancel`,
             action: () => dialog.destroy()
         },
         {
-            label: 'Confirm',
+            label: `Confirm`,
             action: () => {
                 dialog.close(global.get_current_time())
                 onConfirm()

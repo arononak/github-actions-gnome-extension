@@ -27,10 +27,10 @@ export class EnabledExtensionToggle extends QuickSettings.QuickToggle {
 
     _init() {
         super._init({
-            title: 'Github Actions',
+            title: `Github Actions`,
             toggleMode: true,
         })
-        this.label = 'Github Actions'
+        this.label = `Github Actions`
 
         this.settings = extensionSettings()
         
@@ -41,9 +41,9 @@ export class EnabledExtensionToggle extends QuickSettings.QuickToggle {
         this.gicon = createAppGioIcon(iconColor)
 
         this.settings.bind(
-            'extension-enabled',
+            `extension-enabled`,
             this,
-            'checked',
+            `checked`,
             Gio.SettingsBindFlags.DEFAULT,
         )
     }
@@ -58,7 +58,7 @@ export class QuickSettingsIndicator extends QuickSettings.SystemIndicator {
         super._init()
 
         this.quickSettingsItems.push(new EnabledExtensionToggle())
-        this.connect('destroy', () => {
+        this.connect(`destroy`, () => {
             this.quickSettingsItems.forEach((item) => item.destroy())
         })
         Main.panel.statusArea.quickSettings.addExternalIndicator(this, 1)

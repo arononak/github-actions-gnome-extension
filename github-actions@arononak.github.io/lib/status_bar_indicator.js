@@ -41,7 +41,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
     }
 
     _init() {
-        super._init(0.0, 'Github Action StatusBarButton', false)
+        super._init(0.0, `Github Action StatusBarButton`, false)
     }
 
     constructor({
@@ -52,7 +52,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         showIcon = true,
         isInstalledCli = false,
         isLogged = false,
-        tokenScopes = '',
+        tokenScopes = ``,
         refreshCallback = () => { },
         downloadArtifactCallback = (downloadUrl, filename) => { },
         copyTokenCallback = () => { },
@@ -209,27 +209,27 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.repositoryPrivateItem?.label.set_text(loadingText)
         this.repositoryForkItem?.label.set_text(loadingText)
 
-        this.setTransferText('ACME')
+        this.setTransferText(`ACME`)
         this.setTransferIcon(anvilIcon())
     }
 
     initStatusBarIndicator() {
-        this.topBox = new St.BoxLayout({ style_class: 'panel-status-menu-box' })
+        this.topBox = new St.BoxLayout({ style_class: `panel-status-menu-box` })
 
         if (this.showIcon === true) {
-            this.icon = new St.Icon({ style_class: 'system-status-icon' })
+            this.icon = new St.Icon({ style_class: `system-status-icon` })
             this.icon.gicon = createAppGioIcon(AppStatusColor.WHITE)
             this.topBox.add_child(this.icon)
         }
 
-        this.label = new St.Label({ text: '', y_align: Clutter.ActorAlign.CENTER, y_expand: true })
+        this.label = new St.Label({ text: ``, y_align: Clutter.ActorAlign.CENTER, y_expand: true })
         this.topBox.add_child(this.label)
         this.add_child(this.topBox)
     }
 
     updateGithubActionsStatus(extensionState) {
         if (this.simpleMode == true && extensionState.simpleModeShowText == false) {
-            this.label.text = ''
+            this.label.text = ``
         } else {
             this.label.text = this.uppercaseMode == true
                 ? extensionState.text().toUpperCase()
@@ -273,7 +273,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
     setTransferIcon(gicon) {
         this.networkIcon = new St.Icon({ icon_size: 20, gicon: gicon })
-        this.networkIcon.style = 'margin-left: 2px;'
+        this.networkIcon.style = `margin-left: 2px;`
 
         if (this.networkButton) {
             this.networkButton.setIcon(this.networkIcon)
@@ -286,7 +286,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         this.box = new St.BoxLayout({
-            style_class: 'github-actions-top-box',
+            style_class: `github-actions-top-box`,
             vertical: false,
             x_expand: true,
             x_align: Clutter.ActorAlign.FILL,
@@ -294,7 +294,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         })
 
         this.leftBox = new St.BoxLayout({
-            style_class: 'github-actions-top-box',
+            style_class: `github-actions-top-box`,
             vertical: false,
             x_expand: true,
             x_align: Clutter.ActorAlign.FILL,
@@ -302,7 +302,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         })
 
         this.rightBox = new St.BoxLayout({
-            style_class: 'github-actions-button-box',
+            style_class: `github-actions-button-box`,
             x_align: Clutter.ActorAlign.END,
             y_align: Clutter.ActorAlign.CENTER,
             clip_to_allocation: true,
@@ -321,34 +321,34 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         /// Network transfer
         if (this.isLogged() && this.state != ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
-            this.networkButton = new RoundedButton({ iconName: 'system-settings-symbolic', text: '' })
-            this.networkButton.connect('clicked', () => openUrl('https://api.github.com/octocat'))
+            this.networkButton = new RoundedButton({ iconName: `system-settings-symbolic`, text: `` })
+            this.networkButton.connect(`clicked`, () => openUrl(`https://api.github.com/octocat`))
             this.leftBox.add(this.networkButton)
         }
 
         /// Settings
-        this.settingsItem = new RoundedButton({ iconName: 'system-settings-symbolic' })
-        this.settingsItem.connect('clicked', () => extensionOpenPreferences())
+        this.settingsItem = new RoundedButton({ iconName: `system-settings-symbolic` })
+        this.settingsItem.connect(`clicked`, () => extensionOpenPreferences())
         this.rightBox.add_actor(this.settingsItem)
 
         if (this.isInstalledCli() == false) {
-            this.installButton = new RoundedButton({ iconName: 'application-x-addon-symbolic' })
-            this.installButton.connect('clicked', () => openInstallCliScreen())
+            this.installButton = new RoundedButton({ iconName: `application-x-addon-symbolic` })
+            this.installButton.connect(`clicked`, () => openInstallCliScreen())
             this.rightBox.add_actor(this.installButton)
         } else if (this.isLogged()) {
             /// Refresh
-            this.refreshButton = new RoundedButton({ iconName: 'view-refresh-symbolic' })
-            this.refreshButton.connect('clicked', () => this.refreshCallback())
+            this.refreshButton = new RoundedButton({ iconName: `view-refresh-symbolic` })
+            this.refreshButton.connect(`clicked`, () => this.refreshCallback())
             this.rightBox.add_actor(this.refreshButton)
 
             /// Logout
-            this.logoutButton = new RoundedButton({ iconName: 'system-log-out-symbolic' })
-            this.logoutButton.connect('clicked', async () => this.logoutCallback())
+            this.logoutButton = new RoundedButton({ iconName: `system-log-out-symbolic` })
+            this.logoutButton.connect(`clicked`, async () => this.logoutCallback())
             this.rightBox.add_actor(this.logoutButton)
         } else {
             /// Login
-            this.loginButton = new RoundedButton({ iconName: 'avatar-default-symbolic' })
-            this.loginButton.connect('clicked', () => openAuthScreen())
+            this.loginButton = new RoundedButton({ iconName: `avatar-default-symbolic` })
+            this.loginButton.connect(`clicked`, () => openAuthScreen())
             this.rightBox.add_actor(this.loginButton)
         }
 
@@ -361,62 +361,62 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
     initLoggedMenu() {
         /// User
-        this.userMenuItem = new ExpandedMenuItem(null, '')
+        this.userMenuItem = new ExpandedMenuItem(null, ``)
         this.menu.addMenuItem(this.userMenuItem)
 
         /// Token Scopes
         const missingScopes = this.tokenScopes.missingScopes()
         this.tokenScopesItem = new IconPopupMenuItem({
-            startIconName: 'dialog-password-symbolic',
-            text: `Token: ${this.tokenScopes.toString()}${missingScopes.length === 0 ? '' : ` - (MISSING: ${missingScopes})`}`,
-            endIconName: 'edit-copy-symbolic',
+            startIconName: `dialog-password-symbolic`,
+            text: `Token: ${this.tokenScopes.toString()}${missingScopes.length === 0 ? `` : ` - (MISSING: ${missingScopes})`}`,
+            endIconName: `edit-copy-symbolic`,
             endIconCallback: this.copyTokenCallback,
         })
         this.userMenuItem.menuBox.add_actor(this.tokenScopesItem)
 
         /// 2 FA
-        this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl('https://github.com/settings/two_factor_authentication/setup/intro') : {}
+        this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl(`https://github.com/settings/two_factor_authentication/setup/intro`) : {}
         this.twoFactorItem = new IconPopupMenuItem({
-            startIconName: 'security-medium-symbolic',
+            startIconName: `security-medium-symbolic`,
             itemCallback: this.twoFactorCallback,
         })
         this.userMenuItem.menuBox.add_actor(this.twoFactorItem)
 
         /// Minutes
-        this.minutesItem = new IconPopupMenuItem({ startIconName: 'alarm-symbolic' })
+        this.minutesItem = new IconPopupMenuItem({ startIconName: `alarm-symbolic` })
         this.userMenuItem.menuBox.add_actor(this.minutesItem)
 
         /// Packages
-        this.packagesItem = new IconPopupMenuItem({ startIconName: 'network-transmit-receive-symbolic' })
+        this.packagesItem = new IconPopupMenuItem({ startIconName: `network-transmit-receive-symbolic` })
         this.userMenuItem.menuBox.add_actor(this.packagesItem)
 
         /// Shared Storage
-        this.sharedStorageItem = new IconPopupMenuItem({ startIconName: 'network-server-symbolic' })
+        this.sharedStorageItem = new IconPopupMenuItem({ startIconName: `network-server-symbolic` })
         this.userMenuItem.menuBox.add_actor(this.sharedStorageItem)
 
         if (this.simpleMode === false) {
             /// Starred
-            this.starredMenuItem = new ExpandedMenuItem('starred-symbolic', '')
+            this.starredMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.starredMenuItem)
 
             /// Followers            
-            this.followersMenuItem = new ExpandedMenuItem('system-users-symbolic', '')
+            this.followersMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
             this.menu.addMenuItem(this.followersMenuItem)
 
             /// Following
-            this.followingMenuItem = new ExpandedMenuItem('system-users-symbolic', '')
+            this.followingMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
             this.menu.addMenuItem(this.followingMenuItem)
 
             /// Repos
-            this.reposMenuItem = new ExpandedMenuItem('folder-symbolic', '')
+            this.reposMenuItem = new ExpandedMenuItem(`folder-symbolic`, ``)
             this.menu.addMenuItem(this.reposMenuItem)
 
             /// Gists
-            this.gistsMenuItem = new ExpandedMenuItem('utilities-terminal-symbolic', '')
+            this.gistsMenuItem = new ExpandedMenuItem(`utilities-terminal-symbolic`, ``)
             this.menu.addMenuItem(this.gistsMenuItem)
 
             /// Starred gists
-            this.starredGistsMenuItem = new ExpandedMenuItem('starred-symbolic', '')
+            this.starredGistsMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.starredGistsMenuItem)
         }
 
@@ -428,58 +428,58 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.simpleMode === false) {
             /// Repository
-            this.repositoryMenuItem = new ExpandedMenuItem('system-file-manager-symbolic', '', 'applications-internet-symbolic', () => openUrl(this.repositoryUrl))
+            this.repositoryMenuItem = new ExpandedMenuItem(`system-file-manager-symbolic`, ``, `applications-internet-symbolic`, () => openUrl(this.repositoryUrl))
             this.menu.addMenuItem(this.repositoryMenuItem)
 
             /// Repository isPrivate
-            this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: 'changes-prevent-symbolic' })
+            this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: `changes-prevent-symbolic` })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
 
             /// Repository isFork
-            this.repositoryForkItem = new IconPopupMenuItem({ startIconName: 'folder-remote-symbolic' })
+            this.repositoryForkItem = new IconPopupMenuItem({ startIconName: `folder-remote-symbolic` })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
 
             /// Commits
-            this.commitsMenuItem = new ExpandedMenuItem('media-record-symbolic', '')
+            this.commitsMenuItem = new ExpandedMenuItem(`media-record-symbolic`, ``)
             this.menu.addMenuItem(this.commitsMenuItem)
 
             /// Branches
-            this.branchesMenuItem = new ExpandedMenuItem('media-playlist-consecutive-symbolic', '')
+            this.branchesMenuItem = new ExpandedMenuItem(`media-playlist-consecutive-symbolic`, ``)
             this.menu.addMenuItem(this.branchesMenuItem)
 
             /// Tags
-            this.tagsMenuItem = new ExpandedMenuItem('edit-clear-symbolic', '')
+            this.tagsMenuItem = new ExpandedMenuItem(`edit-clear-symbolic`, ``)
             this.menu.addMenuItem(this.tagsMenuItem)
 
             /// Issues
-            this.issuesMenuItem = new ExpandedMenuItem('media-optical-symbolic', '')
+            this.issuesMenuItem = new ExpandedMenuItem(`media-optical-symbolic`, ``)
             this.menu.addMenuItem(this.issuesMenuItem)
 
             /// Pull requests
-            this.pullRequestsMenuItem = new ExpandedMenuItem('view-restore-symbolic', '')
+            this.pullRequestsMenuItem = new ExpandedMenuItem(`view-restore-symbolic`, ``)
             this.menu.addMenuItem(this.pullRequestsMenuItem)
 
             /// Stargazers
-            this.stargazersMenuItem = new ExpandedMenuItem('starred-symbolic', '')
+            this.stargazersMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.stargazersMenuItem)
 
             /// Workflows
-            this.workflowsMenuItem = new ExpandedMenuItem('mail-send-receive-symbolic', '')
+            this.workflowsMenuItem = new ExpandedMenuItem(`mail-send-receive-symbolic`, ``)
             this.menu.addMenuItem(this.workflowsMenuItem)
         }
 
         /// WorkflowRuns
-        this.runsMenuItem = new ExpandedMenuItem('media-playback-start-symbolic', '')
+        this.runsMenuItem = new ExpandedMenuItem(`media-playback-start-symbolic`, ``)
         this.menu.addMenuItem(this.runsMenuItem)
 
         if (this.simpleMode === false) {
             /// Releases
-            this.releasesMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '')
+            this.releasesMenuItem = new ExpandedMenuItem(`folder-visiting-symbolic`, ``)
             this.menu.addMenuItem(this.releasesMenuItem)
         }
 
         /// Artifacts
-        this.artifactsMenuItem = new ExpandedMenuItem('folder-visiting-symbolic', '')
+        this.artifactsMenuItem = new ExpandedMenuItem(`folder-visiting-symbolic`, ``)
         this.menu.addMenuItem(this.artifactsMenuItem)
     }
 
@@ -495,13 +495,13 @@ export class StatusBarIndicator extends PanelMenu.Button {
     setLatestWorkflowRun(run) {
         if (run === null || run === undefined) return
 
-        const conclusion = run["conclusion"]
+        const conclusion = run[`conclusion`]
 
-        if (conclusion == 'success') {
+        if (conclusion == `success`) {
             this.setState({ state: ExtensionState.COMPLETED_SUCCESS })
-        } else if (conclusion == 'failure') {
+        } else if (conclusion == `failure`) {
             this.setState({ state: ExtensionState.COMPLETED_FAILURE })
-        } else if (conclusion == 'cancelled') {
+        } else if (conclusion == `cancelled`) {
             this.setState({ state: ExtensionState.COMPLETED_CANCELLED })
         } else {
             this.setState({ state: ExtensionState.IN_PROGRESS })
@@ -518,60 +518,60 @@ export class StatusBarIndicator extends PanelMenu.Button {
     setUser(user) {
         if (user === null || user === undefined) return
 
-        const userEmail = user['email']
-        const userName = user['name']
-        const createdAt = user['created_at']
-        const userUrl = user['html_url']
-        const avatarUrl = user['avatar_url']
-        const twoFactorEnabled = user['two_factor_authentication']
+        const userEmail = user[`email`]
+        const userName = user[`name`]
+        const createdAt = user[`created_at`]
+        const userUrl = user[`html_url`]
+        const avatarUrl = user[`avatar_url`]
+        const twoFactorEnabled = user[`two_factor_authentication`]
 
         this.userUrl = userUrl
         this.twoFactorEnabled = twoFactorEnabled
 
         const userLabelText = (userName == null || userEmail == null)
-            ? 'No permissions'
+            ? `No permissions`
             : `${userName} (${userEmail}) \n\nJoined GitHub on: ${formatDate(createdAt)} `
 
         if (this.userMenuItem != null) {
             this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl))
             this.userMenuItem.icon.icon_size = 54
             this.userMenuItem.label.text = userLabelText
-            this.userMenuItem.label.style = 'margin-left: 4px;'
+            this.userMenuItem.label.style = `margin-left: 4px;`
         }
 
         if (this.twoFactorItem != null) {
             this.twoFactorItem.label.text = twoFactorEnabled == undefined ?
-                '2FA: No permissions' :
-                `2FA: ${(twoFactorEnabled == true ? 'Enabled' : 'Disabled')}`
+                `2FA: No permissions` :
+                `2FA: ${(twoFactorEnabled == true ? `Enabled` : `Disabled`)}`
         }
     }
 
     setUserBilling(minutes, packages, sharedStorage) {
         let parsedMinutes
         if (minutes != null) {
-            parsedMinutes = `Usage minutes: ${minutes['total_minutes_used']} of ${minutes['included_minutes']}, ${minutes['total_paid_minutes_used']} paid`
+            parsedMinutes = `Usage minutes: ${minutes[`total_minutes_used`]} of ${minutes[`included_minutes`]}, ${minutes[`total_paid_minutes_used`]} paid`
         }
 
         let parsedPackages
         if (packages != null) {
-            parsedPackages = `Data transfer out: ${packages['total_gigabytes_bandwidth_used']} GB of ${packages['included_gigabytes_bandwidth']} GB, ${packages['total_paid_gigabytes_bandwidth_used']} GB paid`
+            parsedPackages = `Data transfer out: ${packages[`total_gigabytes_bandwidth_used`]} GB of ${packages[`included_gigabytes_bandwidth`]} GB, ${packages[`total_paid_gigabytes_bandwidth_used`]} GB paid`
         }
 
         let parsedSharedStorage
         if (sharedStorage != null) {
-            parsedSharedStorage = `Storage for month: ${sharedStorage['estimated_storage_for_month']} GB, ${sharedStorage['estimated_paid_storage_for_month']} GB paid`
+            parsedSharedStorage = `Storage for month: ${sharedStorage[`estimated_storage_for_month`]} GB, ${sharedStorage[`estimated_paid_storage_for_month`]} GB paid`
         }
 
         if (this.minutesItem != null) {
-            this.minutesItem.label.text = parsedMinutes == null ? 'No permissions' : parsedMinutes
+            this.minutesItem.label.text = parsedMinutes == null ? `No permissions` : parsedMinutes
         }
 
         if (this.packagesItem != null) {
-            this.packagesItem.label.text = parsedPackages == null ? 'No permissions' : parsedPackages
+            this.packagesItem.label.text = parsedPackages == null ? `No permissions` : parsedPackages
         }
 
         if (this.sharedStorageItem != null) {
-            this.sharedStorageItem.label.text = parsedSharedStorage == null ? 'No permissions' : parsedSharedStorage
+            this.sharedStorageItem.label.text = parsedSharedStorage == null ? `No permissions` : parsedSharedStorage
         }
     }
 
@@ -580,9 +580,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'starred-symbolic',
-                "text": e['full_name'],
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `starred-symbolic`,
+                "text": e[`full_name`],
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -597,9 +597,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'system-users-symbolic',
-                "text": e['login'],
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `system-users-symbolic`,
+                "text": e[`login`],
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -614,9 +614,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'system-users-symbolic',
-                "text": e['login'],
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `system-users-symbolic`,
+                "text": e[`login`],
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -630,27 +630,27 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (repos === null || repos === undefined) return
 
         function toItem(e) {
-            const visibility = e['visibility']
-            const createdAt = formatDate(e['created_at'])
-            const name = e['name']
-            const owner = e['owner']['login']
+            const visibility = e[`visibility`]
+            const createdAt = formatDate(e[`created_at`])
+            const name = e[`name`]
+            const owner = e[`owner`][`login`]
 
             return {
-                "iconName": 'folder-symbolic',
+                "iconName": `folder-symbolic`,
                 "text": `${createdAt} - (${visibility}) - ${name} `,
-                "callback": () => openUrl(e['html_url']),
-                "endButtonText": 'Watch',
+                "callback": () => openUrl(e[`html_url`]),
+                "endButtonText": `Watch`,
                 "endButtonCallback": () => onWatchCallback(owner, name),
             }
         }
 
         if (this.reposMenuItem != null) {
-            const privateRepoCount = repos.filter((e) => e['private'] == true).length
+            const privateRepoCount = repos.filter((e) => e[`private`] == true).length
 
             this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length} (private: ${privateRepoCount})`)
             this.reposMenuItem.submitItems(
                 repos
-                    .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
+                    .sort((a, b) => (new Date(b[`created_at`])).getTime() - (new Date(a[`created_at`])).getTime())
                     .map((e) => toItem(e)))
         }
     }
@@ -659,13 +659,13 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (gists === null || gists === undefined) return
 
         function toItem(e) {
-            const createdAt = formatDate(e['created_at'])
-            const description = e['description']
+            const createdAt = formatDate(e[`created_at`])
+            const description = e[`description`]
 
             return {
-                "iconName": 'utilities-terminal-symbolic',
-                "text": `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, '')} ` : ''}`,
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `utilities-terminal-symbolic`,
+                "text": `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`,
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -673,7 +673,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.gistsMenuItem.setHeaderItemText(`Gists: ${gists.length} `)
             this.gistsMenuItem.submitItems(
                 gists
-                    .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
+                    .sort((a, b) => (new Date(b[`created_at`])).getTime() - (new Date(a[`created_at`])).getTime())
                     .map((e) => toItem(e)))
         }
     }
@@ -682,13 +682,13 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (starredGists === null || starredGists === undefined) return
 
         function toItem(e) {
-            const createdAt = formatDate(e['created_at'])
-            const description = e['description']
+            const createdAt = formatDate(e[`created_at`])
+            const description = e[`description`]
 
             return {
-                "iconName": 'starred-symbolic',
-                "text": `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, '')} ` : ''}`,
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `starred-symbolic`,
+                "text": `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`,
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -696,7 +696,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.starredGistsMenuItem.setHeaderItemText(`Gists: ${starredGists.length} `)
             this.starredGistsMenuItem.submitItems(
                 starredGists
-                    .sort((a, b) => (new Date(b['created_at'])).getTime() - (new Date(a['created_at'])).getTime())
+                    .sort((a, b) => (new Date(b[`created_at`])).getTime() - (new Date(a[`created_at`])).getTime())
                     .map((e) => toItem(e)))
         }
     }
@@ -707,18 +707,18 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (repo === null || repo === undefined) return
 
         if (this.repositoryMenuItem != null) {
-            this.repositoryMenuItem.label.style = 'margin-left: 4px;'
-            this.repositoryMenuItem.label.text = `${repo['full_name']} \n\nCreated at: ${formatDate(repo['created_at'])} `
+            this.repositoryMenuItem.label.style = `margin-left: 4px;`
+            this.repositoryMenuItem.label.text = `${repo[`full_name`]} \n\nCreated at: ${formatDate(repo[`created_at`])} `
 
-            this.repositoryUrl = repo['html_url']
+            this.repositoryUrl = repo[`html_url`]
         }
 
         if (this.repositoryPrivateItem != null) {
-            this.repositoryPrivateItem.label.text = `Private: ${(repo["private"] == true).toString()} `
+            this.repositoryPrivateItem.label.text = `Private: ${(repo[`private`] == true).toString()} `
         }
 
         if (this.repositoryForkItem != null) {
-            this.repositoryForkItem.label.text = `Fork: ${(repo["fork"] == true).toString()} `
+            this.repositoryForkItem.label.text = `Fork: ${(repo[`fork`] == true).toString()} `
         }
     }
 
@@ -727,9 +727,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'starred-symbolic',
-                "text": e['login'],
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `starred-symbolic`,
+                "text": e[`login`],
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -744,9 +744,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'mail-send-receive-symbolic',
-                "text": e['name'],
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `mail-send-receive-symbolic`,
+                "text": e[`name`],
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -760,13 +760,13 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (runs === null || runs === undefined) return
 
         function toItem(e) {
-            const conclusion = e['conclusion']
-            const id = e['id']
-            const runNumber = e["run_number"]
-            const updatedAt = e["updated_at"]
-            const displayTitle = e["display_title"]
-            const name = e["name"]
-            const htmlUrl = e['html_url']
+            const conclusion = e[`conclusion`]
+            const id = e[`id`]
+            const runNumber = e[`run_number`]
+            const updatedAt = e[`updated_at`]
+            const displayTitle = e[`display_title`]
+            const name = e[`name`]
+            const htmlUrl = e[`html_url`]
 
             const date = formatDate(updatedAt)
             const text = `(#${runNumber}) - ${date} - ${displayTitle} `
@@ -777,15 +777,15 @@ export class StatusBarIndicator extends PanelMenu.Button {
             let showCancel
             let showRerun
 
-            if (conclusion == 'success') {
+            if (conclusion == `success`) {
                 showDelete = true
                 showRerun = true
                 showCancel = false
-            } else if (conclusion == 'failure') {
+            } else if (conclusion == `failure`) {
                 showDelete = true
                 showRerun = true
                 showCancel = false
-            } else if (conclusion == 'cancelled') {
+            } else if (conclusion == `cancelled`) {
                 showDelete = true
                 showRerun = true
                 showCancel = false
@@ -799,11 +799,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
             let endButtonCallback
 
             if (showRerun === true) {
-                endButtonText = 'Re-run'
+                endButtonText = `Re-run`
                 endButtonCallback = () => {
                     showConfirmDialog({
-                        title: 'Re-run a workflow run',
-                        description: 'Are you sure you want to rerun this workflow run?',
+                        title: `Re-run a workflow run`,
+                        description: `Are you sure you want to rerun this workflow run?`,
                         itemTitle: `${date} - ${displayTitle} `,
                         itemDescription: name,
                         iconName: iconName,
@@ -813,11 +813,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             if (showCancel === true) {
-                endButtonText = 'Cancel'
+                endButtonText = `Cancel`
                 endButtonCallback = () => {
                     showConfirmDialog({
-                        title: 'Canceling a workflow run',
-                        description: 'Are you sure you want to cancel this workflow run?',
+                        title: `Canceling a workflow run`,
+                        description: `Are you sure you want to cancel this workflow run?`,
                         itemTitle: `${date} - ${displayTitle} `,
                         itemDescription: name,
                         iconName: iconName,
@@ -830,11 +830,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
                 "iconName": iconName,
                 "text": text,
                 "callback": () => openUrl(htmlUrl),
-                "endIconName": showDelete === true ? 'application-exit-symbolic' : null,
+                "endIconName": showDelete === true ? `application-exit-symbolic` : null,
                 "endIconCallback": showDelete === true ? () => {
                     showConfirmDialog({
-                        title: 'Workflow run deletion',
-                        description: 'Are you sure you want to delete this workflow run?',
+                        title: `Workflow run deletion`,
+                        description: `Are you sure you want to delete this workflow run?`,
                         itemTitle: `${date} - ${displayTitle} `,
                         itemDescription: name,
                         iconName: iconName,
@@ -857,9 +857,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'folder-visiting-symbolic',
-                "text": e['name'],
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `folder-visiting-symbolic`,
+                "text": e[`name`],
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -875,14 +875,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
         const self = this
 
         function toItem(e) {
-            const createdAt = e['created_at']
-            const size = bytesToString(e['size_in_bytes'])
-            const filename = e['name']
-            const downloadUrl = e['archive_download_url']
-            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${(e['expired'] == true ? ' - expired' : '')} `
+            const createdAt = e[`created_at`]
+            const size = bytesToString(e[`size_in_bytes`])
+            const filename = e[`name`]
+            const downloadUrl = e[`archive_download_url`]
+            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${(e[`expired`] == true ? ` - expired` : ``)} `
 
             return {
-                "iconName": 'folder-visiting-symbolic',
+                "iconName": `folder-visiting-symbolic`,
                 "text": labelName,
                 "callback": () => self.downloadArtifactCallback(downloadUrl, filename),
             }
@@ -901,10 +901,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'media-playlist-consecutive-symbolic',
-                "text": e['name'],
+                "iconName": `media-playlist-consecutive-symbolic`,
+                "text": e[`name`],
                 "callback": () => openUrl(repositoryUrl),
-                "endIconName": e['protected'] ? 'changes-prevent-symbolic' : null,
+                "endIconName": e[`protected`] ? `changes-prevent-symbolic` : null,
             }
         }
 
@@ -919,11 +919,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'edit-clear-symbolic',
-                "text": e['name'],
-                "callback": () => openUrl(e['commit']['url']),
-                "endIconName": 'folder-download-symbolic',
-                "endIconCallback": () => openUrl(e['zipball_url'])
+                "iconName": `edit-clear-symbolic`,
+                "text": e[`name`],
+                "callback": () => openUrl(e[`commit`][`url`]),
+                "endIconName": `folder-download-symbolic`,
+                "endIconCallback": () => openUrl(e[`zipball_url`])
             }
         }
 
@@ -938,9 +938,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'view-restore-symbolic',
-                "text": `#${e['number']} ${e['title']}`,
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `view-restore-symbolic`,
+                "text": `#${e[`number`]} ${e[`title`]}`,
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -955,9 +955,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e) {
             return {
-                "iconName": 'media-optical-symbolic',
-                "text": `#${e['number']} ${e['title']}`.slice(0, 200),
-                "callback": () => openUrl(e['html_url']),
+                "iconName": `media-optical-symbolic`,
+                "text": `#${e[`number`]} ${e[`title`]}`.slice(0, 200),
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 
@@ -971,15 +971,15 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (commits === null || commits === undefined) return
 
         function toItem(e) {
-            const date = formatDate(e['commit']['author']['date'])
-            const authorName = e['commit']['author']['name']
-            const authorEmail = e['commit']['author']['email']
-            const message = e['commit']['message'].replace(/\s+/g, ' ')
+            const date = formatDate(e[`commit`][`author`][`date`])
+            const authorName = e[`commit`][`author`][`name`]
+            const authorEmail = e[`commit`][`author`][`email`]
+            const message = e[`commit`][`message`].replace(/\s+/g, ` `)
 
             return {
-                "iconName": 'media-record-symbolic',
+                "iconName": `media-record-symbolic`,
                 "text": `${date} - ${authorName} (${authorEmail}) - ${message}`.slice(0, 200),
-                "callback": () => openUrl(e['html_url']),
+                "callback": () => openUrl(e[`html_url`]),
             }
         }
 

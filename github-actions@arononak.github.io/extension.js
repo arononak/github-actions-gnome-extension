@@ -153,7 +153,7 @@ export default class GithubActionsExtension extends Extension {
                         const clipboard = St.Clipboard.get_default()
                         clipboard.set_text(St.ClipboardType.CLIPBOARD, token)
 
-                        Main.notify('Copied !', token)
+                        Main.notify(`Copied !`, token)
                     },
                     logoutCallback: () => {
                         this.extensionController.logout()

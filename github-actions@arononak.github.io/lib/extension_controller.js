@@ -6,73 +6,73 @@ import { AppStatusColor } from './widgets.js'
 
 export const ExtensionState = {
     NOT_INSTALLED_CLI: {
-        text: () => 'Not installed CLI',
+        text: () => `Not installed CLI`,
         simpleModeShowText: true,
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.GRAY,
     },
     NOT_LOGGED: {
-        text: () => 'Not logged in',
+        text: () => `Not logged in`,
         simpleModeShowText: true,
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.GRAY,
     },
     LOGGED_NO_INTERNET_CONNECTION: {
-        text: () => 'No internet connection',
+        text: () => `No internet connection`,
         simpleModeShowText: true,
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.GRAY,
     },
     LOADING: {
-        text: () => 'Loading',
+        text: () => `Loading`,
         simpleModeShowText: false,
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.BLUE,
     },
     LOGGED_NOT_CHOOSED_REPO: {
-        text: () => 'No repo entered',
+        text: () => `No repo entered`,
         simpleModeShowText: true,
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.GRAY,
     },
     INCORRECT_REPOSITORY: {
-        text: () => 'Incorrect repository',
+        text: () => `Incorrect repository`,
         simpleModeShowText: true,
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.GRAY,
     },
     REPO_WITHOUT_ACTIONS: {
-        text: () => 'Repo without actions',
+        text: () => `Repo without actions`,
         simpleModeShowText: true,
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.GRAY,
     },
     IN_PROGRESS: {
-        text: () => 'In progress',
+        text: () => `In progress`,
         simpleModeShowText: false,
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.BLUE,
     },
     COMPLETED_CANCELLED: {
-        text: () => 'Cancelled',
+        text: () => `Cancelled`,
         simpleModeShowText: false,
         color: AppStatusColor.RED,
         coloredModeColor: AppStatusColor.RED,
     },
     COMPLETED_FAILURE: {
-        text: () => 'Failure',
+        text: () => `Failure`,
         simpleModeShowText: false,
         color: AppStatusColor.RED,
         coloredModeColor: AppStatusColor.RED,
     },
     COMPLETED_SUCCESS: {
-        text: () => 'Success',
+        text: () => `Success`,
         simpleModeShowText: false,
         color: AppStatusColor.WHITE,
         coloredModeColor: AppStatusColor.GREEN,
     },
     LONG_OPERATION_PLEASE_WAIT: {
-        text: () => 'Please wait...',
+        text: () => `Please wait...`,
         simpleModeShowText: true,
         color: AppStatusColor.GRAY,
         coloredModeColor: AppStatusColor.GRAY,
@@ -205,7 +205,7 @@ export class ExtensionController {
     }
 
     observeSettings(settingsRepository) {
-        this.settings.connect('changed::refresh-time', (settings, key) => {
+        this.settings.connect(`changed::refresh-time`, (settings, key) => {
             const enabled = settingsRepository.fetchEnabledExtension()
 
             if (enabled) {
@@ -214,7 +214,7 @@ export class ExtensionController {
             }
         })
 
-        this.settings.connect('changed::full-refresh-time', (settings, key) => {
+        this.settings.connect(`changed::full-refresh-time`, (settings, key) => {
             const enabled = settingsRepository.fetchEnabledExtension()
 
             if (enabled) {
@@ -223,35 +223,35 @@ export class ExtensionController {
             }
         })
 
-        this.settings.connect('changed::simple-mode', (settings, key) => {
+        this.settings.connect(`changed::simple-mode`, (settings, key) => {
             const simpleMode = settingsRepository.fetchSimpleMode()
             if (this.indicator != null && this.indicator != undefined) {
                 this.indicator.setSimpleMode(simpleMode)
             }
         })
 
-        this.settings.connect('changed::colored-mode', (settings, key) => {
+        this.settings.connect(`changed::colored-mode`, (settings, key) => {
             const coloredMode = settingsRepository.fetchColoredMode()
             if (this.indicator != null && this.indicator != undefined) {
                 this.indicator.setColoredMode(coloredMode)
             }
         })
 
-        this.settings.connect('changed::uppercase-mode', (settings, key) => {
+        this.settings.connect(`changed::uppercase-mode`, (settings, key) => {
             const uppercaseMode = settingsRepository.fetchUppercaseMode()
             if (this.indicator != null && this.indicator != undefined) {
                 this.indicator.setUppercaseMode(uppercaseMode)
             }
         })
 
-        this.settings.connect('changed::extended-colored-mode', (settings, key) => {
+        this.settings.connect(`changed::extended-colored-mode`, (settings, key) => {
             const extendedColoredMode = settingsRepository.fetchExtendedColoredMode()
             if (this.indicator != null && this.indicator != undefined) {
                 this.indicator.setExtendedColoredMode(extendedColoredMode)
             }
         })
 
-        this.settings.connect('changed::show-icon', (settings, key) => {
+        this.settings.connect(`changed::show-icon`, (settings, key) => {
             const enabled = settingsRepository.fetchEnabledExtension()
 
             if (enabled) {
@@ -259,7 +259,7 @@ export class ExtensionController {
             }
         })
 
-        this.settings.connect('changed::icon-position', (settings, key) => {
+        this.settings.connect(`changed::icon-position`, (settings, key) => {
             const enabled = settingsRepository.fetchEnabledExtension()
 
             if (enabled) {
@@ -267,7 +267,7 @@ export class ExtensionController {
             }
         })
 
-        this.settings.connect('changed::extension-enabled', (settings, key) => {
+        this.settings.connect(`changed::extension-enabled`, (settings, key) => {
             const enabled = settingsRepository.fetchEnabledExtension()
 
             if (enabled) {
@@ -302,7 +302,7 @@ export class ExtensionController {
             const status = await this.extensionRepository.deleteWorkflowRun(owner, repo, runId)
             indicator.setState({ state: state })
 
-            if (status == 'success') {
+            if (status == `success`) {
                 this.onDeleteWorkflowRun(true, runName)
                 this._fetchData(true)
             } else {
@@ -322,7 +322,7 @@ export class ExtensionController {
             const status = await this.extensionRepository.cancelWorkflowRun(owner, repo, runId)
             indicator.setState({ state: state })
 
-            if (status == 'success') {
+            if (status == `success`) {
                 this.onCancelWorkflowRun(true, runName)
                 this._fetchData(true)
             } else {
@@ -342,7 +342,7 @@ export class ExtensionController {
             const status = await this.extensionRepository.rerunWorkflowRun(owner, repo, runId)
             indicator.setState({ state: state })
 
-            if (status == 'success') {
+            if (status == `success`) {
                 this.onRerunWorkflowRun(true, runName)
                 this._fetchData(true)
             } else {
@@ -414,13 +414,13 @@ export class ExtensionController {
                 if (this.indicator.shouldShowCompletedNotification(previousState, currentState)) {
                     switch (currentState) {
                         case ExtensionState.COMPLETED_SUCCESS:
-                            this.onBuildCompleted(owner, repo, 'success')
+                            this.onBuildCompleted(owner, repo, `success`)
                             break
                         case ExtensionState.COMPLETED_FAILURE:
-                            this.onBuildCompleted(owner, repo, 'failure')
+                            this.onBuildCompleted(owner, repo, `failure`)
                             break
                         case ExtensionState.COMPLETED_CANCELLED:
-                            this.onBuildCompleted(owner, repo, 'cancelled')
+                            this.onBuildCompleted(owner, repo, `cancelled`)
                             break
                     }
                 }

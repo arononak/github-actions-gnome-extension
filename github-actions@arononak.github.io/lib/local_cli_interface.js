@@ -3,15 +3,15 @@
 import Gio from 'gi://Gio'
 
 export async function isGitHubCliInstalled() {
-    return executeCommandAsync(['gh', '--version'])
+    return executeCommandAsync([`gh`, `--version`])
 }
 
 export async function isLogged() {
-    return executeCommandAsync(['gh', 'auth', 'token'])
+    return executeCommandAsync([`gh`, `auth`, `token`])
 }
 
 export async function logoutUser() {
-    return executeCommandAsync(['gh', 'auth', 'logout', '--hostname', 'github.com'])
+    return executeCommandAsync([`gh`, `auth`, `logout`, `--hostname`, `github.com`])
 }
 
 async function executeCommandAsync(commandArray) {
@@ -38,7 +38,7 @@ async function executeCommandAsync(commandArray) {
 export async function authStatus() {
     return new Promise(async (resolve, reject) => {
         try {
-            const proc = Gio.Subprocess.new(['gh', 'auth', 'status'], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
+            const proc = Gio.Subprocess.new([`gh`, `auth`, `status`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
             proc.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
@@ -60,7 +60,7 @@ export async function authStatus() {
 export async function token() {
     return new Promise(async (resolve, reject) => {
         try {
-            const proc = Gio.Subprocess.new(['gh', 'auth', 'token'], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
+            const proc = Gio.Subprocess.new([`gh`, `auth`, `token`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
             proc.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
@@ -94,7 +94,7 @@ export async function downloadArtifactFile(downloadUrl, filename) {
             }
 
             const proc = Gio.Subprocess.new(
-                ['sh', '-c', `exec gh api ${downloadUrl} > ${filename}`],
+                [`sh`, `-c`, `exec gh api ${downloadUrl} > ${filename}`],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             )
 
@@ -131,7 +131,7 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
             }
 
             const proc = Gio.Subprocess.new(
-                ['gh', 'api', '--method', method, '-H', 'Accept: application/vnd.github+json', '-H', 'X-GitHub-Api-Version: 2022-11-28', `${command}?per_page=${pagination}`],
+                [`gh`, `api`, `--method`, method, `-H`, `Accept: application/vnd.github+json`, `-H`, `X-GitHub-Api-Version: 2022-11-28`, `${command}?per_page=${pagination}`],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             )
 
@@ -150,17 +150,17 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
 
                 if (proc.get_successful()) {
                     if (stdout.length == 0 && stderr.length == 0) {
-                        resolve('success')
+                        resolve(`success`)
                         return
                     }
 
                     const response = JSON.parse(stdout)
-                    response['_size_'] = stdout.length /// Welcome in JS World :D
+                    response[`_size_`] = stdout.length /// Welcome in JS World :D
                     resolve(response)
                     return
                 } else {
                     if (stdout.length < 2) {
-                        resolve('no-internet-connection')
+                        resolve(`no-internet-connection`)
                         return
                     }
                     

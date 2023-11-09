@@ -1,5 +1,5 @@
 export class TokenScopes {
-    static requiredScopes = ['repo', 'user', 'workflow']
+    static requiredScopes = [`repo`, `user`, `workflow`]
     
     constructor(scopes) {
         this.scopes = scopes

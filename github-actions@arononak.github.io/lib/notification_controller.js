@@ -10,7 +10,7 @@ export class NotificationController {
         if (success === true) {
             showNotification(`The artifact has been downloaded, check your home directory.\n\n${filename}`, true)
         } else {
-            showNotification('Something went wrong :/', false)
+            showNotification(`Something went wrong :/`, false)
         }
     }
 
@@ -26,7 +26,7 @@ export class NotificationController {
         if (success === true) {
             showNotification(`The Workflow run was successfully deleted.\n\n${runName}`, true)
         } else {
-            showNotification('Something went wrong :/', false)
+            showNotification(`Something went wrong :/`, false)
         }
     }
 
@@ -36,7 +36,7 @@ export class NotificationController {
         if (success === true) {
             showNotification(`The Workflow run was successfully cancelled.\n\n${runName}`, true)
         } else {
-            showNotification('Something went wrong :/', false)
+            showNotification(`Something went wrong :/`, false)
         }
     }
 
@@ -46,7 +46,7 @@ export class NotificationController {
         if (success === true) {
             showNotification(`The Workflow run was successfully re-runed.\n\n${runName}`, true)
         } else {
-            showNotification('Something went wrong :/', false)
+            showNotification(`Something went wrong :/`, false)
         }
     }
 
@@ -54,13 +54,13 @@ export class NotificationController {
         if (this.notificationsEnabled() == false) return
         
         switch (conclusion) {
-            case 'success':
+            case `success`:
                 showNotification(`${owner}/${repo} - The workflow has been successfully built`, true)
                 break
-            case 'failure':
+            case `failure`:
                 showNotification(`${owner}/${repo} - Failed :/`, false)
                 break
-            case 'cancelled':
+            case `cancelled`:
                 showNotification(`${owner}/${repo} - Cancelled`, false)
                 break
         }

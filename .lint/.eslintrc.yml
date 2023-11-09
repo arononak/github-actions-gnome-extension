@@ -17,12 +17,16 @@ rules:
   curly:
    - warn
    - multi-line
+  semi: off
   prefer-template:
    - warn
+  object-curly-spacing:
+   - warn
+   - always
+  quotes:
+   - warn
+   - backtick
   jsdoc/require-jsdoc: off
-  semi: off
-  object-curly-spacing: off
-  quotes: off
   spaced-comment: off
   object-shorthand: off
   eqeqeq: off
