@@ -259,12 +259,12 @@ export class ExtensionRepository {
 
                 const login = user[`login`]
 
-                /// Simple Mode
+                // Simple Mode
                 const minutes = await this.githubService.fetchUserBillingActionsMinutes(login)
                 const packages = await this.githubService.fetchUserBillingPackages(login)
                 const sharedStorage = await this.githubService.fetchUserBillingSharedStorage(login)
 
-                /// Hidden Mode
+                // Hidden Mode
                 const simpleMode = settingsRepository.fetchSimpleMode()
                 const { owner, repo } = settingsRepository.ownerAndRepo()
                 const isStarred = await this.githubService.checkIsRepoStarred(owner, repo)
@@ -283,7 +283,7 @@ export class ExtensionRepository {
 
                 const pagination = settingsRepository.fetchPagination()
 
-                /// Full Mode
+                // Full Mode
                 const starredList = await this.githubService.fetchUserStarred(login, pagination)
                 const followers = await this.githubService.fetchUserFollowers(pagination)
                 const following = await this.githubService.fetchUserFollowing(pagination)

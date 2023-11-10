@@ -319,14 +319,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.topItems.actor.add_actor(this.box)
         this.menu.addMenuItem(this.topItems)
 
-        /// Network transfer
+        // Network transfer
         if (this.isLogged() && this.state != ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
             this.networkButton = new RoundedButton({ iconName: `system-settings-symbolic`, text: `` })
             this.networkButton.connect(`clicked`, () => openUrl(`https://api.github.com/octocat`))
             this.leftBox.add(this.networkButton)
         }
 
-        /// Settings
+        // Settings
         this.settingsItem = new RoundedButton({ iconName: `system-settings-symbolic` })
         this.settingsItem.connect(`clicked`, () => extensionOpenPreferences())
         this.rightBox.add_actor(this.settingsItem)
@@ -336,23 +336,23 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.installButton.connect(`clicked`, () => openInstallCliScreen())
             this.rightBox.add_actor(this.installButton)
         } else if (this.isLogged()) {
-            /// Refresh
+            // Refresh
             this.refreshButton = new RoundedButton({ iconName: `view-refresh-symbolic` })
             this.refreshButton.connect(`clicked`, () => this.refreshCallback())
             this.rightBox.add_actor(this.refreshButton)
 
-            /// Logout
+            // Logout
             this.logoutButton = new RoundedButton({ iconName: `system-log-out-symbolic` })
             this.logoutButton.connect(`clicked`, async () => this.logoutCallback())
             this.rightBox.add_actor(this.logoutButton)
         } else {
-            /// Login
+            // Login
             this.loginButton = new RoundedButton({ iconName: `avatar-default-symbolic` })
             this.loginButton.connect(`clicked`, () => openAuthScreen())
             this.rightBox.add_actor(this.loginButton)
         }
 
-        /// Logged Menu
+        // Logged Menu
         if (this.isLogged() && this.state != ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
             this.initLoggedMenu()
@@ -360,11 +360,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
     }
 
     initLoggedMenu() {
-        /// User
+        // User
         this.userMenuItem = new ExpandedMenuItem(null, ``)
         this.menu.addMenuItem(this.userMenuItem)
 
-        /// Token Scopes
+        // Token Scopes
         const missingScopes = this.tokenScopes.missingScopes()
         this.tokenScopesItem = new IconPopupMenuItem({
             startIconName: `dialog-password-symbolic`,
@@ -374,7 +374,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         })
         this.userMenuItem.menuBox.add_actor(this.tokenScopesItem)
 
-        /// 2 FA
+        // 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl(`https://github.com/settings/two_factor_authentication/setup/intro`) : {}
         this.twoFactorItem = new IconPopupMenuItem({
             startIconName: `security-medium-symbolic`,
@@ -382,40 +382,40 @@ export class StatusBarIndicator extends PanelMenu.Button {
         })
         this.userMenuItem.menuBox.add_actor(this.twoFactorItem)
 
-        /// Minutes
+        // Minutes
         this.minutesItem = new IconPopupMenuItem({ startIconName: `alarm-symbolic` })
         this.userMenuItem.menuBox.add_actor(this.minutesItem)
 
-        /// Packages
+        // Packages
         this.packagesItem = new IconPopupMenuItem({ startIconName: `network-transmit-receive-symbolic` })
         this.userMenuItem.menuBox.add_actor(this.packagesItem)
 
-        /// Shared Storage
+        // Shared Storage
         this.sharedStorageItem = new IconPopupMenuItem({ startIconName: `network-server-symbolic` })
         this.userMenuItem.menuBox.add_actor(this.sharedStorageItem)
 
         if (this.simpleMode === false) {
-            /// Starred
+            // Starred
             this.starredMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.starredMenuItem)
 
-            /// Followers
+            // Followers
             this.followersMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
             this.menu.addMenuItem(this.followersMenuItem)
 
-            /// Following
+            // Following
             this.followingMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
             this.menu.addMenuItem(this.followingMenuItem)
 
-            /// Repos
+            // Repos
             this.reposMenuItem = new ExpandedMenuItem(`folder-symbolic`, ``)
             this.menu.addMenuItem(this.reposMenuItem)
 
-            /// Gists
+            // Gists
             this.gistsMenuItem = new ExpandedMenuItem(`utilities-terminal-symbolic`, ``)
             this.menu.addMenuItem(this.gistsMenuItem)
 
-            /// Starred gists
+            // Starred gists
             this.starredGistsMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.starredGistsMenuItem)
         }
@@ -427,58 +427,58 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
 
         if (this.simpleMode === false) {
-            /// Repository
+            // Repository
             this.repositoryMenuItem = new ExpandedMenuItem(`system-file-manager-symbolic`, ``, `applications-internet-symbolic`, () => openUrl(this.repositoryUrl))
             this.menu.addMenuItem(this.repositoryMenuItem)
 
-            /// Repository isPrivate
+            // Repository isPrivate
             this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: `changes-prevent-symbolic` })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
 
-            /// Repository isFork
+            // Repository isFork
             this.repositoryForkItem = new IconPopupMenuItem({ startIconName: `folder-remote-symbolic` })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
 
-            /// Commits
+            // Commits
             this.commitsMenuItem = new ExpandedMenuItem(`media-record-symbolic`, ``)
             this.menu.addMenuItem(this.commitsMenuItem)
 
-            /// Branches
+            // Branches
             this.branchesMenuItem = new ExpandedMenuItem(`media-playlist-consecutive-symbolic`, ``)
             this.menu.addMenuItem(this.branchesMenuItem)
 
-            /// Tags
+            // Tags
             this.tagsMenuItem = new ExpandedMenuItem(`edit-clear-symbolic`, ``)
             this.menu.addMenuItem(this.tagsMenuItem)
 
-            /// Issues
+            // Issues
             this.issuesMenuItem = new ExpandedMenuItem(`media-optical-symbolic`, ``)
             this.menu.addMenuItem(this.issuesMenuItem)
 
-            /// Pull requests
+            // Pull requests
             this.pullRequestsMenuItem = new ExpandedMenuItem(`view-restore-symbolic`, ``)
             this.menu.addMenuItem(this.pullRequestsMenuItem)
 
-            /// Stargazers
+            // Stargazers
             this.stargazersMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.stargazersMenuItem)
 
-            /// Workflows
+            // Workflows
             this.workflowsMenuItem = new ExpandedMenuItem(`mail-send-receive-symbolic`, ``)
             this.menu.addMenuItem(this.workflowsMenuItem)
         }
 
-        /// WorkflowRuns
+        // WorkflowRuns
         this.runsMenuItem = new ExpandedMenuItem(`media-playback-start-symbolic`, ``)
         this.menu.addMenuItem(this.runsMenuItem)
 
         if (this.simpleMode === false) {
-            /// Releases
+            // Releases
             this.releasesMenuItem = new ExpandedMenuItem(`folder-visiting-symbolic`, ``)
             this.menu.addMenuItem(this.releasesMenuItem)
         }
 
-        /// Artifacts
+        // Artifacts
         this.artifactsMenuItem = new ExpandedMenuItem(`folder-visiting-symbolic`, ``)
         this.menu.addMenuItem(this.artifactsMenuItem)
     }
@@ -491,7 +491,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
     }
 
-    /// Setters
+    // Setters
     setLatestWorkflowRun(run) {
         if (run === null || run === undefined) return
 
@@ -513,7 +513,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
     }
 
-    /// User ------------------------------------------------------------
+    // User ------------------------------------------------------------
 
     setUser(user) {
         if (user === null || user === undefined) return
@@ -701,7 +701,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
     }
 
-    /// Separator ------------------------------------------------------
+    // Separator ------------------------------------------------------
 
     setWatchedRepo(repo) {
         if (repo === null || repo === undefined) return

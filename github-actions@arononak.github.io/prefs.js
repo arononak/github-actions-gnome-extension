@@ -134,7 +134,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             onSpinButtonCreated: (spinButton) => settings.bind(`icon-position`, spinButton, `value`, Gio.SettingsBindFlags.DEFAULT),
         })
 
-        /// Repository
+        // Repository
         const ownerRow = createEntityRow({
             title: `Owner`,
             text: owner,
@@ -147,7 +147,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             onChanged: (text) => prefsController.updateRepo(text),
         })
 
-        /// Appearance
+        // Appearance
         const showNotificationsRow = createToggleRow({
             title: `Show notifications`,
             subtitle: `System notifications when the build is completed and others`,
@@ -197,7 +197,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         appearanceGroup.add(showIconRow)
         appearanceGroup.add(changeIconRow)
 
-        /// Refresh
+        // Refresh
         const refreshStatusRow = createSpinButtonRow({
             title: `Github Actions (in seconds)`,
             subtitle: `Package size: ${packageSize}`,
@@ -237,7 +237,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         refreshStatusGroup.add(fullRefreshRow)
         refreshStatusGroup.add(paginationRow)
 
-        /// Other
+        // Other
         const otherGroup = new Adw.PreferencesGroup({ title: `Other` })
         if (hiddenMode) {
             const extendedColoredMode = createToggleRow({

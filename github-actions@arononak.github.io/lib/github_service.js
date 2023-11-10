@@ -53,7 +53,7 @@ export class GithubService {
     downloadArtifactFile = async (downloadUrl, filename) =>
         cliInterface.downloadArtifactFile(downloadUrl, filename)
 
-    /// Pagoinated lists
+    // Pagoinated lists
     fetchUserRepos = async (pagination) =>
         cliInterface.executeGithubCliCommand(`GET`, `/user/repos`, pagination)
 
@@ -99,7 +99,7 @@ export class GithubService {
     fetchCommits = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/commits`, pagination)
 
-    /// Workflow Run
+    // Workflow Run
     fetchWorkflowRuns = async (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/actions/runs`, pagination)
 

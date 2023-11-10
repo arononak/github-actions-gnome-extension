@@ -47,7 +47,7 @@ export async function authStatus() {
                     resolve(null)
                 }
 
-                /// Github CLI put a response in stderr, why ? idk
+                // Github CLI put a response in stderr, why ? idk
                 resolve(stderr)
             })
         } catch (e) {
@@ -139,13 +139,13 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
 
                 print(`${method} ${command} ${stdout.length} ${stderr.length}`)
 
-                /// [NO_INTERNET_CONNECTION]
-                /// stdout:
-                /// stderr: error connecting to api.github.com
+                // [NO_INTERNET_CONNECTION]
+                // stdout:
+                // stderr: error connecting to api.github.com
 
-                /// [INCORRECT_REQUEST]
-                /// stdout: {"message":"Not Found","documentation_url":"https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository"}
-                /// stderr: gh: Not Found (HTTP 404)
+                // [INCORRECT_REQUEST]
+                // stdout: {"message":"Not Found","documentation_url":"https://docs.github.com/rest/actions/workflow-runs#list-workflow-runs-for-a-repository"}
+                // stderr: gh: Not Found (HTTP 404)
 
                 if (proc.get_successful()) {
                     if (stdout.length == 0 && stderr.length == 0) {
@@ -154,7 +154,7 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
                     }
 
                     const response = JSON.parse(stdout)
-                    response[`_size_`] = stdout.length /// Welcome in JS World :D
+                    response[`_size_`] = stdout.length // Welcome in JS World :D
                     resolve(response)
                 } else {
                     if (stdout.length < 2) {

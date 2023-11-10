@@ -63,7 +63,8 @@ rules:
   require-await: off
   no-trailing-spaces:
    - warn
+  spaced-comment:
+   - warn
   no-async-promise-executor: off
   no-return-await: off
-  spaced-comment: off
   jsdoc/require-jsdoc: off

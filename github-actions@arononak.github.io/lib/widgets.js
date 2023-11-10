@@ -191,7 +191,7 @@ export class RoundedButton extends St.Button {
         }
 
         if (text != null) {
-            /// this.label from St.Button is used
+            // this.label from St.Button is used
             this.boxLabel = new St.Label({ text, y_align: Clutter.ActorAlign.CENTER, y_expand: true })
             this.child.add(this.boxLabel)
             this.setTextColor(null)
@@ -233,7 +233,7 @@ export class IconButton extends St.Button {
     }
 }
 
-/// Parent item
+// Parent item
 export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
     static {
         GObject.registerClass(this)
@@ -307,7 +307,7 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
     }
 }
 
-/// Child item
+// Child item
 export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
     static {
         GObject.registerClass(this)
