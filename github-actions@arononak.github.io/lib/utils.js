@@ -3,7 +3,7 @@
 import GLib from 'gi://GLib'
 
 export function isEmpty(str) {
-    return (!str || str.length === 0)
+    return !str || str.length === 0
 }
 
 export function removeWhiteChars(str) {
@@ -17,7 +17,7 @@ export function formatDate(date) {
         year: `numeric`
     }
 
-    return (new Date(date)).toLocaleDateString(`en-GB`, options)
+    return new Date(date).toLocaleDateString(`en-GB`, options)
 }
 
 export function bytesToString(size) {

@@ -122,7 +122,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.refreshState()
     }
 
-    showRepositoryMenu = () => (this.state === ExtensionState.IN_PROGRESS || isCompleted(this.state))
+    showRepositoryMenu = () => this.state === ExtensionState.IN_PROGRESS || isCompleted(this.state)
 
     isInstalledCli = () => this.state != ExtensionState.NOT_INSTALLED_CLI
 
@@ -528,7 +528,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.userUrl = userUrl
         this.twoFactorEnabled = twoFactorEnabled
 
-        const userLabelText = (userName == null || userEmail == null)
+        const userLabelText = userName == null || userEmail == null
             ? `No permissions`
             : `${userName} (${userEmail}) \n\nJoined GitHub on: ${formatDate(createdAt)} `
 
@@ -542,7 +542,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.twoFactorItem != null) {
             this.twoFactorItem.label.text = twoFactorEnabled == undefined ?
                 `2FA: No permissions` :
-                `2FA: ${(twoFactorEnabled == true ? `Enabled` : `Disabled`)}`
+                `2FA: ${twoFactorEnabled == true ? `Enabled` : `Disabled`}`
         }
     }
 
@@ -650,7 +650,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length} (private: ${privateRepoCount})`)
             this.reposMenuItem.submitItems(
                 repos
-                    .sort((a, b) => (new Date(b[`created_at`])).getTime() - (new Date(a[`created_at`])).getTime())
+                    .sort((a, b) => new Date(b[`created_at`]).getTime() - new Date(a[`created_at`]).getTime())
                     .map((e) => toItem(e)))
         }
     }
@@ -673,7 +673,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.gistsMenuItem.setHeaderItemText(`Gists: ${gists.length} `)
             this.gistsMenuItem.submitItems(
                 gists
-                    .sort((a, b) => (new Date(b[`created_at`])).getTime() - (new Date(a[`created_at`])).getTime())
+                    .sort((a, b) => new Date(b[`created_at`]).getTime() - new Date(a[`created_at`]).getTime())
                     .map((e) => toItem(e)))
         }
     }
@@ -696,7 +696,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.starredGistsMenuItem.setHeaderItemText(`Gists: ${starredGists.length} `)
             this.starredGistsMenuItem.submitItems(
                 starredGists
-                    .sort((a, b) => (new Date(b[`created_at`])).getTime() - (new Date(a[`created_at`])).getTime())
+                    .sort((a, b) => new Date(b[`created_at`]).getTime() - new Date(a[`created_at`]).getTime())
                     .map((e) => toItem(e)))
         }
     }
@@ -879,7 +879,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             const size = bytesToString(e[`size_in_bytes`])
             const filename = e[`name`]
             const downloadUrl = e[`archive_download_url`]
-            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${(e[`expired`] == true ? ` - expired` : ``)} `
+            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${e[`expired`] == true ? ` - expired` : ``} `
 
             return {
                 "iconName": `folder-visiting-symbolic`,

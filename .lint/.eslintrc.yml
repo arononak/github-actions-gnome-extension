@@ -46,8 +46,10 @@ rules:
   eqeqeq: off
   max-statements-per-line:
    - warn
-  brace-style: off
-  no-extra-parens: off
+  brace-style:
+   - warn
+  no-extra-parens:
+   - warn
   nonblock-statement-body-position: off
   operator-linebreak: off
   no-dupe-class-members: off
