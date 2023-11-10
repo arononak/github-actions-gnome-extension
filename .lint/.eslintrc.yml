@@ -34,7 +34,8 @@ rules:
    - warn
   no-unused-vars: off
   eqeqeq: off
-  eol-last: off
+  eol-last:
+   - warn
   max-statements-per-line: off
   brace-style: off
   no-extra-parens: off

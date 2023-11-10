@@ -46,13 +46,13 @@ export class ExtensionRepository {
         onNotLogged,
         onSuccess,
     }) {
-        try {    
+        try {
             const isInstalledCli = await this.githubService.isInstalledCli()
             if (isInstalledCli == false) {
                 onNotInstalledCli()
                 return
             }
-    
+
             const isLogged = await this.githubService.isLogged()
             if (isLogged == false) {
                 onNotLogged()
@@ -74,12 +74,12 @@ export class ExtensionRepository {
         onRepoWithoutActions,
         onCompleted,
     }) {
-        try {    
+        try {
             const isLogged = await this.githubService.isLogged()
             if (isLogged == false) {
                 return
             }
-    
+
             const workflowRunsResponse = await this.githubService.fetchWorkflowRuns(owner, repo, 1)
             switch (workflowRunsResponse) {
                 case null:
@@ -89,9 +89,9 @@ export class ExtensionRepository {
                     onNoInternet()
                     return
             }
-    
+
             onDownloadPackageSize(workflowRunsResponse[`_size_`])
-    
+
             const workflowRuns = workflowRunsResponse[`workflow_runs`]
             if (workflowRuns.length == 0) {
                 onRepoWithoutActions()
@@ -103,7 +103,7 @@ export class ExtensionRepository {
             logError(error)
         }
     }
-    
+
     async fetchData({
         onlyWorkflowRuns,
         indicator,
@@ -128,7 +128,7 @@ export class ExtensionRepository {
 
             if (onlyWorkflowRuns === true) {
                 const { runs } = await this._fetchRepo(settingsRepository, onlyWorkflowRuns)
-    
+
                 indicator.setWorkflowRuns({
                     runs: runs[`workflow_runs`],
                     onDeleteWorkflowRun: (runId, runName) => {
@@ -141,10 +141,10 @@ export class ExtensionRepository {
                         onRerunWorkflowRun(runId, runName)
                     },
                 })
-    
+
                 return
             }
-    
+
             const {
                 user,
                 minutes,
@@ -157,7 +157,7 @@ export class ExtensionRepository {
                 gists,
                 starredGists,
             } = await this._fetchUser(settingsRepository)
-    
+
             const userObjects = [
                 user,
                 minutes,
@@ -170,7 +170,7 @@ export class ExtensionRepository {
                 gists,
                 starredGists,
             ]
-    
+
             indicator.setUser(user)
             indicator.setUserBilling(minutes, packages, sharedStorage)
             indicator.setUserStarred(starredList)
@@ -178,20 +178,20 @@ export class ExtensionRepository {
             indicator.setUserFollowing(following)
             indicator.setUserRepos(repos, (owner, repo) => {
                 onRepoSetAsWatched(owner, repo)
-    
+
                 settingsRepository.updateOwner(owner)
                 settingsRepository.updateRepo(repo)
-    
+
                 refreshCallback()
             })
             indicator.setUserGists(gists)
             indicator.setUserStarredGists(starredGists)
-    
+
             if (!indicator.showRepositoryMenu()) {
                 settingsRepository.updateTransfer(userObjects)
                 return
             }
-    
+
             const {
                 userRepo,
                 workflows,
@@ -205,7 +205,7 @@ export class ExtensionRepository {
                 pullRequests,
                 commits,
             } = await this._fetchRepo(settingsRepository)
-    
+
             const repoObjects = [
                 userRepo,
                 workflows,
@@ -219,9 +219,9 @@ export class ExtensionRepository {
                 pullRequests,
                 commits,
             ]
-    
+
             settingsRepository.updateTransfer([...userObjects, ...repoObjects])
-    
+
             indicator.setWatchedRepo(userRepo)
             indicator.setWorkflows(workflows === undefined ? [] : workflows[`workflows`])
             indicator.setArtifacts(artifacts === undefined ? [] : artifacts[`artifacts`])
