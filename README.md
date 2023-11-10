@@ -30,14 +30,6 @@
 
 # 🖥️ Development
 
-## Cloning and running
-
-```bash
-git clone https://github.com/arononak/github-actions-gnome-extension.git
-cd github-actions-gnome-extension
-make install && make run
-```
-
 ```mermaid
 graph TD
     utils.js---->extension_utils.js
@@ -97,6 +89,16 @@ graph TD
         extension_repository.js
     end
 ```
+
+## 🛫 Cloning and running
+
+```bash
+git clone https://github.com/arononak/github-actions-gnome-extension.git
+cd github-actions-gnome-extension
+make install && make run
+```
+
+## ⌨️ Commands
 
 | Steps                                                              | Commands                                                          |
 |:-------------------------------------------------------------------|:------------------------------------------------------------------|
