@@ -50,7 +50,8 @@ rules:
   no-trailing-spaces: off
   consistent-return: off
   no-async-promise-executor: off
-  no-implicit-coercion: off
+  no-implicit-coercion:
+   - warn
   no-return-await: off
   object-shorthand: off
   spaced-comment: off
