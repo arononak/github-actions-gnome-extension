@@ -58,9 +58,10 @@ rules:
    - before
   no-dupe-class-members:
    - warn
+  consistent-return:
+   - warn
   require-await: off
   no-trailing-spaces: off
-  consistent-return: off
   no-async-promise-executor: off
   no-return-await: off
   spaced-comment: off

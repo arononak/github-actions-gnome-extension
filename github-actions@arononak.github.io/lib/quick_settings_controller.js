@@ -18,6 +18,8 @@ function createIconColor(isDarkMode, isEnabled) {
     } else if (isDarkMode === false && isEnabled === false) {
         return AppStatusColor.BLACK
     }
+
+    return AppStatusColor.BLUE
 }
 
 export class EnabledExtensionToggle extends QuickSettings.QuickToggle {
