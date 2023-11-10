@@ -45,7 +45,8 @@ rules:
   operator-linebreak: off
   no-dupe-class-members: off
   require-await: off
-  no-useless-constructor: off
+  no-useless-constructor:
+   - warn
   no-trailing-spaces: off
   consistent-return: off
   no-async-promise-executor: off
