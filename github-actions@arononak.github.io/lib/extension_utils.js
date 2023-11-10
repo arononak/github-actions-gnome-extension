@@ -25,10 +25,30 @@ export function extensionOpenPreferences() {
     return extension.openPreferences()
 }
 
-export function removeWhiteChars(str)  { return _removeWhiteChars(str) }
-export function openUrl(str)           { return _openUrl(str) }
-export function openInstallCliScreen() { return _openInstallCliScreen() }
-export function openAuthScreen()       { return _openAuthScreen() }
-export function bytesToString(size)    { return _bytesToString(size) }
-export function formatDate(date)       { return _formatDate(date) }
-export function isEmpty(str)           { return _isEmpty(str) }
+export function removeWhiteChars(str) {
+    return _removeWhiteChars(str)
+}
+
+export function openUrl(str) {
+    return _openUrl(str)
+}
+
+export function openInstallCliScreen() {
+    return _openInstallCliScreen()
+}
+
+export function openAuthScreen() {
+    return _openAuthScreen()
+}
+
+export function bytesToString(size) {
+    return _bytesToString(size)
+}
+
+export function formatDate(date) {
+    return _formatDate(date)
+}
+
+export function isEmpty(str) {
+    return _isEmpty(str)
+}
