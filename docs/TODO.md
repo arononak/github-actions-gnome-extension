@@ -64,9 +64,11 @@
 - [x] public repo test & fix bugs
 - [x] openUrl not works
 - [x] commit list
+- [x] Lint
+- [x] extension_controller.js -> extract to 2 classes
+- [ ] extension_repository - refactor to callbacks
 - [ ] Refresh icon during changing theme
 - [ ] Information from githut raw file
-- [ ] extension_repository - refactor to callbacks
 - [ ] TEST.md refactor
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
@@ -82,7 +84,6 @@
 - [ ] NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [ ] Item text length limiter
 - [ ] Settings - repo text fields - dont remove last char
-- [ ] extension_controller.js -> extract to 2 classes
 - [ ] ColoredMode / ExtendedColoredMode - fix
 - [ ] Missing scopes - relogin
 - [ ] Block refresh
@@ -96,7 +97,6 @@
 - [ ] Organization billings
 - [ ] EN / PL - translations
 - [ ] Memory allocations - check memory leaks
-- [ ] Lint
 - [ ] Adjust to Github Enterprice
 - [ ] Performance
 - [ ] --paginat
