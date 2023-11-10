@@ -32,17 +32,18 @@ rules:
    - warn
   no-shadow:
    - warn
-  no-unused-vars: off
-  eqeqeq: off
+  indent:
+   - warn
   eol-last:
    - warn
+  no-unused-vars: off
+  eqeqeq: off
   max-statements-per-line: off
   brace-style: off
   no-extra-parens: off
   nonblock-statement-body-position: off
   operator-linebreak: off
   no-dupe-class-members: off
-  indent: off
   require-await: off
   no-useless-constructor: off
   no-trailing-spaces: off

@@ -23,7 +23,7 @@ import {
     bytesToString as _bytesToString,
     formatDate as _formatDate,
     extensionOpenPreferences as _extensionOpenPreferences,
-    } from './extension_utils.js'
+} from './extension_utils.js'
 
 export function extensionSettings()        { return _extensionSettings() }
 export function openUrl(str)               { return _openUrl(str) }

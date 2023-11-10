@@ -413,15 +413,15 @@ export class ExtensionController {
         
                 if (this.indicator.shouldShowCompletedNotification(previousState, currentState)) {
                     switch (currentState) {
-                        case ExtensionState.COMPLETED_SUCCESS:
-                            this.onBuildCompleted(owner, repo, `success`)
-                            break
-                        case ExtensionState.COMPLETED_FAILURE:
-                            this.onBuildCompleted(owner, repo, `failure`)
-                            break
-                        case ExtensionState.COMPLETED_CANCELLED:
-                            this.onBuildCompleted(owner, repo, `cancelled`)
-                            break
+                    case ExtensionState.COMPLETED_SUCCESS:
+                        this.onBuildCompleted(owner, repo, `success`)
+                        break
+                    case ExtensionState.COMPLETED_FAILURE:
+                        this.onBuildCompleted(owner, repo, `failure`)
+                        break
+                    case ExtensionState.COMPLETED_CANCELLED:
+                        this.onBuildCompleted(owner, repo, `cancelled`)
+                        break
                     }
                 }
             },

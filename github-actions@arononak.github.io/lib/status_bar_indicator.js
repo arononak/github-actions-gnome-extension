@@ -25,7 +25,7 @@ import {
     formatDate,
     extensionOpenPreferences,
     anvilIcon,
-    } from './widgets.js'
+} from './widgets.js'
 
 import { ExtensionState } from './extension_controller.js'
 
