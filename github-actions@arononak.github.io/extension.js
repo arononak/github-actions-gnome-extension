@@ -141,8 +141,8 @@ export default class GithubActionsExtension extends Extension {
                             indicator: this.indicator,
                             downloadUrl: downloadUrl,
                             filename: filename,
-                            onFinishCallback: (success, filename) => {
-                                NotificationController.showDownloadArtifact(success, filename)
+                            onFinishCallback: (_success, _filename) => {
+                                NotificationController.showDownloadArtifact(_success, _filename)
                             },
                         })
                     },

@@ -30,9 +30,10 @@ rules:
    - warn
   no-undef:
    - warn
+  no-shadow:
+   - warn
   no-unused-vars: off
   eqeqeq: off
-  no-shadow: off
   eol-last: off
   max-statements-per-line: off
   brace-style: off

@@ -17,9 +17,9 @@ export async function logoutUser() {
 async function executeCommandAsync(commandArray) {
     return new Promise(async (resolve, reject) => {
         try {
-            const proc = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
+            const process = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
-            proc.communicate_utf8_async(null, null, (proc, res) => {
+            process.communicate_utf8_async(null, null, (proc, res) => {
                 const [, stdout] = proc.communicate_utf8_finish(res)
 
                 if (!proc.get_successful()) {
@@ -38,9 +38,9 @@ async function executeCommandAsync(commandArray) {
 export async function authStatus() {
     return new Promise(async (resolve, reject) => {
         try {
-            const proc = Gio.Subprocess.new([`gh`, `auth`, `status`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
+            const process = Gio.Subprocess.new([`gh`, `auth`, `status`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
-            proc.communicate_utf8_async(null, null, (proc, res) => {
+            process.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
 
                 if (!proc.get_successful()) {
@@ -60,9 +60,9 @@ export async function authStatus() {
 export async function token() {
     return new Promise(async (resolve, reject) => {
         try {
-            const proc = Gio.Subprocess.new([`gh`, `auth`, `token`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
+            const process = Gio.Subprocess.new([`gh`, `auth`, `token`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
-            proc.communicate_utf8_async(null, null, (proc, res) => {
+            process.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
 
                 if (!proc.get_successful()) {
@@ -93,12 +93,12 @@ export async function downloadArtifactFile(downloadUrl, filename) {
                 return
             }
 
-            const proc = Gio.Subprocess.new(
+            const process = Gio.Subprocess.new(
                 [`sh`, `-c`, `exec gh api ${downloadUrl} > ${filename}`],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             )
 
-            proc.communicate_utf8_async(null, null, (proc, res) => {
+            process.communicate_utf8_async(null, null, (proc, res) => {
                 const [, stdout, stderr] = proc.communicate_utf8_finish(res)
 
                 if (proc.get_successful()) {
@@ -129,12 +129,12 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
                 return
             }
 
-            const proc = Gio.Subprocess.new(
+            const process = Gio.Subprocess.new(
                 [`gh`, `api`, `--method`, method, `-H`, `Accept: application/vnd.github+json`, `-H`, `X-GitHub-Api-Version: 2022-11-28`, `${command}?per_page=${pagination}`],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             )
 
-            proc.communicate_utf8_async(null, null, (proc, res) => {
+            process.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
 
                 print(`${method} ${command} ${stdout.length} ${stderr.length}`)

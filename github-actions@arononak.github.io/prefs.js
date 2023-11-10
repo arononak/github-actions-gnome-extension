@@ -32,10 +32,10 @@ function createEntityRow({ title, text, onChanged }) {
     })
     entry.set_size_request(300, -1)
     entry.connect(`changed`, (widget) => {
-        const text = entry.get_buffer().text
+        const entryText = entry.get_buffer().text
 
-        if (text) {
-            onChanged(text)
+        if (entryText) {
+            onChanged(entryText)
         }
     })
 

@@ -1,6 +1,6 @@
 'use strict'
 
-/* for 'global' */
+/* for 'global'c */
 /* eslint-disable no-undef */
 
 import Clutter from 'gi://Clutter'
