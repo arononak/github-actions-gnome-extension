@@ -36,6 +36,8 @@ rules:
    - warn
   eol-last:
    - warn
+  no-useless-constructor:
+   - warn
   no-unused-vars: off
   eqeqeq: off
   max-statements-per-line: off
@@ -45,7 +47,6 @@ rules:
   operator-linebreak: off
   no-dupe-class-members: off
   require-await: off
-  no-useless-constructor: off
   no-trailing-spaces: off
   consistent-return: off
   no-async-promise-executor: off

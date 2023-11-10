@@ -5,8 +5,6 @@ import { TokenScopes } from './token_scopes.js'
 import * as cliInterface from './local_cli_interface.js'
 
 export class GithubService {
-    constructor() { }
-
     isInstalledCli = async () =>
         cliInterface.isGitHubCliInstalled()
 
