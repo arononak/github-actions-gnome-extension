@@ -82,22 +82,6 @@ export class SettingsRepository {
         return true
     }
 
-    dataConsumptionPerHour() {
-        const packageSizeInBytes = this.settings.get_int(`package-size-in-bytes`)
-        const refreshTime = this.fetchRefreshTime()
-        const dataConsumptionPerHour = (packageSizeInBytes / refreshTime) * 60 * 60
-
-        return `${bytesToString(dataConsumptionPerHour)}/h`
-    }
-
-    fullDataConsumptionPerHour() {
-        const packageSizeInBytes = this.settings.get_int(`cold-package-size-in-bytes`)
-        const refreshTime = this.fetchRefreshFullUpdateTime()
-        const dataConsumptionPerHour = (packageSizeInBytes / refreshTime) * 60
-
-        return `${bytesToString(dataConsumptionPerHour)}/h`
-    }
-
     fullDataConsumptionPerHour() {
         const hotRefreshSize = this.settings.get_int(`package-size-in-bytes`)
         const hotRefreshTime = this.fetchRefreshTime()

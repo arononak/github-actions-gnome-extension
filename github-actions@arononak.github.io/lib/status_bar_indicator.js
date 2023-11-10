@@ -540,9 +540,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         if (this.twoFactorItem != null) {
-            this.twoFactorItem.label.text = twoFactorEnabled == undefined ?
-                `2FA: No permissions` :
-                `2FA: ${twoFactorEnabled == true ? `Enabled` : `Disabled`}`
+            this.twoFactorItem.label.text = twoFactorEnabled == undefined
+                ? `2FA: No permissions`
+                : `2FA: ${twoFactorEnabled == true ? `Enabled` : `Disabled`}`
         }
     }
 

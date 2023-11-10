@@ -50,9 +50,14 @@ rules:
    - warn
   no-extra-parens:
    - warn
-  nonblock-statement-body-position: off
-  operator-linebreak: off
-  no-dupe-class-members: off
+  nonblock-statement-body-position:
+   - warn
+   - beside
+  operator-linebreak:
+   - warn
+   - before
+  no-dupe-class-members:
+   - warn
   require-await: off
   no-trailing-spaces: off
   consistent-return: off
