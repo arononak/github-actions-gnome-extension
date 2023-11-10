@@ -86,7 +86,7 @@ export default class GithubActionsExtension extends Extension {
                 onDisableCallback: () => {
                     this.destroyQuickSettings()
                     this.createQuickSettings()
-                    
+
                     this.extensionController.stopRefreshing()
                     this.disposeExtension()
                 },

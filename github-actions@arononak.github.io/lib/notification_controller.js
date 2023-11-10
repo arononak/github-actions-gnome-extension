@@ -52,7 +52,7 @@ export class NotificationController {
 
     static showCompletedBuild(owner, repo, conclusion) {
         if (this.notificationsEnabled() == false) return
-        
+
         switch (conclusion) {
         case `success`:
             showNotification(`${owner}/${repo} - The workflow has been successfully built`, true)

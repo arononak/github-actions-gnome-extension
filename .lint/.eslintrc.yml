@@ -61,7 +61,8 @@ rules:
   consistent-return:
    - warn
   require-await: off
-  no-trailing-spaces: off
+  no-trailing-spaces:
+   - warn
   no-async-promise-executor: off
   no-return-await: off
   spaced-comment: off

@@ -160,7 +160,7 @@ export class ExtensionController {
         }
 
         this.indicator.initMenu()
-        
+
         try {
             this._checkErrors()
             this._fetchStatus()
@@ -408,7 +408,7 @@ export class ExtensionController {
                 const previousState = this.indicator.state
                 this.indicator.setLatestWorkflowRun(run)
                 const currentState = this.indicator.state
-        
+
                 if (this.indicator.shouldShowCompletedNotification(previousState, currentState)) {
                     switch (currentState) {
                     case ExtensionState.COMPLETED_SUCCESS:

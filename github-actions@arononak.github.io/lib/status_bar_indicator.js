@@ -399,7 +399,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.starredMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.starredMenuItem)
 
-            /// Followers            
+            /// Followers
             this.followersMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
             this.menu.addMenuItem(this.followersMenuItem)
 

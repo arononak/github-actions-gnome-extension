@@ -35,7 +35,7 @@ export class EnabledExtensionToggle extends QuickSettings.QuickToggle {
         this.label = `Github Actions`
 
         this.settings = extensionSettings()
-        
+
         const settingsRepository = new SettingsRepository(this.settings)
         const enabled = settingsRepository.fetchEnabledExtension()
         const darkMode = isDarkTheme()

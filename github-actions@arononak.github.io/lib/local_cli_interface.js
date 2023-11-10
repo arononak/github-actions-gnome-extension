@@ -140,7 +140,7 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
                 print(`${method} ${command} ${stdout.length} ${stderr.length}`)
 
                 /// [NO_INTERNET_CONNECTION]
-                /// stdout: 
+                /// stdout:
                 /// stderr: error connecting to api.github.com
 
                 /// [INCORRECT_REQUEST]
@@ -161,7 +161,7 @@ export async function executeGithubCliCommand(method, command, pagination = 100)
                         resolve(`no-internet-connection`)
                         return
                     }
-                    
+
                     resolve(null)
                 }
             })
