@@ -105,7 +105,7 @@ export default class GithubActionsExtension extends Extension {
         this.removeStatusBarIndicator()
     }
 
-    async createStatusBarIndicator() {
+    createStatusBarIndicator() {
         return new Promise(async (resolve, reject) => {
             try {
                 const {

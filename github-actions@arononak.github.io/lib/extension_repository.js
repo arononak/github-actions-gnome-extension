@@ -249,7 +249,7 @@ export class ExtensionRepository {
         }
     }
 
-    async _fetchUser(settingsRepository) {
+    _fetchUser(settingsRepository) {
         return new Promise(async (resolve, reject) => {
             try {
                 const user = await this.githubService.fetchUser()
@@ -311,7 +311,7 @@ export class ExtensionRepository {
         })
     }
 
-    async _fetchRepo(settingsRepository, onlyWorkflowRuns = false) {
+    _fetchRepo(settingsRepository, onlyWorkflowRuns = false) {
         return new Promise(async (resolve, reject) => {
             try {
                 const { owner, repo } = settingsRepository.ownerAndRepo()

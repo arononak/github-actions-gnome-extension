@@ -4,9 +4,6 @@ extends:
 parserOptions:
   sourceType: module
 rules:
-  arrow-parens:
-   - warn
-   - always
   comma-dangle:
    - warn
    - arrays: only-multiline
@@ -14,57 +11,44 @@ rules:
      imports: only-multiline
      exports: only-multiline
      functions: only-multiline
-  curly:
-   - warn
-   - multi-line
-  semi: off
-  prefer-template:
-   - warn
-  object-curly-spacing:
+  arrow-parens:
    - warn
    - always
-  quotes:
-   - warn
-   - backtick
-  no-useless-return:
-   - warn
-  no-undef:
-   - warn
-  no-shadow:
-   - warn
-  indent:
-   - warn
-  eol-last:
-   - warn
-  no-useless-constructor:
-   - warn
-  no-implicit-coercion:
-   - warn
-  object-shorthand:
-   - warn
-  no-unused-vars: off
-  eqeqeq: off
-  max-statements-per-line:
-   - warn
-  brace-style:
-   - warn
-  no-extra-parens:
-   - warn
   nonblock-statement-body-position:
    - warn
    - beside
   operator-linebreak:
    - warn
    - before
-  no-dupe-class-members:
+  curly:
    - warn
-  consistent-return:
+   - multi-line
+  object-curly-spacing:
    - warn
-  require-await: off
-  no-trailing-spaces:
+   - always
+  quotes:
    - warn
-  spaced-comment:
-   - warn
+   - backtick
+  prefer-template: warn
+  no-useless-return: warn
+  no-undef: warn
+  no-shadow: warn
+  indent: warn
+  eol-last: warn
+  no-useless-constructor: warn
+  no-implicit-coercion: warn
+  object-shorthand: warn
+  max-statements-per-line: warn
+  brace-style: warn
+  no-extra-parens: warn
+  no-dupe-class-members: warn
+  consistent-return: warn
+  no-trailing-spaces: warn
+  spaced-comment: warn
+  require-await: warn
+  eqeqeq: off
+  no-unused-vars: off
+  semi: off
   no-async-promise-executor: off
   no-return-await: off
   jsdoc/require-jsdoc: off

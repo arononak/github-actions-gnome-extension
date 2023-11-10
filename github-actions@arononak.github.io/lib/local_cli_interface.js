@@ -2,20 +2,20 @@
 
 import Gio from 'gi://Gio'
 
-export async function isGitHubCliInstalled() {
+export function isGitHubCliInstalled() {
     return executeCommandAsync([`gh`, `--version`])
 }
 
-export async function isLogged() {
+export function isLogged() {
     return executeCommandAsync([`gh`, `auth`, `token`])
 }
 
-export async function logoutUser() {
+export function logoutUser() {
     return executeCommandAsync([`gh`, `auth`, `logout`, `--hostname`, `github.com`])
 }
 
-async function executeCommandAsync(commandArray) {
-    return new Promise(async (resolve, reject) => {
+function executeCommandAsync(commandArray) {
+    return new Promise((resolve, reject) => {
         try {
             const process = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
@@ -35,8 +35,8 @@ async function executeCommandAsync(commandArray) {
     })
 }
 
-export async function authStatus() {
-    return new Promise(async (resolve, reject) => {
+export function authStatus() {
+    return new Promise((resolve, reject) => {
         try {
             const process = Gio.Subprocess.new([`gh`, `auth`, `status`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
@@ -57,8 +57,8 @@ export async function authStatus() {
     })
 }
 
-export async function token() {
-    return new Promise(async (resolve, reject) => {
+export function token() {
+    return new Promise((resolve, reject) => {
         try {
             const process = Gio.Subprocess.new([`gh`, `auth`, `token`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
@@ -78,7 +78,7 @@ export async function token() {
     })
 }
 
-export async function downloadArtifactFile(downloadUrl, filename) {
+export function downloadArtifactFile(downloadUrl, filename) {
     return new Promise(async (resolve, reject) => {
         try {
             const isInstalledCli = await isGitHubCliInstalled()
@@ -114,7 +114,7 @@ export async function downloadArtifactFile(downloadUrl, filename) {
     })
 }
 
-export async function executeGithubCliCommand(method, command, pagination = 100) {
+export function executeGithubCliCommand(method, command, pagination = 100) {
     return new Promise(async (resolve, reject) => {
         try {
             const isInstalledCli = await isGitHubCliInstalled()

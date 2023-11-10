@@ -343,7 +343,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
             // Logout
             this.logoutButton = new RoundedButton({ iconName: `system-log-out-symbolic` })
-            this.logoutButton.connect(`clicked`, async () => this.logoutCallback())
+            this.logoutButton.connect(`clicked`, () => this.logoutCallback())
             this.rightBox.add_actor(this.logoutButton)
         } else {
             // Login
