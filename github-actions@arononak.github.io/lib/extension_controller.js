@@ -354,12 +354,6 @@ export class ExtensionController {
     }
 
     _checkErrors() {
-        const transferText = this.settingsRepository.fullDataConsumptionPerHour()
-        setTimeout(() => {
-            this.indicator.setTransferText(transferText)
-            this.indicator.refreshGithubIcon()
-        }, 5000)
-
         if (this.indicator.isLongOperation()) {
             return
         }
@@ -376,7 +370,11 @@ export class ExtensionController {
             onNotLogged: () => {
                 this.indicator.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: true })
             },
-            onSuccess: () => {},
+            onSuccess: () => {
+                const transferText = this.settingsRepository.fullDataConsumptionPerHour()
+                this.indicator.setTransferText(transferText)
+                this.indicator.refreshGithubIcon()
+            },
         })
     }
 
