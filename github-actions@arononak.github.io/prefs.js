@@ -25,7 +25,7 @@ function createButtonRow({ title, subtitle, buttonLabel, onButtonPressed }) {
 
 function createEntityRow({ title, text, onChanged }) {
     const entry = new Gtk.Entry({
-        buffer: new Gtk.EntryBuffer({ text: text }),
+        buffer: new Gtk.EntryBuffer({ text }),
         hexpand: true,
         halign: Gtk.Align.END,
         valign: Gtk.Align.CENTER,
@@ -39,7 +39,7 @@ function createEntityRow({ title, text, onChanged }) {
         }
     })
 
-    const row = new Adw.ActionRow({ title: title })
+    const row = new Adw.ActionRow({ title })
     row.add_suffix(entry)
     row.activatable_widget = entry
 
@@ -53,9 +53,9 @@ function createSpinButtonRow({ title, subtitle, value, lower, upper, onSpinButto
     spinButton.margin_top = 8
     spinButton.margin_bottom = 8
     spinButton.adjustment = new Gtk.Adjustment({
-        value: value,
-        lower: lower,
-        upper: upper,
+        value,
+        lower,
+        upper,
         step_increment: 1,
         page_increment: 10,
         page_size: 0,

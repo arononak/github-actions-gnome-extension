@@ -49,8 +49,8 @@ export class SettingsRepository {
         const repo = this.fetchRepo(this.settings)
 
         return {
-            owner: owner,
-            repo: repo,
+            owner,
+            repo,
         }
     }
 
@@ -63,12 +63,12 @@ export class SettingsRepository {
         const showIcon = this.fetchShowIcon()
 
         return {
-            "simpleMode": simpleMode,
-            "coloredMode": coloredMode,
-            "uppercaseMode": uppercaseMode,
-            "extendedColoredMode": extendedColoredMode,
-            "iconPosition": iconPosition,
-            "showIcon": showIcon,
+            simpleMode,
+            coloredMode,
+            uppercaseMode,
+            extendedColoredMode,
+            iconPosition,
+            showIcon,
         }
     }
 

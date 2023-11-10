@@ -272,10 +272,10 @@ export class ExtensionRepository {
 
                 if (simpleMode) {
                     resolve({
-                        "user": user,
-                        "minutes": minutes,
-                        "packages": packages,
-                        "sharedStorage": sharedStorage,
+                        user,
+                        minutes,
+                        packages,
+                        sharedStorage,
                     })
 
                     return
@@ -292,17 +292,17 @@ export class ExtensionRepository {
                 const starredGists = await this.githubService.fetchUserStarredGists(pagination)
 
                 resolve({
-                    "user": user,
-                    "minutes": minutes,
-                    "packages": packages,
-                    "sharedStorage": sharedStorage,
+                    user,
+                    minutes,
+                    packages,
+                    sharedStorage,
 
-                    "starredList": starredList,
-                    "followers": followers,
-                    "following": following,
-                    "repos": repos,
-                    "gists": gists,
-                    "starredGists": starredGists,
+                    starredList,
+                    followers,
+                    following,
+                    repos,
+                    gists,
+                    starredGists,
                 })
             } catch (error) {
                 logError(error)
@@ -320,7 +320,7 @@ export class ExtensionRepository {
                 const runs = await this.githubService.fetchWorkflowRuns(owner, repo, pagination)
 
                 if (onlyWorkflowRuns === true) {
-                    resolve({ "runs": runs })
+                    resolve({ runs })
                     return
                 }
 
@@ -328,7 +328,7 @@ export class ExtensionRepository {
                 const artifacts = await this.githubService.fetchArtifacts(owner, repo, pagination)
 
                 if (simpleMode) {
-                    resolve({ "runs": runs, "artifacts": artifacts })
+                    resolve({ runs, artifacts })
                     return
                 }
 
@@ -343,18 +343,18 @@ export class ExtensionRepository {
                 const commits = await this.githubService.fetchCommits(owner, repo, pagination)
 
                 resolve({
-                    "runs": runs,
-                    "artifacts": artifacts,
+                    runs,
+                    artifacts,
 
-                    "userRepo": userRepo,
-                    "workflows": workflows,
-                    "stargazers": stargazers,
-                    "releases": releases,
-                    "branches": branches,
-                    "tags": tags,
-                    "issues": issues,
-                    "pullRequests": pullRequests,
-                    "commits": commits,
+                    userRepo,
+                    workflows,
+                    stargazers,
+                    releases,
+                    branches,
+                    tags,
+                    issues,
+                    pullRequests,
+                    commits,
                 })
             } catch (error) {
                 logError(error)

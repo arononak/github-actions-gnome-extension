@@ -139,18 +139,18 @@ export class ExtensionController {
         const tokenScopes = await this.extensionRepository.tokenScopes()
 
         return {
-            "enabledExtension": enabledExtension,
+            enabledExtension,
 
-            "isInstalledCli": isInstalledCli,
-            "isLogged": isLogged,
-            "tokenScopes": tokenScopes,
+            isInstalledCli,
+            isLogged,
+            tokenScopes,
 
-            "simpleMode": simpleMode,
-            "coloredMode": coloredMode,
-            "uppercaseMode": uppercaseMode,
-            "extendedColoredMode": extendedColoredMode,
-            "iconPosition": iconPosition,
-            "showIcon": showIcon,
+            simpleMode,
+            coloredMode,
+            uppercaseMode,
+            extendedColoredMode,
+            iconPosition,
+            showIcon,
         }
     }
 
@@ -285,7 +285,7 @@ export class ExtensionController {
             const state = indicator.getState()
             indicator.setState({ state: ExtensionState.LONG_OPERATION_PLEASE_WAIT })
             const success = await this.extensionRepository.downloadArtifactFile(downloadUrl, filename)
-            indicator.setState({ state: state })
+            indicator.setState({ state })
 
             onFinishCallback(success, filename)
         } catch (error) {
@@ -300,7 +300,7 @@ export class ExtensionController {
             const state = indicator.getState()
             indicator.setState({ state: ExtensionState.LONG_OPERATION_PLEASE_WAIT })
             const status = await this.extensionRepository.deleteWorkflowRun(owner, repo, runId)
-            indicator.setState({ state: state })
+            indicator.setState({ state })
 
             if (status == `success`) {
                 this.onDeleteWorkflowRun(true, runName)
@@ -320,7 +320,7 @@ export class ExtensionController {
             const state = indicator.getState()
             indicator.setState({ state: ExtensionState.LONG_OPERATION_PLEASE_WAIT })
             const status = await this.extensionRepository.cancelWorkflowRun(owner, repo, runId)
-            indicator.setState({ state: state })
+            indicator.setState({ state })
 
             if (status == `success`) {
                 this.onCancelWorkflowRun(true, runName)
@@ -340,7 +340,7 @@ export class ExtensionController {
             const state = indicator.getState()
             indicator.setState({ state: ExtensionState.LONG_OPERATION_PLEASE_WAIT })
             const status = await this.extensionRepository.rerunWorkflowRun(owner, repo, runId)
-            indicator.setState({ state: state })
+            indicator.setState({ state })
 
             if (status == `success`) {
                 this.onRerunWorkflowRun(true, runName)
@@ -392,8 +392,8 @@ export class ExtensionController {
         const { owner, repo } = this.settingsRepository.ownerAndRepo()
 
         this.extensionRepository.fetchStatus({
-            owner: owner,
-            repo: repo,
+            owner,
+            repo,
             onNoInternet: () => {
                 this.indicator.setState({ state: ExtensionState.LOGGED_NO_INTERNET_CONNECTION })
             },
@@ -434,18 +434,18 @@ export class ExtensionController {
         }
 
         this.extensionRepository.fetchData({
-            onlyWorkflowRuns: onlyWorkflowRuns,
+            onlyWorkflowRuns,
             indicator: this.indicator,
             settingsRepository: this.settingsRepository,
             onRepoSetAsWatched: this.onRepoSetAsWatched,
             onDeleteWorkflowRun: (runId, runName) => {
-                this.deleteWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
+                this.deleteWorkflowRun({ indicator: this.indicator, runId, runName })
             },
             onCancelWorkflowRun: (runId, runName) => {
-                this.cancelWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
+                this.cancelWorkflowRun({ indicator: this.indicator, runId, runName })
             },
             onRerunWorkflowRun: (runId, runName) => {
-                this.rerunWorkflowRun({ indicator: this.indicator, runId: runId, runName: runName })
+                this.rerunWorkflowRun({ indicator: this.indicator, runId, runName })
             },
             refreshCallback: () => {
                 this.refresh()

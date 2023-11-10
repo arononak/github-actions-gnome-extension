@@ -45,27 +45,27 @@ export class PrefsController {
         }
 
         return {
-            "enabledExtension": enabledExtension,
+            enabledExtension,
 
-            "owner": owner,
-            "repo": repo,
-            "refreshTime": refreshTime,
-            "coldRefreshTime": coldRefreshTime,
-            "packageSize": packageSize,
-            "coldPackageSize": coldPackageSize,
-            "pagination": pagination,
+            owner,
+            repo,
+            refreshTime,
+            coldRefreshTime,
+            packageSize,
+            coldPackageSize,
+            pagination,
 
-            "showNotifications": showNotifications,
-            "simpleMode": simpleMode,
-            "coloredMode": coloredMode,
-            "uppercaseMode": uppercaseMode,
-            "iconPosition": iconPosition,
-            "showIcon": showIcon,
+            showNotifications,
+            simpleMode,
+            coloredMode,
+            uppercaseMode,
+            iconPosition,
+            showIcon,
 
-            "hiddenMode": hiddenMode,
+            hiddenMode,
 
             "version": extensionVersion,
-            "versionDescription": versionDescription,
+            versionDescription,
         }
     }
 

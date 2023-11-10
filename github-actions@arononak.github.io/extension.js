@@ -122,14 +122,14 @@ export default class GithubActionsExtension extends Extension {
                 } = await this.extensionController.fetchSettings()
 
                 this.indicator = new StatusBarIndicator({
-                    isInstalledCli: isInstalledCli,
-                    isLogged: isLogged,
-                    tokenScopes: tokenScopes,
-                    simpleMode: simpleMode,
-                    coloredMode: coloredMode,
-                    uppercaseMode: uppercaseMode,
-                    extendedColoredMode: extendedColoredMode,
-                    showIcon: showIcon,
+                    isInstalledCli,
+                    isLogged,
+                    tokenScopes,
+                    simpleMode,
+                    coloredMode,
+                    uppercaseMode,
+                    extendedColoredMode,
+                    showIcon,
                     refreshCallback: () => {
                         this.extensionController.refresh()
 
@@ -139,8 +139,8 @@ export default class GithubActionsExtension extends Extension {
                     downloadArtifactCallback: (downloadUrl, filename) => {
                         this.extensionController.downloadArtifact({
                             indicator: this.indicator,
-                            downloadUrl: downloadUrl,
-                            filename: filename,
+                            downloadUrl,
+                            filename,
                             onFinishCallback: (_success, _filename) => {
                                 NotificationController.showDownloadArtifact(_success, _filename)
                             },

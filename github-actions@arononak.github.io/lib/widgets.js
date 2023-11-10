@@ -172,7 +172,7 @@ export class RoundedButton extends St.Button {
 
         if (text != null) {
             /// this.label from St.Button is used
-            this.boxLabel = new St.Label({ text: text, y_align: Clutter.ActorAlign.CENTER, y_expand: true })
+            this.boxLabel = new St.Label({ text, y_align: Clutter.ActorAlign.CENTER, y_expand: true })
             this.child.add(this.boxLabel)
             this.setTextColor(null)
         }
@@ -227,7 +227,7 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
         this.scrollView.add_actor(this.menuBox)
         this.menu.box.add_actor(this.scrollView)
 
-        this.label = new St.Label({ text: text })
+        this.label = new St.Label({ text })
         this.insert_child_at_index(this.label, 0)
 
         this.setStartIcon({ iconName: startIconName })
@@ -404,8 +404,8 @@ export function showConfirmDialog({
     })
 
     const content = new Dialog.MessageDialogContent({
-        title: title,
-        description: description,
+        title,
+        description,
     })
     dialog.contentLayout.add_child(content)
 

@@ -256,7 +256,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             if (extendedColoredMode) {
                 const backgroundColor = darkTheme ? appStatusColor.backgroundColorDark : appStatusColor.backgroundColor
                 const borderColor = darkTheme ? appStatusColor.borderColorDark : appStatusColor.borderColor
-                this.networkButton.setColor({ backgroundColor: backgroundColor, borderColor: borderColor })
+                this.networkButton.setColor({ backgroundColor, borderColor })
             } else {
                 this.networkButton.setColor({ backgroundColor: null, borderColor: null })
             }
@@ -272,7 +272,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
     }
 
     setTransferIcon(gicon) {
-        this.networkIcon = new St.Icon({ icon_size: 20, gicon: gicon })
+        this.networkIcon = new St.Icon({ icon_size: 20, gicon })
         this.networkIcon.style = `margin-left: 2px;`
 
         if (this.networkButton) {
@@ -806,7 +806,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
                         description: `Are you sure you want to rerun this workflow run?`,
                         itemTitle: `${date} - ${displayTitle} `,
                         itemDescription: name,
-                        iconName: iconName,
+                        iconName,
                         onConfirm: () => onRerunWorkflowRun(id, `${displayTitle} ${name} `),
                     })
                 }
@@ -820,15 +820,15 @@ export class StatusBarIndicator extends PanelMenu.Button {
                         description: `Are you sure you want to cancel this workflow run?`,
                         itemTitle: `${date} - ${displayTitle} `,
                         itemDescription: name,
-                        iconName: iconName,
+                        iconName,
                         onConfirm: () => onCancelWorkflowRun(id, `${displayTitle} ${name} `),
                     })
                 }
             }
 
             return {
-                "iconName": iconName,
-                "text": text,
+                iconName,
+                text,
                 "callback": () => openUrl(htmlUrl),
                 "endIconName": showDelete === true ? `application-exit-symbolic` : null,
                 "endIconCallback": showDelete === true ? () => {
@@ -837,12 +837,12 @@ export class StatusBarIndicator extends PanelMenu.Button {
                         description: `Are you sure you want to delete this workflow run?`,
                         itemTitle: `${date} - ${displayTitle} `,
                         itemDescription: name,
-                        iconName: iconName,
+                        iconName,
                         onConfirm: () => onDeleteWorkflowRun(id, `${displayTitle} ${name} `),
                     })
                 } : null,
-                "endButtonText": endButtonText,
-                "endButtonCallback": endButtonCallback,
+                endButtonText,
+                endButtonCallback,
             }
         }
 
