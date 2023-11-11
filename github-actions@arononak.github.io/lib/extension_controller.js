@@ -1,6 +1,6 @@
 'use strict'
 
-import { ExtensionRepository } from './extension_repository.js'
+import { ExtensionRepository, DataTypeEnum } from './extension_repository.js'
 import { SettingsRepository }  from './settings_repository.js'
 import { AppStatusColor } from './widgets.js'
 
@@ -431,8 +431,19 @@ export class ExtensionController {
             return
         }
 
+        const repositoryEntered = indicator.showRepositoryMenu()
+
+        let type
+        if (onlyWorkflowRuns === true) {
+            type = DataTypeEnum.ONLY_RUNS
+        } else if (repositoryEntered === true) {
+            type = DataTypeEnum.FULL
+        } else {
+            type = DataTypeEnum.ONLY_USER
+        }
+
         this.extensionRepository.fetchData({
-            onlyWorkflowRuns,
+            type: type,
             indicator: this.indicator,
             settingsRepository: this.settingsRepository,
             onRepoSetAsWatched: this.onRepoSetAsWatched,

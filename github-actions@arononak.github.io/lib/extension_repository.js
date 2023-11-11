@@ -1,5 +1,11 @@
 import { GithubService } from './github_service.js'
 
+const DataTypeEnum = {
+    FULL: 'full',
+    ONLY_USER: 'only_user',
+    ONLY_RUNS: 'only_runs',
+}
+
 export class ExtensionRepository {
     constructor() {
         this.githubService = new GithubService()
@@ -105,7 +111,7 @@ export class ExtensionRepository {
     }
 
     async fetchData({
-        onlyWorkflowRuns,
+        type,
         indicator,
         settingsRepository,
         onRepoSetAsWatched,
@@ -126,8 +132,8 @@ export class ExtensionRepository {
                 settingsRepository.updateNewestVersion(newestVersion)
             }
 
-            if (onlyWorkflowRuns === true) {
-                const { runs } = await this._fetchRepo(settingsRepository, onlyWorkflowRuns)
+            if (type === DataTypeEnum.ONLY_RUNS) {
+                const { runs } = await this._fetchRepo(settingsRepository, true)
 
                 indicator.setWorkflowRuns({
                     runs: runs[`workflow_runs`],
@@ -187,7 +193,7 @@ export class ExtensionRepository {
             indicator.setUserGists(gists)
             indicator.setUserStarredGists(starredGists)
 
-            if (!indicator.showRepositoryMenu()) {
+            if (type === DataTypeEnum.ONLY_USER) {
                 settingsRepository.updateTransfer(userObjects)
                 return
             }
