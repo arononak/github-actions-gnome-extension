@@ -88,12 +88,12 @@ export class ExtensionRepository {
 
             const workflowRunsResponse = await this.githubService.fetchWorkflowRuns(owner, repo, 1)
             switch (workflowRunsResponse) {
-            case null:
-                onIncorrectRepository()
-                return
-            case `no-internet-connection`:
-                onNoInternet()
-                return
+                case null:
+                    onIncorrectRepository()
+                    return
+                case `no-internet-connection`:
+                    onNoInternet()
+                    return
             }
 
             onDownloadPackageSize(workflowRunsResponse[`_size_`])

@@ -33,7 +33,10 @@ rules:
   no-useless-return: warn
   no-undef: warn
   no-shadow: warn
-  indent: warn
+  indent:
+    - warn
+    - 4
+    - SwitchCase: 1
   eol-last: warn
   no-useless-constructor: warn
   no-implicit-coercion: warn

@@ -54,15 +54,15 @@ export class NotificationController {
         if (this.notificationsEnabled() == false) return
 
         switch (conclusion) {
-        case `success`:
-            showNotification(`${owner}/${repo} - The workflow has been successfully built`, true)
-            break
-        case `failure`:
-            showNotification(`${owner}/${repo} - Failed :/`, false)
-            break
-        case `cancelled`:
-            showNotification(`${owner}/${repo} - Cancelled`, false)
-            break
+            case `success`:
+                showNotification(`${owner}/${repo} - The workflow has been successfully built`, true)
+                break
+            case `failure`:
+                showNotification(`${owner}/${repo} - Failed :/`, false)
+                break
+            case `cancelled`:
+                showNotification(`${owner}/${repo} - Cancelled`, false)
+                break
         }
     }
 
