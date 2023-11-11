@@ -66,13 +66,13 @@
 - [x] commit list
 - [x] Lint
 - [x] extension_controller.js -> extract to 2 classes
-- [ ] extension_repository - refactor to callbacks
+- [x] extension_repository - refactor to callbacks
 - [ ] Refresh icon during changing theme
+- [ ] max list item text length from settings
 - [ ] Information from githut raw file
 - [ ] TEST.md refactor
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
-- [ ] max list item text length from settings
 - [ ] dates manager
 - [ ] Suspend bug
 - [ ] label list

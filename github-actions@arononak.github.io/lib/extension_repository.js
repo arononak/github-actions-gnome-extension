@@ -1,9 +1,9 @@
 import { GithubService } from './github_service.js'
 
 const DataTypeEnum = {
-    FULL: 'full',
-    ONLY_USER: 'only_user',
-    ONLY_RUNS: 'only_runs',
+    FULL: `full`,
+    ONLY_USER: `only_user`,
+    ONLY_RUNS: `only_runs`,
 }
 
 export class ExtensionRepository {
@@ -112,13 +112,10 @@ export class ExtensionRepository {
 
     async fetchData({
         type,
-        indicator,
         settingsRepository,
-        onRepoSetAsWatched,
-        onDeleteWorkflowRun,
-        onCancelWorkflowRun,
-        onRerunWorkflowRun,
-        refreshCallback,
+        onUserDownloaded,
+        onRunsDownloaded,
+        onRepoDownloaded,
     }) {
         try {
             const isLogged = await this.githubService.isLogged()
@@ -134,122 +131,25 @@ export class ExtensionRepository {
 
             if (type === DataTypeEnum.ONLY_RUNS) {
                 const { runs } = await this._fetchRepo(settingsRepository, true)
-
-                indicator.setWorkflowRuns({
-                    runs: runs[`workflow_runs`],
-                    onDeleteWorkflowRun: (runId, runName) => {
-                        onDeleteWorkflowRun(runId, runName)
-                    },
-                    onCancelWorkflowRun: (runId, runName) => {
-                        onCancelWorkflowRun(runId, runName)
-                    },
-                    onRerunWorkflowRun: (runId, runName) => {
-                        onRerunWorkflowRun(runId, runName)
-                    },
-                })
-
+                onRunsDownloaded(runs[`workflow_runs`])
                 return
             }
 
-            const {
-                user,
-                minutes,
-                packages,
-                sharedStorage,
-                starredList,
-                followers,
-                following,
-                repos,
-                gists,
-                starredGists,
-            } = await this._fetchUser(settingsRepository)
+            const userObject = await this._fetchUser(settingsRepository)
 
-            const userObjects = [
-                user,
-                minutes,
-                packages,
-                sharedStorage,
-                starredList,
-                followers,
-                following,
-                repos,
-                gists,
-                starredGists,
-            ]
-
-            indicator.setUser(user)
-            indicator.setUserBilling(minutes, packages, sharedStorage)
-            indicator.setUserStarred(starredList)
-            indicator.setUserFollowers(followers)
-            indicator.setUserFollowing(following)
-            indicator.setUserRepos(repos, (owner, repo) => {
-                onRepoSetAsWatched(owner, repo)
-
-                settingsRepository.updateOwner(owner)
-                settingsRepository.updateRepo(repo)
-
-                refreshCallback()
-            })
-            indicator.setUserGists(gists)
-            indicator.setUserStarredGists(starredGists)
+            onUserDownloaded(userObject)
 
             if (type === DataTypeEnum.ONLY_USER) {
-                settingsRepository.updateTransfer(userObjects)
+                settingsRepository.updateTransfer(Object.values(userObject))
                 return
             }
 
-            const {
-                userRepo,
-                workflows,
-                artifacts,
-                stargazers,
-                runs,
-                releases,
-                branches,
-                tags,
-                issues,
-                pullRequests,
-                commits,
-            } = await this._fetchRepo(settingsRepository)
+            const repoObject = await this._fetchRepo(settingsRepository)
 
-            const repoObjects = [
-                userRepo,
-                workflows,
-                artifacts,
-                stargazers,
-                runs,
-                releases,
-                branches,
-                tags,
-                issues,
-                pullRequests,
-                commits,
-            ]
+            settingsRepository.updateTransfer([...Object.values(userObject), ...Object.values(repoObject)])
 
-            settingsRepository.updateTransfer([...userObjects, ...repoObjects])
-
-            indicator.setWatchedRepo(userRepo)
-            indicator.setWorkflows(workflows === undefined ? [] : workflows[`workflows`])
-            indicator.setArtifacts(artifacts === undefined ? [] : artifacts[`artifacts`])
-            indicator.setStargazers(stargazers)
-            indicator.setWorkflowRuns({
-                runs: runs[`workflow_runs`],
-                onDeleteWorkflowRun: (runId, runName) => {
-                    onDeleteWorkflowRun(runId, runName)
-                },
-                onCancelWorkflowRun: (runId, runName) => {
-                    onCancelWorkflowRun(runId, runName)
-                },
-                onRerunWorkflowRun: (runId, runName) => {
-                    onRerunWorkflowRun(runId, runName)
-                },
-            })
-            indicator.setReleases(releases)
-            indicator.setBranches(branches)
-            indicator.setTags(tags)
-            indicator.setIssues(issues)
-            indicator.setPullRequests(pullRequests)
-            indicator.setCommits(commits)
+            onRunsDownloaded(repoObject[`runs`][`workflow_runs`])
+            onRepoDownloaded(repoObject)
         } catch (error) {
             logError(error)
         }

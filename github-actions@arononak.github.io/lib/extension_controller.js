@@ -431,7 +431,7 @@ export class ExtensionController {
             return
         }
 
-        const repositoryEntered = indicator.showRepositoryMenu()
+        const repositoryEntered = this.indicator.showRepositoryMenu()
 
         let type
         if (onlyWorkflowRuns === true) {
@@ -443,21 +443,76 @@ export class ExtensionController {
         }
 
         this.extensionRepository.fetchData({
-            type: type,
-            indicator: this.indicator,
+            type,
             settingsRepository: this.settingsRepository,
-            onRepoSetAsWatched: this.onRepoSetAsWatched,
-            onDeleteWorkflowRun: (runId, runName) => {
-                this.deleteWorkflowRun({ indicator: this.indicator, runId, runName })
+            onUserDownloaded: (userObject) => {
+                const {
+                    user,
+                    minutes,
+                    packages,
+                    sharedStorage,
+                    starredList,
+                    followers,
+                    following,
+                    repos,
+                    gists,
+                    starredGists,
+                } = userObject
+
+                this.indicator.setUser(user)
+                this.indicator.setUserBilling(minutes, packages, sharedStorage)
+                this.indicator.setUserStarred(starredList)
+                this.indicator.setUserFollowers(followers)
+                this.indicator.setUserFollowing(following)
+                this.indicator.setUserGists(gists)
+                this.indicator.setUserStarredGists(starredGists)
+                this.indicator.setUserRepos(repos, (owner, repo) => {
+                    this.onRepoSetAsWatched(owner, repo)
+
+                    this.settingsRepository.updateOwner(owner)
+                    this.settingsRepository.updateRepo(repo)
+
+                    this.refresh()
+                })
             },
-            onCancelWorkflowRun: (runId, runName) => {
-                this.cancelWorkflowRun({ indicator: this.indicator, runId, runName })
+            onRunsDownloaded: (runs) => {
+                this.indicator.setWorkflowRuns({
+                    runs: runs[`workflow_runs`],
+                    onDeleteWorkflowRun: (runId, runName) => {
+                        this.deleteWorkflowRun({ indicator: this.indicator, runId, runName })
+                    },
+                    onCancelWorkflowRun: (runId, runName) => {
+                        this.cancelWorkflowRun({ indicator: this.indicator, runId, runName })
+                    },
+                    onRerunWorkflowRun: (runId, runName) => {
+                        this.rerunWorkflowRun({ indicator: this.indicator, runId, runName })
+                    },
+                })
             },
-            onRerunWorkflowRun: (runId, runName) => {
-                this.rerunWorkflowRun({ indicator: this.indicator, runId, runName })
-            },
-            refreshCallback: () => {
-                this.refresh()
+            onRepoDownloaded: (repoObject) => {
+                const {
+                    userRepo,
+                    workflows,
+                    artifacts,
+                    stargazers,
+                    releases,
+                    branches,
+                    tags,
+                    issues,
+                    pullRequests,
+                    commits,
+                } = repoObject
+
+                this.indicator.setWatchedRepo(userRepo)
+                this.indicator.setWorkflows(workflows === undefined ? [] : workflows[`workflows`])
+                this.indicator.setArtifacts(artifacts === undefined ? [] : artifacts[`artifacts`])
+                this.indicator.setStargazers(stargazers)
+                this.indicator.setReleases(releases)
+                this.indicator.setBranches(branches)
+                this.indicator.setTags(tags)
+                this.indicator.setIssues(issues)
+                this.indicator.setPullRequests(pullRequests)
+                this.indicator.setCommits(commits)
             },
         })
     }
