@@ -2,39 +2,53 @@
 
 We want to ensure that our application works flawlessly before deployment. Below, you will find steps to test it to make sure everything is working as intended. 😊
 
-## 🌐 Connect to the repository and check the data is being downloaded:
-• Select a repository that does not contain a github actions workflow - UserData,
+</br>
 
-• Select the repository containing the github actions workflow        - UserData + RepoData,
+### 1. Connect to the repository
+• check the data - with repository
 
-• Check data refresh,
+### 2. Connect to the reposition without Actions
+• check the data - without repository
 
-• Remove workflow,
+### 3. Click refresh button
+• check data refresh
 
-• Start workflow,
+### 4. Remove workflow
 
-• Cancel workflow,
+### 5. Start workflow
 
-• Download artifact,
+### 6. Cancel workflow
 
-• Watch repo & notification,
+### 7. Download artifact
 
-## ▶️ Launch the workflow:
+### 8. Watch repo
+• check notification
 
-• Check changing status: SUCCESS/FAILURE -> IN_PROGRESS -> SUCCESS/FAILURE,
+### 9. Launch the workflow:
+• Check changing status: SUCCESS/FAILURE -> IN_PROGRESS -> SUCCESS/FAILURE
 
-• Check completed notification,
+• Check completed notification
 
-## 🧮 Check status label:
+### 10. Check status label:
+• LOGGED_NOT_CHOOSED_REPO
 
-• 🧮 Repo states: LOGGED_NOT_CHOOSED_REPO, REPO_WITHOUT_ACTIONS, INCORRECT_REPOSITORY,
+• INCORRECT_REPOSITORY
 
-• 📵 No internet connection,
+• REPO_WITHOUT_ACTIONS
 
-• 🔒 Logout,
+• NO_INTERNET_CONNECTION
 
-• 🧩 No CLI,
+• LOGOUT
 
-## ⚙️ Settings:
+• NO_CLI
 
-• All settings,
+```bash
+sudo apt remove gh
+```
+
+```bash
+sudo apt install gh
+```
+
+### 11. Settings:
+• check all settings
