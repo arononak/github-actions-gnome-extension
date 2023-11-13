@@ -70,7 +70,7 @@
 - [ ] Refresh icon during changing theme
 - [ ] max list item text length from settings
 - [ ] Information from githut raw file
-- [ ] TEST.md refactor
+- [x] TEST.md refactor
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
 - [ ] dates manager
