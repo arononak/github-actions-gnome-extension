@@ -91,13 +91,14 @@ graph TD
 ```
 
 ## 📜️ Development rules
+This project was built using **Aron Flow** (fuck scrum)
 
 | Before `git push`            | Before deploy                                |
 |:-----------------------------|:---------------------------------------------|
 | `make lint-fix`              | 🏞 New screenshots                           |
 |                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |
 |                              | 🏷️ New tag & release                         |
-|                              | 🛰 Deploy only Friday 18:00+ CET !!!         |
+|                              | 🛰 Deploy only on Fridays !                  |
 
 ## 🛫 Cloning and running
 
@@ -123,7 +124,7 @@ make install && make run
 
 # 📝 © 2023 Aron Onak
 
-> **Warning**<br>
+> [!WARNING]
 > The GitHub logo is a trademark of Microsoft.<br>
 > This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.<br>
 > If you have any feedback, please contact me at arononak@gmail.com
