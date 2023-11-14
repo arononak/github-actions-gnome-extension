@@ -28,7 +28,7 @@
 | 🔓 Check scopes      | `gh auth status`                              |
 | 🔄 If any is missing | `gh auth refresh --scopes user,repo,workflow` |
 
-# 🖥️ Development
+# 🖥️ Development [TODO](./docs/TODO.md)
 
 ```mermaid
 graph TD
@@ -92,12 +92,12 @@ graph TD
 
 ## 📜️ Development rules
 
-| Before `git push`            | Before deploy                                | ✅️ [TODO LIST](./docs/TODO.md)                                    |
-|:-----------------------------|:---------------------------------------------|:------------------------------------------------------------------|
-| `make lint-fix`              | 🏞 New screenshots                           | If you have any feedback, please contact me at arononak@gmail.com |
-|                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |                                                                   |
-|                              | 🏷️ New tag & release                         |                                                                   |
-|                              | 🛰 Time to deploy - Friday 18:00+ CET        |                                                                   |
+| Before `git push`            | Before deploy                                |
+|:-----------------------------|:---------------------------------------------|
+| `make lint-fix`              | 🏞 New screenshots                           |
+|                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |
+|                              | 🏷️ New tag & release                         |
+|                              | 🛰 Deploy only Friday 18:00+ CET !!!         |
 
 ## 🛫 Cloning and running
 
@@ -125,7 +125,5 @@ make install && make run
 
 > **Warning**<br>
 > The GitHub logo is a trademark of Microsoft.<br>
-> This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.
-
-
-
+> This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.<br>
+> If you have any feedback, please contact me at arononak@gmail.com
