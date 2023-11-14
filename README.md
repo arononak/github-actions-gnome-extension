@@ -95,8 +95,10 @@ graph TD
 | Before `git push`            | Before deploy                                |
 |:-----------------------------|:---------------------------------------------|
 | `make lint-fix`              | 🏞 New screenshots                           |
-|                              | 🏷️ New tag & release                         |
 |                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |
+|                              | 🏷️ New tag & release                         |
+|                              | 🛰 Time to deploy - Friday 18:00+ CET        |
+
 
 ## 🛫 Cloning and running
 
