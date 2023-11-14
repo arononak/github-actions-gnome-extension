@@ -90,6 +90,14 @@ graph TD
     end
 ```
 
+## 📜️ Development rules
+
+| Before `git push`            | Before deploy                                |
+|:-----------------------------|:---------------------------------------------|
+| `make lint-fix`              | 🏞 New screenshots                           |
+|                              | 🏷️ New tag & release                         |
+|                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |
+
 ## 🛫 Cloning and running
 
 ```bash
