@@ -92,13 +92,12 @@ graph TD
 
 ## 📜️ Development rules
 
-| Before `git push`            | Before deploy                                |
-|:-----------------------------|:---------------------------------------------|
-| `make lint-fix`              | 🏞 New screenshots                           |
-|                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |
-|                              | 🏷️ New tag & release                         |
-|                              | 🛰 Time to deploy - Friday 18:00+ CET        |
-
+| Before `git push`            | Before deploy                                | ✅️ [TODO LIST](./docs/TODO.md)                                    |
+|:-----------------------------|:---------------------------------------------|:------------------------------------------------------------------|
+| `make lint-fix`              | 🏞 New screenshots                           | If you have any feedback, please contact me at arononak@gmail.com |
+|                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |                                                                   |
+|                              | 🏷️ New tag & release                         |                                                                   |
+|                              | 🛰 Time to deploy - Friday 18:00+ CET        |                                                                   |
 
 ## 🛫 Cloning and running
 
@@ -119,8 +118,6 @@ make install && make run
 | 🔄 Compiles schemas                                                | `make compile`                                                    |
 | 🛠️ Builds gnome-extensions package                                 | `make build`                                                      |
 | 📦 Builds and installs on system, gnome restart required           | `make install`                                                    |
-| 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)                        |                                                                   |
-| ✅️ [TODO LIST](./docs/TODO.md)                                     | If you have any feedback, please contact me at arononak@gmail.com |
 
 ---
 
