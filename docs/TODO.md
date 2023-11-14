@@ -71,9 +71,10 @@
 - [ ] max list item text length from settings
 - [ ] Information from githut raw file
 - [x] TEST.md refactor
+- [ ] No internet start fixes
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
-- [ ] dates manager
+- [ ] dates manager - locale in settings
 - [ ] Suspend bug
 - [ ] label list
 - [ ] org list

@@ -157,13 +157,18 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         const previousState = this.state
         this.state = state
-        this.updateGithubActionsStatus(state)
+        this.updateStatusLabel(state)
 
         if (previousState === state) {
             return
         }
 
         if (previousState === ExtensionState.LONG_OPERATION_PLEASE_WAIT) {
+            return
+        }
+
+        if (state === ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
+            this.setTransferEmptyState()
             return
         }
 
@@ -208,7 +213,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.sharedStorageItem?.label.set_text(loadingText)
         this.repositoryPrivateItem?.label.set_text(loadingText)
         this.repositoryForkItem?.label.set_text(loadingText)
+        this.setTransferEmptyState()
+    }
 
+    setTransferEmptyState() {
         this.setTransferText(`ACME`)
         this.setTransferIcon(anvilIcon())
     }
@@ -227,7 +235,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.add_child(this.topBox)
     }
 
-    updateGithubActionsStatus(extensionState) {
+    updateStatusLabel(extensionState) {
         if (this.simpleMode == true && extensionState.simpleModeShowText == false) {
             this.label.text = ``
         } else {

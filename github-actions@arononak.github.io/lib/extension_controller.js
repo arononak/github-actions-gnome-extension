@@ -371,9 +371,11 @@ export class ExtensionController {
                 this.indicator.setState({ state: ExtensionState.NOT_LOGGED, forceUpdate: true })
             },
             onSuccess: () => {
-                const transferText = this.settingsRepository.fullDataConsumptionPerHour()
-                this.indicator.setTransferText(transferText)
-                this.indicator.refreshGithubIcon()
+                if (this.indicator.state !== ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
+                    const transferText = this.settingsRepository.fullDataConsumptionPerHour()
+                    this.indicator.setTransferText(transferText)
+                    this.indicator.refreshGithubIcon()
+                }
             },
         })
     }

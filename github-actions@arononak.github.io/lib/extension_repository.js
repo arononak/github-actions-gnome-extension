@@ -1,6 +1,6 @@
 import { GithubService } from './github_service.js'
 
-const DataTypeEnum = {
+export const DataTypeEnum = {
     FULL: `full`,
     ONLY_USER: `only_user`,
     ONLY_RUNS: `only_runs`,
