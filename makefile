@@ -25,7 +25,7 @@ install: build
 	rm -r -f $(EXTENSION_PACKAGE)
 
 compile:
-	glib-compile-schemas "$(EXTENSION_DIRECTORY)/schemas/"
+	glib-compile-schemas "github-actions@arononak.github.io/schemas/"
 
 lint:
 	eslint -c ./.lint/.eslintrc.yml github-actions@arononak.github.io/
