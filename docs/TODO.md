@@ -75,6 +75,7 @@
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
 - [ ] dates manager - locale in settings
+- [ ] Repository public/private - change to lock icon
 - [ ] Suspend bug
 - [ ] label list
 - [ ] org list
