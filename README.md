@@ -110,15 +110,16 @@ make start
 
 ## ⌨️ Commands
 
-| Steps                                                              | Commands                                                          |
-|:-------------------------------------------------------------------|:------------------------------------------------------------------|
-| ▶️  Starts a gnome session in a window                              | `make run`                                                        |
-| ➡️  Copying the extension from the system                           | `make copy`                                                       |
-| 🔎️ Starts code analysis                                            | `make lint`                                                       |
-| ✏️  Starts ESLint fixing                                            | `make lint-fix`                                                   |
-| 🔄 Compiles schemas                                                | `make compile`                                                    |
-| 🛠️ Builds gnome-extensions package                                 | `make build`                                                      |
-| 📦 Builds and installs on system, gnome restart required           | `make install`                                                    |
+| Steps                                                                | Commands                                                          |
+|:---------------------------------------------------------------------|:------------------------------------------------------------------|
+| ▶️  Starts a gnome session in a window                                | `make run`                                                        |
+| ➡️  Copying the extension from the system                             | `make copy`                                                       |
+| 🔎️ Starts code analysis                                              | `make lint`                                                       |
+| ✏️  Starts ESLint fixing                                              | `make lint-fix`                                                   |
+| 🔄 Compiles schemas                                                  | `make compile`                                                    |
+| 🛠️ Builds gnome-extensions package                                   | `make build`                                                      |
+| 📦 Builds and installs on system, gnome restart required             | `make install`                                                    |
+| 💻️ Installs the extension and starts a new gnome session in a window | `make start`                                                      |
 
 ---
 
