@@ -23,6 +23,8 @@ copy:
 install: build
 	gnome-extensions install $(EXTENSION_PACKAGE) --force
 	rm -r -f $(EXTENSION_PACKAGE)
+	
+start: install run
 
 compile:
 	glib-compile-schemas "github-actions@arononak.github.io/schemas/"
