@@ -50,6 +50,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         uppercaseMode = false,
         extendedColoredMode = false,
         showIcon = true,
+        textLengthLimiter = 100,
         isInstalledCli = false,
         isLogged = false,
         tokenScopes = ``,
@@ -65,6 +66,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.uppercaseMode = uppercaseMode
         this.extendedColoredMode = extendedColoredMode
         this.showIcon = showIcon
+        this.textLengthLimiter = textLengthLimiter
 
         this.tokenScopes = tokenScopes
 
@@ -119,6 +121,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
     setShowIcon = (showIcon) => {
         this.showIcon = showIcon
+        this.refreshState()
+    }
+
+    setTextLengthLimiter = (textLengthLimiter) => {
+        this.textLengthLimiter = textLengthLimiter
         this.refreshState()
     }
 
@@ -586,58 +593,58 @@ export class StatusBarIndicator extends PanelMenu.Button {
     setUserStarred(starred) {
         if (starred === null || starred === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `starred-symbolic`,
-                "text": e[`full_name`],
+                "text": e[`full_name`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
 
         if (this.starredMenuItem != null) {
             this.starredMenuItem.setHeaderItemText(`Starred: ${starred.length} `)
-            this.starredMenuItem.submitItems(starred.map((e) => toItem(e)))
+            this.starredMenuItem.submitItems(starred.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setUserFollowers(followers) {
         if (followers === null || followers === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `system-users-symbolic`,
-                "text": e[`login`],
+                "text": e[`login`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
 
         if (this.followersMenuItem != null) {
             this.followersMenuItem.setHeaderItemText(`Followers: ${followers.length} `)
-            this.followersMenuItem.submitItems(followers.map((e) => toItem(e)))
+            this.followersMenuItem.submitItems(followers.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setUserFollowing(following) {
         if (following === null || following === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `system-users-symbolic`,
-                "text": e[`login`],
+                "text": e[`login`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
 
         if (this.followingMenuItem != null) {
             this.followingMenuItem.setHeaderItemText(`Following: ${following.length} `)
-            this.followingMenuItem.submitItems(following.map((e) => toItem(e)))
+            this.followingMenuItem.submitItems(following.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setUserRepos(repos, onWatchCallback) {
         if (repos === null || repos === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             const visibility = e[`visibility`]
             const createdAt = formatDate(e[`created_at`])
             const name = e[`name`]
@@ -645,7 +652,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
             return {
                 "iconName": `folder-symbolic`,
-                "text": `${createdAt} - (${visibility}) - ${name} `,
+                "text": `${createdAt} - (${visibility}) - ${name}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
                 "endButtonText": `Watch`,
                 "endButtonCallback": () => onWatchCallback(owner, name),
@@ -659,20 +666,21 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.reposMenuItem.submitItems(
                 repos
                     .sort((a, b) => new Date(b[`created_at`]).getTime() - new Date(a[`created_at`]).getTime())
-                    .map((e) => toItem(e)))
+                    .map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setUserGists(gists) {
         if (gists === null || gists === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             const createdAt = formatDate(e[`created_at`])
             const description = e[`description`]
+            const text = `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`
 
             return {
                 "iconName": `utilities-terminal-symbolic`,
-                "text": `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`,
+                "text": text.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
@@ -682,20 +690,21 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.gistsMenuItem.submitItems(
                 gists
                     .sort((a, b) => new Date(b[`created_at`]).getTime() - new Date(a[`created_at`]).getTime())
-                    .map((e) => toItem(e)))
+                    .map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setUserStarredGists(starredGists) {
         if (starredGists === null || starredGists === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             const createdAt = formatDate(e[`created_at`])
             const description = e[`description`]
+            const text = `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`
 
             return {
                 "iconName": `starred-symbolic`,
-                "text": `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`,
+                "text": text.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
@@ -705,7 +714,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.starredGistsMenuItem.submitItems(
                 starredGists
                     .sort((a, b) => new Date(b[`created_at`]).getTime() - new Date(a[`created_at`]).getTime())
-                    .map((e) => toItem(e)))
+                    .map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
@@ -733,41 +742,41 @@ export class StatusBarIndicator extends PanelMenu.Button {
     setStargazers(stargazers) {
         if (stargazers === null || stargazers === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `starred-symbolic`,
-                "text": e[`login`],
+                "text": e[`login`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
 
         if (this.stargazersMenuItem != null) {
             this.stargazersMenuItem.setHeaderItemText(`Stargazers: ${stargazers.length} `)
-            this.stargazersMenuItem.submitItems(stargazers.map((e) => toItem(e)))
+            this.stargazersMenuItem.submitItems(stargazers.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setWorkflows(workflows) {
         if (workflows === null || workflows === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `mail-send-receive-symbolic`,
-                "text": e[`name`],
+                "text": e[`name`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
 
         if (this.workflowsMenuItem != null) {
-            this.workflowsMenuItem.setHeaderItemText(`Workflows: ${workflows.length} `)
-            this.workflowsMenuItem.submitItems(workflows.map((e) => toItem(e)))
+            this.workflowsMenuItem.setHeaderItemText(`Workflows: ${workflows.length}`)
+            this.workflowsMenuItem.submitItems(workflows.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setWorkflowRuns({ runs, onDeleteWorkflowRun, onCancelWorkflowRun, onRerunWorkflowRun }) {
         if (runs === null || runs === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             const conclusion = e[`conclusion`]
             const id = e[`id`]
             const runNumber = e[`run_number`]
@@ -836,7 +845,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
             return {
                 iconName,
-                text,
+                "text": text.slice(0, textLengthLimiter),
                 "callback": () => openUrl(htmlUrl),
                 "endIconName": showDelete === true ? `application-exit-symbolic` : null,
                 "endIconCallback": showDelete === true ? () => {
@@ -856,24 +865,24 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.runsMenuItem != null) {
             this.runsMenuItem.setHeaderItemText(`Workflow runs: ${runs.length} `)
-            this.runsMenuItem.submitItems(runs.map((e) => toItem(e)))
+            this.runsMenuItem.submitItems(runs.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setReleases(releases) {
         if (releases === null || releases === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `folder-visiting-symbolic`,
-                "text": e[`name`],
+                "text": e[`name`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
 
         if (this.releasesMenuItem != null) {
-            this.releasesMenuItem.setHeaderItemText(`Releases: ${releases.length} `)
-            this.releasesMenuItem.submitItems(releases.map((e) => toItem(e)))
+            this.releasesMenuItem.setHeaderItemText(`Releases: ${releases.length}`)
+            this.releasesMenuItem.submitItems(releases.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
@@ -882,7 +891,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         const self = this
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             const createdAt = e[`created_at`]
             const size = bytesToString(e[`size_in_bytes`])
             const filename = e[`name`]
@@ -891,14 +900,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
             return {
                 "iconName": `folder-visiting-symbolic`,
-                "text": labelName,
+                "text": labelName.slice(0, textLengthLimiter),
                 "callback": () => self.downloadArtifactCallback(downloadUrl, filename),
             }
         }
 
         if (this.artifactsMenuItem != null) {
-            this.artifactsMenuItem.setHeaderItemText(`Artifacts: ${artifacts.length} `)
-            this.artifactsMenuItem.submitItems(artifacts.map((e) => toItem(e)))
+            this.artifactsMenuItem.setHeaderItemText(`Artifacts: ${artifacts.length}`)
+            this.artifactsMenuItem.submitItems(artifacts.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
@@ -907,10 +916,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         const repositoryUrl = this.repositoryUrl
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `media-playlist-consecutive-symbolic`,
-                "text": e[`name`],
+                "text": e[`name`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(repositoryUrl),
                 "endIconName": e[`protected`] ? `changes-prevent-symbolic` : null,
             }
@@ -918,17 +927,17 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.branchesMenuItem != null) {
             this.branchesMenuItem.setHeaderItemText(`Branches: ${branches.length} `)
-            this.branchesMenuItem.submitItems(branches.map((e) => toItem(e)))
+            this.branchesMenuItem.submitItems(branches.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setTags(tags) {
         if (tags === null || tags === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `edit-clear-symbolic`,
-                "text": e[`name`],
+                "text": e[`name`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`commit`][`url`]),
                 "endIconName": `folder-download-symbolic`,
                 "endIconCallback": () => openUrl(e[`zipball_url`])
@@ -937,48 +946,48 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.tagsMenuItem != null) {
             this.tagsMenuItem.setHeaderItemText(`Tags: ${tags.length} `)
-            this.tagsMenuItem.submitItems(tags.map((e) => toItem(e)))
+            this.tagsMenuItem.submitItems(tags.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setPullRequests(pullRequests) {
         if (pullRequests === null || pullRequests === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `view-restore-symbolic`,
-                "text": `#${e[`number`]} ${e[`title`]}`,
+                "text": `#${e[`number`]} ${e[`title`]}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
 
         if (this.pullRequestsMenuItem != null) {
             this.pullRequestsMenuItem.setHeaderItemText(`Pull requests: ${pullRequests.length}`.slice(0, 200))
-            this.pullRequestsMenuItem.submitItems(pullRequests.map((e) => toItem(e)))
+            this.pullRequestsMenuItem.submitItems(pullRequests.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setIssues(issues) {
         if (issues === null || issues === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             return {
                 "iconName": `media-optical-symbolic`,
-                "text": `#${e[`number`]} ${e[`title`]}`.slice(0, 200),
+                "text": `#${e[`number`]} ${e[`title`]}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
 
         if (this.issuesMenuItem != null) {
-            this.issuesMenuItem.setHeaderItemText(`Issues: ${issues.length} `)
-            this.issuesMenuItem.submitItems(issues.map((e) => toItem(e)))
+            this.issuesMenuItem.setHeaderItemText(`Issues: ${issues.length}`)
+            this.issuesMenuItem.submitItems(issues.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 
     setCommits(commits) {
         if (commits === null || commits === undefined) return
 
-        function toItem(e) {
+        function toItem(e, textLengthLimiter) {
             const date = formatDate(e[`commit`][`author`][`date`])
             const authorName = e[`commit`][`author`][`name`]
             const authorEmail = e[`commit`][`author`][`email`]
@@ -986,14 +995,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
             return {
                 "iconName": `media-record-symbolic`,
-                "text": `${date} - ${authorName} (${authorEmail}) - ${message}`.slice(0, 200),
+                "text": `${date} - ${authorName} (${authorEmail}) - ${message}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
 
         if (this.commitsMenuItem != null) {
             this.commitsMenuItem.setHeaderItemText(`Commits: ${commits.length}`)
-            this.commitsMenuItem.submitItems(commits.map((e) => toItem(e)))
+            this.commitsMenuItem.submitItems(commits.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 }

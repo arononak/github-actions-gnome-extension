@@ -137,7 +137,7 @@ export function executeGithubCliCommand(method, command, pagination = 100) {
             process.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
 
-                print(`${method} ${command} ${stdout.length} ${stderr.length}`)
+                print(`${method} ${command} (${stdout.length}) <${stderr.length}>`)
 
                 // [NO_INTERNET_CONNECTION]
                 // stdout:

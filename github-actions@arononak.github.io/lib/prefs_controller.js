@@ -29,6 +29,7 @@ export class PrefsController {
         const uppercaseMode = this.settingsRepository.fetchUppercaseMode()
         const iconPosition = this.settingsRepository.fetchIconPosition()
         const showIcon = this.settingsRepository.fetchShowIcon()
+        const textLengthLimiter = this.settingsRepository.fetchTextLengthLimiter()
 
         const hiddenMode = this.settingsRepository.fetchHiddenMode()
 
@@ -61,6 +62,7 @@ export class PrefsController {
             uppercaseMode,
             iconPosition,
             showIcon,
+            textLengthLimiter,
 
             hiddenMode,
 

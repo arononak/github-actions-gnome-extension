@@ -35,6 +35,7 @@ export class SettingsRepository {
     fetchExtendedColoredMode = () => this.settings.get_boolean(`extended-colored-mode`)
     fetchIconPosition = () => this.settings.get_int(`icon-position`)
     fetchShowIcon = () => this.settings.get_boolean(`show-icon`)
+    fetchTextLengthLimiter = () => this.settings.get_int(`text-length-limiter`)
 
     fetchHiddenMode = () => this.settings.get_boolean(`hidden-mode`)
     updateHiddenMode = (mode) => this.settings.set_boolean(`hidden-mode`, mode)
@@ -61,6 +62,7 @@ export class SettingsRepository {
         const extendedColoredMode = this.fetchExtendedColoredMode()
         const iconPosition = this.fetchIconPosition()
         const showIcon = this.fetchShowIcon()
+        const textLengthLimiter = this.fetchTextLengthLimiter()
 
         return {
             simpleMode,
@@ -69,6 +71,7 @@ export class SettingsRepository {
             extendedColoredMode,
             iconPosition,
             showIcon,
+            textLengthLimiter,
         }
     }
 

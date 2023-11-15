@@ -52,5 +52,8 @@
     <key name="show-notifications" type="b">
       <default>true</default>
     </key>
+    <key name="text-length-limiter" type="i">
+      <default>100</default>
+    </key>
   </schema>
 </schemalist>

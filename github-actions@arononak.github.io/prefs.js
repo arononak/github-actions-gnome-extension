@@ -110,6 +110,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             uppercaseMode,
             iconPosition,
             showIcon,
+            textLengthLimiter,
 
             hiddenMode,
 
@@ -117,7 +118,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             versionDescription,
         } = prefsController.fetchData()
 
-        window.set_default_size(600, 1290)
+        window.set_default_size(600, 1340)
 
         const enabledRow = createToggleRow({
             title: `Enabled`,
@@ -189,6 +190,15 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             onButtonPressed: () => prefsController.onOpenExtensionFolderClicked(),
         })
 
+        const textLengthLimiterSpinRow = createSpinButtonRow({
+            title: `Text length limiter`,
+            subtitle: `Limits the length of text in list items`,
+            value: textLengthLimiter,
+            lower: 10,
+            upper: 500,
+            onSpinButtonCreated: (spinButton) => settings.bind(`text-length-limiter`, spinButton, `value`, Gio.SettingsBindFlags.DEFAULT),
+        })
+
         const appearanceGroup = new Adw.PreferencesGroup({ title: `Appearance` })
         appearanceGroup.add(showNotificationsRow)
         appearanceGroup.add(simpleModeRow)
@@ -196,6 +206,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         appearanceGroup.add(uppercaseModeRow)
         appearanceGroup.add(showIconRow)
         appearanceGroup.add(changeIconRow)
+        appearanceGroup.add(textLengthLimiterSpinRow)
 
         // Refresh
         const refreshStatusRow = createSpinButtonRow({
@@ -217,7 +228,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         })
 
         const paginationRow = createSpinButtonRow({
-            title: `Pagination:`,
+            title: `Pagination`,
             value: pagination,
             lower: 1,
             upper: 100,
@@ -267,7 +278,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         otherGroup.add(bugBountyRow)
 
         const versionRow = new Adw.ActionRow({
-            title: `Version:`,
+            title: `Version`,
             subtitle: versionDescription,
         })
         versionRow.add_suffix(new Gtk.Label({ label: version, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }))

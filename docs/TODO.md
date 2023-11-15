@@ -67,10 +67,11 @@
 - [x] Lint
 - [x] extension_controller.js -> extract to 2 classes
 - [x] extension_repository - refactor to callbacks
-- [ ] Refresh icon during changing theme
-- [ ] max list item text length from settings
-- [ ] Information from githut raw file
 - [x] TEST.md refactor
+- [x] max list item text length from settings
+- [ ] Refresh icon during changing theme
+- [ ] Changing settings without refresh indicator
+- [ ] Information from githut raw file
 - [ ] No internet start fixes
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable

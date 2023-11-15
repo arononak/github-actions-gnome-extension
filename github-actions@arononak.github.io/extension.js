@@ -119,6 +119,7 @@ export default class GithubActionsExtension extends Extension {
                     extendedColoredMode,
                     iconPosition,
                     showIcon,
+                    textLengthLimiter,
                 } = await this.extensionController.fetchSettings()
 
                 this.indicator = new StatusBarIndicator({
@@ -130,6 +131,7 @@ export default class GithubActionsExtension extends Extension {
                     uppercaseMode,
                     extendedColoredMode,
                     showIcon,
+                    textLengthLimiter,
                     refreshCallback: () => {
                         this.extensionController.refresh()
 

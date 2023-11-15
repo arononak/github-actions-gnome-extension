@@ -132,6 +132,7 @@ export class ExtensionController {
             extendedColoredMode,
             iconPosition,
             showIcon,
+            textLengthLimiter,
         } = this.settingsRepository.fetchAppearanceSettings()
 
         const isInstalledCli = await this.extensionRepository.isInstalledCli()
@@ -151,6 +152,7 @@ export class ExtensionController {
             extendedColoredMode,
             iconPosition,
             showIcon,
+            textLengthLimiter
         }
     }
 
@@ -248,6 +250,13 @@ export class ExtensionController {
             const extendedColoredMode = settingsRepository.fetchExtendedColoredMode()
             if (this.indicator != null && this.indicator != undefined) {
                 this.indicator.setExtendedColoredMode(extendedColoredMode)
+            }
+        })
+
+        this.settings.connect(`changed::text-length-limiter`, (settings, key) => {
+            const textLengthLimiter = settingsRepository.fetchTextLengthLimiter()
+            if (this.indicator != null && this.indicator != undefined) {
+                this.indicator.setTextLengthLimiter(textLengthLimiter)
             }
         })
 
