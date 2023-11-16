@@ -70,18 +70,18 @@
 - [x] TEST.md refactor
 - [x] max list item text length from settings
 - [x] Refresh icon during changing theme
+- [x] label list
 - [ ] Expired artifacts
 - [ ] Expired workflow rerun
 - [ ] workflow run - rerun 2 endpoints
+- [ ] Changing settings without refresh indicator
+- [ ] org list
+- [ ] No internet start fixes
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
-- [ ] Changing settings without refresh indicator
-- [ ] No internet start fixes
 - [ ] Dates manager - locale in settings
 - [ ] Repository public/private - change to lock icon
 - [ ] Suspend bug
-- [ ] label list
-- [ ] org list
 - [ ] Super simple mode
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin

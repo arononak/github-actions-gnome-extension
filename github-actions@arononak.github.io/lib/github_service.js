@@ -99,6 +99,9 @@ export class GithubService {
     fetchCommits = (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/commits`, pagination)
 
+    fetchLabels = (owner, repo, pagination) =>
+        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/labels`, pagination)
+
     // Workflow Run
     fetchWorkflowRuns = (owner, repo, pagination) =>
         cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/actions/runs`, pagination)

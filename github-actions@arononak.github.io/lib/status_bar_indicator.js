@@ -212,6 +212,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.tagsMenuItem?.setHeaderItemText(loadingText)
         this.issuesMenuItem?.setHeaderItemText(loadingText)
         this.commitsMenuItem?.setHeaderItemText(loadingText)
+        this.labelsMenuItem?.setHeaderItemText(loadingText)
         this.pullRequestsMenuItem?.setHeaderItemText(loadingText)
         this.artifactsMenuItem?.setHeaderItemText(loadingText)
         this.twoFactorItem?.label.set_text(loadingText)
@@ -465,6 +466,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
             // Tags
             this.tagsMenuItem = new ExpandedMenuItem(`edit-clear-symbolic`, ``)
             this.menu.addMenuItem(this.tagsMenuItem)
+
+            // Labels
+            this.labelsMenuItem = new ExpandedMenuItem(`edit-clear-symbolic`, ``)
+            this.menu.addMenuItem(this.labelsMenuItem)
 
             // Issues
             this.issuesMenuItem = new ExpandedMenuItem(`media-optical-symbolic`, ``)
@@ -947,6 +952,22 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.tagsMenuItem != null) {
             this.tagsMenuItem.setHeaderItemText(`Tags: ${tags.length} `)
             this.tagsMenuItem.submitItems(tags.map((e) => toItem(e, this.textLengthLimiter)))
+        }
+    }
+
+    setLabels(labels) {
+        if (labels === null || labels === undefined) return
+
+        function toItem(e, textLengthLimiter) {
+            return {
+                "iconName": `edit-clear-symbolic`,
+                "text": `${e[`name`]} - ${e[`description`]}`.slice(0, textLengthLimiter),
+            }
+        }
+
+        if (this.labelsMenuItem != null) {
+            this.labelsMenuItem.setHeaderItemText(`Labels: ${labels.length} `)
+            this.labelsMenuItem.submitItems(labels.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 

@@ -247,6 +247,7 @@ export class ExtensionRepository {
                 const issues = await this.githubService.fetchIssues(owner, repo, pagination)
                 const pullRequests = await this.githubService.fetchPullRequests(owner, repo, pagination)
                 const commits = await this.githubService.fetchCommits(owner, repo, pagination)
+                const labels = await this.githubService.fetchLabels(owner, repo, pagination)
 
                 resolve({
                     runs,
@@ -261,6 +262,7 @@ export class ExtensionRepository {
                     issues,
                     pullRequests,
                     commits,
+                    labels,
                 })
             } catch (error) {
                 logError(error)
