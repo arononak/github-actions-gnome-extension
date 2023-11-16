@@ -69,13 +69,15 @@
 - [x] extension_repository - refactor to callbacks
 - [x] TEST.md refactor
 - [x] max list item text length from settings
-- [ ] Refresh icon during changing theme
-- [ ] Changing settings without refresh indicator
-- [ ] Information from githut raw file
-- [ ] No internet start fixes
+- [x] Refresh icon during changing theme
+- [ ] Expired artifacts
+- [ ] Expired workflow rerun
+- [ ] workflow run - rerun 2 endpoints
 - [ ] Workflow Run branch
 - [ ] Workflow enable/disable
-- [ ] dates manager - locale in settings
+- [ ] Changing settings without refresh indicator
+- [ ] No internet start fixes
+- [ ] Dates manager - locale in settings
 - [ ] Repository public/private - change to lock icon
 - [ ] Suspend bug
 - [ ] label list
@@ -94,22 +96,20 @@
 - [ ] position in top panel (right | center | left)
 - [ ] Refresh - interupt promise's
 - [ ] README.md gif preview
-- [ ] Expired artifacts
-- [ ] Expired workflow rerun
 - [ ] Logs - crashes
 - [ ] Organization billings
 - [ ] EN / PL - translations
 - [ ] Memory allocations - check memory leaks
-- [ ] Adjust to Github Enterprice
 - [ ] Performance
 - [ ] --paginat
-- [ ] workflow run - rerun 2 endpoints
 - [ ] WearOS project attach
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
+- [ ] Information from githut raw file
 - [ ] Multirepo
 - [ ] Data cache
 - [ ] multi workflow runs
 - [ ] DebugMode
+- [ ] Adjust to Github Enterprice
 - [ ] Custom Icons
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
