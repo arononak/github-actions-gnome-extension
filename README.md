@@ -95,7 +95,7 @@ This project was built using **Aron Flow** (fuck scrum)
 
 | Before `git push`            | Before deploy                                |
 |:-----------------------------|:---------------------------------------------|
-| `make lint-fix`              | 🏞 New screenshots                           |
+| ✏️ `make lint-fix`            | 🏞 New screenshots                           |
 |                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |
 |                              | 🏷️ New tag & release                         |
 |                              | 🛰 Deploy only on Fridays !                  |
