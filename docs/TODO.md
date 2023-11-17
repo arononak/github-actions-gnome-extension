@@ -106,6 +106,7 @@
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] Information from githut raw file
+- [ ] Loading symbol during refreshig data
 - [ ] Multirepo
 - [ ] Data cache
 - [ ] multi workflow runs
