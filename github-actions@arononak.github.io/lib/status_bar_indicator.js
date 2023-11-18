@@ -219,6 +219,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.minutesItem?.label.set_text(loadingText)
         this.packagesItem?.label.set_text(loadingText)
         this.sharedStorageItem?.label.set_text(loadingText)
+        this.repositoryCreatedItem?.label.set_text(loadingText)
         this.repositoryPrivateItem?.label.set_text(loadingText)
         this.repositoryForkItem?.label.set_text(loadingText)
         this.setTransferEmptyState()
@@ -447,6 +448,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.repositoryMenuItem = new ExpandedMenuItem(`system-file-manager-symbolic`, ``, `applications-internet-symbolic`, () => openUrl(this.repositoryUrl))
             this.menu.addMenuItem(this.repositoryMenuItem)
 
+            // Repository createdAt
+            this.repositoryCreatedItem = new IconPopupMenuItem({ startIconName: `application-x-addon-symbolic` })
+            this.repositoryMenuItem.menuBox.add_actor(this.repositoryCreatedItem)
+
             // Repository isPrivate
             this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: `changes-prevent-symbolic` })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
@@ -530,6 +535,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.repositoryMenuItem != null) {
             this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName(conclusion) })
             this.repositoryMenuItem.icon.icon_size = 22
+
+            this.repositoryMenuItem.label.style = `margin-left: 4px;`
+            this.repositoryMenuItem.label.text = `${run[`repository`][`full_name`]} \n\n#${run[`run_number`]} - ${run[`display_title`]}`
         }
     }
 
@@ -728,11 +736,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
     setWatchedRepo(repo) {
         if (repo === null || repo === undefined) return
 
-        if (this.repositoryMenuItem != null) {
-            this.repositoryMenuItem.label.style = `margin-left: 4px;`
-            this.repositoryMenuItem.label.text = `${repo[`full_name`]} \n\nCreated at: ${formatDate(repo[`created_at`])} `
+        this.repositoryUrl = repo[`html_url`]
 
-            this.repositoryUrl = repo[`html_url`]
+        if (this.repositoryCreatedItem != null) {
+            this.repositoryCreatedItem.label.text = `Created at: ${formatDate(repo[`created_at`])} `
         }
 
         if (this.repositoryPrivateItem != null) {
