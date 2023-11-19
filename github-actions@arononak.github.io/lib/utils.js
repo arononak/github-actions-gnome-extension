@@ -42,7 +42,7 @@ export function openInstallCliScreen() {
 }
 
 export function openExtensionGithubIssuesPage() {
-    openUrl(`https://github.com/arononak/github-actions-gnome-extension/issues`)
+    openUrl(`https://github.com/arononak/github-actions-gnome-extension/issues/new`)
 }
 
 export function openAuthScreen() {
