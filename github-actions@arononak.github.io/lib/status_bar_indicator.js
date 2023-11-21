@@ -658,14 +658,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (repos === null || repos === undefined) return
 
         function toItem(e, textLengthLimiter) {
-            const visibility = e[`visibility`]
             const createdAt = formatDate(e[`created_at`])
             const name = e[`name`]
             const owner = e[`owner`][`login`]
+            const isPrivate = e[`private`] == true
 
             return {
-                "iconName": `folder-symbolic`,
-                "text": `${createdAt} - (${visibility}) - ${name}`.slice(0, textLengthLimiter),
+                "iconName": isPrivate ? `changes-prevent-symbolic` : `network-workgroup-symbolic`,
+                "text": `${createdAt} - ${name}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
                 "endButtonText": `Watch`,
                 "endButtonCallback": () => onWatchCallback(owner, name),
@@ -673,9 +673,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         if (this.reposMenuItem != null) {
-            const privateRepoCount = repos.filter((e) => e[`private`] == true).length
-
-            this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length} (private: ${privateRepoCount})`)
+            this.reposMenuItem.setHeaderItemText(`Repos: ${repos.length}`)
             this.reposMenuItem.submitItems(
                 repos
                     .sort((a, b) => new Date(b[`created_at`]).getTime() - new Date(a[`created_at`]).getTime())
