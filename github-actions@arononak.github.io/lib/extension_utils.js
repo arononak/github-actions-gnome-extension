@@ -8,6 +8,7 @@ import {
     bytesToString as _bytesToString,
     formatDate as _formatDate,
     isEmpty as _isEmpty,
+    copyToClipboard as _copyToClipboard,
 } from './utils.js'
 
 export function extensionSettings() {
@@ -51,4 +52,8 @@ export function formatDate(date) {
 
 export function isEmpty(str) {
     return _isEmpty(str)
+}
+
+export function copyToClipboard(text) {
+    return _copyToClipboard(text)
 }

@@ -48,3 +48,9 @@ export function openExtensionGithubIssuesPage() {
 export function openAuthScreen() {
     exec(`gnome-terminal -- bash -c "gh auth login --scopes user,repo,workflow"`)
 }
+
+export function copyToClipboard(text) {
+    const St = imports.gi.St
+    const clipboard = St.Clipboard.get_default()
+    clipboard.set_text(St.ClipboardType.CLIPBOARD, text)
+}

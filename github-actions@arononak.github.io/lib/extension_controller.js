@@ -1,8 +1,15 @@
 'use strict'
 
 import { ExtensionRepository, DataTypeEnum } from './extension_repository.js'
-import { SettingsRepository }  from './settings_repository.js'
-import { AppStatusColor } from './widgets.js'
+
+import { SettingsRepository } from './settings_repository.js'
+
+import * as Main from 'resource:///org/gnome/shell/ui/main.js'
+
+import {
+    AppStatusColor,
+    copyToClipboard,
+} from './widgets.js'
 
 export const ExtensionState = {
     NOT_INSTALLED_CLI: {
@@ -94,8 +101,11 @@ export class ExtensionController {
         await this.extensionRepository.logoutUser()
     }
 
-    async fetchToken() {
-        return await this.extensionRepository.fetchToken()
+    async copyTokenToClipboard() {
+        const token = await this.extensionRepository.fetchToken()
+
+        copyToClipboard(token)
+        Main.notify(`Copied !`, token)
     }
 
     attachCallbacks({

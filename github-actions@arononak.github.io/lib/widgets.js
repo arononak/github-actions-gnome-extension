@@ -23,6 +23,7 @@ import {
     bytesToString as _bytesToString,
     formatDate as _formatDate,
     extensionOpenPreferences as _extensionOpenPreferences,
+    copyToClipboard as _copyToClipboard,
 } from './extension_utils.js'
 
 export function extensionSettings() {
@@ -51,6 +52,10 @@ export function formatDate(date) {
 
 export function extensionOpenPreferences() {
     return _extensionOpenPreferences()
+}
+
+export function copyToClipboard(text) {
+    return _copyToClipboard(text)
 }
 
 export const AppStatusColor = {
