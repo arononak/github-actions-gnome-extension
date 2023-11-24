@@ -10,6 +10,8 @@ import {
     isEmpty as _isEmpty,
 } from './utils.js'
 
+import St from 'gi://St'
+
 export function extensionSettings() {
     const extension = Extension.lookupByUUID(`github-actions@arononak.github.io`)
     return extension.getSettings(`org.gnome.shell.extensions.github-actions`)
