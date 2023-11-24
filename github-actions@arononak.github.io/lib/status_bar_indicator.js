@@ -737,7 +737,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.repositoryUrl = repo[`html_url`]
 
         if (this.repositoryCreatedItem != null) {
-            this.repositoryCreatedItem.label.text = `Created at: ${formDateFormatController.formatatDate(repo[`created_at`])} `
+            this.repositoryCreatedItem.label.text = `Created at: ${DateFormatController.formatatDate(repo[`created_at`])} `
         }
 
         if (this.repositoryPrivateItem != null) {

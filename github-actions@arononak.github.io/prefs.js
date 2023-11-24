@@ -90,7 +90,7 @@ function createToggleRow({ title, subtitle, value, onSwitchButtonCreated }) {
 
 function createComboBox({ title, subtitle, value, values, onChanged }) {
     const comboBox = new Gtk.ComboBoxText()
-    values.forEach(element => comboBox.append_text(element))
+    values.forEach((element) => comboBox.append_text(element))
 
     const row = new Adw.ActionRow({
         title: title == undefined ? null : title,
@@ -101,7 +101,7 @@ function createComboBox({ title, subtitle, value, values, onChanged }) {
 
     const selectedIndex = values.indexOf(value);
     comboBox.set_active(selectedIndex)
-    
+
     comboBox.connect(`changed`, (widget) => {
         const text = widget.get_active_text();
         onChanged(text)
