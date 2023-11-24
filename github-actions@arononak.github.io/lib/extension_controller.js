@@ -498,7 +498,7 @@ export class ExtensionController {
             },
             onRunsDownloaded: (runs) => {
                 this.indicator.setWorkflowRuns({
-                    runs: runs[`workflow_runs`],
+                    runs: runs,
                     onDeleteWorkflowRun: (runId, runName) => {
                         this.deleteWorkflowRun({ indicator: this.indicator, runId, runName })
                     },
