@@ -71,33 +71,28 @@
 - [x] max list item text length from settings
 - [x] Refresh icon during changing theme
 - [x] label list
+- [x] Dates manager - locale in settings
+- [x] Repository public/private - change to lock icon
+- [x] Item text length limiter
 - [ ] Expired artifacts
 - [ ] Expired workflow rerun
 - [ ] workflow run - rerun 2 endpoints
 - [ ] Changing settings without refresh indicator
 - [ ] org list
 - [ ] No internet start fixes
-- [ ] Workflow Run branch
 - [ ] Workflow enable/disable
-- [ ] Dates manager - locale in settings
-- [ ] Repository public/private - change to lock icon
 - [ ] Suspend bug
 - [ ] Super simple mode
 - [ ] Double confirm dialogs
 - [ ] ConfirmDialog - icon margin
 - [ ] Refresh after completed workflow run
 - [ ] NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
-- [ ] Item text length limiter
 - [ ] Settings - repo text fields - dont remove last char
 - [ ] ColoredMode / ExtendedColoredMode - fix
 - [ ] Missing scopes - relogin
 - [ ] Block refresh
-- [ ] Settings tabs
 - [ ] position in top panel (right | center | left)
 - [ ] Refresh - interupt promise's
-- [ ] README.md gif preview
-- [ ] Logs - crashes
-- [ ] Organization billings
 - [ ] EN / PL - translations
 - [ ] Memory allocations - check memory leaks
 - [ ] Performance
@@ -105,7 +100,10 @@
 - [ ] WearOS project attach
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
+- [ ] Settings tabs
 - [ ] Information from githut raw file
+- [ ] Organization billings
+- [ ] Logs crashes to file
 - [ ] Loading symbol during refreshig data
 - [ ] Multirepo
 - [ ] Data cache
