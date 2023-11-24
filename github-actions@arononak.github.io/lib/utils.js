@@ -1,6 +1,7 @@
 'use strict'
 
 import GLib from 'gi://GLib'
+import St from 'gi://St'
 
 export function isEmpty(str) {
     return !str || str.length === 0
@@ -50,7 +51,6 @@ export function openAuthScreen() {
 }
 
 export function copyToClipboard(text) {
-    const St = imports.gi.St
     const clipboard = St.Clipboard.get_default()
     clipboard.set_text(St.ClipboardType.CLIPBOARD, text)
 }
