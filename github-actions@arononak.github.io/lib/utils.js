@@ -1,7 +1,6 @@
 'use strict'
 
 import GLib from 'gi://GLib'
-import St from 'gi://St'
 
 export function isEmpty(str) {
     return !str || str.length === 0
