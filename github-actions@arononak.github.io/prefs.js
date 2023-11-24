@@ -88,6 +88,29 @@ function createToggleRow({ title, subtitle, value, onSwitchButtonCreated }) {
     return row
 }
 
+function createComboBox({ title, subtitle, value, values, onChanged }) {
+    const comboBox = new Gtk.ComboBoxText()
+    values.forEach(element => comboBox.append_text(element))
+
+    const row = new Adw.ActionRow({
+        title: title == undefined ? null : title,
+        subtitle: subtitle == undefined ? null : subtitle,
+    })
+    row.add_suffix(comboBox)
+    row.activatable_widget = comboBox
+
+    const selectedIndex = values.indexOf(value);
+    comboBox.set_active(selectedIndex)
+    
+    comboBox.connect(`changed`, (widget) => {
+        const text = widget.get_active_text();
+        onChanged(text)
+        row.subtitle = text
+    })
+
+    return row
+}
+
 export default class GithubActionsPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings()
@@ -111,6 +134,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             iconPosition,
             showIcon,
             textLengthLimiter,
+            locale,
 
             hiddenMode,
 
@@ -199,6 +223,13 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             onSpinButtonCreated: (spinButton) => settings.bind(`text-length-limiter`, spinButton, `value`, Gio.SettingsBindFlags.DEFAULT),
         })
 
+        const localeComboBox = createComboBox({
+            title: `Date format`,
+            subtitle: locale,
+            values: [`pl-PL`, `en-GB`, `en-US`],
+            onChanged: (text) => prefsController.updateLocale(text)
+        })
+
         const appearanceGroup = new Adw.PreferencesGroup({ title: `Appearance` })
         appearanceGroup.add(showNotificationsRow)
         appearanceGroup.add(simpleModeRow)
@@ -207,6 +238,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         appearanceGroup.add(showIconRow)
         appearanceGroup.add(changeIconRow)
         appearanceGroup.add(textLengthLimiterSpinRow)
+        appearanceGroup.add(localeComboBox)
 
         // Refresh
         const refreshStatusRow = createSpinButtonRow({

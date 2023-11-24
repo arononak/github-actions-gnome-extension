@@ -45,6 +45,9 @@ export class SettingsRepository {
 
     fetchShowNotifications = () => this.settings.get_boolean(`show-notifications`)
 
+    fetchLocale = () => this.settings.get_string(`locale`)
+    updateLocale = (locale) => this.settings.set_string(`locale`, locale)
+
     ownerAndRepo() {
         const owner = this.fetchOwner(this.settings)
         const repo = this.fetchRepo(this.settings)

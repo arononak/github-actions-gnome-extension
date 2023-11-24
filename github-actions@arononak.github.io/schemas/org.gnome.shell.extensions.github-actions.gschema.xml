@@ -55,5 +55,8 @@
     <key name="text-length-limiter" type="i">
       <default>100</default>
     </key>
+    <key name="locale" type="s">
+      <default>'en-GB'</default>
+    </key>
   </schema>
 </schemalist>

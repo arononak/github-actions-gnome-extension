@@ -22,11 +22,11 @@ import {
     openInstallCliScreen,
     openAuthScreen,
     bytesToString,
-    formatDate,
     extensionOpenPreferences,
     anvilIcon,
 } from './widgets.js'
 
+import { DateFormatController } from './date_format_controller.js'
 import { ExtensionState } from './extension_controller.js'
 
 export function isCompleted(state) {
@@ -558,7 +558,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         const userLabelText = userName == null || userEmail == null
             ? `No permissions`
-            : `${userName} (${userEmail}) \n\nJoined GitHub on: ${formatDate(createdAt)} `
+            : `${userName} (${userEmail}) \n\nJoined GitHub on: ${DateFormatController.format(createdAt)} `
 
         if (this.userMenuItem != null) {
             this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl))
@@ -658,7 +658,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (repos === null || repos === undefined) return
 
         function toItem(e, textLengthLimiter) {
-            const createdAt = formatDate(e[`created_at`])
+            const createdAt = DateFormatController.format(e[`created_at`])
             const name = e[`name`]
             const owner = e[`owner`][`login`]
             const isPrivate = e[`private`] == true
@@ -685,7 +685,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (gists === null || gists === undefined) return
 
         function toItem(e, textLengthLimiter) {
-            const createdAt = formatDate(e[`created_at`])
+            const createdAt = DateFormatController.format(e[`created_at`])
             const description = e[`description`]
             const text = `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`
 
@@ -709,7 +709,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (starredGists === null || starredGists === undefined) return
 
         function toItem(e, textLengthLimiter) {
-            const createdAt = formatDate(e[`created_at`])
+            const createdAt = DateFormatController.format(e[`created_at`])
             const description = e[`description`]
             const text = `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`
 
@@ -737,7 +737,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.repositoryUrl = repo[`html_url`]
 
         if (this.repositoryCreatedItem != null) {
-            this.repositoryCreatedItem.label.text = `Created at: ${formatDate(repo[`created_at`])} `
+            this.repositoryCreatedItem.label.text = `Created at: ${formDateFormatController.formatatDate(repo[`created_at`])} `
         }
 
         if (this.repositoryPrivateItem != null) {
@@ -795,7 +795,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             const name = e[`name`]
             const htmlUrl = e[`html_url`]
 
-            const date = formatDate(updatedAt)
+            const date = DateFormatController.format(updatedAt)
             const text = `(#${runNumber}) - ${date} - ${displayTitle} `
 
             const iconName = conclusionIconName(conclusion)
@@ -906,7 +906,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             const size = bytesToString(e[`size_in_bytes`])
             const filename = e[`name`]
             const downloadUrl = e[`archive_download_url`]
-            const labelName = `${formatDate(createdAt)} - ${filename} - (${size}) ${e[`expired`] == true ? ` - expired` : ``} `
+            const labelName = `${DateFormatController.format(createdAt)} - ${filename} - (${size}) ${e[`expired`] == true ? ` - expired` : ``} `
 
             return {
                 "iconName": `folder-visiting-symbolic`,
@@ -1014,7 +1014,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (commits === null || commits === undefined) return
 
         function toItem(e, textLengthLimiter) {
-            const date = formatDate(e[`commit`][`author`][`date`])
+            const date = DateFormatController.format(e[`commit`][`author`][`date`])
             const authorName = e[`commit`][`author`][`name`]
             const authorEmail = e[`commit`][`author`][`email`]
             const message = e[`commit`][`message`].replace(/\s+/g, ` `)

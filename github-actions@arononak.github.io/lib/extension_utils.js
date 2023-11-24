@@ -46,8 +46,8 @@ export function bytesToString(size) {
     return _bytesToString(size)
 }
 
-export function formatDate(date) {
-    return _formatDate(date)
+export function formatDate(date, locale) {
+    return _formatDate(date, locale)
 }
 
 export function isEmpty(str) {

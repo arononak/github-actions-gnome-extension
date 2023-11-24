@@ -30,6 +30,7 @@ export class PrefsController {
         const iconPosition = this.settingsRepository.fetchIconPosition()
         const showIcon = this.settingsRepository.fetchShowIcon()
         const textLengthLimiter = this.settingsRepository.fetchTextLengthLimiter()
+        const locale = this.settingsRepository.fetchLocale()
 
         const hiddenMode = this.settingsRepository.fetchHiddenMode()
 
@@ -63,6 +64,7 @@ export class PrefsController {
             iconPosition,
             showIcon,
             textLengthLimiter,
+            locale,
 
             hiddenMode,
 
@@ -77,6 +79,10 @@ export class PrefsController {
 
     updateRepo(repo) {
         this.settingsRepository.updateRepo(repo)
+    }
+
+    updateLocale(text) {
+        this.settingsRepository.updateLocale(text)
     }
 
     onStarClicked() {

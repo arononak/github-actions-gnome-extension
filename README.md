@@ -37,6 +37,8 @@ graph TD
     utils.js---->prefs_utils.js
     utils.js---->settings_repository.js
     extension_utils.js-->widgets.js
+    settings_repository.js-->date_format_controller.js
+    date_format_controller.js-->status_bar_indicator.js
     widgets.js--->status_bar_indicator.js
     widgets.js--->quick_settings_controller.js
     widgets.js--->notification_controller.js
@@ -87,6 +89,7 @@ graph TD
         widgets.js
         extension_utils.js
         extension_repository.js
+        date_format_controller.js
     end
 ```
 

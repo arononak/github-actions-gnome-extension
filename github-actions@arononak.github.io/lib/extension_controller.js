@@ -270,6 +270,10 @@ export class ExtensionController {
             }
         })
 
+        this.settings.connect(`changed::locale`, (settings, key) => {
+            this.onReloadCallback()
+        })
+
         this.settings.connect(`changed::show-icon`, (settings, key) => {
             const enabled = settingsRepository.fetchEnabledExtension()
 

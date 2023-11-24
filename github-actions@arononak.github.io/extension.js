@@ -30,8 +30,8 @@ export default class GithubActionsExtension extends Extension {
     enable() {
         this.settings = this.getSettings()
         this.extensionController = new ExtensionController(this.settings)
-        this.createQuickSettings()
         this.initExtension()
+        this.createQuickSettings()
     }
 
     disable() {

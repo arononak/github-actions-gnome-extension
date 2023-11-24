@@ -46,8 +46,8 @@ export function bytesToString(str) {
     return _bytesToString(str)
 }
 
-export function formatDate(date) {
-    return _formatDate(date)
+export function formatDate(date, locale) {
+    return _formatDate(date, locale)
 }
 
 export function extensionOpenPreferences() {
