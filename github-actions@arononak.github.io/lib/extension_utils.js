@@ -8,7 +8,6 @@ import {
     bytesToString as _bytesToString,
     formatDate as _formatDate,
     isEmpty as _isEmpty,
-    copyToClipboard as _copyToClipboard,
 } from './utils.js'
 
 export function extensionSettings() {
@@ -55,5 +54,6 @@ export function isEmpty(str) {
 }
 
 export function copyToClipboard(text) {
-    return _copyToClipboard(text)
+    const clipboard = St.Clipboard.get_default()
+    clipboard.set_text(St.ClipboardType.CLIPBOARD, text)
 }
