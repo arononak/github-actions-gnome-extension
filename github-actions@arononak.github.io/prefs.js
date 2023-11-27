@@ -225,7 +225,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
 
         const localeComboBox = createComboBox({
             title: `Date format`,
-            subtitle: locale,
+            value: locale,
             values: [`pl-PL`, `en-GB`, `en-US`],
             onChanged: (text) => prefsController.updateLocale(text)
         })
