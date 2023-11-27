@@ -10,16 +10,6 @@ export function removeWhiteChars(str) {
     return str.replace(/\s+/g, ``)
 }
 
-export function formatDate(date, locale = `en-GB`) {
-    const options = {
-        day: `2-digit`,
-        month: `2-digit`,
-        year: `numeric`
-    }
-
-    return new Date(date).toLocaleDateString(locale, options)
-}
-
 export function bytesToString(size) {
     var i = size == 0 ? 0 : Math.floor(Math.log(size) / Math.log(1024))
     return `${Number((size / Math.pow(1024, i)).toFixed(2))} ${[`B`, `KB`, `MB`][i]}`

@@ -6,7 +6,6 @@ import {
     openInstallCliScreen as _openInstallCliScreen,
     openAuthScreen as _openAuthScreen,
     bytesToString as _bytesToString,
-    formatDate as _formatDate,
     isEmpty as _isEmpty,
 } from './utils.js'
 
@@ -45,10 +44,6 @@ export function openAuthScreen() {
 
 export function bytesToString(size) {
     return _bytesToString(size)
-}
-
-export function formatDate(date, locale) {
-    return _formatDate(date, locale)
 }
 
 export function isEmpty(str) {

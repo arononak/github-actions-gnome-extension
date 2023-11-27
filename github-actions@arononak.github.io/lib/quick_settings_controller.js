@@ -5,7 +5,8 @@ import Gio from 'gi://Gio'
 import * as QuickSettings from 'resource:///org/gnome/shell/ui/quickSettings.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
-import { createAppGioIcon, isDarkTheme, AppStatusColor, extensionSettings } from './widgets.js'
+import { extensionSettings } from './extension_utils.js'
+import { createAppGioIcon, isDarkTheme, AppStatusColor } from './widgets.js'
 import { SettingsRepository } from './settings_repository.js'
 
 function createIconColor(isDarkMode, isEnabled) {

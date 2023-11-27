@@ -14,49 +14,7 @@ import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js'
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
-import {
-    extensionPath,
-    extensionSettings as _extensionSettings,
-    openUrl as _openUrl,
-    openInstallCliScreen as _openInstallCliScreen,
-    openAuthScreen as _openAuthScreen,
-    bytesToString as _bytesToString,
-    formatDate as _formatDate,
-    extensionOpenPreferences as _extensionOpenPreferences,
-    copyToClipboard as _copyToClipboard,
-} from './extension_utils.js'
-
-export function extensionSettings() {
-    return _extensionSettings()
-}
-
-export function openUrl(str) {
-    return _openUrl(str)
-}
-
-export function openInstallCliScreen() {
-    return _openInstallCliScreen()
-}
-
-export function openAuthScreen() {
-    return _openAuthScreen()
-}
-
-export function bytesToString(str) {
-    return _bytesToString(str)
-}
-
-export function formatDate(date, locale) {
-    return _formatDate(date, locale)
-}
-
-export function extensionOpenPreferences() {
-    return _extensionOpenPreferences()
-}
-
-export function copyToClipboard(text) {
-    return _copyToClipboard(text)
-}
+import { extensionPath } from './extension_utils.js'
 
 export const AppStatusColor = {
     WHITE: {

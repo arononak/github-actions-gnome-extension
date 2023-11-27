@@ -1,6 +1,6 @@
 'use strict'
 
-import { formatDate, extensionSettings } from './widgets.js'
+import { extensionSettings } from './extension_utils.js'
 import { SettingsRepository } from './settings_repository.js'
 
 export class DateFormatController {
@@ -9,6 +9,16 @@ export class DateFormatController {
         const settingsRepository = new SettingsRepository(settings)
         const locale = settingsRepository.fetchLocale()
 
-        return formatDate(date, locale)
+        return DateFormatController.formatDate(date, locale)
+    }
+
+    static formatDate(date, locale = `en-GB`) {
+        const options = {
+            day: `2-digit`,
+            month: `2-digit`,
+            year: `numeric`
+        }
+
+        return new Date(date).toLocaleDateString(locale, options)
     }
 }

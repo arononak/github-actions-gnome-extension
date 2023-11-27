@@ -1,15 +1,10 @@
 'use strict'
 
-import { ExtensionRepository, DataTypeEnum } from './extension_repository.js'
-
-import { SettingsRepository } from './settings_repository.js'
-
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
-
-import {
-    AppStatusColor,
-    copyToClipboard,
-} from './widgets.js'
+import { ExtensionRepository, DataTypeEnum } from './extension_repository.js'
+import { SettingsRepository } from './settings_repository.js'
+import { copyToClipboard } from './extension_utils.js'
+import { AppStatusColor } from './widgets.js'
 
 export const ExtensionState = {
     NOT_INSTALLED_CLI: {

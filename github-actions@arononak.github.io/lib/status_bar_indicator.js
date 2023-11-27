@@ -8,6 +8,14 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js'
 import * as PanelMenu from 'resource:///org/gnome/shell/ui/panelMenu.js'
 
 import {
+    openInstallCliScreen,
+    openAuthScreen,
+    extensionOpenPreferences,
+    bytesToString,
+    openUrl,
+} from './extension_utils.js'
+
+import {
     AppStatusColor,
     appIcon,
     createAppGioIcon,
@@ -18,11 +26,6 @@ import {
     showConfirmDialog,
     conclusionIconName,
     isDarkTheme,
-    openUrl,
-    openInstallCliScreen,
-    openAuthScreen,
-    bytesToString,
-    extensionOpenPreferences,
     anvilIcon,
 } from './widgets.js'
 
