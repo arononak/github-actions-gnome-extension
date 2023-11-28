@@ -909,12 +909,13 @@ export class StatusBarIndicator extends PanelMenu.Button {
             const size = bytesToString(e[`size_in_bytes`])
             const filename = e[`name`]
             const downloadUrl = e[`archive_download_url`]
-            const labelName = `${DateFormatController.format(createdAt)} - ${filename} - (${size}) ${e[`expired`] == true ? ` - expired` : ``} `
+            const labelName = `${DateFormatController.format(createdAt)} - ${filename} - (${size})`
+            const isExpired = e[`expired`] == true
 
             return {
-                "iconName": `folder-visiting-symbolic`,
+                "iconName": isExpired ? `window-close-symbolic` : `folder-visiting-symbolic`,
                 "text": labelName.slice(0, textLengthLimiter),
-                "callback": () => self.downloadArtifactCallback(downloadUrl, filename),
+                "callback": () => isExpired ? null : self.downloadArtifactCallback(downloadUrl, filename),
             }
         }
 
