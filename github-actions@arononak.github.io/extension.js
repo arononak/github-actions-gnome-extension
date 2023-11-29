@@ -54,6 +54,8 @@ export default class GithubActionsExtension extends Extension {
         try {
             const { enabledExtension } = await this.extensionController.fetchSettings()
 
+            const isRepositoryEntered = this.extensionController.isRepositoryEntered()
+
             this.extensionController.attachCallbacks({
                 onRepoSetAsWatched: (owner, repo) => {
                     NotificationController.showSetAsWatched(owner, repo)
@@ -80,7 +82,7 @@ export default class GithubActionsExtension extends Extension {
                     this.destroyQuickSettings()
                     this.createQuickSettings()
 
-                    await this.createStatusBarIndicator()
+                    await this.createStatusBarIndicator(isRepositoryEntered)
                     this.extensionController.startRefreshing()
                 },
                 onDisableCallback: () => {
@@ -93,7 +95,7 @@ export default class GithubActionsExtension extends Extension {
             })
 
             if (enabledExtension) {
-                await this.createStatusBarIndicator()
+                await this.createStatusBarIndicator(isRepositoryEntered)
                 this.extensionController.startRefreshing()
             }
         } catch (error) {
@@ -105,7 +107,7 @@ export default class GithubActionsExtension extends Extension {
         this.removeStatusBarIndicator()
     }
 
-    createStatusBarIndicator() {
+    createStatusBarIndicator(isRepositoryEntered) {
         return new Promise(async (resolve, reject) => {
             try {
                 const {
@@ -123,6 +125,8 @@ export default class GithubActionsExtension extends Extension {
                 } = await this.extensionController.fetchSettings()
 
                 this.indicator = new StatusBarIndicator({
+                    isRepositoryEntered,
+
                     isInstalledCli,
                     isLogged,
                     tokenScopes,

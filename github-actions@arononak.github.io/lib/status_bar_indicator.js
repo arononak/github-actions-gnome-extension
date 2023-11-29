@@ -48,6 +48,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
     }
 
     constructor({
+        isRepositoryEntered = false,
         simpleMode = false,
         coloredMode = false,
         uppercaseMode = false,
@@ -63,6 +64,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
         logoutCallback = () => { },
     }) {
         super()
+
+        this.isRepositoryEntered = isRepositoryEntered
 
         this.simpleMode = simpleMode
         this.coloredMode = coloredMode
@@ -132,8 +135,6 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.refreshState()
     }
 
-    showRepositoryMenu = () => this.state === ExtensionState.IN_PROGRESS || isCompleted(this.state)
-
     isInstalledCli = () => this.state != ExtensionState.NOT_INSTALLED_CLI
 
     isLongOperation = () => this.state == ExtensionState.LONG_OPERATION_PLEASE_WAIT
@@ -182,18 +183,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
             return
         }
 
-        if (isCompleted(this.state)) {
+        if (forceUpdate === true) {
             this.initMenu()
             this.refreshCallback()
-            return
         }
-
-        if (forceUpdate === false) {
-            return
-        }
-
-        this.initMenu()
-        this.refreshCallback()
     }
 
     setLoadingTexts() {
@@ -440,7 +433,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.menu.addMenuItem(this.starredGistsMenuItem)
         }
 
-        if (!this.showRepositoryMenu()) {
+        if (!this.isRepositoryEntered) {
             return
         }
 

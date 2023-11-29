@@ -96,6 +96,8 @@ export class ExtensionController {
         await this.extensionRepository.logoutUser()
     }
 
+    isRepositoryEntered = () => this.settingsRepository.isRepositoryEntered()
+
     async copyTokenToClipboard() {
         const token = await this.extensionRepository.fetchToken()
 
@@ -181,6 +183,7 @@ export class ExtensionController {
         if (this.isStarted === true) {
             return
         }
+
         this.isStarted = true
 
         try {
@@ -199,6 +202,7 @@ export class ExtensionController {
         if (this.isStarted === false) {
             return
         }
+
         this.isStarted = false
 
         clearInterval(this.stateRefreshInterval)
@@ -376,7 +380,7 @@ export class ExtensionController {
             return
         }
 
-        if (!this.settingsRepository.isRepositoryEntered()) {
+        if (!this.isRepositoryEntered()) {
             this.indicator.setState({ state: ExtensionState.LOGGED_NOT_CHOOSED_REPO, forceUpdate: true })
             return
         }
@@ -403,7 +407,7 @@ export class ExtensionController {
             return
         }
 
-        if (!this.settingsRepository.isRepositoryEntered()) {
+        if (!this.isRepositoryEntered()) {
             return
         }
 
@@ -451,7 +455,7 @@ export class ExtensionController {
             return
         }
 
-        const repositoryEntered = this.indicator.showRepositoryMenu()
+        const repositoryEntered = this.isRepositoryEntered()
 
         let type
         if (onlyWorkflowRuns === true) {
