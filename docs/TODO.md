@@ -84,7 +84,7 @@
 - [ ] Suspend bug
 - [ ] Super simple mode
 - [ ] Double confirm dialogs
-- [ ] ConfirmDialog - icon margin
+- [x] ConfirmDialog - icon margin
 - [ ] Refresh after completed workflow run
 - [ ] NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [ ] Settings - repo text fields - dont remove last char
