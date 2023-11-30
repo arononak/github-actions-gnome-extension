@@ -386,17 +386,19 @@ export function showConfirmDialog({
         dialog = null
     })
 
-    const content = new Dialog.MessageDialogContent({
-        title,
-        description,
-    })
+    const content = new Dialog.MessageDialogContent({ title, description })
+
     dialog.contentLayout.add_child(content)
 
+    const icon = new St.Icon({ icon_name: iconName })
+    icon.style = `margin-right: 8px;`
+
     const item = new Dialog.ListSectionItem({
-        icon_actor: new St.Icon({ icon_name: iconName }),
+        icon_actor: icon,
         title: itemTitle,
         description: itemDescription,
     })
+
     content.add_child(item)
 
     dialog.setButtons([
