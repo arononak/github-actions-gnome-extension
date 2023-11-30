@@ -74,8 +74,8 @@
 - [x] Dates manager - locale in settings
 - [x] Repository public/private - change to lock icon
 - [x] Item text length limiter
-- [ ] Expired artifacts
-- [ ] Expired workflow rerun
+- [x] Expired artifacts
+- [x] Expired workflow rerun
 - [ ] workflow run - rerun 2 endpoints
 - [ ] Changing settings without refresh indicator
 - [ ] org list
@@ -101,6 +101,7 @@
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] Settings tabs
+- [ ] Different sound & turn off
 - [ ] Information from githut raw file
 - [ ] Organization billings
 - [ ] Logs crashes to file
