@@ -76,30 +76,30 @@
 - [x] Item text length limiter
 - [x] Expired artifacts
 - [x] Expired workflow rerun
-- [ ] workflow run - rerun 2 endpoints
-- [ ] Changing settings without refresh indicator
-- [ ] org list
-- [ ] No internet start fixes
-- [ ] Workflow enable/disable
-- [ ] Suspend bug
-- [ ] Super simple mode
-- [ ] Double confirm dialogs
 - [x] ConfirmDialog - icon margin
-- [ ] Refresh after completed workflow run
-- [ ] NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
-- [ ] Settings - repo text fields - dont remove last char
-- [ ] ColoredMode / ExtendedColoredMode - fix
-- [ ] Missing scopes - relogin
-- [ ] Block refresh
-- [ ] position in top panel (right | center | left)
-- [ ] Refresh - interupt promise's
-- [ ] EN / PL - translations
+- [x] Refresh after completed workflow run
+- [x] Performance
+- [ ] BUG - Refresh state - Changing repo without actions & with actions
+- [ ] BUG - Workflow rerun / cancel ...
+- [ ] FEATURE - Super simple mode
+- [ ] FEATURE - Workflow run - rerun 2 endpoints
+- [ ] FEATURE - Changing settings without refresh indicator
+- [ ] FEATURE - Workflow enable/disable
+- [ ] BUG - suspend
+- [ ] BUG - No internet start fixes
+- [ ] BUG - Double confirm dialogs
+- [ ] BUG - NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
+- [ ] BUG - Settings - repo text fields - dont remove last char
+- [ ] BUG - ColoredMode / ExtendedColoredMode - fix
+- [ ] FEATURE - Missing scopes - relogin
+- [ ] FEATURE - Block refresh
+- [ ] FEATURE - position in top panel (right | center | left)
+- [ ] FEATURE - EN / PL - translations
 - [ ] Memory allocations - check memory leaks
-- [ ] Performance
-- [ ] --paginat
-- [ ] WearOS project attach
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
+- [ ] --paginat
+- [ ] WearOS project attach
 - [ ] Settings tabs
 - [ ] Different sound & turn off
 - [ ] Information from githut raw file
@@ -108,6 +108,7 @@
 - [ ] Loading symbol during refreshig data
 - [ ] Multirepo
 - [ ] Data cache
+- [ ] ORGs list
 - [ ] multi workflow runs
 - [ ] DebugMode
 - [ ] Adjust to Github Enterprice
