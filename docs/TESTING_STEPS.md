@@ -52,3 +52,5 @@ sudo apt install gh
 
 ### 11. Settings:
 • check all settings
+
+### 12. Copy token to clipboard:
