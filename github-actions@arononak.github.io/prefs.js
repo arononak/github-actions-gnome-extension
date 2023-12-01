@@ -10,8 +10,8 @@ import { PrefsController } from './lib/prefs_controller.js'
 function createButtonRow({ title, subtitle, buttonLabel, onButtonPressed }) {
     const button = new Gtk.Button({ label: buttonLabel })
     button.connect(`clicked`, onButtonPressed)
-    button.margin_top = 8
-    button.margin_bottom = 8
+    button.margin_top = 16
+    button.margin_bottom = 16
 
     const row = new Adw.ActionRow({
         title: title == undefined ? null : title,
@@ -90,6 +90,8 @@ function createToggleRow({ title, subtitle, value, onSwitchButtonCreated }) {
 
 function createComboBox({ title, subtitle, value, values, onChanged }) {
     const comboBox = new Gtk.ComboBoxText()
+    comboBox.margin_top = 8
+    comboBox.margin_bottom = 8
     values.forEach((element) => comboBox.append_text(element))
 
     const row = new Adw.ActionRow({
