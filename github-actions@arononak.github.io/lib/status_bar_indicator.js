@@ -657,11 +657,12 @@ export class StatusBarIndicator extends PanelMenu.Button {
             const createdAt = DateFormatController.format(e[`created_at`])
             const name = e[`name`]
             const owner = e[`owner`][`login`]
+            const language = e[`language`] == null ? `` : `(${e[`language`]})`
             const isPrivate = e[`private`] == true
 
             return {
                 "iconName": isPrivate ? `changes-prevent-symbolic` : `network-workgroup-symbolic`,
-                "text": `${createdAt} - ${name}`.slice(0, textLengthLimiter),
+                "text": `${createdAt} - ${name} ${language}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
                 "endButtonText": `Watch`,
                 "endButtonCallback": () => onWatchCallback(owner, name),

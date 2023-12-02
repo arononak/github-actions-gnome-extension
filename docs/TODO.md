@@ -95,6 +95,7 @@
 - [ ] FEATURE - Block refresh
 - [ ] FEATURE - position in top panel (right | center | left)
 - [ ] FEATURE - EN / PL - translations
+- [ ] FEATURE - TEXT table
 - [ ] Memory allocations - check memory leaks
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
