@@ -99,9 +99,11 @@
 - [ ] Memory allocations - check memory leaks
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
-- [ ] --paginat
+- [ ] --paginate
+- [ ] StatusBar - 3 sections - user | Repo | actions
 - [ ] WearOS project attach
 - [ ] Settings tabs
+- [ ] Billing line progress
 - [ ] Different sound & turn off
 - [ ] Information from githut raw file
 - [ ] Organization billings
