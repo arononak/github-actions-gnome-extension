@@ -112,9 +112,6 @@ This project was built using **Aron Flow** (fuck scrum)
 ```bash
 git clone https://github.com/arononak/github-actions-gnome-extension.git
 cd github-actions-gnome-extension
-```
-
-```bash
 make start
 ```
 
