@@ -144,7 +144,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             versionDescription,
         } = prefsController.fetchData()
 
-        window.set_default_size(600, 1410)
+        window.set_default_size(600, 1420)
 
         const enabledRow = createToggleRow({
             title: `Enabled`,

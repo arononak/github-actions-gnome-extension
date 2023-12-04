@@ -137,7 +137,7 @@ export function executeGithubCliCommand(method, command, pagination = 100) {
             process.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
 
-                print(`${method} ${command} (${stdout.length}) <${stderr.length}>`)
+                print(`${method} ${command} stdout: ${stdout.length} stderr: ${stderr.length}`)
 
                 // [NO_INTERNET_CONNECTION]
                 // stdout:
@@ -154,7 +154,14 @@ export function executeGithubCliCommand(method, command, pagination = 100) {
                     }
 
                     const response = JSON.parse(stdout)
+
+                    if (JSON.stringify(response) === JSON.stringify({})) {
+                        resolve(`success`)
+                        return
+                    }
+
                     response[`_size_`] = stdout.length // Welcome in JS World :D
+
                     resolve(response)
                 } else {
                     if (stdout.length < 2) {

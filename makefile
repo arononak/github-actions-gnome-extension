@@ -5,6 +5,7 @@ GIT_TAG := $(shell git describe --tags --abbrev=0)
 run:
 	env MUTTER_DEBUG_DUMMY_MODE_SPECS=1600x1200 \
 	dbus-run-session -- gnome-shell --nested --wayland
+	gnome-extensions enable $(EXTENSION_PACKAGE)
 
 build:
 	@echo 'export const VERSION = `$(GIT_TAG)`' > github-actions@arononak.github.io/lib/version.js
@@ -34,3 +35,6 @@ lint:
 
 lint-fix:
 	eslint -c ./.lint/.eslintrc.yml github-actions@arononak.github.io/ --fix
+
+logs:
+	journalctl -f -o cat /usr/bin/gnome-shell

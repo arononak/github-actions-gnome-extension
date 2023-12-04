@@ -80,7 +80,7 @@
 - [x] Refresh after completed workflow run
 - [x] Performance
 - [ ] BUG - Refresh state - Changing repo without actions & with actions
-- [ ] BUG - Workflow rerun / cancel ...
+- [x] BUG - Workflow rerun / cancel ...
 - [ ] FEATURE - Super simple mode
 - [ ] FEATURE - Workflow run - rerun 2 endpoints
 - [ ] FEATURE - Changing settings without refresh indicator
