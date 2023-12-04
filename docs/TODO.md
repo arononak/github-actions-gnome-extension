@@ -90,7 +90,7 @@
 - [ ] BUG - Double confirm dialogs
 - [ ] BUG - NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [ ] BUG - Settings - repo text fields - dont remove last char
-- [ ] BUG - ColoredMode / ExtendedColoredMode - fix
+- [x] BUG - ColoredMode / ExtendedColoredMode - fix
 - [ ] FEATURE - Missing scopes - relogin
 - [ ] FEATURE - Block refresh
 - [ ] FEATURE - position in top panel (right | center | left)

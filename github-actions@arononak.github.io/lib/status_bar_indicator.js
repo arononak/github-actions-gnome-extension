@@ -264,14 +264,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
             : `color: ${AppStatusColor.WHITE};`
 
         if (this.networkButton != null) {
-            this.networkButton.setTextColor(darkTheme ? appStatusColor.textColorDark : appStatusColor.textColor)
-
-            if (extendedColoredMode) {
-                const backgroundColor = darkTheme ? appStatusColor.backgroundColorDark : appStatusColor.backgroundColor
-                const borderColor = darkTheme ? appStatusColor.borderColorDark : appStatusColor.borderColor
-                this.networkButton.setColor({ backgroundColor, borderColor })
-            } else {
-                this.networkButton.setColor({ backgroundColor: null, borderColor: null })
+            if (extendedColoredMode === true && coloredMode === true) {
+                this.networkButton.setTextColor(
+                    darkTheme ? appStatusColor.textColorDark : appStatusColor.textColor,
+                )
+                this.networkButton.setColor({
+                    backgroundColor: darkTheme ? appStatusColor.backgroundColorDark : appStatusColor.backgroundColor,
+                    borderColor: darkTheme ? appStatusColor.borderColorDark : appStatusColor.borderColor,
+                })
             }
         }
     }
