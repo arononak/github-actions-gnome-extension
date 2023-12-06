@@ -107,7 +107,7 @@ This project was built using **Aron Flow** (fuck scrum)
 |                              | 🏷️ New tag & release                         |
 |                              | 🛰 Deploy only on Fridays !                  |
 
-## 🛫 Cloning and running
+## 🛸️ Cloning and running
 
 ```bash
 git clone https://github.com/arononak/github-actions-gnome-extension.git
@@ -135,7 +135,8 @@ make logs
 | 🔄 Compiles schemas                                                  | `make compile`                                                    |
 | 🛠️ Builds gnome-extensions package                                   | `make build`                                                      |
 | 📦 Builds and installs on system, gnome restart required             | `make install`                                                    |
-| 💻️ Installs the extension and starts a new gnome session in a window | `make start`                                                      |
+| 💻️ Installs the extension and starts a new Gnome session in a window | `make start`                                                      |
+| 📼️ Displays logs of the current Gnome session                        | `make logs`                                                       |
 
 ---
 
