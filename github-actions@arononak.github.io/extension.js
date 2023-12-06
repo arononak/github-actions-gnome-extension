@@ -124,6 +124,8 @@ export default class GithubActionsExtension extends Extension {
                     textLengthLimiter,
                 } = await this.extensionController.fetchSettings()
 
+                print(`tokenScopes: '${tokenScopes.toString()}'`)
+
                 this.indicator = new StatusBarIndicator({
                     isRepositoryEntered,
 

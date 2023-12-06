@@ -86,7 +86,7 @@
 - [ ] FEATURE - Changing settings without refresh indicator
 - [ ] FEATURE - Workflow enable/disable
 - [ ] BUG - suspend
-- [ ] BUG - No internet start fixes
+- [x] BUG - No internet start fixes
 - [ ] BUG - Double confirm dialogs
 - [ ] BUG - NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [ ] BUG - Settings - repo text fields - dont remove last char

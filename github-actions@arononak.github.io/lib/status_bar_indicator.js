@@ -549,6 +549,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
         const avatarUrl = user[`avatar_url`]
         const twoFactorEnabled = user[`two_factor_authentication`]
 
+        if (avatarUrl == undefined) {
+            return
+        }
+
         this.userUrl = userUrl
         this.twoFactorEnabled = twoFactorEnabled
 

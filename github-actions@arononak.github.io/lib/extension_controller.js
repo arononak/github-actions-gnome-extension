@@ -376,6 +376,10 @@ export class ExtensionController {
     }
 
     _checkErrors() {
+        if (this.indicator == undefined) {
+            return
+        }
+
         if (this.indicator.isLongOperation()) {
             return
         }
@@ -403,6 +407,10 @@ export class ExtensionController {
     }
 
     _fetchStatus() {
+        if (this.indicator == undefined) {
+            return
+        }
+
         if (this.indicator.isLongOperation()) {
             return
         }
@@ -451,6 +459,10 @@ export class ExtensionController {
     }
 
     _fetchData(onlyWorkflowRuns = false) {
+        if (this.indicator == undefined) {
+            return
+        }
+
         if (this.indicator.isLongOperation()) {
             return
         }
