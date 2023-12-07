@@ -358,9 +358,9 @@ export function showConfirmDialog({
     iconName,
     onConfirm
 }) {
-    let dialog = new ModalDialog.ModalDialog({ destroyOnClose: false })
+    let dialog = new ModalDialog.ModalDialog({ destroyOnClose: true })
     let reminderId = null
-    let closedId = dialog.connect(`closed`, (_dialog) => {
+    let closedId = dialog.connect(`closed`, () => {
         if (!reminderId) {
             reminderId = GLib.timeout_add_seconds(GLib.PRIORITY_DEFAULT, 60,
                 () => {

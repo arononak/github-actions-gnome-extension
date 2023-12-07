@@ -87,7 +87,7 @@
 - [ ] FEATURE - Workflow enable/disable
 - [ ] BUG - suspend
 - [x] BUG - No internet start fixes
-- [ ] BUG - Double confirm dialogs
+- [x] BUG - Double confirm dialogs
 - [ ] BUG - NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [ ] BUG - Settings - repo text fields - dont remove last char
 - [x] BUG - ColoredMode / ExtendedColoredMode - fix
