@@ -342,7 +342,7 @@ export function showNotification(message, success) {
 
     const file = Gio.File.new_for_path(
         success === true
-            ? `/usr/share/sounds/freedesktop/stereo/complete.oga`
+            ? `/usr/share/sounds/freedesktop/stereo/dialog-information.oga`
             : `/usr/share/sounds/freedesktop/stereo/dialog-warning.oga`
     )
 
