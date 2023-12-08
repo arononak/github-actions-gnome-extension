@@ -21,7 +21,7 @@ export class GithubService {
         const authStatus = await cliInterface.authStatus()
 
         if (authStatus == null) {
-            return new TokenScopes('NO CONNECTION')
+            return new TokenScopes(`NO CONNECTION`)
         }
 
         const lastLine = authStatus.substring(authStatus.lastIndexOf(`✓`))
