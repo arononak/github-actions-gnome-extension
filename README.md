@@ -119,7 +119,7 @@ if the extension fails to load in the window:
 
 ```bash
 make install
-RELOGIN
+2x RELOGIN
 make logs
 ```
 

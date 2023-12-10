@@ -86,8 +86,8 @@ export class ExtensionRepository {
                 return
             }
 
-            const workflowRunsResponse = await this.githubService.fetchWorkflowRuns(owner, repo, 1)
-            switch (workflowRunsResponse) {
+            const workflowRuns = await this.githubService.fetchWorkflowRuns(owner, repo, 1)
+            switch (workflowRuns) {
                 case null:
                     onIncorrectRepository()
                     return
@@ -96,9 +96,8 @@ export class ExtensionRepository {
                     return
             }
 
-            onDownloadPackageSize(workflowRunsResponse[`_size_`])
+            onDownloadPackageSize(workflowRuns[`_size_`])
 
-            const workflowRuns = workflowRunsResponse[`workflow_runs`]
             if (workflowRuns.length == 0) {
                 onRepoWithoutActions()
                 return
@@ -131,7 +130,7 @@ export class ExtensionRepository {
 
             if (type === DataTypeEnum.ONLY_RUNS) {
                 const { runs } = await this._fetchRepo(settingsRepository, true)
-                onRunsDownloaded(runs[`workflow_runs`])
+                onRunsDownloaded(runs)
                 return
             }
 
@@ -148,7 +147,7 @@ export class ExtensionRepository {
 
             settingsRepository.updateTransfer([...Object.values(userObject), ...Object.values(repoObject)])
 
-            onRunsDownloaded(repoObject[`runs`][`workflow_runs`])
+            onRunsDownloaded(repoObject[`runs`])
             onRepoDownloaded(repoObject)
         } catch (error) {
             logError(error)
@@ -187,7 +186,10 @@ export class ExtensionRepository {
                     return
                 }
 
-                const pagination = settingsRepository.fetchPagination()
+                let pagination = settingsRepository.fetchPagination()
+                if (pagination === 0) {
+                    pagination = undefined
+                }
 
                 // Full Mode
                 const starredList = await this.githubService.fetchUserStarred(login, pagination)
@@ -221,12 +223,17 @@ export class ExtensionRepository {
         return new Promise(async (resolve, reject) => {
             try {
                 const { owner, repo } = settingsRepository.ownerAndRepo()
-                const pagination = settingsRepository.fetchPagination()
+                let pagination = settingsRepository.fetchPagination()
+                if (pagination === 0) {
+                    pagination = undefined
+                }
 
                 const runs = await this.githubService.fetchWorkflowRuns(owner, repo, pagination)
 
                 if (onlyWorkflowRuns === true) {
-                    resolve({ runs })
+                    resolve({
+                        runs,
+                    })
                     return
                 }
 
@@ -234,7 +241,10 @@ export class ExtensionRepository {
                 const artifacts = await this.githubService.fetchArtifacts(owner, repo, pagination)
 
                 if (simpleMode) {
-                    resolve({ runs, artifacts })
+                    resolve({
+                        runs,
+                        artifacts,
+                    })
                     return
                 }
 

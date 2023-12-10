@@ -541,8 +541,8 @@ export class ExtensionController {
                 } = repoObject
 
                 this.indicator.setWatchedRepo(userRepo)
-                this.indicator.setWorkflows(workflows === undefined ? [] : workflows[`workflows`])
-                this.indicator.setArtifacts(artifacts === undefined ? [] : artifacts[`artifacts`])
+                this.indicator.setWorkflows(workflows)
+                this.indicator.setArtifacts(artifacts)
                 this.indicator.setStargazers(stargazers)
                 this.indicator.setReleases(releases)
                 this.indicator.setBranches(branches)

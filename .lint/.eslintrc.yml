@@ -55,3 +55,4 @@ rules:
   no-async-promise-executor: off
   no-return-await: off
   jsdoc/require-jsdoc: off
+  no-await-in-loop: off

@@ -17,6 +17,15 @@ export class GithubService {
     token = () =>
         cliInterface.token()
 
+    checkIsRepoStarred = (owner, repo) =>
+        cliInterface.executeGithubCliCommand(`GET`, `/user/starred/${owner}/${repo}`)
+
+    downloadArtifactFile = (downloadUrl, filename) =>
+        cliInterface.downloadArtifactFile(downloadUrl, filename)
+
+    fetcNewestExtensionRelease = () =>
+        cliInterface.executeGithubCliCommand(`GET`, `https://api.github.com/repos/arononak/github-actions-gnome-extension/releases`, 1)
+
     tokenScopes = async () => {
         const authStatus = await cliInterface.authStatus()
 
@@ -47,65 +56,7 @@ export class GithubService {
     fetchUserRepo = (owner, repo) =>
         cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}`)
 
-    checkIsRepoStarred = (owner, repo) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/user/starred/${owner}/${repo}`)
-
-    downloadArtifactFile = (downloadUrl, filename) =>
-        cliInterface.downloadArtifactFile(downloadUrl, filename)
-
-    // Pagoinated lists
-    fetchUserRepos = (pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/user/repos`, pagination)
-
-    fetchUserGists = (pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/gists`, pagination)
-
-    fetchUserStarredGists = (pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/gists/starred`, pagination)
-
-    fetchUserStarred = (username, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/users/${username}/starred`, pagination)
-
-    fetchUserFollowers = (pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/user/followers`, pagination)
-
-    fetchUserFollowing = (pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/user/following`, pagination)
-
-    fetchWorkflows = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/actions/workflows`, pagination)
-
-    fetchArtifacts = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/actions/artifacts`, pagination)
-
-    fetchStargazers = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/stargazers`, pagination)
-
-    fetchReleases = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/releases`, pagination)
-
-    fetchBranches = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/branches`, pagination)
-
-    fetchTags = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/tags`, pagination)
-
-    fetchIssues = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/issues`, pagination)
-
-    fetchPullRequests = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/pulls`, pagination)
-
-    fetchCommits = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/commits`, pagination)
-
-    fetchLabels = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/labels`, pagination)
-
     // Workflow Run
-    fetchWorkflowRuns = (owner, repo, pagination) =>
-        cliInterface.executeGithubCliCommand(`GET`, `/repos/${owner}/${repo}/actions/runs`, pagination)
-
     cancelWorkflowRun = (owner, repo, runId) =>
         cliInterface.executeGithubCliCommand(`POST`, `/repos/${owner}/${repo}/actions/runs/${runId}/cancel`)
 
@@ -115,6 +66,80 @@ export class GithubService {
     deleteWorkflowRun = (owner, repo, runId) =>
         cliInterface.executeGithubCliCommand(`DELETE`, `/repos/${owner}/${repo}/actions/runs/${runId}`)
 
-    fetcNewestExtensionRelease = () =>
-        cliInterface.executeGithubCliCommand(`GET`, `https://api.github.com/repos/arononak/github-actions-gnome-extension/releases`, 1)
+    // Pagoinated lists
+    fetchWorkflowRuns = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/actions/runs`, pagination, `workflow_runs`)
+
+    fetchUserRepos = (pagination) =>
+        this.fetchFullPaginatedList(`/user/repos`, pagination)
+
+    fetchUserGists = (pagination) =>
+        this.fetchFullPaginatedList(`/gists`, pagination)
+
+    fetchUserStarredGists = (pagination) =>
+        this.fetchFullPaginatedList(`/gists/starred`, pagination)
+
+    fetchUserStarred = (username, pagination) =>
+        this.fetchFullPaginatedList(`/users/${username}/starred`, pagination)
+
+    fetchUserFollowers = (pagination) =>
+        this.fetchFullPaginatedList(`/user/followers`, pagination)
+
+    fetchUserFollowing = (pagination) =>
+        this.fetchFullPaginatedList(`/user/following`, pagination)
+
+    fetchWorkflows = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/actions/workflows`, pagination, `workflows`)
+
+    fetchArtifacts = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/actions/artifacts`, pagination, `artifacts`)
+
+    fetchStargazers = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/stargazers`, pagination)
+
+    fetchReleases = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/releases`, pagination)
+
+    fetchBranches = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/branches`, pagination)
+
+    fetchTags = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/tags`, pagination)
+
+    fetchIssues = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/issues`, pagination)
+
+    fetchPullRequests = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/pulls`, pagination)
+
+    fetchCommits = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/commits`, pagination)
+
+    fetchLabels = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/labels`, pagination)
+
+    async fetchFullPaginatedList(endpoint, pagination, nestedFieldName) {
+        let currentPagination = pagination === undefined ? 100 : pagination
+
+        let page = 1
+        let container = []
+        let byteSize = 0
+
+        let json
+        do {
+            json = await cliInterface.executeGithubCliCommand(`GET`, endpoint, currentPagination, page)
+            byteSize += json[`_size_`]
+
+            if (nestedFieldName !== undefined) {
+                json = json[nestedFieldName]
+            }
+            container = [...container, ...json]
+
+            page += 1
+        } while (json.length === currentPagination && pagination === undefined)
+
+        container[`_size_`] = byteSize
+
+        return container
+    }
 }

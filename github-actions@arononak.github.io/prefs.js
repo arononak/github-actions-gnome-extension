@@ -263,8 +263,9 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
 
         const paginationRow = createSpinButtonRow({
             title: `Pagination`,
+            subtitle: `Set to 0 for unlimited data downloads`,
             value: pagination,
-            lower: 1,
+            lower: 0,
             upper: 100,
             onSpinButtonCreated: (spinButton) => settings.bind(`pagination`, spinButton, `value`, Gio.SettingsBindFlags.DEFAULT),
         })

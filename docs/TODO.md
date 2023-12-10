@@ -79,6 +79,7 @@
 - [x] ConfirmDialog - icon margin
 - [x] Refresh after completed workflow run
 - [x] Performance
+- [x] --paginate
 - [ ] BUG - Refresh state - Changing repo without actions & with actions
 - [x] BUG - Workflow rerun / cancel ...
 - [ ] FEATURE - Super simple mode
@@ -99,7 +100,6 @@
 - [ ] Memory allocations - check memory leaks
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
-- [ ] --paginate
 - [ ] StatusBar - 3 sections - user | Repo | actions
 - [ ] WearOS project attach
 - [ ] Settings tabs

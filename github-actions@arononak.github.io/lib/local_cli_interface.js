@@ -114,7 +114,9 @@ export function downloadArtifactFile(downloadUrl, filename) {
     })
 }
 
-export function executeGithubCliCommand(method, command, pagination = 100) {
+export function executeGithubCliCommand(method, command, pagination = 100, page = 1) {
+    const fullCommand = `${command}?per_page=${pagination}&page=${page}`
+
     return new Promise(async (resolve, reject) => {
         try {
             const isInstalledCli = await isGitHubCliInstalled()
@@ -130,14 +132,14 @@ export function executeGithubCliCommand(method, command, pagination = 100) {
             }
 
             const process = Gio.Subprocess.new(
-                [`gh`, `api`, `--method`, method, `-H`, `Accept: application/vnd.github+json`, `-H`, `X-GitHub-Api-Version: 2022-11-28`, `${command}?per_page=${pagination}`],
+                [`gh`, `api`, `--method`, method, `-H`, `Accept: application/vnd.github+json`, `-H`, `X-GitHub-Api-Version: 2022-11-28`, fullCommand],
                 Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE
             )
 
             process.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
 
-                print(`${method} ${command} stdout: ${stdout.length} stderr: ${stderr.length}`)
+                print(`${method} ${fullCommand} stdout: ${stdout.length} stderr: ${stderr.length}`)
 
                 // [NO_INTERNET_CONNECTION]
                 // stdout:
@@ -153,16 +155,16 @@ export function executeGithubCliCommand(method, command, pagination = 100) {
                         return
                     }
 
-                    const response = JSON.parse(stdout)
+                    const json = JSON.parse(stdout)
 
-                    if (JSON.stringify(response) === JSON.stringify({})) {
+                    if (JSON.stringify(json) === JSON.stringify({})) {
                         resolve(`success`)
                         return
                     }
 
-                    response[`_size_`] = stdout.length // Welcome in JS World :D
+                    json[`_size_`] = stdout.length // Welcome in JS World :D
 
-                    resolve(response)
+                    resolve(json)
                 } else {
                     if (stdout.length < 2) {
                         resolve(`no-internet-connection`)
