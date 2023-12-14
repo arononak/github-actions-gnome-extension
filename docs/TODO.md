@@ -80,27 +80,26 @@
 - [x] Refresh after completed workflow run
 - [x] Performance
 - [x] --paginate
-- [ ] BUG - Refresh state - Changing repo without actions & with actions
+- [x] BUG - ColoredMode / ExtendedColoredMode - fix
 - [x] BUG - Workflow rerun / cancel ...
+- [x] BUG - No internet start fixes
+- [x] BUG - Double confirm dialogs
+- [ ] BUG - suspend
+- [ ] BUG - Refresh state - Changing repo without actions & with actions
+- [ ] BUG - NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
+- [ ] BUG - Settings - repo text fields - dont remove last char
 - [ ] FEATURE - Super simple mode
 - [ ] FEATURE - Workflow run - rerun 2 endpoints
 - [ ] FEATURE - Changing settings without refresh indicator
-- [ ] FEATURE - Workflow enable/disable
-- [ ] BUG - suspend
-- [x] BUG - No internet start fixes
-- [x] BUG - Double confirm dialogs
-- [ ] BUG - NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
-- [ ] BUG - Settings - repo text fields - dont remove last char
-- [x] BUG - ColoredMode / ExtendedColoredMode - fix
 - [ ] FEATURE - Missing scopes - relogin
+- [ ] FEATURE - Workflow enable/disable
 - [ ] FEATURE - Block refresh
 - [ ] FEATURE - position in top panel (right | center | left)
-- [ ] FEATURE - EN / PL - translations
-- [ ] FEATURE - TEXT table
-- [ ] Memory allocations - check memory leaks
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] StatusBar - 3 sections - user | Repo | actions
+- [ ] Memory allocations - check memory leaks
+- [ ] FEATURE - EN / PL - translations
 - [ ] WearOS project attach
 - [ ] Settings tabs
 - [ ] Billing line progress
