@@ -33,7 +33,11 @@ export class SettingsRepository {
     fetchColoredMode = () => this.settings.get_boolean(`colored-mode`)
     fetchUppercaseMode = () => this.settings.get_boolean(`uppercase-mode`)
     fetchExtendedColoredMode = () => this.settings.get_boolean(`extended-colored-mode`)
+
+    fetchIconPositionBox = () => this.settings.get_string(`icon-position-box`)
+    updateIconPositionBox = (text) => this.settings.set_string(`icon-position-box`, text)
     fetchIconPosition = () => this.settings.get_int(`icon-position`)
+
     fetchShowIcon = () => this.settings.get_boolean(`show-icon`)
     fetchTextLengthLimiter = () => this.settings.get_int(`text-length-limiter`)
 
@@ -63,6 +67,7 @@ export class SettingsRepository {
         const coloredMode = this.fetchColoredMode()
         const uppercaseMode = this.fetchUppercaseMode()
         const extendedColoredMode = this.fetchExtendedColoredMode()
+        const iconPositionBox = this.fetchIconPositionBox()
         const iconPosition = this.fetchIconPosition()
         const showIcon = this.fetchShowIcon()
         const textLengthLimiter = this.fetchTextLengthLimiter()
@@ -72,6 +77,7 @@ export class SettingsRepository {
             coloredMode,
             uppercaseMode,
             extendedColoredMode,
+            iconPositionBox,
             iconPosition,
             showIcon,
             textLengthLimiter,

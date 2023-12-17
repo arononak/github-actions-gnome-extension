@@ -133,6 +133,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             simpleMode,
             coloredMode,
             uppercaseMode,
+            iconPositionBox,
             iconPosition,
             showIcon,
             textLengthLimiter,
@@ -144,7 +145,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             versionDescription,
         } = prefsController.fetchData()
 
-        window.set_default_size(600, 1420)
+        window.set_default_size(600, 1470)
 
         const enabledRow = createToggleRow({
             title: `Enabled`,
@@ -152,8 +153,15 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             onSwitchButtonCreated: (switchButton) => settings.bind(`extension-enabled`, switchButton, `active`, Gio.SettingsBindFlags.DEFAULT),
         })
 
-        const iconPositionRow = createSpinButtonRow({
+        const iconPositionComboBox = createComboBox({
             title: `Position in top panel`,
+            value: iconPositionBox,
+            values: [`left`, `center`, `right`],
+            onChanged: (text) => prefsController.updatePositionBox(text)
+        })
+
+        const iconPositionRow = createSpinButtonRow({
+            title: `Position index`,
             subtitle: `Suggested by @thyttan`,
             value: iconPosition,
             lower: -100,
@@ -272,6 +280,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
 
         const generalGroup = new Adw.PreferencesGroup({ title: `General` })
         generalGroup.add(enabledRow)
+        generalGroup.add(iconPositionComboBox)
         generalGroup.add(iconPositionRow)
 
         const watchedGroup = new Adw.PreferencesGroup({ title: `Watched repository` })

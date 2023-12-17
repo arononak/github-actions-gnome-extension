@@ -132,19 +132,20 @@ export class ExtensionController {
     async fetchSettings() {
         const enabledExtension = this.settingsRepository.fetchEnabledExtension()
 
+        const isInstalledCli = await this.extensionRepository.isInstalledCli()
+        const isLogged = await this.extensionRepository.isLogged()
+        const tokenScopes = await this.extensionRepository.tokenScopes()
+
         const {
             simpleMode,
             coloredMode,
             uppercaseMode,
             extendedColoredMode,
+            iconPositionBox,
             iconPosition,
             showIcon,
             textLengthLimiter,
         } = this.settingsRepository.fetchAppearanceSettings()
-
-        const isInstalledCli = await this.extensionRepository.isInstalledCli()
-        const isLogged = await this.extensionRepository.isLogged()
-        const tokenScopes = await this.extensionRepository.tokenScopes()
 
         return {
             enabledExtension,
@@ -157,6 +158,7 @@ export class ExtensionController {
             coloredMode,
             uppercaseMode,
             extendedColoredMode,
+            iconPositionBox,
             iconPosition,
             showIcon,
             textLengthLimiter
@@ -274,6 +276,14 @@ export class ExtensionController {
         })
 
         this.settings.connect(`changed::show-icon`, (settings, key) => {
+            const enabled = settingsRepository.fetchEnabledExtension()
+
+            if (enabled) {
+                this.onReloadCallback()
+            }
+        })
+
+        this.settings.connect(`changed::icon-position-box`, (settings, key) => {
             const enabled = settingsRepository.fetchEnabledExtension()
 
             if (enabled) {

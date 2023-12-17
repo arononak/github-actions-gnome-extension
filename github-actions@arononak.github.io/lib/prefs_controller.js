@@ -27,6 +27,7 @@ export class PrefsController {
         const simpleMode = this.settingsRepository.fetchSimpleMode()
         const coloredMode = this.settingsRepository.fetchColoredMode()
         const uppercaseMode = this.settingsRepository.fetchUppercaseMode()
+        const iconPositionBox = this.settingsRepository.fetchIconPositionBox()
         const iconPosition = this.settingsRepository.fetchIconPosition()
         const showIcon = this.settingsRepository.fetchShowIcon()
         const textLengthLimiter = this.settingsRepository.fetchTextLengthLimiter()
@@ -61,6 +62,7 @@ export class PrefsController {
             simpleMode,
             coloredMode,
             uppercaseMode,
+            iconPositionBox,
             iconPosition,
             showIcon,
             textLengthLimiter,
@@ -83,6 +85,10 @@ export class PrefsController {
 
     updateLocale(text) {
         this.settingsRepository.updateLocale(text)
+    }
+
+    updatePositionBox(text) {
+        this.settingsRepository.updateIconPositionBox(text)
     }
 
     onStarClicked() {

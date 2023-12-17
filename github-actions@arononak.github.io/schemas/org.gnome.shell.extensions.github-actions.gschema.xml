@@ -37,6 +37,9 @@
     <key name="extended-colored-mode" type="b">
       <default>false</default>
     </key>
+    <key name="icon-position-box" type="s">
+      <default>'right'</default>
+    </key>
     <key name="icon-position" type="i">
       <default>0</default>
     </key>

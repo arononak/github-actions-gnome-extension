@@ -119,6 +119,7 @@ export default class GithubActionsExtension extends Extension {
                     coloredMode,
                     uppercaseMode,
                     extendedColoredMode,
+                    iconPositionBox,
                     iconPosition,
                     showIcon,
                     textLengthLimiter,
@@ -160,7 +161,7 @@ export default class GithubActionsExtension extends Extension {
                     },
                 })
 
-                Main.panel.addToStatusArea(this._uuid, this.indicator, iconPosition)
+                Main.panel.addToStatusArea(this._uuid, this.indicator, iconPosition, iconPositionBox)
 
                 this.extensionController.attachIndicator(this.indicator)
 
