@@ -88,8 +88,6 @@ export class ExtensionController {
         this.extensionRepository = new ExtensionRepository()
 
         this.isStarted = false
-
-        this.observeSettings(this.settingsRepository)
     }
 
     async logout() {
@@ -188,6 +186,8 @@ export class ExtensionController {
 
         this.isStarted = true
 
+        this.observeSettings(this.settingsRepository)
+
         try {
             const settingsRepository = this.settingsRepository
             this.refresh()
@@ -207,6 +207,8 @@ export class ExtensionController {
 
         this.isStarted = false
 
+        this.disconnectSettings(this.settingsRepository)
+
         clearInterval(this.stateRefreshInterval)
         this.stateRefreshInterval = null
 
@@ -218,98 +220,90 @@ export class ExtensionController {
     }
 
     observeSettings(settingsRepository) {
-        this.settings.connect(`changed::refresh-time`, (settings, key) => {
-            const enabled = settingsRepository.fetchEnabledExtension()
+        this.settings.connect(`changed::extension-enabled`, () => extensionSwitchOn())
 
-            if (enabled) {
-                this.stopRefreshing()
-                this.startRefreshing()
-            }
-        })
+        this.settings.connect(`changed::refresh-time`, () => restartExtension())
+        this.settings.connect(`changed::full-refresh-time`, () => restartExtension())
+        this.settings.connect(`changed::locale`, () => reloadExtension())
+        this.settings.connect(`changed::show-icon`, () => reloadExtension())
+        this.settings.connect(`changed::icon-position-box`, () => reloadExtension())
+        this.settings.connect(`changed::icon-position`, () => reloadExtension())
 
-        this.settings.connect(`changed::full-refresh-time`, (settings, key) => {
-            const enabled = settingsRepository.fetchEnabledExtension()
-
-            if (enabled) {
-                this.stopRefreshing()
-                this.startRefreshing()
-            }
-        })
-
-        this.settings.connect(`changed::simple-mode`, (settings, key) => {
-            const simpleMode = settingsRepository.fetchSimpleMode()
+        this.settings.connect(`changed::simple-mode`, () => {
             if (this.indicator != null && this.indicator != undefined) {
-                this.indicator.setSimpleMode(simpleMode)
+                this.indicator.setSimpleMode(settingsRepository.fetchSimpleMode())
             }
         })
 
-        this.settings.connect(`changed::colored-mode`, (settings, key) => {
-            const coloredMode = settingsRepository.fetchColoredMode()
+        this.settings.connect(`changed::colored-mode`, () => {
             if (this.indicator != null && this.indicator != undefined) {
-                this.indicator.setColoredMode(coloredMode)
+                this.indicator.setColoredMode(settingsRepository.fetchColoredMode())
             }
         })
 
-        this.settings.connect(`changed::uppercase-mode`, (settings, key) => {
-            const uppercaseMode = settingsRepository.fetchUppercaseMode()
+        this.settings.connect(`changed::uppercase-mode`, () => {
             if (this.indicator != null && this.indicator != undefined) {
-                this.indicator.setUppercaseMode(uppercaseMode)
+                this.indicator.setUppercaseMode(settingsRepository.fetchUppercaseMode())
             }
         })
 
-        this.settings.connect(`changed::extended-colored-mode`, (settings, key) => {
-            const extendedColoredMode = settingsRepository.fetchExtendedColoredMode()
+        this.settings.connect(`changed::extended-colored-mode`, () => {
             if (this.indicator != null && this.indicator != undefined) {
-                this.indicator.setExtendedColoredMode(extendedColoredMode)
+                this.indicator.setExtendedColoredMode(settingsRepository.fetchExtendedColoredMode())
             }
         })
 
-        this.settings.connect(`changed::text-length-limiter`, (settings, key) => {
-            const textLengthLimiter = settingsRepository.fetchTextLengthLimiter()
+        this.settings.connect(`changed::text-length-limiter`, () => {
             if (this.indicator != null && this.indicator != undefined) {
-                this.indicator.setTextLengthLimiter(textLengthLimiter)
+                this.indicator.setTextLengthLimiter(settingsRepository.fetchTextLengthLimiter())
             }
         })
+    }
 
-        this.settings.connect(`changed::locale`, (settings, key) => {
+    disconnectSettings() {
+        this.settings.disconnect('changed::extension-enabled')
+
+        this.settings.disconnect(`changed::refresh-time`)
+        this.settings.disconnect(`changed::full-refresh-time`,)
+        this.settings.disconnect(`changed::locale`)
+        this.settings.disconnect(`changed::show-icon`)
+        this.settings.disconnect(`changed::icon-position-box`)
+        this.settings.disconnect(`changed::icon-position`)
+
+        this.settings.disconnect(`changed::simple-mode`)
+        this.settings.disconnect(`changed::colored-mode`)
+        this.settings.disconnect(`changed::uppercase-mode`)
+        this.settings.disconnect(`changed::extended-colored-mode`)
+        this.settings.disconnect(`changed::text-length-limiter`)
+    }
+
+    restartExtension() {
+        const enabled = settingsRepository.fetchEnabledExtension()
+
+        if (enabled) {
+            this.stopRefreshing()
+            this.startRefreshing()
+        }
+    }
+
+    reloadExtension() {
+        const enabled = settingsRepository.fetchEnabledExtension()
+
+        if (enabled) {
             this.onReloadCallback()
-        })
+        }
+    }
 
-        this.settings.connect(`changed::show-icon`, (settings, key) => {
-            const enabled = settingsRepository.fetchEnabledExtension()
+    extensionSwitchOn() {
+        const enabled = settingsRepository.fetchEnabledExtension()
 
-            if (enabled) {
-                this.onReloadCallback()
-            }
-        })
-
-        this.settings.connect(`changed::icon-position-box`, (settings, key) => {
-            const enabled = settingsRepository.fetchEnabledExtension()
-
-            if (enabled) {
-                this.onReloadCallback()
-            }
-        })
-
-        this.settings.connect(`changed::icon-position`, (settings, key) => {
-            const enabled = settingsRepository.fetchEnabledExtension()
-
-            if (enabled) {
-                this.onReloadCallback()
-            }
-        })
-
-        this.settings.connect(`changed::extension-enabled`, (settings, key) => {
-            const enabled = settingsRepository.fetchEnabledExtension()
-
-            if (enabled) {
-                this.startRefreshing()
-                this.onEnableCallback()
-            } else {
-                this.stopRefreshing()
-                this.onDisableCallback()
-            }
-        })
+        if (enabled) {
+            this.startRefreshing()
+            this.onEnableCallback()
+        } else {
+            this.stopRefreshing()
+            this.onDisableCallback()
+        }
     }
 
     async downloadArtifact({ indicator, downloadUrl, filename, onFinishCallback }) {
