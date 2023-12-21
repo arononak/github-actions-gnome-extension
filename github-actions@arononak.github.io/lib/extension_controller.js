@@ -220,14 +220,14 @@ export class ExtensionController {
     }
 
     observeSettings(settingsRepository) {
-        this.settings.connect(`changed::extension-enabled`, () => extensionSwitchOn())
+        this.settings.connect(`changed::extension-enabled`, () => this.extensionSwitchOn())
 
-        this.settings.connect(`changed::refresh-time`, () => restartExtension())
-        this.settings.connect(`changed::full-refresh-time`, () => restartExtension())
-        this.settings.connect(`changed::locale`, () => reloadExtension())
-        this.settings.connect(`changed::show-icon`, () => reloadExtension())
-        this.settings.connect(`changed::icon-position-box`, () => reloadExtension())
-        this.settings.connect(`changed::icon-position`, () => reloadExtension())
+        this.settings.connect(`changed::refresh-time`, () => this.restartExtension())
+        this.settings.connect(`changed::full-refresh-time`, () => this.restartExtension())
+        this.settings.connect(`changed::locale`, () => this.reloadExtension())
+        this.settings.connect(`changed::show-icon`, () => this.reloadExtension())
+        this.settings.connect(`changed::icon-position-box`, () => this.reloadExtension())
+        this.settings.connect(`changed::icon-position`, () => this.reloadExtension())
 
         this.settings.connect(`changed::simple-mode`, () => {
             if (this.indicator != null && this.indicator != undefined) {
@@ -261,10 +261,10 @@ export class ExtensionController {
     }
 
     disconnectSettings() {
-        this.settings.disconnect('changed::extension-enabled')
+        this.settings.disconnect(`changed::extension-enabled`)
 
         this.settings.disconnect(`changed::refresh-time`)
-        this.settings.disconnect(`changed::full-refresh-time`,)
+        this.settings.disconnect(`changed::full-refresh-time`)
         this.settings.disconnect(`changed::locale`)
         this.settings.disconnect(`changed::show-icon`)
         this.settings.disconnect(`changed::icon-position-box`)
@@ -278,7 +278,7 @@ export class ExtensionController {
     }
 
     restartExtension() {
-        const enabled = settingsRepository.fetchEnabledExtension()
+        const enabled = this.settingsRepository.fetchEnabledExtension()
 
         if (enabled) {
             this.stopRefreshing()
@@ -287,7 +287,7 @@ export class ExtensionController {
     }
 
     reloadExtension() {
-        const enabled = settingsRepository.fetchEnabledExtension()
+        const enabled = this.settingsRepository.fetchEnabledExtension()
 
         if (enabled) {
             this.onReloadCallback()
@@ -295,7 +295,7 @@ export class ExtensionController {
     }
 
     extensionSwitchOn() {
-        const enabled = settingsRepository.fetchEnabledExtension()
+        const enabled = this.settingsRepository.fetchEnabledExtension()
 
         if (enabled) {
             this.startRefreshing()
