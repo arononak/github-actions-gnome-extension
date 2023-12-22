@@ -100,6 +100,10 @@ export class PrefsController {
         openUrl(`${extension.path}/assets`)
     }
 
+    onOpenHomepageClicked() {
+        openUrl(`https://github.com/arononak/github-actions-gnome-extension`)
+    }
+
     onOpenExtensionGithubIssuesPageClicked() {
         openExtensionGithubIssuesPage()
     }

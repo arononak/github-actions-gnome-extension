@@ -145,7 +145,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             versionDescription,
         } = prefsController.fetchData()
 
-        window.set_default_size(600, 1470)
+        window.set_default_size(600, 1530)
 
         const enabledRow = createToggleRow({
             title: `Enabled`,
@@ -294,6 +294,16 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
 
         // Other
         const otherGroup = new Adw.PreferencesGroup({ title: `Other` })
+
+        const homepageRow = createButtonRow({
+            title: `Homepage`,
+            subtitle: `The central node of this project`,
+            buttonLabel: `Open`,
+            onButtonPressed: () => prefsController.onOpenHomepageClicked(),
+        })
+        
+        otherGroup.add(homepageRow)
+
         if (hiddenMode) {
             const extendedColoredMode = createToggleRow({
                 title: `Extended colored mode (Hidden feature)`,
@@ -319,6 +329,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             buttonLabel: `Report !`,
             onButtonPressed: () => prefsController.onOpenExtensionGithubIssuesPageClicked(),
         })
+
         otherGroup.add(bugBountyRow)
 
         const versionRow = new Adw.ActionRow({
