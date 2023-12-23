@@ -9,6 +9,7 @@ import { PrefsController } from './lib/prefs_controller.js'
 
 function createButtonRow({ title, subtitle, buttonLabel, onButtonPressed }) {
     const button = new Gtk.Button({ label: buttonLabel })
+    button.set_size_request(120, -1)
     button.connect(`clicked`, onButtonPressed)
     button.margin_top = 16
     button.margin_bottom = 16
@@ -48,6 +49,7 @@ function createEntityRow({ title, text, onChanged }) {
 
 function createSpinButtonRow({ title, subtitle, value, lower, upper, onSpinButtonCreated }) {
     const spinButton = new Gtk.SpinButton({ climb_rate: 1, digits: 0 })
+    spinButton.set_size_request(120, -1)
     spinButton.wrap = true
     spinButton.width_chars = 2
     spinButton.margin_top = 8
@@ -90,6 +92,7 @@ function createToggleRow({ title, subtitle, value, onSwitchButtonCreated }) {
 
 function createComboBox({ title, subtitle, value, values, onChanged }) {
     const comboBox = new Gtk.ComboBoxText()
+    comboBox.set_size_request(120, -1)
     comboBox.margin_top = 8
     comboBox.margin_bottom = 8
     values.forEach((element) => comboBox.append_text(element))
@@ -145,7 +148,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             versionDescription,
         } = prefsController.fetchData()
 
-        window.set_default_size(600, 1530)
+        window.set_default_size(600, 1550)
 
         const enabledRow = createToggleRow({
             title: `Enabled`,
@@ -325,7 +328,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
 
         const bugBountyRow = createButtonRow({
             title: `Bug Bounty program`,
-            subtitle: `If you find an error in the application and it is corrected in the next version, your login and email will be on the honor list in the extension`,
+            subtitle: `If you find an error and it is corrected in the next version, your login and email will be on the honor list in the extension`,
             buttonLabel: `Report !`,
             onButtonPressed: () => prefsController.onOpenExtensionGithubIssuesPageClicked(),
         })
