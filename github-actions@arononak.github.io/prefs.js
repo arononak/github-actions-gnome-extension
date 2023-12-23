@@ -35,8 +35,8 @@ function createEntityRow({ title, text, onChanged }) {
     entry.connect(`changed`, (widget) => {
         const entryText = entry.get_buffer().text
 
-        if (entryText) {
-            onChanged(entryText)
+        if (entryText !== null && entryText !== undefined) {
+            onChanged(entryText);
         }
     })
 
