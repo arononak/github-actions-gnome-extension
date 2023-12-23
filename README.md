@@ -138,7 +138,7 @@ graph TD
 > [!NOTE]
 > Copyright © 2023 Aron Onak. All rights reserved.
 > 
-> Licensed under the [GPL-3](LICENSE.txt) license.
+> Licensed under the [GPL-3](LICENSE) license.
 >
 > If you have any feedback, please contact me at arononak@gmail.com
 
