@@ -2,25 +2,18 @@
 
 # Github Actions Gnome Extension 🧩
 
-[![GPLv3 License](https://img.shields.io/badge/License-GPL%20v3-yellow.svg?labelColor=orange&color=white)](https://opensource.org/licenses)
-
-[![GitHub release](https://img.shields.io/github/v/release/arononak/github-actions-gnome-extension?labelColor=fuchsia&color=white)](https://github.com/arononak/github-actions-gnome-extension/releases/latest)
-
-![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/arononak/github-actions-gnome-extension/.github%2Fworkflows%2Fmain.yml?labelColor=olive&color=white)
-
-[![Commits](https://img.shields.io/github/commit-activity/m/arononak/github-actions-gnome-extension?labelColor=purple&color=white)](https://github.com/arononak/github-actions-gnome-extension/graphs/contributors)
-
+![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/arononak/github-actions-gnome-extension/.github%2Fworkflows%2Fmain.yml?labelColor=orange&color=white)
+[![Commits](https://img.shields.io/github/commit-activity/m/arononak/github-actions-gnome-extension?labelColor=blue&color=white)](https://github.com/arononak/github-actions-gnome-extension/graphs/contributors)
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arononak/github-actions-gnome-extension?labelColor=yellow&color=white)
+![Static Badge](https://img.shields.io/badge/Give_me-STAR!-blue?labelColor=fushia&color=aqua)
 
-![Static Badge](https://img.shields.io/badge/Give_me-STAR!-blue?labelColor=maroon&color=aqua)
+# [🏞 Preview](./docs/SCREENSHOTS.md)
 
-# 🏞 Preview [MORE](./docs/SCREENSHOTS.md)
-
-| SimpleMode - OFF                                                                                                 | SimpleMode - ON                                                                                                 |
+| Default                                                                                                          | Simple mode                                                                                                     |
 |:----------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------:|
 | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_full.png?raw=true)            | ![](https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/menu_simple.png?raw=true)         |
 
-# [🔨 Installation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md) and Configuration
+# [🔨 Installation](https://github.com/cli/cli/blob/trunk/docs/install_linux.md)
 
 | Steps                | Commands                                      |
 |:---------------------|:----------------------------------------------|
@@ -28,7 +21,7 @@
 | 🔓 Check scopes      | `gh auth status`                              |
 | 🔄 If any is missing | `gh auth refresh --scopes user,repo,workflow` |
 
-# 🖥️ Development [TODO](./docs/TODO.md)
+# [🖥️ Development](./docs/TODO.md)
 
 ```mermaid
 graph TD
@@ -97,52 +90,58 @@ graph TD
     end
 ```
 
-## 📜️ Development rules
-This project was built using **Aron Flow** (fuck scrum)
+- ### 📜️ Development **rules**
 
-| Before `git push`            | Before deploy                                |
-|:-----------------------------|:---------------------------------------------|
-| ✏️ `make lint-fix`            | 🏞 New screenshots                           |
-|                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |
-|                              | 🏷️ New tag & release                         |
-|                              | 🛰 Deploy only on Fridays !                  |
+  This project was built using **Aron Flow** (fuck scrum).
 
-## 🛸️ Cloning and running
+  | Before `git push`            | Before deploy                                |
+  |:-----------------------------|:---------------------------------------------|
+  | ✏️ `make lint-fix`            | 🏞 New screenshots                           |
+  |                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |
+  |                              | 🏷️ New tag & release                         |
+  |                              | 🛰 Deploy only on Fridays !                  |
 
-```bash
-git clone https://github.com/arononak/github-actions-gnome-extension.git
-cd github-actions-gnome-extension
-make start
-```
+- ### 📥 Cloning and running
 
-if the extension fails to load in the window:
+  ```bash
+  git clone https://github.com/arononak/github-actions-gnome-extension.git
+  cd github-actions-gnome-extension
+  make start
+  ```
 
-```bash
-make install
-2x RELOGIN
-make logs
-```
+  if the extension fails to load in the window:
 
+  ```bash
+  make install
+  RELOGIN
+  make install
+  RELOGIN
+  make logs
+  ```
 
-## ⌨️ Commands
+- ### ⌨️ Makefile commands
 
-| Steps                                                                | Commands                                                          |
-|:---------------------------------------------------------------------|:------------------------------------------------------------------|
-| ▶️  Starts a gnome session in a window                                | `make run`                                                        |
-| ➡️  Copying the extension from the system                             | `make copy`                                                       |
-| 🔎️ Starts code analysis                                              | `make lint`                                                       |
-| ✏️  Starts ESLint fixing                                              | `make lint-fix`                                                   |
-| 🔄 Compiles schemas                                                  | `make compile`                                                    |
-| 🛠️ Builds gnome-extensions package                                   | `make build`                                                      |
-| 📦 Builds and installs on system, gnome restart required             | `make install`                                                    |
-| 💻️ Installs the extension and starts a new Gnome session in a window | `make start`                                                      |
-| 📼️ Displays logs of the current Gnome session                        | `make logs`                                                       |
+  | Steps                                                                | Commands                                                          |
+  |:---------------------------------------------------------------------|:------------------------------------------------------------------|
+  | ▶️  Starts a gnome session in a window                                | `make run`                                                        |
+  | ➡️  Copying the extension from the system                             | `make copy`                                                       |
+  | 🔎️ Starts code analysis                                              | `make lint`                                                       |
+  | ✏️  Starts ESLint fixing                                              | `make lint-fix`                                                   |
+  | 🔄 Compiles schemas                                                  | `make compile`                                                    |
+  | 🛠️ Builds gnome-extensions package                                   | `make build`                                                      |
+  | 📦 Builds and installs on system, gnome restart required             | `make install`                                                    |
+  | 💻️ Installs the extension and starts a new Gnome session in a window | `make start`                                                      |
+  | 📼️ Displays logs of the current Gnome session                        | `make logs`                                                       |
 
----
+# 📝 License
 
-# 📝 © 2023 Aron Onak
+> [!NOTE]
+> Copyright © 2023 Aron Onak. All rights reserved.
+> 
+> Licensed under the [GPL-3](LICENSE.txt) license.
+>
+> If you have any feedback, please contact me at arononak@gmail.com
 
 > [!WARNING]
 > The GitHub logo is a trademark of Microsoft.<br>
 > This extension is not affiliated, funded, or in any way associated with Microsoft and GitHub.<br>
-> If you have any feedback, please contact me at arononak@gmail.com
