@@ -7,10 +7,18 @@
 ![GitHub code size in bytes](https://img.shields.io/github/languages/code-size/arononak/github-actions-gnome-extension?labelColor=yellow&color=white)
 ![Static Badge](https://img.shields.io/badge/Give_me-STAR!-blue?labelColor=fushia&color=aqua)
 
-1. [Preview](#-preview)
-2. [Installation](#-installation)
-3. [Development](#-development)
-4. [License](#-license)
+<details>
+<summary>Table of Contents</summary>
+
+1. [🏞 Preview](#-preview)
+2. [🔨 Installation](#️-installation)
+3. [🖥️ Development](#️-development)
+   - [📜 Development Rules](#️-development-rules)
+   - [📥 Cloning and Running](#️-cloning-and-running)
+   - [⌨️ Makefile Commands](#️-makefile-commands)
+4. [📝 License](#-license)
+
+</details>
 
 # [🏞 Preview](./docs/SCREENSHOTS.md)
 
