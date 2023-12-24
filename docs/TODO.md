@@ -98,6 +98,7 @@
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] StatusBar - 3 sections - user | Repo | actions
+- [ ] Attach Flutter to generate commit history in window
 - [ ] Memory allocations - check memory leaks
 - [ ] FEATURE - EN / PL - translations
 - [ ] WearOS project attach
