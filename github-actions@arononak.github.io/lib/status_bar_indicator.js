@@ -379,11 +379,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         // Token Scopes
         const missingScopes = this.tokenScopes.missingScopes()
+        const hasAllScopes = missingScopes.length === 0
         this.tokenScopesItem = new IconPopupMenuItem({
             startIconName: `dialog-password-symbolic`,
-            text: `Token: ${this.tokenScopes.toString()}${missingScopes.length === 0 ? `` : ` - (MISSING: ${missingScopes})`}`,
+            text: `Token: ${this.tokenScopes.toString()}${hasAllScopes ? `` : ` - (MISSING: ${missingScopes})`}`,
             endIconName: `edit-copy-symbolic`,
             endIconCallback: this.copyTokenCallback,
+            endButtonText: hasAllScopes ? null : `Relogin`,
+            endButtonCallback: hasAllScopes ? null : () => openAuthScreen(),
         })
         this.userMenuItem.menuBox.add_actor(this.tokenScopesItem)
 

@@ -462,7 +462,7 @@ export class ExtensionController {
         })
     }
 
-    _fetchData(onlyWorkflowRuns = false) {
+    async _fetchData(onlyWorkflowRuns = false) {
         if (this.indicator == undefined) {
             return
         }
@@ -480,6 +480,13 @@ export class ExtensionController {
             type = DataTypeEnum.FULL
         } else {
             type = DataTypeEnum.ONLY_USER
+        }
+
+        const tokenScopes = await this.extensionRepository.tokenScopes()
+        if (!this.indicator.tokenScopes.isEqual(tokenScopes)) {
+            this.indicator.tokenScopes = tokenScopes
+
+            this.indicator.initMenu()
         }
 
         this.extensionRepository.fetchData({

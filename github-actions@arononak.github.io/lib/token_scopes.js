@@ -8,4 +8,6 @@ export class TokenScopes {
     missingScopes = () => TokenScopes.requiredScopes.filter((e) => !this.scopes.includes(e))
 
     toString = () => this.scopes
+
+    isEqual = (otherTokenScopes) => JSON.stringify(this.scopes) === JSON.stringify(otherTokenScopes.scopes)
 }

@@ -304,7 +304,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             buttonLabel: `Open`,
             onButtonPressed: () => prefsController.onOpenHomepageClicked(),
         })
-        
+
         otherGroup.add(homepageRow)
 
         if (hiddenMode) {
