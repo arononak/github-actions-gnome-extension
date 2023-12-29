@@ -117,4 +117,5 @@
 - [ ] Adjust to Github Enterprice
 - [ ] Custom Icons
 - [ ] FEATURE - Super simple mode
+- [ ] DEBUG - set env as argument to show debug menu
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
