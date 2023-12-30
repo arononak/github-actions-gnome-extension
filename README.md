@@ -149,7 +149,7 @@ graph TD
 # 📝 License
 
 > [!NOTE]
-> Copyright © 2023 Aron Onak. All rights reserved.<br>
+> Copyright © 2024 Aron Onak. All rights reserved.<br>
 > Licensed under the [GPL-3](LICENSE) license.<br>
 > If you have any feedback, please contact me at arononak@gmail.com
 
