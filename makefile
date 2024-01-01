@@ -2,7 +2,7 @@ EXTENSION_DIRECTORY := $(HOME)/.local/share/gnome-shell/extensions/github-action
 EXTENSION_PACKAGE := github-actions@arononak.github.io.shell-extension.zip
 GIT_TAG := $(shell git describe --tags --abbrev=0)
 
-run:
+run: install
 	env MUTTER_DEBUG_DUMMY_MODE_SPECS=1600x1200 \
 	dbus-run-session -- gnome-shell --nested --wayland
 	gnome-extensions enable $(EXTENSION_PACKAGE)
@@ -24,8 +24,6 @@ copy:
 install: build
 	gnome-extensions install $(EXTENSION_PACKAGE) --force
 	rm -r -f $(EXTENSION_PACKAGE)
-	
-start: install run
 
 compile:
 	glib-compile-schemas "github-actions@arononak.github.io/schemas/"
@@ -41,4 +39,3 @@ logs:
 
 logout:
 	gnome-session-quit --logout --no-prompt
-
