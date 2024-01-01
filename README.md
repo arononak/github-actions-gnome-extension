@@ -126,9 +126,9 @@ graph TD
 
   ```bash
   make install
-  RELOGIN
+  make logout
   make install
-  RELOGIN
+  make logout
   make logs
   ```
 
