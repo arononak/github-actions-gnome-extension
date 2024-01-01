@@ -97,6 +97,7 @@
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] StatusBar - 3 sections - user | Repo | actions
+- [ ] New notifications style - Title - command
 - [ ] /zen /versions
 - [ ] Attach Flutter to generate commit history in window
 - [ ] Memory allocations - check memory leaks
