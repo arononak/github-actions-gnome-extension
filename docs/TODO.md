@@ -118,4 +118,5 @@
 - [ ] Custom Icons
 - [ ] FEATURE - Super simple mode
 - [ ] DEBUG - set env as argument to show debug menu
+- [ ] status and user ranking
 - [ ] GitHub logo - copyright allow to change color - https://github.com/orgs/community/discussions/62091
