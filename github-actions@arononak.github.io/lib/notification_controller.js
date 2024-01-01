@@ -59,10 +59,10 @@ export class NotificationController {
                 showNotification(`${owner}/${repo} - The workflow has been successfully built`, true)
                 break
             case `failure`:
-                showNotification(`${owner}/${repo} - Failed :/`, false)
+                showNotification(`${owner}/${repo} - Your build ended like titanic :/`, false)
                 break
             case `cancelled`:
-                showNotification(`${owner}/${repo} - Cancelled`, false)
+                showNotification(`${owner}/${repo} - CANCELLED`, false)
                 break
         }
     }
