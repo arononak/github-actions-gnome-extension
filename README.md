@@ -145,6 +145,7 @@ graph TD
   | 📦 Builds and installs on system, gnome restart required             | `make install`                                                    |
   | 💻️ Installs the extension and starts a new Gnome session in a window | `make start`                                                      |
   | 📼️ Displays logs of the current Gnome session                        | `make logs`                                                       |
+  | 😴 logout                                                            | `make logout`                                                     |
 
 # 📝 License
 

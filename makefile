@@ -38,3 +38,7 @@ lint-fix:
 
 logs:
 	journalctl -f -o cat /usr/bin/gnome-shell
+
+logout:
+	gnome-session-quit --logout --no-prompt
+
