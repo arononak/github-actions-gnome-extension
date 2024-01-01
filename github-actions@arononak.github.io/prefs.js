@@ -148,7 +148,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             versionDescription,
         } = prefsController.fetchData()
 
-        window.set_default_size(600, 1550)
+        window.set_default_size(600, 1600)
 
         const enabledRow = createToggleRow({
             title: `Enabled`,
@@ -304,8 +304,23 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             buttonLabel: `Open`,
             onButtonPressed: () => prefsController.onOpenHomepageClicked(),
         })
-
         otherGroup.add(homepageRow)
+
+        const bugBountyRow = createButtonRow({
+            title: `Bug Bounty program`,
+            subtitle: `If you find an error and it is corrected in the next version, your login and email will be on the honor list in the extension`,
+            buttonLabel: `Report !`,
+            onButtonPressed: () => prefsController.onOpenExtensionGithubIssuesPageClicked(),
+        })
+        otherGroup.add(bugBountyRow)
+
+        const newExtensionRow = createButtonRow({
+            title: `New extension`,
+            subtitle: `Check out my new extension`,
+            buttonLabel: `Check`,
+            onButtonPressed: () => prefsController.onOpenNewExtensionClicked(),
+        })
+        otherGroup.add(newExtensionRow)
 
         if (hiddenMode) {
             const extendedColoredMode = createToggleRow({
@@ -325,15 +340,6 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
 
             otherGroup.add(starRow)
         }
-
-        const bugBountyRow = createButtonRow({
-            title: `Bug Bounty program`,
-            subtitle: `If you find an error and it is corrected in the next version, your login and email will be on the honor list in the extension`,
-            buttonLabel: `Report !`,
-            onButtonPressed: () => prefsController.onOpenExtensionGithubIssuesPageClicked(),
-        })
-
-        otherGroup.add(bugBountyRow)
 
         const versionRow = new Adw.ActionRow({
             title: `Version`,

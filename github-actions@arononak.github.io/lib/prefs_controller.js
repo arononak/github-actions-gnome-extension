@@ -107,4 +107,8 @@ export class PrefsController {
     onOpenExtensionGithubIssuesPageClicked() {
         openExtensionGithubIssuesPage()
     }
+
+    onOpenNewExtensionClicked() {
+        openUrl(`https://extensions.gnome.org/extension/6643/gold-silver-price/`)
+    }
 }
