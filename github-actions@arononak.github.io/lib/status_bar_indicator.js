@@ -48,7 +48,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
     }
 
     constructor({
-        isRepositoryEntered = false,
+        hasRepository = false,
         simpleMode = false,
         coloredMode = false,
         uppercaseMode = false,
@@ -65,7 +65,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
     }) {
         super()
 
-        this.isRepositoryEntered = isRepositoryEntered
+        this.hasRepository = hasRepository
 
         this.simpleMode = simpleMode
         this.coloredMode = coloredMode
@@ -436,7 +436,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.menu.addMenuItem(this.starredGistsMenuItem)
         }
 
-        if (!this.isRepositoryEntered) {
+        if (!this.hasRepository) {
             return
         }
 

@@ -84,7 +84,7 @@ export class SettingsRepository {
         }
     }
 
-    isRepositoryEntered() {
+    hasRepository() {
         const { owner, repo } = this.ownerAndRepo(this.settings)
 
         if (isEmpty(removeWhiteChars(owner)) || isEmpty(removeWhiteChars(repo))) {
