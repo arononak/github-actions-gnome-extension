@@ -487,6 +487,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.stargazersMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.stargazersMenuItem)
 
+            this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
+
             // Workflows
             this.workflowsMenuItem = new ExpandedMenuItem(`mail-send-receive-symbolic`, ``)
             this.menu.addMenuItem(this.workflowsMenuItem)
