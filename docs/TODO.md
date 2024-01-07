@@ -86,19 +86,19 @@
 - [x] BUG - Double confirm dialogs
 - [x] BUG - Settings - repo text fields - dont remove last char
 - [x] FEATURE - position in top panel (right | center | left)
+- [x] StatusBar - 3 sections - user | Repo | actions
+- [x] FEATURE - Missing scopes - relogin
 - [ ] BUG - Refresh state - Changing repo without actions & with actions
 - [ ] BUG - NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
-- [ ] BUG - suspend
-- [ ] FEATURE - Workflow run - rerun 2 endpoints
-- [ ] FEATURE - Changing settings without refresh indicator
-- [x] FEATURE - Missing scopes - relogin
-- [ ] FEATURE - Workflow enable/disable
-- [ ] FEATURE - Block refresh
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
-- [ ] StatusBar - 3 sections - user | Repo | actions
+- [ ] BUG - suspend
 - [ ] New notifications style - Title - command
+- [ ] FEATURE - Workflow enable/disable
+- [ ] FEATURE - Block refresh
+- [ ] FEATURE - Workflow run - rerun 2 endpoints
 - [ ] /zen /versions
+- [ ] FEATURE - Changing settings without refresh indicator
 - [ ] Attach Flutter to generate commit history in window
 - [ ] Memory allocations - check memory leaks
 - [ ] FEATURE - EN / PL - translations
