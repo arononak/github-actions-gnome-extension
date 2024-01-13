@@ -889,9 +889,13 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (releases === null || releases === undefined) return
 
         function toItem(e, textLengthLimiter) {
+            const publishedAt = e[`published_at`]
+            const name = e[`name`]
+            const labelText = `${DateFormatController.format(publishedAt)} - ${name})`
+
             return {
                 "iconName": `folder-visiting-symbolic`,
-                "text": e[`name`].slice(0, textLengthLimiter),
+                "text": labelText.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
