@@ -537,8 +537,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName(conclusion) })
             this.repositoryMenuItem.icon.icon_size = 22
 
+            const repositoryName = run[`repository`][`full_name`]
+            const repositoryLatestRun = `#${run[`run_number`]} - ${run[`display_title`]}`
+
             this.repositoryMenuItem.label.style = `margin-left: 4px;`
-            this.repositoryMenuItem.label.text = `${run[`repository`][`full_name`]} \n\n#${run[`run_number`]} - ${run[`display_title`]}`
+            this.repositoryMenuItem.label.text = repositoryName + `\n\n` + repositoryLatestRun
         }
     }
 
@@ -741,6 +744,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (repo === null || repo === undefined) return
 
         this.repositoryUrl = repo[`html_url`]
+
+        this.repositoryMenuItem.label.text = repo[`full_name`]
 
         if (this.repositoryCreatedItem != null) {
             this.repositoryCreatedItem.label.text = `Created at: ${DateFormatController.format(repo[`created_at`])} `
