@@ -218,6 +218,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.repositoryCreatedItem?.label.set_text(loadingText)
         this.repositoryPrivateItem?.label.set_text(loadingText)
         this.repositoryForkItem?.label.set_text(loadingText)
+        this.repositoryLanguageItem?.label.set_text(loadingText)
+        this.repositoryLicenseItem?.label.set_text(loadingText)
         this.setTransferEmptyState()
     }
 
@@ -448,7 +450,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.menu.addMenuItem(this.repositoryMenuItem)
 
             // Repository createdAt
-            this.repositoryCreatedItem = new IconPopupMenuItem({ startIconName: `application-x-addon-symbolic` })
+            this.repositoryCreatedItem = new IconPopupMenuItem({ startIconName: `alarm-symbolic` })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryCreatedItem)
 
             // Repository isPrivate
@@ -456,8 +458,16 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
 
             // Repository isFork
-            this.repositoryForkItem = new IconPopupMenuItem({ startIconName: `folder-remote-symbolic` })
+            this.repositoryForkItem = new IconPopupMenuItem({ startIconName: `system-software-install-symbolic` })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
+
+            // Repository language
+            this.repositoryLanguageItem = new IconPopupMenuItem({ startIconName: `preferences-desktop-locale-symbolic` })
+            this.repositoryMenuItem.menuBox.add_actor(this.repositoryLanguageItem)
+
+            // Repository license
+            this.repositoryLicenseItem = new IconPopupMenuItem({ startIconName: `accessories-text-editor-symbolic` })
+            this.repositoryMenuItem.menuBox.add_actor(this.repositoryLicenseItem)
 
             // Commits
             this.commitsMenuItem = new ExpandedMenuItem(`media-record-symbolic`, ``)
@@ -757,6 +767,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.repositoryForkItem != null) {
             this.repositoryForkItem.label.text = `Fork: ${(repo[`fork`] == true).toString()} `
+        }
+
+        if (this.repositoryLanguageItem != null) {
+            this.repositoryLanguageItem.label.text = `Language: ${(repo[`language`]).toString()} `
+        }
+
+        if (this.repositoryLicenseItem != null) {
+            this.repositoryLicenseItem.label.text = `License: ${repo[`license`] != null ? repo[`license`]['spdx_id'] : 'Empty'}`
         }
     }
 
