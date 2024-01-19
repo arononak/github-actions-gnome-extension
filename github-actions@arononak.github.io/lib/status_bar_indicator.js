@@ -551,7 +551,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             const repositoryLatestRun = `#${run[`run_number`]} - ${run[`display_title`]}`
 
             this.repositoryMenuItem.label.style = `margin-left: 4px;`
-            this.repositoryMenuItem.label.text = repositoryName + `\n\n` + repositoryLatestRun
+            this.repositoryMenuItem.label.text = `${repositoryName}\n\n${repositoryLatestRun}`
         }
     }
 
@@ -770,11 +770,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         if (this.repositoryLanguageItem != null) {
-            this.repositoryLanguageItem.label.text = `Language: ${(repo[`language`]).toString()} `
+            this.repositoryLanguageItem.label.text = `Language: ${repo[`language`].toString()} `
         }
 
         if (this.repositoryLicenseItem != null) {
-            this.repositoryLicenseItem.label.text = `License: ${repo[`license`] != null ? repo[`license`]['spdx_id'] : 'Empty'}`
+            this.repositoryLicenseItem.label.text = `License: ${repo[`license`] != null ? repo[`license`][`spdx_id`] : `Empty`}`
         }
     }
 
