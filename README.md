@@ -125,10 +125,8 @@ graph TD
   if the extension fails to load in the window:
 
   ```bash
-  make install
-  make logout
-  make install
-  make logout
+  make install && make logout
+  make install && make logout
   make logs
   ```
 
