@@ -450,7 +450,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.menu.addMenuItem(this.repositoryMenuItem)
 
             // Repository createdAt
-            this.repositoryCreatedItem = new IconPopupMenuItem({ startIconName: `alarm-symbolic` })
+            this.repositoryCreatedItem = new IconPopupMenuItem({ startIconName: `x-office-calendar-symbolic` })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryCreatedItem)
 
             // Repository isPrivate
