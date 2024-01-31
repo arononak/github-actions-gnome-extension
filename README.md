@@ -1,6 +1,6 @@
 [<img src="https://github.com/arononak/github-actions-gnome-extension/blob/main/docs/get-it.png?raw=true" height="100" align="right">](https://extensions.gnome.org/extension/5973/github-actions/)
 
-# GitHub Actions Gnome Extension 🧩
+# GitHub Actions Gnome Extension 🧩 [MORE](https://medium.com/@arononak/github-actions-integration-with-gnome-desktop-6804afbf5515)
 
 ![GitHub Workflow Status](https://img.shields.io/github/actions/workflow/status/arononak/github-actions-gnome-extension/.github%2Fworkflows%2Fmain.yml?labelColor=orange&color=white)
 [![Commits](https://img.shields.io/github/commit-activity/m/arononak/github-actions-gnome-extension?labelColor=blue&color=white)](https://github.com/arononak/github-actions-gnome-extension/graphs/contributors)
