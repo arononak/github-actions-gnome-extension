@@ -681,13 +681,16 @@ export class StatusBarIndicator extends PanelMenu.Button {
             const owner = e[`owner`][`login`]
             const language = e[`language`] == null ? `` : `(${e[`language`]})`
             const isPrivate = e[`private`] == true
+            const stars = e[`stargazers_count`]
 
             return {
                 "iconName": isPrivate ? `changes-prevent-symbolic` : `network-workgroup-symbolic`,
                 "text": `${createdAt} - ${name} ${language}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
-                "endButtonText": `Watch`,
-                "endButtonCallback": () => onWatchCallback(owner, name),
+                "endButtonText": `${stars} stars`,
+                "endButtonCallback": () => {},
+                "endIconName": `emblem-ok-symbolic`,
+                "endIconCallback": () => onWatchCallback(owner, name),
             }
         }
 
