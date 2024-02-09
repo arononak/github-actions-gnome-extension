@@ -107,7 +107,7 @@ export class GithubService {
         this.fetchFullPaginatedList(`/repos/${owner}/${repo}/tags`, pagination)
 
     fetchIssues = (owner, repo, pagination) =>
-        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/issues`, pagination)
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/issues?state=all`, pagination)
 
     fetchPullRequests = (owner, repo, pagination) =>
         this.fetchFullPaginatedList(`/repos/${owner}/${repo}/pulls`, pagination)

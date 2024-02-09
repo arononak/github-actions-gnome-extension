@@ -115,7 +115,7 @@ export function downloadArtifactFile(downloadUrl, filename) {
 }
 
 export function executeGithubCliCommand(method, command, pagination = 100, page = 1) {
-    const fullCommand = `${command}?per_page=${pagination}&page=${page}`
+    const fullCommand = `${command}${command.includes(`?`) ? `&` : `?`}per_page=${pagination}&page=${page}`
 
     return new Promise(async (resolve, reject) => {
         try {

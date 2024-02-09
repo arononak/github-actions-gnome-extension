@@ -688,7 +688,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
                 "text": `${createdAt} - ${name} ${language}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
                 "endButtonText": `${stars} stars`,
-                "endButtonCallback": () => {},
+                "endButtonCallback": () => { },
                 "endIconName": `emblem-ok-symbolic`,
                 "endIconCallback": () => onWatchCallback(owner, name),
             }
@@ -1034,9 +1034,26 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (issues === null || issues === undefined) return
 
         function toItem(e, textLengthLimiter) {
+            const number = e[`number`]
+            const createdAt = e[`created_at`]
+            const state = e[`state`]
+
+            const date = DateFormatController.format(createdAt)
+
+            function icon(_state) {
+                switch (_state) {
+                    case `open`:
+                        return `emblem-important-symbolic`
+                    case `closed`:
+                        return `emblem-ok-symbolic`
+                    default:
+                        return `view-grid-symbolic`
+                }
+            }
+
             return {
-                "iconName": `media-optical-symbolic`,
-                "text": `#${e[`number`]} ${e[`title`]}`.slice(0, textLengthLimiter),
+                "iconName": icon(state),
+                "text": `(#${number}) - ${date} - ${e[`title`]}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
             }
         }
