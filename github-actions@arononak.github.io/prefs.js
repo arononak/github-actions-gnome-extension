@@ -20,6 +20,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         const settings = this.getSettings()
 
         const prefsController = new PrefsController(settings)
+        
         const {
             enabledExtension,
 
