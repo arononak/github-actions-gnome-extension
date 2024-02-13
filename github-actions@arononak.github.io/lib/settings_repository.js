@@ -56,10 +56,7 @@ export class SettingsRepository {
         const owner = this.fetchOwner(this.settings)
         const repo = this.fetchRepo(this.settings)
 
-        return {
-            owner,
-            repo,
-        }
+        return { owner, repo }
     }
 
     fetchAppearanceSettings() {
