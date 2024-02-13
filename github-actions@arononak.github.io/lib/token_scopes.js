@@ -1,3 +1,5 @@
+'use strict'
+
 export class TokenScopes {
     static requiredScopes = [`repo`, `user`, `workflow`]
 

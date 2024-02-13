@@ -1,3 +1,5 @@
+'use strict'
+
 import { GithubService } from './github_service.js'
 
 export const DataTypeEnum = {

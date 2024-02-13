@@ -1,3 +1,5 @@
+'use strict'
+
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
 
 import {
