@@ -209,6 +209,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.issuesMenuItem?.setHeaderItemText(loadingText)
         this.commitsMenuItem?.setHeaderItemText(loadingText)
         this.labelsMenuItem?.setHeaderItemText(loadingText)
+        this.collaboratorsMenuItem?.setHeaderItemText(loadingText)
         this.pullRequestsMenuItem?.setHeaderItemText(loadingText)
         this.artifactsMenuItem?.setHeaderItemText(loadingText)
         this.twoFactorItem?.label.set_text(loadingText)
@@ -484,6 +485,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
             // Labels
             this.labelsMenuItem = new ExpandedMenuItem(`edit-clear-symbolic`, ``)
             this.menu.addMenuItem(this.labelsMenuItem)
+
+            // Collaborators
+            this.collaboratorsMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
+            this.menu.addMenuItem(this.collaboratorsMenuItem)
 
             // Issues
             this.issuesMenuItem = new ExpandedMenuItem(`media-optical-symbolic`, ``)
@@ -1010,6 +1015,23 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.labelsMenuItem != null) {
             this.labelsMenuItem.setHeaderItemText(`Labels: ${labels.length} `)
             this.labelsMenuItem.submitItems(labels.map((e) => toItem(e, this.textLengthLimiter)))
+        }
+    }
+
+    setCollaborators(collaborators) {
+        if (collaborators === null || collaborators === undefined) return
+
+        function toItem(e, textLengthLimiter) {
+            return {
+                "iconName": `system-users-symbolic`,
+                "text": `${e[`login`]}`.slice(0, textLengthLimiter),
+                "callback": () => openUrl(e[`html_url`]),
+            }
+        }
+
+        if (this.collaboratorsMenuItem != null) {
+            this.collaboratorsMenuItem.setHeaderItemText(`Collaborators: ${collaborators.length} `)
+            this.collaboratorsMenuItem.submitItems(collaborators.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 

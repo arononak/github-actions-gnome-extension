@@ -118,6 +118,9 @@ export class GithubService {
     fetchLabels = (owner, repo, pagination) =>
         this.fetchFullPaginatedList(`/repos/${owner}/${repo}/labels`, pagination)
 
+    fetchCollaborators = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/collaborators`, pagination)
+
     async fetchFullPaginatedList(endpoint, pagination, nestedFieldName) {
         let currentPagination = pagination === undefined ? 100 : pagination
 

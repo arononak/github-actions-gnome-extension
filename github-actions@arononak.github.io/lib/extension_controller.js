@@ -549,6 +549,7 @@ export class ExtensionController {
                     pullRequests,
                     commits,
                     labels,
+                    collaborators,
                 } = repoObject
 
                 this.indicator.setWatchedRepo(userRepo)
@@ -562,6 +563,7 @@ export class ExtensionController {
                 this.indicator.setPullRequests(pullRequests)
                 this.indicator.setCommits(commits)
                 this.indicator.setLabels(labels)
+                this.indicator.setCollaborators(collaborators)
             },
         })
     }
