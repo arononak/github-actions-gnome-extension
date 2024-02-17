@@ -20,7 +20,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         const settings = this.getSettings()
 
         const prefsController = new PrefsController(settings)
-        
+
         const {
             enabledExtension,
 
@@ -206,6 +206,14 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         })
         otherGroup.add(homepageRow)
 
+        const newExtensionRow = createButtonRow({
+            title: `New extension`,
+            subtitle: `Check out my new extension`,
+            buttonLabel: `Check`,
+            onButtonPressed: () => prefsController.onOpenNewExtensionClicked(),
+        })
+        otherGroup.add(newExtensionRow)
+
         const bugBountyRow = createButtonRow({
             title: `Bug Bounty program`,
             subtitle: `If you find an error and it is corrected in the next version, your login and email will be on the honor list in the extension`,
@@ -214,13 +222,31 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         })
         otherGroup.add(bugBountyRow)
 
-        const newExtensionRow = createButtonRow({
-            title: `New extension`,
-            subtitle: `Check out my new extension`,
-            buttonLabel: `Check`,
-            onButtonPressed: () => prefsController.onOpenNewExtensionClicked(),
+        const honorRollRow = createButtonRow({
+            title: `Honor Roll`,
+            subtitle: `List of people who helped develop this extension`,
+            buttonLabel: `Show`,
+            onButtonPressed: () => {
+                let dialog = new Gtk.Dialog({
+                    title: `Honor Roll`,
+                    use_header_bar: true,
+                    modal: true,
+                })
+
+                let label = new Gtk.Label({
+                    label: `\n Empty list :/ \n\n If you had any contribution and you agree to include your nickname + email. \n Please send me an email: arononak@gmail.com `,
+                })
+                label.set_halign(Gtk.Align.CENTER)
+                label.set_valign(Gtk.Align.CENTER)
+                label.set_hexpand(true)
+                label.set_vexpand(false)
+
+                dialog.set_default_size(300, 200)
+                dialog.get_content_area().append(label)
+                dialog.show()
+            },
         })
-        otherGroup.add(newExtensionRow)
+        otherGroup.add(honorRollRow)
 
         if (hiddenMode) {
             const extendedColoredMode = createToggleRow({
