@@ -470,6 +470,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.repositoryLicenseItem = new IconPopupMenuItem({ startIconName: `accessories-text-editor-symbolic` })
             this.repositoryMenuItem.menuBox.add_actor(this.repositoryLicenseItem)
 
+            // Stargazers
+            this.stargazersMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
+            this.menu.addMenuItem(this.stargazersMenuItem)
+
             // Commits
             this.commitsMenuItem = new ExpandedMenuItem(`media-record-symbolic`, ``)
             this.menu.addMenuItem(this.commitsMenuItem)
@@ -482,26 +486,27 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.tagsMenuItem = new ExpandedMenuItem(`edit-clear-symbolic`, ``)
             this.menu.addMenuItem(this.tagsMenuItem)
 
-            // Labels
-            this.labelsMenuItem = new ExpandedMenuItem(`edit-clear-symbolic`, ``)
-            this.menu.addMenuItem(this.labelsMenuItem)
-
-            // Collaborators
-            this.collaboratorsMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
-            this.menu.addMenuItem(this.collaboratorsMenuItem)
-
-            // Issues
-            this.issuesMenuItem = new ExpandedMenuItem(`media-optical-symbolic`, ``)
-            this.menu.addMenuItem(this.issuesMenuItem)
+            // Releases
+            this.releasesMenuItem = new ExpandedMenuItem(`folder-visiting-symbolic`, ``)
+            this.menu.addMenuItem(this.releasesMenuItem)
 
             // Pull requests
             this.pullRequestsMenuItem = new ExpandedMenuItem(`view-restore-symbolic`, ``)
             this.menu.addMenuItem(this.pullRequestsMenuItem)
 
-            // Stargazers
-            this.stargazersMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
-            this.menu.addMenuItem(this.stargazersMenuItem)
+            // Issues
+            this.issuesMenuItem = new ExpandedMenuItem(`media-optical-symbolic`, ``)
+            this.menu.addMenuItem(this.issuesMenuItem)
 
+            // Collaborators
+            this.collaboratorsMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
+            this.menu.addMenuItem(this.collaboratorsMenuItem)
+
+            // Labels
+            this.labelsMenuItem = new ExpandedMenuItem(`mail-attachment-symbolic`, ``)
+            this.menu.addMenuItem(this.labelsMenuItem)
+
+            // Separator
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
 
             // Workflows
@@ -512,12 +517,6 @@ export class StatusBarIndicator extends PanelMenu.Button {
         // WorkflowRuns
         this.runsMenuItem = new ExpandedMenuItem(`media-playback-start-symbolic`, ``)
         this.menu.addMenuItem(this.runsMenuItem)
-
-        if (this.simpleMode === false) {
-            // Releases
-            this.releasesMenuItem = new ExpandedMenuItem(`folder-visiting-symbolic`, ``)
-            this.menu.addMenuItem(this.releasesMenuItem)
-        }
 
         // Artifacts
         this.artifactsMenuItem = new ExpandedMenuItem(`folder-visiting-symbolic`, ``)
@@ -1007,7 +1006,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         function toItem(e, textLengthLimiter) {
             return {
-                "iconName": `edit-clear-symbolic`,
+                "iconName": `mail-attachment-symbolic`,
                 "text": `${e[`name`]} - ${e[`description`]}`.slice(0, textLengthLimiter),
             }
         }
