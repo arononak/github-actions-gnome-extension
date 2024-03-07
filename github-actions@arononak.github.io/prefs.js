@@ -48,7 +48,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             versionDescription,
         } = prefsController.fetchData()
 
-        window.set_default_size(600, 1620)
+        window.set_default_size(600, 1680)
 
         const enabledRow = createToggleRow({
             title: `Enabled`,
@@ -153,6 +153,25 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         appearanceGroup.add(textLengthLimiterSpinRow)
         appearanceGroup.add(localeComboBox)
 
+        if (hiddenMode) {
+            const extendedColoredMode = createToggleRow({
+                title: `Extended colored mode (Hidden feature)`,
+                subtitle: `More intense colored mode`,
+                value: coloredMode,
+                onSwitchButtonCreated: (switchButton) => settings.bind(`extended-colored-mode`, switchButton, `active`, Gio.SettingsBindFlags.DEFAULT),
+            })
+
+            appearanceGroup.add(extendedColoredMode)
+        } else {
+            const starRow = createButtonRow({
+                title: `Unlock hidden features`,
+                buttonLabel: `Give me a star!`,
+                onButtonPressed: () => prefsController.onStarClicked(),
+            })
+
+            appearanceGroup.add(starRow)
+        }
+
         // Refresh
         const refreshStatusRow = createSpinButtonRow({
             title: `Github Actions (in seconds)`,
@@ -207,7 +226,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         otherGroup.add(homepageRow)
 
         const newExtensionRow = createButtonRow({
-            title: `New extension`,
+            title: `Gold Silver Price - Gnome Extension`,
             subtitle: `Check out my new extension`,
             buttonLabel: `Check`,
             onButtonPressed: () => prefsController.onOpenNewExtensionClicked(),
@@ -247,25 +266,6 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             },
         })
         otherGroup.add(honorRollRow)
-
-        if (hiddenMode) {
-            const extendedColoredMode = createToggleRow({
-                title: `Extended colored mode (Hidden feature)`,
-                subtitle: `More intense colored mode`,
-                value: coloredMode,
-                onSwitchButtonCreated: (switchButton) => settings.bind(`extended-colored-mode`, switchButton, `active`, Gio.SettingsBindFlags.DEFAULT),
-            })
-
-            otherGroup.add(extendedColoredMode)
-        } else {
-            const starRow = createButtonRow({
-                title: `Unlock hidden features`,
-                buttonLabel: `Give me a star!`,
-                onButtonPressed: () => prefsController.onStarClicked(),
-            })
-
-            otherGroup.add(starRow)
-        }
 
         const versionRow = new Adw.ActionRow({
             title: `Version`,
