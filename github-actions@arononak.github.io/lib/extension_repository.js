@@ -259,8 +259,9 @@ export class ExtensionRepository {
                 const issues = await this.githubService.fetchIssues(owner, repo, pagination)
                 const pullRequests = await this.githubService.fetchPullRequests(owner, repo, pagination)
                 const commits = await this.githubService.fetchCommits(owner, repo, pagination)
-                const labels = await this.githubService.fetchLabels(owner, repo, pagination)
                 const collaborators = await this.githubService.fetchCollaborators(owner, repo, pagination)
+                const labels = await this.githubService.fetchLabels(owner, repo, pagination)
+                const milestones = await this.githubService.fetchMilestones(owner, repo, pagination)
 
                 resolve({
                     runs,
@@ -272,11 +273,12 @@ export class ExtensionRepository {
                     releases,
                     branches,
                     tags,
-                    issues,
                     pullRequests,
                     commits,
-                    labels,
+                    issues,
                     collaborators,
+                    labels,
+                    milestones,
                 })
             } catch (error) {
                 logError(error)

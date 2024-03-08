@@ -209,6 +209,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.issuesMenuItem?.setHeaderItemText(loadingText)
         this.commitsMenuItem?.setHeaderItemText(loadingText)
         this.labelsMenuItem?.setHeaderItemText(loadingText)
+        this.milestonesMenuItem?.setHeaderItemText(loadingText)
         this.collaboratorsMenuItem?.setHeaderItemText(loadingText)
         this.pullRequestsMenuItem?.setHeaderItemText(loadingText)
         this.artifactsMenuItem?.setHeaderItemText(loadingText)
@@ -505,6 +506,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
             // Labels
             this.labelsMenuItem = new ExpandedMenuItem(`mail-attachment-symbolic`, ``)
             this.menu.addMenuItem(this.labelsMenuItem)
+
+            // Milestones
+            this.milestonesMenuItem = new ExpandedMenuItem(`find-location-symbolic`, ``)
+            this.menu.addMenuItem(this.milestonesMenuItem)
 
             // Separator
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
@@ -1082,6 +1087,40 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.issuesMenuItem != null) {
             this.issuesMenuItem.setHeaderItemText(`Issues: ${issues.length}`)
             this.issuesMenuItem.submitItems(issues.map((e) => toItem(e, this.textLengthLimiter)))
+        }
+    }
+
+    setMilestones(milestones) {
+        if (milestones === null || milestones === undefined) return
+
+        function toItem(e, textLengthLimiter) {
+            const number = e[`number`]
+            const createdAt = e[`created_at`]
+            const state = e[`state`]
+
+            const date = DateFormatController.format(createdAt)
+
+            function icon(_state) {
+                switch (_state) {
+                    case `open`:
+                        return `emblem-important-symbolic`
+                    case `closed`:
+                        return `emblem-ok-symbolic`
+                    default:
+                        return `view-grid-symbolic`
+                }
+            }
+
+            return {
+                "iconName": icon(state),
+                "text": `(#${number}) - ${date} - ${e[`title`]}`.slice(0, textLengthLimiter),
+                "callback": () => openUrl(e[`html_url`]),
+            }
+        }
+
+        if (this.milestonesMenuItem != null) {
+            this.milestonesMenuItem.setHeaderItemText(`Milestones: ${milestones.length}`)
+            this.milestonesMenuItem.submitItems(milestones.map((e) => toItem(e, this.textLengthLimiter)))
         }
     }
 

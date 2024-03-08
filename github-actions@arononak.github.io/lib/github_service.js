@@ -106,20 +106,23 @@ export class GithubService {
     fetchTags = (owner, repo, pagination) =>
         this.fetchFullPaginatedList(`/repos/${owner}/${repo}/tags`, pagination)
 
-    fetchIssues = (owner, repo, pagination) =>
-        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/issues?state=all`, pagination)
-
     fetchPullRequests = (owner, repo, pagination) =>
         this.fetchFullPaginatedList(`/repos/${owner}/${repo}/pulls`, pagination)
 
     fetchCommits = (owner, repo, pagination) =>
         this.fetchFullPaginatedList(`/repos/${owner}/${repo}/commits`, pagination)
 
-    fetchLabels = (owner, repo, pagination) =>
-        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/labels`, pagination)
+    fetchIssues = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/issues?state=all`, pagination)
 
     fetchCollaborators = (owner, repo, pagination) =>
         this.fetchFullPaginatedList(`/repos/${owner}/${repo}/collaborators`, pagination)
+
+    fetchLabels = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/labels`, pagination)
+
+    fetchMilestones = (owner, repo, pagination) =>
+        this.fetchFullPaginatedList(`/repos/${owner}/${repo}/milestones?state=all`, pagination)
 
     async fetchFullPaginatedList(endpoint, pagination, nestedFieldName) {
         let currentPagination = pagination === undefined ? 100 : pagination
