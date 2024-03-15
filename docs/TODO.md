@@ -90,10 +90,10 @@
 - [x] FEATURE - Missing scopes - relogin
 - [x] BUG - Refresh state - Changing repo without actions & with actions
 - [x] BUG - NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
-- [ ] Notification success / fail more sounds
-- [ ] Workflow run error message
-- [ ] Collaboration list
+- [x] Collaboration list
 - [ ] Files count & code line count
+- [ ] Workflow run error message
+- [ ] Notification success / fail more sounds
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] NO DATA for empty sections
