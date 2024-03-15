@@ -634,10 +634,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (starred === null || starred === undefined) return
 
         function toItem(e, textLengthLimiter) {
+            const stars = e[`stargazers_count`]
+
             return {
                 "iconName": `starred-symbolic`,
                 "text": e[`full_name`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
+                "endButtonText": `${stars} stars`,
+                "endButtonCallback": () => { },
             }
         }
 
