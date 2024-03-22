@@ -636,11 +636,15 @@ export class StatusBarIndicator extends PanelMenu.Button {
         function toItem(e, textLengthLimiter) {
             const stars = e[`stargazers_count`]
 
+            function formatNumber(stringNumber) {
+                return String(stringNumber).split(``).reverse().join(``).replace(/(\d{3})/g, `$1 `).split(``).reverse().join(``).trim();
+            }
+
             return {
                 "iconName": `starred-symbolic`,
                 "text": e[`full_name`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
-                "endButtonText": `${stars} stars`,
+                "endButtonText": `${formatNumber(stars)} stars`,
                 "endButtonCallback": () => { },
             }
         }
