@@ -6,9 +6,7 @@
     "arononak@gmail.com"
   ],
   "settings-schema": "org.gnome.shell.extensions.github-actions",
-  "shell-version": [
-    "45"
-  ],
+  "shell-version": ["45", "46"],
   "url": "https://github.com/arononak/github-actions-gnome-extension",
   "uuid": "github-actions@arononak.github.io",
   "version": 109
