@@ -13,6 +13,7 @@ import {
     extensionOpenPreferences,
     bytesToString,
     openUrl,
+    isEmpty,
 } from './extension_utils.js'
 
 import {
@@ -554,7 +555,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.setState({ state: ExtensionState.IN_PROGRESS })
         }
 
-        if (this.repositoryMenuItem != null) {
+        if (this.repositoryMenuItem != null && this.repositoryMenuItem != undefined) {
             this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName(conclusion) })
             this.repositoryMenuItem.icon.icon_size = 22
 
@@ -777,7 +778,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         this.repositoryUrl = repo[`html_url`]
 
-        this.repositoryMenuItem.label.text = repo[`full_name`]
+        if (isEmpty(this.repositoryMenuItem.label.text)) {
+            this.repositoryMenuItem.label.text = repo[`full_name`]
+        }
 
         if (this.repositoryCreatedItem != null) {
             this.repositoryCreatedItem.label.text = `Created at: ${DateFormatController.format(repo[`created_at`])} `
