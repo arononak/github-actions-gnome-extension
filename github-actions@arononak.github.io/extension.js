@@ -156,6 +156,9 @@ export default class GithubActionsExtension extends Extension {
                     copyTokenCallback: async () => {
                         await this.extensionController.copyTokenToClipboard()
                     },
+                    copyCommitIdCallback: async (commitId) => {
+                        await this.extensionController.copyCommitIdToClipboard(commitId)
+                    },
                     logoutCallback: () => {
                         this.extensionController.logout()
                     },

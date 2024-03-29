@@ -61,6 +61,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         refreshCallback = () => { },
         downloadArtifactCallback = (downloadUrl, filename) => { },
         copyTokenCallback = () => { },
+        copyCommitIdCallback = () => { },
         logoutCallback = () => { },
     }) {
         super()
@@ -79,6 +80,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.refreshCallback = refreshCallback
         this.downloadArtifactCallback = downloadArtifactCallback
         this.copyTokenCallback = copyTokenCallback
+        this.copyCommitIdCallback = copyCommitIdCallback
         this.logoutCallback = logoutCallback
 
         this.initStatusBarIndicator()
@@ -1135,22 +1137,25 @@ export class StatusBarIndicator extends PanelMenu.Button {
     setCommits(commits) {
         if (commits === null || commits === undefined) return
 
-        function toItem(e, textLengthLimiter) {
+        function toItem(e, textLengthLimiter, copyCommitIdCallback) {
             const date = DateFormatController.format(e[`commit`][`author`][`date`])
             const authorName = e[`commit`][`author`][`name`]
             const authorEmail = e[`commit`][`author`][`email`]
             const message = e[`commit`][`message`].replace(/\s+/g, ` `)
+            const commitSha = e[`sha`]
 
             return {
                 "iconName": `media-record-symbolic`,
                 "text": `${date} - ${authorName} (${authorEmail}) - ${message}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
+                "endIconName": `edit-copy-symbolic`,
+                "endIconCallback": () => copyCommitIdCallback(commitSha),
             }
         }
 
         if (this.commitsMenuItem != null) {
             this.commitsMenuItem.setHeaderItemText(`Commits: ${commits.length}`)
-            this.commitsMenuItem.submitItems(commits.map((e) => toItem(e, this.textLengthLimiter)))
+            this.commitsMenuItem.submitItems(commits.map((e) => toItem(e, this.textLengthLimiter, (commitSha) => this.copyCommitIdCallback(commitSha))))
         }
     }
 }

@@ -103,6 +103,11 @@ export class ExtensionController {
         Main.notify(`Copied !`, token)
     }
 
+    copyCommitIdToClipboard(commitId) {
+        copyToClipboard(commitId)
+        Main.notify(`Copied !`, commitId)
+    }
+
     attachCallbacks({
         onRepoSetAsWatched,
         onDeleteWorkflowRun,
