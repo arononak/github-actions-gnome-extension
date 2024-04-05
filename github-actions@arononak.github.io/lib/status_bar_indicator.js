@@ -940,11 +940,14 @@ export class StatusBarIndicator extends PanelMenu.Button {
             const publishedAt = e[`published_at`]
             const name = e[`name`]
             const labelText = `${DateFormatController.format(publishedAt)} - ${name})`
+            const targetCommitish = e[`target_commitish`]
 
             return {
                 "iconName": `folder-visiting-symbolic`,
                 "text": labelText.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
+                "endButtonText": targetCommitish,
+                "endButtonCallback": () => { },
             }
         }
 
