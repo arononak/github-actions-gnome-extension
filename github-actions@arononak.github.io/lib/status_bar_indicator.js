@@ -1079,6 +1079,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
             const number = e[`number`]
             const createdAt = e[`created_at`]
             const state = e[`state`]
+            const login = e[`user`][`login`]
+            const loginUrl = e[`user`][`html_url`]
 
             const date = DateFormatController.format(createdAt)
 
@@ -1097,6 +1099,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
                 "iconName": icon(state),
                 "text": `(#${number}) - ${date} - ${e[`title`]}`.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
+                endButtonText: login,
+                endButtonCallback: () => openUrl(loginUrl),
             }
         }
 
