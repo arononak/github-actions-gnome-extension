@@ -26,6 +26,9 @@ export class GithubService {
     fetcNewestExtensionRelease = () =>
         cliInterface.executeGithubCliCommand(`GET`, `https://api.github.com/repos/arononak/github-actions-gnome-extension/releases`, 1)
 
+    zen = () =>
+        cliInterface.zen()
+
     tokenScopes = async () => {
         const authStatus = await cliInterface.authStatus()
 

@@ -57,6 +57,27 @@ export function authStatus() {
     })
 }
 
+export function zen() {
+    return new Promise((resolve, reject) => {
+        try {
+            const process = Gio.Subprocess.new([`gh`, `api`, `/zen`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
+
+            process.communicate_utf8_async(null, null, (proc, res) => {
+                const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
+
+                if (!proc.get_successful()) {
+                    resolve(null)
+                }
+                
+                resolve(stdout)
+            })
+        } catch (e) {
+            logError(e)
+            resolve(null)
+        }
+    })
+}
+
 export function token() {
     return new Promise((resolve, reject) => {
         try {

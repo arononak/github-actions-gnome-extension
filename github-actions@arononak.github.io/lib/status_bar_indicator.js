@@ -64,6 +64,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         copyTokenCallback = () => { },
         copyCommitIdCallback = () => { },
         logoutCallback = () => { },
+        zenCallback = () => { },
     }) {
         super()
 
@@ -83,6 +84,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.copyTokenCallback = copyTokenCallback
         this.copyCommitIdCallback = copyCommitIdCallback
         this.logoutCallback = logoutCallback
+        this.zenCallback = zenCallback
 
         this.initStatusBarIndicator()
 
@@ -247,19 +249,27 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.add_child(this.topBox)
     }
 
-    updateStatusLabel(extensionState) {
-        if (this.simpleMode == true && extensionState.simpleModeShowText == false) {
+    setStatusText(text) {
+        this.label.text = text
+    }
+
+    setZen(isZen) {
+        this.isZen = isZen
+    }
+
+    updateStatusLabel(state) {
+        if (this.simpleMode == true && state.simpleModeShowText == false) {
             this.label.text = ``
         } else {
             this.label.text = this.uppercaseMode == true
-                ? extensionState.text().toUpperCase()
-                : extensionState.text()
+                ? state.text().toUpperCase()
+                : state.text()
         }
 
         this.setStatusColor(
             this.coloredMode,
             this.extendedColoredMode,
-            this.coloredMode ? extensionState.coloredModeColor : extensionState.color,
+            this.coloredMode ? state.coloredModeColor : state.color,
         )
     }
 
@@ -344,6 +354,10 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.networkButton = new RoundedButton({ iconName: `system-settings-symbolic`, text: `` })
             this.networkButton.connect(`clicked`, () => openUrl(`https://api.github.com/octocat`))
             this.leftBox.add(this.networkButton)
+
+            this.zenButton = new RoundedButton({ iconName: `application-x-addon-symbolic`})
+            this.zenButton.connect(`clicked`, () => this.zenCallback())
+            this.leftBox.add(this.zenButton)
         }
 
         // Settings

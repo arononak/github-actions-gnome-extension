@@ -162,6 +162,11 @@ export default class GithubActionsExtension extends Extension {
                     logoutCallback: () => {
                         this.extensionController.logout()
                     },
+                    zenCallback: () => {
+                        this.extensionController.zen({
+                            indicator: this.indicator,
+                        })
+                    },
                 })
 
                 Main.panel.addToStatusArea(this._uuid, this.indicator, iconPosition, iconPositionBox)

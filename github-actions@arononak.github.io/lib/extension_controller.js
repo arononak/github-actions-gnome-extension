@@ -384,6 +384,26 @@ export class ExtensionController {
         }
     }
 
+    async zen({ indicator }) {
+        try {
+            const zen = await this.extensionRepository.zen()
+
+            const state = indicator.getState()
+            indicator.setZen(true)
+            indicator.setStatusText(zen)
+
+            new Promise((resolve, reject) => {
+                setTimeout(() => {
+                    indicator.setZen(false)
+                    indicator.setState({ state })
+                    resolve()
+                }, 5000)
+            })
+        } catch (error) {
+            logError(error)
+        }
+    }
+
     _checkErrors() {
         if (this.indicator == undefined) {
             return

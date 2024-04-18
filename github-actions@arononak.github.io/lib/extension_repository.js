@@ -33,6 +33,10 @@ export class ExtensionRepository {
         return await this.githubService.tokenScopes()
     }
 
+    async zen() {
+        return await this.githubService.zen()
+    }
+
     async downloadArtifactFile(downloadUrl, filename) {
         return await this.githubService.downloadArtifactFile(downloadUrl, filename)
     }
