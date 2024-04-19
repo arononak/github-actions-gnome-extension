@@ -392,15 +392,19 @@ export class ExtensionController {
             indicator.setZen(true)
             indicator.setStatusText(zen)
 
-            new Promise((resolve, reject) => {
-                setTimeout(() => {
-                    indicator.setZen(false)
-                    indicator.setState({ state })
-                    resolve()
-                }, 5000)
-            })
+            this.zenTimeout = setTimeout(() => {
+                indicator.setZen(false)
+                indicator.setState({ state })
+            }, 5000)
         } catch (error) {
             logError(error)
+        }
+    }
+
+    removeZenTimeout() {
+        if (this.zenTimeout !== undefined) {
+            clearTimeout(this.zenTimeout)
+            this.zenTimeout = null
         }
     }
 

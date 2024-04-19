@@ -104,6 +104,7 @@ export default class GithubActionsExtension extends Extension {
     }
 
     disposeExtension() {
+        this.extensionController.removeZenTimeout()
         this.removeStatusBarIndicator()
     }
 
