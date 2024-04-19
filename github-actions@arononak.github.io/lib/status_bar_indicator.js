@@ -355,7 +355,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.networkButton.connect(`clicked`, () => openUrl(`https://api.github.com/octocat`))
             this.leftBox.add(this.networkButton)
 
-            this.zenButton = new RoundedButton({ iconName: `application-x-addon-symbolic`})
+            this.zenButton = new RoundedButton({ iconName: `application-x-addon-symbolic` })
             this.zenButton.connect(`clicked`, () => this.zenCallback())
             this.leftBox.add(this.zenButton)
         }

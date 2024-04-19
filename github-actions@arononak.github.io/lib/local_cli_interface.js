@@ -68,7 +68,7 @@ export function zen() {
                 if (!proc.get_successful()) {
                     resolve(null)
                 }
-                
+
                 resolve(stdout)
             })
         } catch (e) {
