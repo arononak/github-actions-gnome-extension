@@ -14,6 +14,7 @@ import {
     bytesToString,
     openUrl,
     isEmpty,
+    isGnome45,
 } from './extension_utils.js'
 
 import {
@@ -341,49 +342,86 @@ export class StatusBarIndicator extends PanelMenu.Button {
             vertical: false
         })
 
-        this.box.add(this.leftBox)
-        this.box.add(this.rightBox)
+        if (isGnome45()) {
+            this.box.add(this.leftBox)
+            this.box.add(this.rightBox)
+        } else {
+            this.box.add_child(this.leftBox)
+            this.box.add_child(this.rightBox)
+        }
 
         this.topItems = new PopupMenu.PopupBaseMenuItem({ reactive: false })
         this.topItems.remove_all_children() // Remove left margin from non visible PopupMenuItem icon
-        this.topItems.actor.add_actor(this.box)
+        if (isGnome45()) {
+            this.topItems.actor.add_actor(this.box)
+        } else {
+            this.topItems.actor.add_child(this.box)
+        }
         this.menu.addMenuItem(this.topItems)
 
         // Network transfer
         if (this.isLogged() && this.state != ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
             this.networkButton = new RoundedButton({ iconName: `system-settings-symbolic`, text: `` })
             this.networkButton.connect(`clicked`, () => openUrl(`https://api.github.com/octocat`))
-            this.leftBox.add(this.networkButton)
+            if (isGnome45()) {
+                this.leftBox.add(this.networkButton)
+            } else {
+                this.leftBox.add_child(this.networkButton)
+            }
 
             this.zenButton = new RoundedButton({ iconName: `application-x-addon-symbolic` })
             this.zenButton.connect(`clicked`, () => this.zenCallback())
-            this.leftBox.add(this.zenButton)
+            if (isGnome45()) {
+                this.leftBox.add(this.zenButton)
+            } else {
+                this.leftBox.add_child(this.zenButton)
+            }
         }
 
         // Settings
         this.settingsItem = new RoundedButton({ iconName: `system-settings-symbolic` })
         this.settingsItem.connect(`clicked`, () => extensionOpenPreferences())
-        this.rightBox.add_actor(this.settingsItem)
+        if (isGnome45()) {
+            this.rightBox.add_actor(this.settingsItem)
+        } else {
+            this.rightBox.add_child(this.settingsItem)
+        }
 
         if (this.isInstalledCli() == false) {
             this.installButton = new RoundedButton({ iconName: `application-x-addon-symbolic` })
             this.installButton.connect(`clicked`, () => openInstallCliScreen())
-            this.rightBox.add_actor(this.installButton)
+            if (isGnome45()) {
+                this.rightBox.add_actor(this.installButton)
+            } else {
+                this.rightBox.add_child(this.installButton)
+            }
         } else if (this.isLogged()) {
             // Refresh
             this.refreshButton = new RoundedButton({ iconName: `view-refresh-symbolic` })
             this.refreshButton.connect(`clicked`, () => this.refreshCallback())
-            this.rightBox.add_actor(this.refreshButton)
+            if (isGnome45()) {
+                this.rightBox.add_actor(this.refreshButton)
+            } else {
+                this.rightBox.add_child(this.refreshButton)
+            }
 
             // Logout
             this.logoutButton = new RoundedButton({ iconName: `system-log-out-symbolic` })
             this.logoutButton.connect(`clicked`, () => this.logoutCallback())
-            this.rightBox.add_actor(this.logoutButton)
+            if (isGnome45()) {
+                this.rightBox.add_actor(this.logoutButton)
+            } else {
+                this.rightBox.add_child(this.logoutButton)
+            }
         } else {
             // Login
             this.loginButton = new RoundedButton({ iconName: `avatar-default-symbolic` })
             this.loginButton.connect(`clicked`, () => openAuthScreen())
-            this.rightBox.add_actor(this.loginButton)
+            if (isGnome45()) {
+                this.rightBox.add_actor(this.loginButton)
+            } else {
+                this.rightBox.add_child(this.loginButton)
+            }
         }
 
         // Logged Menu
@@ -409,7 +447,12 @@ export class StatusBarIndicator extends PanelMenu.Button {
             endButtonText: hasAllScopes ? null : `Relogin`,
             endButtonCallback: hasAllScopes ? null : () => openAuthScreen(),
         })
-        this.userMenuItem.menuBox.add_actor(this.tokenScopesItem)
+        if (isGnome45()) {
+            this.userMenuItem.menuBox.add_actor(this.tokenScopesItem)
+        } else {
+            this.userMenuItem.menuBox.add_child(this.tokenScopesItem)
+        }
+        
 
         // 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl(`https://github.com/settings/two_factor_authentication/setup/intro`) : {}
@@ -417,19 +460,35 @@ export class StatusBarIndicator extends PanelMenu.Button {
             startIconName: `security-medium-symbolic`,
             itemCallback: this.twoFactorCallback,
         })
-        this.userMenuItem.menuBox.add_actor(this.twoFactorItem)
+        if (isGnome45()) {
+            this.userMenuItem.menuBox.add_actor(this.twoFactorItem)
+        } else {
+            this.userMenuItem.menuBox.add_child(this.twoFactorItem)
+        }
 
         // Minutes
         this.minutesItem = new IconPopupMenuItem({ startIconName: `alarm-symbolic` })
-        this.userMenuItem.menuBox.add_actor(this.minutesItem)
+        if (isGnome45()) {
+            this.userMenuItem.menuBox.add_actor(this.minutesItem)
+        } else {
+            this.userMenuItem.menuBox.add_child(this.minutesItem)
+        }
 
         // Packages
         this.packagesItem = new IconPopupMenuItem({ startIconName: `network-transmit-receive-symbolic` })
-        this.userMenuItem.menuBox.add_actor(this.packagesItem)
+        if (isGnome45()) {
+            this.userMenuItem.menuBox.add_actor(this.packagesItem)
+        } else {
+            this.userMenuItem.menuBox.add_child(this.packagesItem)
+        }
 
         // Shared Storage
         this.sharedStorageItem = new IconPopupMenuItem({ startIconName: `network-server-symbolic` })
-        this.userMenuItem.menuBox.add_actor(this.sharedStorageItem)
+        if (isGnome45()) {
+            this.userMenuItem.menuBox.add_actor(this.sharedStorageItem)
+        } else {
+            this.userMenuItem.menuBox.add_child(this.sharedStorageItem)
+        }
 
         if (this.simpleMode === false) {
             // Starred
@@ -470,23 +529,44 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
             // Repository createdAt
             this.repositoryCreatedItem = new IconPopupMenuItem({ startIconName: `x-office-calendar-symbolic` })
-            this.repositoryMenuItem.menuBox.add_actor(this.repositoryCreatedItem)
+            if (isGnome45()) {
+                this.repositoryMenuItem.menuBox.add_actor(this.repositoryCreatedItem)
+            } else {
+                this.repositoryMenuItem.menuBox.add_child(this.repositoryCreatedItem)
+            }
 
             // Repository isPrivate
             this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: `changes-prevent-symbolic` })
-            this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
+            if (isGnome45()) {
+                this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
+            } else {
+                this.repositoryMenuItem.menuBox.add_child(this.repositoryPrivateItem)
+            }
 
             // Repository isFork
             this.repositoryForkItem = new IconPopupMenuItem({ startIconName: `system-software-install-symbolic` })
-            this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
+            if (isGnome45()) {
+                this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
+            } else {
+                this.repositoryMenuItem.menuBox.add_child(this.repositoryForkItem)
+
+            }
 
             // Repository language
             this.repositoryLanguageItem = new IconPopupMenuItem({ startIconName: `preferences-desktop-locale-symbolic` })
-            this.repositoryMenuItem.menuBox.add_actor(this.repositoryLanguageItem)
+            if (isGnome45()) {
+                this.repositoryMenuItem.menuBox.add_actor(this.repositoryLanguageItem)
+            } else {
+                this.repositoryMenuItem.menuBox.add_child(this.repositoryLanguageItem)
+            }
 
             // Repository license
             this.repositoryLicenseItem = new IconPopupMenuItem({ startIconName: `accessories-text-editor-symbolic` })
-            this.repositoryMenuItem.menuBox.add_actor(this.repositoryLicenseItem)
+            if (isGnome45()) {
+                this.repositoryMenuItem.menuBox.add_actor(this.repositoryLicenseItem)
+            } else {
+                this.repositoryMenuItem.menuBox.add_child(this.repositoryLicenseItem)
+            }
 
             // Stargazers
             this.stargazersMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)

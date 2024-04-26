@@ -14,7 +14,10 @@ import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js'
 import * as MessageTray from 'resource:///org/gnome/shell/ui/messageTray.js'
 import * as Main from 'resource:///org/gnome/shell/ui/main.js'
 
-import { extensionPath } from './extension_utils.js'
+import {
+    extensionPath,
+    isGnome45,
+} from './extension_utils.js'
 
 export const AppStatusColor = {
     WHITE: {
@@ -150,13 +153,21 @@ export class RoundedButton extends St.Button {
 
         if (iconName != null) {
             this.icon = new St.Icon({ icon_name: iconName, icon_size: 20 })
-            this.child.add(this.icon)
+            if (isGnome45()) {
+                this.child.add(this.icon)
+            } else {
+                this.child.add_child(this.icon)
+            }
         }
 
         if (text != null) {
             // this.label from St.Button is used
             this.boxLabel = new St.Label({ text, y_align: Clutter.ActorAlign.CENTER, y_expand: true })
-            this.child.add(this.boxLabel)
+            if (isGnome45()) {
+                this.child.add(this.boxLabel)
+            } else {
+                this.child.add_child(this.boxLabel)
+            }
             this.setTextColor(null)
         }
     }
@@ -173,8 +184,13 @@ export class RoundedButton extends St.Button {
         this.icon = icon
 
         this.child.remove_all_children()
-        this.child.add(this.icon)
-        this.child.add(this.boxLabel)
+        if (isGnome45()) {
+            this.child.add(this.icon)
+            this.child.add(this.boxLabel)
+        } else {
+            this.child.add_child(this.icon)
+            this.child.add_child(this.boxLabel)
+        }
     }
 }
 
@@ -207,8 +223,13 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
 
         this.menuBox = new St.BoxLayout({ vertical: true, style_class: `menu-box` })
         this.scrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true })
-        this.scrollView.add_actor(this.menuBox)
-        this.menu.box.add_actor(this.scrollView)
+        if (isGnome45()) {
+            this.scrollView.add_actor(this.menuBox)
+            this.menu.box.add_actor(this.scrollView)
+        } else {
+            this.scrollView.add_child(this.menuBox)
+            this.menu.box.add_child(this.scrollView)
+        }
 
         this.label = new St.Label({ text })
         this.insert_child_at_index(this.label, 0)
@@ -229,7 +250,11 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
                 x_align: Clutter.ActorAlign.END,
                 y_align: Clutter.ActorAlign.CENTER,
             })
-            box.add(endIcon)
+            if (isGnome45()) {
+                box.add(endIcon)
+            } else {
+                box.add_child(endIcon)
+            }
             this.insert_child_at_index(box, 5)
         }
     }
@@ -238,17 +263,21 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
         this.menuBox.remove_all_children()
 
         items.forEach((i) => {
-            this.menuBox.add_actor(
-                new IconPopupMenuItem({
-                    text: i[`text`],
-                    startIconName: i[`iconName`],
-                    itemCallback: i[`callback`],
-                    endIconName: i[`endIconName`],
-                    endIconCallback: i[`endIconCallback`],
-                    endButtonText: i[`endButtonText`],
-                    endButtonCallback: i[`endButtonCallback`],
-                }),
-            )
+            const item = new IconPopupMenuItem({
+                text: i[`text`],
+                startIconName: i[`iconName`],
+                itemCallback: i[`callback`],
+                endIconName: i[`endIconName`],
+                endIconCallback: i[`endIconCallback`],
+                endButtonText: i[`endButtonText`],
+                endButtonCallback: i[`endButtonCallback`],
+            })
+            
+            if (isGnome45()) {
+                this.menuBox.add_actor(item)
+            } else {
+                this.menuBox.add_child(item)
+            }
         })
     }
 
@@ -296,7 +325,11 @@ export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
             if (endButtonText != null) {
                 const button = new St.Button({ style_class: `button github-actions-text-button`, label: endButtonText })
                 button.connect(`clicked`, endButtonCallback)
-                box.add(button)
+                if (isGnome45()) {
+                    box.add(button)
+                } else {
+                    box.add_child(button)
+                }
             }
 
             if (endIconName != null) {
@@ -306,7 +339,11 @@ export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
                     callback: () => endIconCallback()
                 })
 
-                box.add(icon)
+                if (isGnome45()) {
+                    box.add(icon)
+                } else {
+                    box.add_child(icon)
+                }
             }
         }
     }

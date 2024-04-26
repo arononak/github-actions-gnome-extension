@@ -1,6 +1,7 @@
 'use strict'
 
 import { Extension } from 'resource:///org/gnome/shell/extensions/extension.js'
+import * as Config from 'resource:///org/gnome/shell/misc/config.js'
 
 import {
     removeWhiteChars as _removeWhiteChars,
@@ -55,4 +56,9 @@ export function isEmpty(str) {
 export function copyToClipboard(text) {
     const clipboard = St.Clipboard.get_default()
     clipboard.set_text(St.ClipboardType.CLIPBOARD, text)
+}
+
+export function isGnome45() {
+    const [major, minor] = Config.PACKAGE_VERSION.split(`.`).map((s) => Number(s))
+    return (major == 45)
 }
