@@ -272,7 +272,7 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
                 endButtonText: i[`endButtonText`],
                 endButtonCallback: i[`endButtonCallback`],
             })
-            
+
             if (isGnome45()) {
                 this.menuBox.add_actor(item)
             } else {

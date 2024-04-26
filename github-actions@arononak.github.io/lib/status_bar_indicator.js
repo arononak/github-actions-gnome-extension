@@ -452,7 +452,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         } else {
             this.userMenuItem.menuBox.add_child(this.tokenScopesItem)
         }
-        
+
 
         // 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl(`https://github.com/settings/two_factor_authentication/setup/intro`) : {}
@@ -549,7 +549,6 @@ export class StatusBarIndicator extends PanelMenu.Button {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
             } else {
                 this.repositoryMenuItem.menuBox.add_child(this.repositoryForkItem)
-
             }
 
             // Repository language

@@ -60,5 +60,5 @@ export function copyToClipboard(text) {
 
 export function isGnome45() {
     const [major, minor] = Config.PACKAGE_VERSION.split(`.`).map((s) => Number(s))
-    return (major == 45)
+    return major == 45
 }
