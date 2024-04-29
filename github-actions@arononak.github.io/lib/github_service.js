@@ -1,6 +1,5 @@
 'use strict'
 
-import { removeWhiteChars } from './utils.js'
 import { TokenScopes } from './token_scopes.js'
 import * as cliInterface from './local_cli_interface.js'
 
@@ -36,12 +35,16 @@ export class GithubService {
             return new TokenScopes(`NO CONNECTION`)
         }
 
-        const lastLine = authStatus.substring(authStatus.lastIndexOf(`✓`))
-        const scopesLine = lastLine.substring(lastLine.indexOf(`:`) + 1)
+        const scopesStartIndex = authStatus.indexOf(`Token scopes:`) + `Token scopes:`.length
+        const scopesEndIndex = authStatus.indexOf(`\n`, scopesStartIndex)
+        const scopes = authStatus
+            .slice(scopesStartIndex, scopesEndIndex)
+            .trim()
+            .replace(/'/g, ``)
+            .split(`,`)
+            .map((scope) => scope.trim())
 
-        const scopesArray = removeWhiteChars(scopesLine).split(`,`)
-
-        return new TokenScopes(scopesArray)
+        return new TokenScopes(scopes)
     }
 
     fetchUser = () =>

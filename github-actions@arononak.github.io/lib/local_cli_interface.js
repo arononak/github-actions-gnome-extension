@@ -47,8 +47,7 @@ export function authStatus() {
                     resolve(null)
                 }
 
-                // Github CLI put a response in stderr, why ? idk
-                resolve(stderr)
+                resolve(stdout)
             })
         } catch (e) {
             logError(e)
