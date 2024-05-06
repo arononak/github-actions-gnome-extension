@@ -44,6 +44,8 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
 
             hiddenMode,
 
+            cliVersion,
+
             version,
             versionDescription,
         } = prefsController.fetchData()
@@ -266,6 +268,13 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             },
         })
         otherGroup.add(honorRollRow)
+
+        const recommendedCliVersionRow = new Adw.ActionRow({
+            title: `GitHub CLI Version`,
+            subtitle: `Recommended version 2.45.0`,
+        })
+        recommendedCliVersionRow.add_suffix(new Gtk.Label({ label: cliVersion, halign: Gtk.Align.START, valign: Gtk.Align.CENTER }))
+        otherGroup.add(recommendedCliVersionRow)
 
         const versionRow = new Adw.ActionRow({
             title: `Version`,

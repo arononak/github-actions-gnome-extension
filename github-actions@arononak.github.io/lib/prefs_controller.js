@@ -35,6 +35,8 @@ export class PrefsController {
 
         const hiddenMode = this.settingsRepository.fetchHiddenMode()
 
+        const cliVersion = this.settingsRepository.fetchCliVersion()
+
         const extensionVersion = VERSION
         const newestVersion = this.settingsRepository.fetchNewestVersion()
 
@@ -70,6 +72,7 @@ export class PrefsController {
 
             hiddenMode,
 
+            cliVersion,
             "version": extensionVersion,
             versionDescription,
         }

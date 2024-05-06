@@ -44,6 +44,9 @@ export class SettingsRepository {
     fetchHiddenMode = () => this.settings.get_boolean(`hidden-mode`)
     updateHiddenMode = (mode) => this.settings.set_boolean(`hidden-mode`, mode)
 
+    fetchCliVersion = () => this.settings.get_string(`cli-version`)
+    updateCliVersion = (cliVersion) => this.settings.set_string(`cli-version`, cliVersion)
+
     fetchNewestVersion = () => this.settings.get_string(`newest-version`)
     updateNewestVersion = (newestVersion) => this.settings.set_string(`newest-version`, newestVersion)
 

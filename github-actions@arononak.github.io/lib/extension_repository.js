@@ -21,6 +21,10 @@ export class ExtensionRepository {
         return await this.githubService.token()
     }
 
+    async fetchCliVersion() {
+        return await this.githubService.cliVersion()
+    }
+
     async isInstalledCli() {
         return await this.githubService.isInstalledCli()
     }
@@ -132,6 +136,11 @@ export class ExtensionRepository {
             const newestVersion = newestRelease[0][`tag_name`]
             if (newestVersion != undefined) {
                 settingsRepository.updateNewestVersion(newestVersion)
+            }
+
+            const cliVersion = await this.githubService.cliVersion()
+            if (cliVersion != undefined) {
+                settingsRepository.updateCliVersion(cliVersion)
             }
 
             if (type === DataTypeEnum.ONLY_RUNS) {

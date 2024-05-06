@@ -7,6 +7,12 @@ export class GithubService {
     isInstalledCli = () =>
         cliInterface.isGitHubCliInstalled()
 
+    cliVersion = async () => {
+        const cliVersionStatus = await cliInterface.cliVersion()
+
+        return cliVersionStatus.match(/\d+\.\d+\.\d+/)[0]
+    }
+
     isLogged = () =>
         cliInterface.isLogged()
 
