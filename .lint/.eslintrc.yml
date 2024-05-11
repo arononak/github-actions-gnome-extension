@@ -56,3 +56,4 @@ rules:
   no-return-await: off
   jsdoc/require-jsdoc: off
   no-await-in-loop: off
+  no-unused-expressions: off
