@@ -361,21 +361,34 @@ export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
 }
 
 export function showNotification(message, success) {
-    const source = new MessageTray.Source(
-        `Github Actions`,
-        success === true ? `emoji-symbols-symbolic` : `window-close-symbolic`,
-    )
+    const source = isGnome45()
+        ? new MessageTray.Source(
+            `Github Actions`,
+            success === true ? `emoji-symbols-symbolic` : `window-close-symbolic`,
+        )
+        : new MessageTray.Source({
+            title: `Github Actions`,
+            icon: new Gio.ThemedIcon({ name: success === true ? `emoji-symbols-symbolic` : `window-close-symbolic` }),
+        })
 
     Main.messageTray.add(source)
 
-    const notification = new MessageTray.Notification(
-        source,
-        success === true ? `Success!` : `Error`,
-        message,
-        { gicon: appIcon() },
-    )
+    const notification = isGnome45()
+        ? new MessageTray.Notification(
+            source,
+            success === true ? `Success!` : `Error`,
+            message,
+            { gicon: appIcon() },
+        )
+        : new MessageTray.Notification({
+            source,
+            title: success === true ? `Success!` : `Error`,
+            body: message,
+            gicon: appIcon(),
+            urgency: MessageTray.Urgency.NORMAL,
+        })
 
-    source.showNotification(notification)
+    isGnome45() ? source.showNotification(notification) : source.addNotification(notification)
 
     const file = Gio.File.new_for_path(
         success === true
