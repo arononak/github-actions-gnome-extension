@@ -31,8 +31,13 @@ import {
     anvilIcon,
 } from './widgets.js'
 
-import { DateFormatController } from './date_format_controller.js'
-import { ExtensionState } from './extension_controller.js'
+import {
+    DateFormatController,
+} from './date_format_controller.js'
+
+import {
+    ExtensionState,
+} from './extension_controller.js'
 
 export function isCompleted(state) {
     return state === ExtensionState.COMPLETED_SUCCESS
@@ -871,28 +876,28 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         this.repositoryUrl = repo[`html_url`]
 
-        if (isEmpty(this.repositoryMenuItem.label.text)) {
+        if (!isEmpty(this.repositoryMenuItem.label.text)) {
             this.repositoryMenuItem.label.text = repo[`full_name`]
         }
 
         if (this.repositoryCreatedItem != null) {
-            this.repositoryCreatedItem.label.text = `Created at: ${DateFormatController.format(repo[`created_at`])} `
+            this.repositoryCreatedItem.label.text = `Created at: ${DateFormatController.format(repo[`created_at`])}`
         }
 
         if (this.repositoryPrivateItem != null) {
-            this.repositoryPrivateItem.label.text = `Private: ${(repo[`private`] == true).toString()} `
+            this.repositoryPrivateItem.label.text = `Private: ${(repo[`private`] == true).toString()}`
         }
 
         if (this.repositoryForkItem != null) {
-            this.repositoryForkItem.label.text = `Fork: ${(repo[`fork`] == true).toString()} `
+            this.repositoryForkItem.label.text = `Fork: ${(repo[`fork`] == true).toString()}`
         }
 
         if (this.repositoryLanguageItem != null) {
-            this.repositoryLanguageItem.label.text = `Language: ${repo[`language`].toString()} `
+            this.repositoryLanguageItem.label.text = `Language: ${repo?.language || `null`}`
         }
 
         if (this.repositoryLicenseItem != null) {
-            this.repositoryLicenseItem.label.text = `License: ${repo[`license`] != null ? repo[`license`][`spdx_id`] : `Empty`}`
+            this.repositoryLicenseItem.label.text = `License: ${repo?.license?.spdx_id ?? `null`}`
         }
     }
 

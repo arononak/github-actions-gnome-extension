@@ -146,6 +146,7 @@ export class GithubService {
         let json
         do {
             json = await cliInterface.executeGithubCliCommand(`GET`, endpoint, currentPagination, page)
+            if (json == null) break
             byteSize += json[`_size_`]
 
             if (nestedFieldName !== undefined) {
