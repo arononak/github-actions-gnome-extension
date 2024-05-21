@@ -212,8 +212,7 @@ export class IconButton extends St.Button {
     }
 }
 
-// Parent item
-export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
+export class ParentMenuItem extends PopupMenu.PopupSubMenuMenuItem {
     static {
         GObject.registerClass(this)
     }
@@ -263,7 +262,7 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
         this.menuBox.remove_all_children()
 
         items.forEach((i) => {
-            const item = new IconPopupMenuItem({
+            const item = new ChildMenuItem({
                 text: i[`text`],
                 startIconName: i[`iconName`],
                 itemCallback: i[`callback`],
@@ -300,7 +299,7 @@ export class ExpandedMenuItem extends PopupMenu.PopupSubMenuMenuItem {
 }
 
 // Child item
-export class IconPopupMenuItem extends PopupMenu.PopupImageMenuItem {
+export class ChildMenuItem extends PopupMenu.PopupImageMenuItem {
     static {
         GObject.registerClass(this)
     }

@@ -23,8 +23,8 @@ import {
     createAppGioIcon,
     createAppGioIconInner,
     RoundedButton,
-    ExpandedMenuItem,
-    IconPopupMenuItem,
+    ParentMenuItem,
+    ChildMenuItem,
     showConfirmDialog,
     conclusionIconName,
     isDarkTheme,
@@ -438,13 +438,13 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
     initLoggedMenu() {
         // User
-        this.userMenuItem = new ExpandedMenuItem(null, ``)
+        this.userMenuItem = new ParentMenuItem(null, ``)
         this.menu.addMenuItem(this.userMenuItem)
 
         // Token Scopes
         const missingScopes = this.tokenScopes.missingScopes()
         const hasAllScopes = missingScopes.length === 0
-        this.tokenScopesItem = new IconPopupMenuItem({
+        this.tokenScopesItem = new ChildMenuItem({
             startIconName: `dialog-password-symbolic`,
             text: `Token: ${this.tokenScopes.toString()}${hasAllScopes ? `` : ` - (MISSING: ${missingScopes})`}`,
             endIconName: `edit-copy-symbolic`,
@@ -461,7 +461,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         // 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl(`https://github.com/settings/two_factor_authentication/setup/intro`) : {}
-        this.twoFactorItem = new IconPopupMenuItem({
+        this.twoFactorItem = new ChildMenuItem({
             startIconName: `security-medium-symbolic`,
             itemCallback: this.twoFactorCallback,
         })
@@ -472,7 +472,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         // Minutes
-        this.minutesItem = new IconPopupMenuItem({ startIconName: `alarm-symbolic` })
+        this.minutesItem = new ChildMenuItem({ startIconName: `alarm-symbolic` })
         if (isGnome45()) {
             this.userMenuItem.menuBox.add_actor(this.minutesItem)
         } else {
@@ -480,7 +480,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         // Packages
-        this.packagesItem = new IconPopupMenuItem({ startIconName: `network-transmit-receive-symbolic` })
+        this.packagesItem = new ChildMenuItem({ startIconName: `network-transmit-receive-symbolic` })
         if (isGnome45()) {
             this.userMenuItem.menuBox.add_actor(this.packagesItem)
         } else {
@@ -488,7 +488,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         // Shared Storage
-        this.sharedStorageItem = new IconPopupMenuItem({ startIconName: `network-server-symbolic` })
+        this.sharedStorageItem = new ChildMenuItem({ startIconName: `network-server-symbolic` })
         if (isGnome45()) {
             this.userMenuItem.menuBox.add_actor(this.sharedStorageItem)
         } else {
@@ -497,27 +497,27 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.simpleMode === false) {
             // Starred
-            this.starredMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
+            this.starredMenuItem = new ParentMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.starredMenuItem)
 
             // Followers
-            this.followersMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
+            this.followersMenuItem = new ParentMenuItem(`system-users-symbolic`, ``)
             this.menu.addMenuItem(this.followersMenuItem)
 
             // Following
-            this.followingMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
+            this.followingMenuItem = new ParentMenuItem(`system-users-symbolic`, ``)
             this.menu.addMenuItem(this.followingMenuItem)
 
             // Repos
-            this.reposMenuItem = new ExpandedMenuItem(`folder-symbolic`, ``)
+            this.reposMenuItem = new ParentMenuItem(`folder-symbolic`, ``)
             this.menu.addMenuItem(this.reposMenuItem)
 
             // Gists
-            this.gistsMenuItem = new ExpandedMenuItem(`utilities-terminal-symbolic`, ``)
+            this.gistsMenuItem = new ParentMenuItem(`utilities-terminal-symbolic`, ``)
             this.menu.addMenuItem(this.gistsMenuItem)
 
             // Starred gists
-            this.starredGistsMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
+            this.starredGistsMenuItem = new ParentMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.starredGistsMenuItem)
         }
 
@@ -529,11 +529,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.simpleMode === false) {
             // Repository
-            this.repositoryMenuItem = new ExpandedMenuItem(`system-file-manager-symbolic`, ``, `applications-internet-symbolic`, () => openUrl(this.repositoryUrl))
+            this.repositoryMenuItem = new ParentMenuItem(`system-file-manager-symbolic`, ``, `applications-internet-symbolic`, () => openUrl(this.repositoryUrl))
             this.menu.addMenuItem(this.repositoryMenuItem)
 
             // Repository createdAt
-            this.repositoryCreatedItem = new IconPopupMenuItem({ startIconName: `x-office-calendar-symbolic` })
+            this.repositoryCreatedItem = new ChildMenuItem({ startIconName: `x-office-calendar-symbolic` })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryCreatedItem)
             } else {
@@ -541,7 +541,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             // Repository isPrivate
-            this.repositoryPrivateItem = new IconPopupMenuItem({ startIconName: `changes-prevent-symbolic` })
+            this.repositoryPrivateItem = new ChildMenuItem({ startIconName: `changes-prevent-symbolic` })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
             } else {
@@ -549,7 +549,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             // Repository isFork
-            this.repositoryForkItem = new IconPopupMenuItem({ startIconName: `system-software-install-symbolic` })
+            this.repositoryForkItem = new ChildMenuItem({ startIconName: `system-software-install-symbolic` })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
             } else {
@@ -557,7 +557,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             // Repository language
-            this.repositoryLanguageItem = new IconPopupMenuItem({ startIconName: `preferences-desktop-locale-symbolic` })
+            this.repositoryLanguageItem = new ChildMenuItem({ startIconName: `preferences-desktop-locale-symbolic` })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryLanguageItem)
             } else {
@@ -565,7 +565,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             // Repository license
-            this.repositoryLicenseItem = new IconPopupMenuItem({ startIconName: `accessories-text-editor-symbolic` })
+            this.repositoryLicenseItem = new ChildMenuItem({ startIconName: `accessories-text-editor-symbolic` })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryLicenseItem)
             } else {
@@ -573,59 +573,59 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             // Stargazers
-            this.stargazersMenuItem = new ExpandedMenuItem(`starred-symbolic`, ``)
+            this.stargazersMenuItem = new ParentMenuItem(`starred-symbolic`, ``)
             this.menu.addMenuItem(this.stargazersMenuItem)
 
             // Commits
-            this.commitsMenuItem = new ExpandedMenuItem(`media-record-symbolic`, ``)
+            this.commitsMenuItem = new ParentMenuItem(`media-record-symbolic`, ``)
             this.menu.addMenuItem(this.commitsMenuItem)
 
             // Branches
-            this.branchesMenuItem = new ExpandedMenuItem(`media-playlist-consecutive-symbolic`, ``)
+            this.branchesMenuItem = new ParentMenuItem(`media-playlist-consecutive-symbolic`, ``)
             this.menu.addMenuItem(this.branchesMenuItem)
 
             // Tags
-            this.tagsMenuItem = new ExpandedMenuItem(`edit-clear-symbolic`, ``)
+            this.tagsMenuItem = new ParentMenuItem(`edit-clear-symbolic`, ``)
             this.menu.addMenuItem(this.tagsMenuItem)
 
             // Releases
-            this.releasesMenuItem = new ExpandedMenuItem(`folder-visiting-symbolic`, ``)
+            this.releasesMenuItem = new ParentMenuItem(`folder-visiting-symbolic`, ``)
             this.menu.addMenuItem(this.releasesMenuItem)
 
             // Pull requests
-            this.pullRequestsMenuItem = new ExpandedMenuItem(`view-restore-symbolic`, ``)
+            this.pullRequestsMenuItem = new ParentMenuItem(`view-restore-symbolic`, ``)
             this.menu.addMenuItem(this.pullRequestsMenuItem)
 
             // Issues
-            this.issuesMenuItem = new ExpandedMenuItem(`media-optical-symbolic`, ``)
+            this.issuesMenuItem = new ParentMenuItem(`media-optical-symbolic`, ``)
             this.menu.addMenuItem(this.issuesMenuItem)
 
             // Collaborators
-            this.collaboratorsMenuItem = new ExpandedMenuItem(`system-users-symbolic`, ``)
+            this.collaboratorsMenuItem = new ParentMenuItem(`system-users-symbolic`, ``)
             this.menu.addMenuItem(this.collaboratorsMenuItem)
 
             // Labels
-            this.labelsMenuItem = new ExpandedMenuItem(`mail-attachment-symbolic`, ``)
+            this.labelsMenuItem = new ParentMenuItem(`mail-attachment-symbolic`, ``)
             this.menu.addMenuItem(this.labelsMenuItem)
 
             // Milestones
-            this.milestonesMenuItem = new ExpandedMenuItem(`find-location-symbolic`, ``)
+            this.milestonesMenuItem = new ParentMenuItem(`find-location-symbolic`, ``)
             this.menu.addMenuItem(this.milestonesMenuItem)
 
             // Separator
             this.menu.addMenuItem(new PopupMenu.PopupSeparatorMenuItem())
 
             // Workflows
-            this.workflowsMenuItem = new ExpandedMenuItem(`mail-send-receive-symbolic`, ``)
+            this.workflowsMenuItem = new ParentMenuItem(`mail-send-receive-symbolic`, ``)
             this.menu.addMenuItem(this.workflowsMenuItem)
         }
 
         // WorkflowRuns
-        this.runsMenuItem = new ExpandedMenuItem(`media-playback-start-symbolic`, ``)
+        this.runsMenuItem = new ParentMenuItem(`media-playback-start-symbolic`, ``)
         this.menu.addMenuItem(this.runsMenuItem)
 
         // Artifacts
-        this.artifactsMenuItem = new ExpandedMenuItem(`folder-visiting-symbolic`, ``)
+        this.artifactsMenuItem = new ParentMenuItem(`folder-visiting-symbolic`, ``)
         this.menu.addMenuItem(this.artifactsMenuItem)
     }
 
