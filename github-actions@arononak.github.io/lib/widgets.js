@@ -298,7 +298,6 @@ export class ParentMenuItem extends PopupMenu.PopupSubMenuMenuItem {
     }
 }
 
-// Child item
 export class ChildMenuItem extends PopupMenu.PopupImageMenuItem {
     static {
         GObject.registerClass(this)
@@ -322,12 +321,12 @@ export class ChildMenuItem extends PopupMenu.PopupImageMenuItem {
             this.insert_child_at_index(box, 100)
 
             if (endButtonText != null) {
-                const button = new St.Button({ style_class: `button github-actions-text-button`, label: endButtonText })
-                button.connect(`clicked`, endButtonCallback)
+                this._endButton = new St.Button({ style_class: `button github-actions-text-button`, label: endButtonText })
+                this._endButton.connect(`clicked`, endButtonCallback)
                 if (isGnome45()) {
-                    box.add(button)
+                    box.add(this._endButton)
                 } else {
-                    box.add_child(button)
+                    box.add_child(this._endButton)
                 }
             }
 
@@ -356,6 +355,12 @@ export class ChildMenuItem extends PopupMenu.PopupImageMenuItem {
             x_align: Clutter.ActorAlign.END,
             y_align: Clutter.ActorAlign.CENTER,
         })
+    }
+
+    updateEndButtonText(newText) {
+        if (this._endButton) {
+            this._endButton.label = newText;
+        }
     }
 }
 

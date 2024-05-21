@@ -224,15 +224,29 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.collaboratorsMenuItem?.setHeaderItemText(loadingText)
         this.pullRequestsMenuItem?.setHeaderItemText(loadingText)
         this.artifactsMenuItem?.setHeaderItemText(loadingText)
+
         this.twoFactorItem?.label.set_text(loadingText)
         this.minutesItem?.label.set_text(loadingText)
-        this.packagesItem?.label.set_text(loadingText)
-        this.sharedStorageItem?.label.set_text(loadingText)
+        this.bandwidthItem?.label.set_text(loadingText)
+        this.storageItem?.label.set_text(loadingText)
+
         this.repositoryCreatedItem?.label.set_text(loadingText)
         this.repositoryPrivateItem?.label.set_text(loadingText)
         this.repositoryForkItem?.label.set_text(loadingText)
         this.repositoryLanguageItem?.label.set_text(loadingText)
         this.repositoryLicenseItem?.label.set_text(loadingText)
+
+        this.twoFactorItem?.updateEndButtonText(loadingText)
+        this.minutesItem?.updateEndButtonText(loadingText)
+        this.bandwidthItem?.updateEndButtonText(loadingText)
+        this.storageItem?.updateEndButtonText(loadingText)
+
+        this.repositoryCreatedItem?.updateEndButtonText(loadingText)
+        this.repositoryPrivateItem?.updateEndButtonText(loadingText)
+        this.repositoryForkItem?.updateEndButtonText(loadingText)
+        this.repositoryLanguageItem?.updateEndButtonText(loadingText)
+        this.repositoryLicenseItem?.updateEndButtonText(loadingText)
+
         this.setTransferEmptyState()
     }
 
@@ -461,10 +475,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         // 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl(`https://github.com/settings/two_factor_authentication/setup/intro`) : {}
-        this.twoFactorItem = new ChildMenuItem({
-            startIconName: `security-medium-symbolic`,
-            itemCallback: this.twoFactorCallback,
-        })
+        this.twoFactorItem = new ChildMenuItem({ startIconName: `security-medium-symbolic`, itemCallback: this.twoFactorCallback, endButtonText: ``, endButtonCallback: () => { } })
         if (isGnome45()) {
             this.userMenuItem.menuBox.add_actor(this.twoFactorItem)
         } else {
@@ -472,7 +483,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         // Minutes
-        this.minutesItem = new ChildMenuItem({ startIconName: `alarm-symbolic` })
+        this.minutesItem = new ChildMenuItem({ startIconName: `alarm-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
         if (isGnome45()) {
             this.userMenuItem.menuBox.add_actor(this.minutesItem)
         } else {
@@ -480,19 +491,19 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         // Packages
-        this.packagesItem = new ChildMenuItem({ startIconName: `network-transmit-receive-symbolic` })
+        this.bandwidthItem = new ChildMenuItem({ startIconName: `network-transmit-receive-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
         if (isGnome45()) {
-            this.userMenuItem.menuBox.add_actor(this.packagesItem)
+            this.userMenuItem.menuBox.add_actor(this.bandwidthItem)
         } else {
-            this.userMenuItem.menuBox.add_child(this.packagesItem)
+            this.userMenuItem.menuBox.add_child(this.bandwidthItem)
         }
 
         // Shared Storage
-        this.sharedStorageItem = new ChildMenuItem({ startIconName: `network-server-symbolic` })
+        this.storageItem = new ChildMenuItem({ startIconName: `network-server-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
         if (isGnome45()) {
-            this.userMenuItem.menuBox.add_actor(this.sharedStorageItem)
+            this.userMenuItem.menuBox.add_actor(this.storageItem)
         } else {
-            this.userMenuItem.menuBox.add_child(this.sharedStorageItem)
+            this.userMenuItem.menuBox.add_child(this.storageItem)
         }
 
         if (this.simpleMode === false) {
@@ -533,7 +544,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.menu.addMenuItem(this.repositoryMenuItem)
 
             // Repository createdAt
-            this.repositoryCreatedItem = new ChildMenuItem({ startIconName: `x-office-calendar-symbolic` })
+            this.repositoryCreatedItem = new ChildMenuItem({ startIconName: `x-office-calendar-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryCreatedItem)
             } else {
@@ -541,7 +552,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             // Repository isPrivate
-            this.repositoryPrivateItem = new ChildMenuItem({ startIconName: `changes-prevent-symbolic` })
+            this.repositoryPrivateItem = new ChildMenuItem({ startIconName: `changes-prevent-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
             } else {
@@ -549,7 +560,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             // Repository isFork
-            this.repositoryForkItem = new ChildMenuItem({ startIconName: `system-software-install-symbolic` })
+            this.repositoryForkItem = new ChildMenuItem({ startIconName: `system-software-install-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
             } else {
@@ -557,7 +568,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             // Repository language
-            this.repositoryLanguageItem = new ChildMenuItem({ startIconName: `preferences-desktop-locale-symbolic` })
+            this.repositoryLanguageItem = new ChildMenuItem({ startIconName: `preferences-desktop-locale-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryLanguageItem)
             } else {
@@ -565,7 +576,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             }
 
             // Repository license
-            this.repositoryLicenseItem = new ChildMenuItem({ startIconName: `accessories-text-editor-symbolic` })
+            this.repositoryLicenseItem = new ChildMenuItem({ startIconName: `accessories-text-editor-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
             if (isGnome45()) {
                 this.repositoryMenuItem.menuBox.add_actor(this.repositoryLicenseItem)
             } else {
@@ -696,38 +707,40 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         if (this.twoFactorItem != null) {
-            this.twoFactorItem.label.text = twoFactorEnabled == undefined
-                ? `2FA: No permissions`
-                : `2FA: ${twoFactorEnabled == true ? `Enabled` : `Disabled`}`
+            this.twoFactorItem.label.text = `2FA`
+            this.twoFactorItem.updateEndButtonText(twoFactorEnabled == undefined ? `No permissions` : twoFactorEnabled == true ? `Enabled` : `Disabled`)
         }
     }
 
     setUserBilling(minutes, packages, sharedStorage) {
         let parsedMinutes
         if (minutes != null) {
-            parsedMinutes = `Usage minutes: ${minutes[`total_minutes_used`]} of ${minutes[`included_minutes`]}, ${minutes[`total_paid_minutes_used`]} paid`
+            parsedMinutes = `${minutes[`total_minutes_used`]} of ${minutes[`included_minutes`]}, (${minutes[`total_paid_minutes_used`]} paid)`
         }
 
         let parsedPackages
         if (packages != null) {
-            parsedPackages = `Data transfer out: ${packages[`total_gigabytes_bandwidth_used`]} GB of ${packages[`included_gigabytes_bandwidth`]} GB, ${packages[`total_paid_gigabytes_bandwidth_used`]} GB paid`
+            parsedPackages = `${packages[`total_gigabytes_bandwidth_used`]} GB of ${packages[`included_gigabytes_bandwidth`]} GB, ${packages[`total_paid_gigabytes_bandwidth_used`]} GB paid`
         }
 
-        let parsedSharedStorage
+        let parsedStorage
         if (sharedStorage != null) {
-            parsedSharedStorage = `Storage for month: ${sharedStorage[`estimated_storage_for_month`]} GB, ${sharedStorage[`estimated_paid_storage_for_month`]} GB paid`
+            parsedStorage = `${sharedStorage[`estimated_storage_for_month`]} GB, ${sharedStorage[`estimated_paid_storage_for_month`]} GB paid`
         }
 
         if (this.minutesItem != null) {
-            this.minutesItem.label.text = parsedMinutes == null ? `No permissions` : parsedMinutes
+            this.minutesItem.label.text = `Minutes`
+            this.minutesItem.updateEndButtonText(parsedMinutes == null ? `No permissions` : parsedMinutes)
         }
 
-        if (this.packagesItem != null) {
-            this.packagesItem.label.text = parsedPackages == null ? `No permissions` : parsedPackages
+        if (this.bandwidthItem != null) {
+            this.bandwidthItem.label.text = `Bandwidth`
+            this.bandwidthItem.updateEndButtonText(parsedPackages == null ? `No permissions` : parsedPackages)
         }
 
-        if (this.sharedStorageItem != null) {
-            this.sharedStorageItem.label.text = parsedSharedStorage == null ? `No permissions` : parsedSharedStorage
+        if (this.storageItem != null) {
+            this.storageItem.label.text = `Storage`
+            this.storageItem.updateEndButtonText(parsedStorage == null ? `No permissions` : parsedStorage)
         }
     }
 
@@ -881,23 +894,28 @@ export class StatusBarIndicator extends PanelMenu.Button {
         }
 
         if (this.repositoryCreatedItem != null) {
-            this.repositoryCreatedItem.label.text = `Created at: ${DateFormatController.format(repo[`created_at`])}`
+            this.repositoryCreatedItem.label.text = `Created at`
+            this.repositoryCreatedItem.updateEndButtonText(DateFormatController.format(repo[`created_at`]))
         }
 
         if (this.repositoryPrivateItem != null) {
-            this.repositoryPrivateItem.label.text = `Private: ${(repo[`private`] == true).toString()}`
+            this.repositoryPrivateItem.label.text = `Private`
+            this.repositoryPrivateItem.updateEndButtonText((repo[`private`] == true).toString())
         }
 
         if (this.repositoryForkItem != null) {
-            this.repositoryForkItem.label.text = `Fork: ${(repo[`fork`] == true).toString()}`
+            this.repositoryForkItem.label.text = `Fork`
+            this.repositoryForkItem.updateEndButtonText((repo[`fork`] == true).toString())
         }
 
         if (this.repositoryLanguageItem != null) {
-            this.repositoryLanguageItem.label.text = `Language: ${repo?.language || `null`}`
+            this.repositoryLanguageItem.label.text = `Language`
+            this.repositoryLanguageItem.updateEndButtonText(repo?.language || `null`)
         }
 
         if (this.repositoryLicenseItem != null) {
-            this.repositoryLicenseItem.label.text = `License: ${repo?.license?.spdx_id ?? `null`}`
+            this.repositoryLicenseItem.label.text = `License`
+            this.repositoryLicenseItem.updateEndButtonText(repo?.license?.spdx_id ?? `null`)
         }
     }
 
