@@ -10,13 +10,11 @@
 <details>
 <summary>Table of Contents</summary>
 
-1. [🏞 Preview](#-preview)
-2. [🔨 Installation](#-installation)
-3. [🖥️ Development](#-development)
-   - [📜 Development Rules](#-development-rules)
-   - [📥 Cloning and Running](#-cloning-and-running)
-   - [⌨️ Makefile Commands](#️-makefile-commands)
-4. [📝 License](#-license)
+- [GitHub Actions Gnome Extension 🧩 MORE](#github-actions-gnome-extension--more)
+- [🏞 Preview](#-preview)
+- [🔨 Installation](#-installation)
+- [🖥️ Development](#️-development)
+- [📝 License](#-license)
 
 </details>
 
@@ -35,6 +33,8 @@
 | 🔄 If any is missing | `gh auth refresh --scopes user,repo,workflow` |
 
 # [🖥️ Development](./docs/TODO.md)
+
+![](https://github.com/arononak/github-actions-gnome-extension/blob/main/development.png?raw=true)
 
 ```mermaid
 graph TD
