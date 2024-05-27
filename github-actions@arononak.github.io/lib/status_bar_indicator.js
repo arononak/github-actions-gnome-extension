@@ -466,45 +466,25 @@ export class StatusBarIndicator extends PanelMenu.Button {
             endButtonText: hasAllScopes ? null : `Relogin`,
             endButtonCallback: hasAllScopes ? null : () => openAuthScreen(),
         })
-        if (isGnome45()) {
-            this.userMenuItem.menuBox.add_actor(this.tokenScopesItem)
-        } else {
-            this.userMenuItem.menuBox.add_child(this.tokenScopesItem)
-        }
 
+        this.userMenuItem.addChild(this.tokenScopesItem)
 
         // 2 FA
         this.twoFactorCallback = () => this.twoFactorEnabled == false ? openUrl(`https://github.com/settings/two_factor_authentication/setup/intro`) : {}
         this.twoFactorItem = new ChildMenuItem({ startIconName: `security-medium-symbolic`, itemCallback: this.twoFactorCallback, endButtonText: ``, endButtonCallback: () => { } })
-        if (isGnome45()) {
-            this.userMenuItem.menuBox.add_actor(this.twoFactorItem)
-        } else {
-            this.userMenuItem.menuBox.add_child(this.twoFactorItem)
-        }
+        this.userMenuItem.addChild(this.twoFactorItem)
 
         // Minutes
         this.minutesItem = new ChildMenuItem({ startIconName: `alarm-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
-        if (isGnome45()) {
-            this.userMenuItem.menuBox.add_actor(this.minutesItem)
-        } else {
-            this.userMenuItem.menuBox.add_child(this.minutesItem)
-        }
+        this.userMenuItem.addChild(this.minutesItem)
 
         // Packages
         this.bandwidthItem = new ChildMenuItem({ startIconName: `network-transmit-receive-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
-        if (isGnome45()) {
-            this.userMenuItem.menuBox.add_actor(this.bandwidthItem)
-        } else {
-            this.userMenuItem.menuBox.add_child(this.bandwidthItem)
-        }
+        this.userMenuItem.addChild(this.bandwidthItem)
 
         // Shared Storage
         this.storageItem = new ChildMenuItem({ startIconName: `network-server-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
-        if (isGnome45()) {
-            this.userMenuItem.menuBox.add_actor(this.storageItem)
-        } else {
-            this.userMenuItem.menuBox.add_child(this.storageItem)
-        }
+        this.userMenuItem.addChild(this.storageItem)
 
         if (this.simpleMode === false) {
             // Starred
@@ -540,48 +520,19 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.simpleMode === false) {
             // Repository
-            this.repositoryMenuItem = new ParentMenuItem(`system-file-manager-symbolic`, ``, `applications-internet-symbolic`, () => openUrl(this.repositoryUrl))
-            this.menu.addMenuItem(this.repositoryMenuItem)
-
-            // Repository createdAt
             this.repositoryCreatedItem = new ChildMenuItem({ startIconName: `x-office-calendar-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
-            if (isGnome45()) {
-                this.repositoryMenuItem.menuBox.add_actor(this.repositoryCreatedItem)
-            } else {
-                this.repositoryMenuItem.menuBox.add_child(this.repositoryCreatedItem)
-            }
-
-            // Repository isPrivate
             this.repositoryPrivateItem = new ChildMenuItem({ startIconName: `changes-prevent-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
-            if (isGnome45()) {
-                this.repositoryMenuItem.menuBox.add_actor(this.repositoryPrivateItem)
-            } else {
-                this.repositoryMenuItem.menuBox.add_child(this.repositoryPrivateItem)
-            }
-
-            // Repository isFork
             this.repositoryForkItem = new ChildMenuItem({ startIconName: `system-software-install-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
-            if (isGnome45()) {
-                this.repositoryMenuItem.menuBox.add_actor(this.repositoryForkItem)
-            } else {
-                this.repositoryMenuItem.menuBox.add_child(this.repositoryForkItem)
-            }
-
-            // Repository language
             this.repositoryLanguageItem = new ChildMenuItem({ startIconName: `preferences-desktop-locale-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
-            if (isGnome45()) {
-                this.repositoryMenuItem.menuBox.add_actor(this.repositoryLanguageItem)
-            } else {
-                this.repositoryMenuItem.menuBox.add_child(this.repositoryLanguageItem)
-            }
-
-            // Repository license
             this.repositoryLicenseItem = new ChildMenuItem({ startIconName: `accessories-text-editor-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
-            if (isGnome45()) {
-                this.repositoryMenuItem.menuBox.add_actor(this.repositoryLicenseItem)
-            } else {
-                this.repositoryMenuItem.menuBox.add_child(this.repositoryLicenseItem)
-            }
+
+            this.repositoryMenuItem = new ParentMenuItem(`system-file-manager-symbolic`, ``, `applications-internet-symbolic`, () => openUrl(this.repositoryUrl))
+            this.repositoryMenuItem.addChild(this.repositoryCreatedItem)
+            this.repositoryMenuItem.addChild(this.repositoryPrivateItem)
+            this.repositoryMenuItem.addChild(this.repositoryForkItem)
+            this.repositoryMenuItem.addChild(this.repositoryLanguageItem)
+            this.repositoryMenuItem.addChild(this.repositoryLicenseItem)
+            this.menu.addMenuItem(this.repositoryMenuItem)
 
             // Stargazers
             this.stargazersMenuItem = new ParentMenuItem(`starred-symbolic`, ``)

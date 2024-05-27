@@ -258,6 +258,14 @@ export class ParentMenuItem extends PopupMenu.PopupSubMenuMenuItem {
         }
     }
 
+    addChild(menuItem) {
+        if (isGnome45()) {
+            this.menuBox.add_actor(menuItem)
+        } else {
+            this.menuBox.add_child(menuItem)
+        }
+    }
+
     submitItems(items) {
         this.menuBox.remove_all_children()
 
