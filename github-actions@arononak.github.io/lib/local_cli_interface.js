@@ -3,24 +3,40 @@
 import Gio from 'gi://Gio'
 
 export function isGitHubCliInstalled() {
-    return executeCommandAsync([`gh`, `--version`])
+    return executeCommandAsyncBool([`gh`, `--version`])
 }
 
 export function isLogged() {
-    return executeCommandAsync([`gh`, `auth`, `token`])
+    return executeCommandAsyncBool([`gh`, `auth`, `token`])
 }
 
 export function logoutUser() {
-    return executeCommandAsync([`gh`, `auth`, `logout`, `--hostname`, `github.com`])
+    return executeCommandAsyncBool([`gh`, `auth`, `logout`, `--hostname`, `github.com`])
 }
 
-function executeCommandAsync(commandArray) {
+export function authStatus() {
+    return executeCommandAsyncStringOrNull([`gh`, `auth`, `status`])
+}
+
+export function zen() {
+    return executeCommandAsyncStringOrNull([`gh`, `api`, `/zen`])
+}
+
+export function token() {
+    return executeCommandAsyncStringOrNull([`gh`, `auth`, `token`])
+}
+
+export function cliVersion() {
+    return executeCommandAsyncStringOrNull([`gh`, `--version`])
+}
+
+function executeCommandAsyncBool(commandArray) {
     return new Promise((resolve, reject) => {
         try {
             const process = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
             process.communicate_utf8_async(null, null, (proc, res) => {
-                const [, stdout] = proc.communicate_utf8_finish(res)
+                const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
 
                 if (!proc.get_successful()) {
                     resolve(false)
@@ -35,73 +51,10 @@ function executeCommandAsync(commandArray) {
     })
 }
 
-export function authStatus() {
+function executeCommandAsyncStringOrNull(commandArray) {
     return new Promise((resolve, reject) => {
         try {
-            const process = Gio.Subprocess.new([`gh`, `auth`, `status`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
-
-            process.communicate_utf8_async(null, null, (proc, res) => {
-                const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
-
-                if (!proc.get_successful()) {
-                    resolve(null)
-                }
-
-                resolve(stdout)
-            })
-        } catch (e) {
-            logError(e)
-            resolve(null)
-        }
-    })
-}
-
-export function zen() {
-    return new Promise((resolve, reject) => {
-        try {
-            const process = Gio.Subprocess.new([`gh`, `api`, `/zen`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
-
-            process.communicate_utf8_async(null, null, (proc, res) => {
-                const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
-
-                if (!proc.get_successful()) {
-                    resolve(null)
-                }
-
-                resolve(stdout)
-            })
-        } catch (e) {
-            logError(e)
-            resolve(null)
-        }
-    })
-}
-
-export function token() {
-    return new Promise((resolve, reject) => {
-        try {
-            const process = Gio.Subprocess.new([`gh`, `auth`, `token`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
-
-            process.communicate_utf8_async(null, null, (proc, res) => {
-                const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
-
-                if (!proc.get_successful()) {
-                    resolve(null)
-                }
-
-                resolve(stdout)
-            })
-        } catch (e) {
-            logError(e)
-            resolve(null)
-        }
-    })
-}
-
-export function cliVersion() {
-    return new Promise((resolve, reject) => {
-        try {
-            const process = Gio.Subprocess.new([`gh`, `--version`], Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
+            const process = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
 
             process.communicate_utf8_async(null, null, (proc, res) => {
                 const [status, stdout, stderr] = proc.communicate_utf8_finish(res)
