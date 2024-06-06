@@ -452,7 +452,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
     initLoggedMenu() {
         // User
-        this.userMenuItem = new ParentMenuItem(null, ``)
+        this.userMenuItem = new ParentMenuItem(null, ``, null, null, true)
         this.menu.addMenuItem(this.userMenuItem)
 
         // Token Scopes
@@ -526,7 +526,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.repositoryLanguageItem = new ChildMenuItem({ startIconName: `preferences-desktop-locale-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
             this.repositoryLicenseItem = new ChildMenuItem({ startIconName: `accessories-text-editor-symbolic`, endButtonText: ``, endButtonCallback: () => { } })
 
-            this.repositoryMenuItem = new ParentMenuItem(`system-file-manager-symbolic`, ``, `applications-internet-symbolic`, () => openUrl(this.repositoryUrl))
+            this.repositoryMenuItem = new ParentMenuItem(`system-file-manager-symbolic`, ``, `applications-internet-symbolic`, () => openUrl(this.repositoryUrl), true)
             this.repositoryMenuItem.addChild(this.repositoryCreatedItem)
             this.repositoryMenuItem.addChild(this.repositoryPrivateItem)
             this.repositoryMenuItem.addChild(this.repositoryForkItem)
@@ -617,12 +617,11 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         if (this.repositoryMenuItem != null && this.repositoryMenuItem != undefined) {
             this.repositoryMenuItem.setStartIcon({ iconName: conclusionIconName(conclusion) })
-            this.repositoryMenuItem.icon.icon_size = 22
+            this.repositoryMenuItem.icon.icon_size = 28
 
             const repositoryName = run[`repository`][`full_name`]
             const repositoryLatestRun = `#${run[`run_number`]} - ${run[`display_title`]}`
 
-            this.repositoryMenuItem.label.style = `margin-left: 4px;`
             this.repositoryMenuItem.label.text = `${repositoryName}\n\n${repositoryLatestRun}`
         }
     }
@@ -654,7 +653,6 @@ export class StatusBarIndicator extends PanelMenu.Button {
             this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl))
             this.userMenuItem.icon.icon_size = 54
             this.userMenuItem.label.text = userLabelText
-            this.userMenuItem.label.style = `margin-left: 4px;`
         }
 
         if (this.twoFactorItem != null) {
@@ -666,7 +664,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
     setUserBilling(minutes, packages, sharedStorage) {
         let parsedMinutes
         if (minutes != null) {
-            parsedMinutes = `${minutes[`total_minutes_used`]} of ${minutes[`included_minutes`]}, (${minutes[`total_paid_minutes_used`]} paid)`
+            parsedMinutes = `${minutes[`total_minutes_used`]} of ${minutes[`included_minutes`]}, ${minutes[`total_paid_minutes_used`]} paid`
         }
 
         let parsedPackages

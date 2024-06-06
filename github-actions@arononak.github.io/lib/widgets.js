@@ -124,11 +124,11 @@ export function appIcon() {
 
 export function conclusionIconName(conclusion) {
     if (conclusion == `success`) {
-        return `emblem-default`
+        return `emblem-ok-symbolic`
     } else if (conclusion == `failure`) {
-        return `emblem-unreadable`
+        return `dialog-error-symbolic`
     } else if (conclusion == `cancelled`) {
-        return `emblem-unreadable`
+        return `dialog-error-symbolic`
     } else {
         return `emblem-synchronizing-symbolic`
     }
@@ -139,6 +139,34 @@ export function isDarkTheme() {
     const theme = settings.get_string(`gtk-theme`)
 
     return theme.replace(/'/g, ``).trim().includes(`dark`)
+}
+
+export function getAccentColor() {
+    const settings = new Gio.Settings({ schema: `org.gnome.desktop.interface` })
+    const theme = settings.get_string(`gtk-theme`)
+
+    switch (true) {
+        case theme.includes(`bark`):
+            return `#787859`
+        case theme.includes(`blue`):
+            return `#0073E5`
+        case theme.includes(`magenta`):
+            return `#B34CB3`
+        case theme.includes(`olive`):
+            return `#4B8501`
+        case theme.includes(`prussiangreen`):
+            return `#308280`
+        case theme.includes(`purple`):
+            return `#7764D8`
+        case theme.includes(`red`):
+            return `#DA3450`
+        case theme.includes(`sage`):
+            return `#657B69`
+        case theme.includes(`viridian`):
+            return `#03875B`
+        default:
+            return `#E95420`
+    }
 }
 
 export class RoundedButton extends St.Button {
@@ -217,8 +245,10 @@ export class ParentMenuItem extends PopupMenu.PopupSubMenuMenuItem {
         GObject.registerClass(this)
     }
 
-    constructor(startIconName, text, endIconName, endIconCallback) {
+    constructor(startIconName, text, endIconName, endIconCallback, accentColor = false) {
         super(``)
+
+        this.accentColor = accentColor
 
         this.menuBox = new St.BoxLayout({ vertical: true, style_class: `menu-box` })
         this.scrollView = new St.ScrollView({ y_align: Clutter.ActorAlign.START, y_expand: true, overlay_scrollbars: true })
@@ -231,6 +261,12 @@ export class ParentMenuItem extends PopupMenu.PopupSubMenuMenuItem {
         }
 
         this.label = new St.Label({ text })
+
+        if (accentColor == true) {
+            this.style = `background-color: ${getAccentColor()};`
+            this.label.style = `margin-left: 4px; color: white;`
+        }
+
         this.insert_child_at_index(this.label, 0)
 
         this.setStartIcon({ iconName: startIconName })
@@ -295,7 +331,7 @@ export class ParentMenuItem extends PopupMenu.PopupSubMenuMenuItem {
     setStartIcon({ iconName }) {
         this.icon = new St.Icon({ icon_name: iconName, style_class: `popup-menu-icon` })
 
-        const iconContainer = new St.Widget({ style_class: `popup-menu-icon-container` })
+        const iconContainer = new St.Widget({ style_class: `popup-menu-icon-container`, style: this.accentColor == true ? `color: white;` : `` })
         if (this.iconContainer == null) {
             this.iconContainer = iconContainer
             this.insert_child_at_index(this.iconContainer, 0)

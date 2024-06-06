@@ -30,7 +30,7 @@ export function cliVersion() {
     return executeCommandAsyncStringOrNull([`gh`, `--version`])
 }
 
-function executeCommandAsyncBool(commandArray) {
+export function executeCommandAsyncBool(commandArray) {
     return new Promise((resolve, reject) => {
         try {
             const process = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
@@ -51,7 +51,7 @@ function executeCommandAsyncBool(commandArray) {
     })
 }
 
-function executeCommandAsyncStringOrNull(commandArray) {
+export function executeCommandAsyncStringOrNull(commandArray) {
     return new Promise((resolve, reject) => {
         try {
             const process = Gio.Subprocess.new(commandArray, Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE)
