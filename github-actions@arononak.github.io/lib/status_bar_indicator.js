@@ -730,12 +730,16 @@ export class StatusBarIndicator extends PanelMenu.Button {
         function toItem(e, textLengthLimiter) {
             const createdAt = DateFormatController.format(e[`created_at`])
             const description = e[`description`]
+            const login = e[`owner`][`login`]
+            const loginUrl = e[`owner`][`html_url`]
             const text = `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`
 
             return {
                 "iconName": `utilities-terminal-symbolic`,
                 "text": text.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
+                "endButtonText": login,
+                "endButtonCallback": () => openUrl(loginUrl),
             }
         }
 
@@ -754,12 +758,16 @@ export class StatusBarIndicator extends PanelMenu.Button {
         function toItem(e, textLengthLimiter) {
             const createdAt = DateFormatController.format(e[`created_at`])
             const description = e[`description`]
+            const login = e[`owner`][`login`]
+            const loginUrl = e[`owner`][`html_url`]
             const text = `${createdAt}${description.length !== 0 ? ` - ${description.replace(/\n/g, ``)} ` : ``}`
 
             return {
                 "iconName": `starred-symbolic`,
                 "text": text.slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
+                "endButtonText": login,
+                "endButtonCallback": () => openUrl(loginUrl),
             }
         }
 
