@@ -240,6 +240,25 @@ export class IconButton extends St.Button {
     }
 }
 
+export class ParentMenuItemEmpty extends PopupMenu.PopupBaseMenuItem {
+    static {
+        GObject.registerClass(this)
+    }
+
+    constructor() {
+        super({ reactive: false })
+        this.remove_all_children() // Remove left margin from non visible PopupMenuItem icon
+    }
+
+    addWidget(widget) {
+        if (isGnome45()) {
+            this.actor.add_actor(widget)
+        } else {
+            this.actor.add_child(widget)
+        }
+    }
+}
+
 export class ParentMenuItem extends PopupMenu.PopupSubMenuMenuItem {
     static {
         GObject.registerClass(this)
@@ -404,6 +423,30 @@ export class ChildMenuItem extends PopupMenu.PopupImageMenuItem {
     updateEndButtonText(newText) {
         if (this._endButton) {
             this._endButton.label = newText;
+        }
+    }
+}
+
+export class Box extends St.BoxLayout {
+    static {
+        GObject.registerClass(this)
+    }
+
+    constructor({ gravityEnd = false }) {
+        super({
+            style_class: `github-actions-box`,
+            x_align: gravityEnd ? Clutter.ActorAlign.END : Clutter.ActorAlign.FILL,
+            y_align: Clutter.ActorAlign.CENTER,
+            vertical: false,
+            x_expand: true,
+        })
+    }
+
+    addWidget(widget) {
+        if (isGnome45()) {
+            this.add(widget)
+        } else {
+            this.add_child(widget)
         }
     }
 }

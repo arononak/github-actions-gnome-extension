@@ -1,10 +1,4 @@
-.github-actions-top-box {
-    padding: 0px;
-    spacing: 8px;
-    flex: 1;
-}
-
-.github-actions-button-box {
+.github-actions-box {
     padding: 0px;
     spacing: 8px;
     flex: 1;

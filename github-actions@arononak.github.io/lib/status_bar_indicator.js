@@ -14,7 +14,6 @@ import {
     bytesToString,
     openUrl,
     isEmpty,
-    isGnome45,
 } from './extension_utils.js'
 
 import {
@@ -29,6 +28,8 @@ import {
     conclusionIconName,
     isDarkTheme,
     anvilIcon,
+    Box,
+    ParentMenuItemEmpty,
 } from './widgets.js'
 
 import {
@@ -335,112 +336,52 @@ export class StatusBarIndicator extends PanelMenu.Button {
             return
         }
 
-        this.box = new St.BoxLayout({
-            style_class: `github-actions-top-box`,
-            vertical: false,
-            x_expand: true,
-            x_align: Clutter.ActorAlign.FILL,
-            y_align: Clutter.ActorAlign.CENTER,
-        })
+        this.box = new Box({})
+        this.leftBox = new Box({})
+        this.rightBox = new Box({ gravityEnd: true })
 
-        this.leftBox = new St.BoxLayout({
-            style_class: `github-actions-top-box`,
-            vertical: false,
-            x_expand: true,
-            x_align: Clutter.ActorAlign.FILL,
-            y_align: Clutter.ActorAlign.CENTER,
-        })
+        this.box.addWidget(this.leftBox)
+        this.box.addWidget(this.rightBox)
 
-        this.rightBox = new St.BoxLayout({
-            style_class: `github-actions-button-box`,
-            x_align: Clutter.ActorAlign.END,
-            y_align: Clutter.ActorAlign.CENTER,
-            clip_to_allocation: true,
-            reactive: true,
-            pack_start: false,
-            vertical: false
-        })
-
-        if (isGnome45()) {
-            this.box.add(this.leftBox)
-            this.box.add(this.rightBox)
-        } else {
-            this.box.add_child(this.leftBox)
-            this.box.add_child(this.rightBox)
-        }
-
-        this.topItems = new PopupMenu.PopupBaseMenuItem({ reactive: false })
-        this.topItems.remove_all_children() // Remove left margin from non visible PopupMenuItem icon
-        if (isGnome45()) {
-            this.topItems.actor.add_actor(this.box)
-        } else {
-            this.topItems.actor.add_child(this.box)
-        }
+        this.topItems = new ParentMenuItemEmpty()
+        this.topItems.addWidget(this.box)
         this.menu.addMenuItem(this.topItems)
 
         // Network transfer
         if (this.isLogged() && this.state != ExtensionState.LOGGED_NO_INTERNET_CONNECTION) {
             this.networkButton = new RoundedButton({ iconName: `system-settings-symbolic`, text: `` })
             this.networkButton.connect(`clicked`, () => openUrl(`https://api.github.com/octocat`))
-            if (isGnome45()) {
-                this.leftBox.add(this.networkButton)
-            } else {
-                this.leftBox.add_child(this.networkButton)
-            }
+            this.leftBox.addWidget(this.networkButton)
 
             this.zenButton = new RoundedButton({ iconName: `application-x-addon-symbolic` })
             this.zenButton.connect(`clicked`, () => this.zenCallback())
-            if (isGnome45()) {
-                this.leftBox.add(this.zenButton)
-            } else {
-                this.leftBox.add_child(this.zenButton)
-            }
+            this.leftBox.addWidget(this.zenButton)
         }
 
         // Settings
         this.settingsItem = new RoundedButton({ iconName: `system-settings-symbolic` })
         this.settingsItem.connect(`clicked`, () => extensionOpenPreferences())
-        if (isGnome45()) {
-            this.rightBox.add_actor(this.settingsItem)
-        } else {
-            this.rightBox.add_child(this.settingsItem)
-        }
+        this.rightBox.addWidget(this.settingsItem)
 
         if (this.isInstalledCli() == false) {
             this.installButton = new RoundedButton({ iconName: `application-x-addon-symbolic` })
             this.installButton.connect(`clicked`, () => openInstallCliScreen())
-            if (isGnome45()) {
-                this.rightBox.add_actor(this.installButton)
-            } else {
-                this.rightBox.add_child(this.installButton)
-            }
+            this.rightBox.addWidget(this.installButton)
         } else if (this.isLogged()) {
             // Refresh
             this.refreshButton = new RoundedButton({ iconName: `view-refresh-symbolic` })
             this.refreshButton.connect(`clicked`, () => this.refreshCallback())
-            if (isGnome45()) {
-                this.rightBox.add_actor(this.refreshButton)
-            } else {
-                this.rightBox.add_child(this.refreshButton)
-            }
+            this.rightBox.addWidget(this.refreshButton)
 
             // Logout
             this.logoutButton = new RoundedButton({ iconName: `system-log-out-symbolic` })
             this.logoutButton.connect(`clicked`, () => this.logoutCallback())
-            if (isGnome45()) {
-                this.rightBox.add_actor(this.logoutButton)
-            } else {
-                this.rightBox.add_child(this.logoutButton)
-            }
+            this.rightBox.addWidget(this.logoutButton)
         } else {
             // Login
             this.loginButton = new RoundedButton({ iconName: `avatar-default-symbolic` })
             this.loginButton.connect(`clicked`, () => openAuthScreen())
-            if (isGnome45()) {
-                this.rightBox.add_actor(this.loginButton)
-            } else {
-                this.rightBox.add_child(this.loginButton)
-            }
+            this.rightBox.addWidget(this.loginButton)
         }
 
         // Logged Menu
