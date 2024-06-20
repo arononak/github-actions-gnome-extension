@@ -667,6 +667,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
                 "iconName": `system-users-symbolic`,
                 "text": e[`login`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
+                "endButtonText": e[`type`],
+                "endButtonCallback": () => { },
             }
         }
 
@@ -684,6 +686,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
                 "iconName": `system-users-symbolic`,
                 "text": e[`login`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
+                "endButtonText": e[`type`],
+                "endButtonCallback": () => { },
             }
         }
 
