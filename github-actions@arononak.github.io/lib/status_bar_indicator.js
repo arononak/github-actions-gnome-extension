@@ -638,6 +638,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (starred === null || starred === undefined) return
 
         function toItem(e, textLengthLimiter) {
+            if (e == null || e == undefined) return null
+
             const stars = e[`stargazers_count`]
 
             function formatNumber(stringNumber) {
@@ -829,6 +831,8 @@ export class StatusBarIndicator extends PanelMenu.Button {
                 "iconName": `starred-symbolic`,
                 "text": e[`login`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(e[`html_url`]),
+                "endButtonText": e[`type`],
+                "endButtonCallback": () => { },
             }
         }
 
