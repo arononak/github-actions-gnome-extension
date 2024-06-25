@@ -96,14 +96,16 @@ export class ExtensionRepository {
                 return
             }
 
+            const newestVersion = await this.githubService.fetcNewestExtensionRelease()
+            if (newestVersion == `no-internet-connection`) {
+                onNoInternet()
+                return
+            }
+
             const workflowRuns = await this.githubService.fetchWorkflowRuns(owner, repo, 1)
-            switch (workflowRuns) {
-                case null:
-                    onIncorrectRepository()
-                    return
-                case `no-internet-connection`:
-                    onNoInternet()
-                    return
+            if (workflowRuns == null) {
+                onIncorrectRepository()
+                return
             }
 
             onDownloadPackageSize(workflowRuns[`_size_`])
@@ -133,6 +135,8 @@ export class ExtensionRepository {
             }
 
             const newestRelease = await this.githubService.fetcNewestExtensionRelease()
+            if (newestRelease == 'no-internet-connection') return null
+
             const newestVersion = newestRelease[0][`tag_name`]
             if (newestVersion != undefined) {
                 settingsRepository.updateNewestVersion(newestVersion)
@@ -145,11 +149,15 @@ export class ExtensionRepository {
 
             if (type === DataTypeEnum.ONLY_RUNS) {
                 const { runs } = await this._fetchRepo(settingsRepository, true)
+                if (runs == null || runs == undefined) return
+
                 onRunsDownloaded(runs)
+
                 return
             }
 
             const userObject = await this._fetchUser(settingsRepository)
+            if (userObject == null || userObject == undefined) return
 
             onUserDownloaded(userObject)
 
@@ -159,6 +167,7 @@ export class ExtensionRepository {
             }
 
             const repoObject = await this._fetchRepo(settingsRepository)
+            if (repoObject == null || repoObject == undefined) return
 
             settingsRepository.updateTransfer([...Object.values(userObject), ...Object.values(repoObject)])
 
