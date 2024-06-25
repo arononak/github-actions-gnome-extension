@@ -147,9 +147,9 @@ export class GithubService {
         do {
             json = await cliInterface.executeGithubCliCommand(`GET`, endpoint, currentPagination, page)
 
-            if (json == 'no-internet-connection') return null
+            if (json == `no-internet-connection`) return null
 
-            if (json == null || json == undefined) break            
+            if (json == null || json == undefined) break
 
             byteSize += json[`_size_`]
 

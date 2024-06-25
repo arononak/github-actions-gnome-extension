@@ -135,7 +135,7 @@ export class ExtensionRepository {
             }
 
             const newestRelease = await this.githubService.fetcNewestExtensionRelease()
-            if (newestRelease == 'no-internet-connection') return null
+            if (newestRelease == `no-internet-connection`) return
 
             const newestVersion = newestRelease[0][`tag_name`]
             if (newestVersion != undefined) {
