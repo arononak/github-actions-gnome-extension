@@ -1,6 +1,7 @@
 'use strict'
 
 import { GithubService } from './github_service.js'
+import { CacheRepository } from './cache_repository.js'
 
 export const DataTypeEnum = {
     FULL: `full`,
@@ -134,14 +135,32 @@ export class ExtensionRepository {
                 return
             }
 
+            // TODO: Change Onwer to Login after migration to multirepo
+            const { owner, repo } = settingsRepository.ownerAndRepo()
+
+            // Cache User
+            const cacheUser = CacheRepository.fetchUser(owner)
+            if (cacheUser != null) {
+                onUserDownloaded(cacheUser)
+            }
+
+            // Cache Repo
+            const cacheRepo = CacheRepository.fetchRepo(owner, repo)
+            if (cacheRepo != null) {
+                onRepoDownloaded(cacheRepo)
+            }
+
+            // Check no-internet
             const newestRelease = await this.githubService.fetcNewestExtensionRelease()
             if (newestRelease == `no-internet-connection`) return
 
+            // Update newest version
             const newestVersion = newestRelease[0][`tag_name`]
             if (newestVersion != undefined) {
                 settingsRepository.updateNewestVersion(newestVersion)
             }
 
+            // Check CLI Version
             const cliVersion = await this.githubService.cliVersion()
             if (cliVersion != undefined) {
                 settingsRepository.updateCliVersion(cliVersion)
@@ -200,13 +219,15 @@ export class ExtensionRepository {
                 settingsRepository.updateHiddenMode(isStarred === `success`)
 
                 if (simpleMode) {
-                    resolve({
+                    const userObject = {
                         user,
                         minutes,
                         packages,
                         sharedStorage,
-                    })
+                    }
 
+                    CacheRepository.updateUser(login, userObject)
+                    resolve(userObject)
                     return
                 }
 
@@ -223,7 +244,7 @@ export class ExtensionRepository {
                 const gists = await this.githubService.fetchUserGists(pagination)
                 const starredGists = await this.githubService.fetchUserStarredGists(pagination)
 
-                resolve({
+                const userObject = {
                     user,
                     minutes,
                     packages,
@@ -235,7 +256,10 @@ export class ExtensionRepository {
                     repos,
                     gists,
                     starredGists,
-                })
+                }
+
+                CacheRepository.updateUser(login, userObject)
+                resolve(userObject)
             } catch (error) {
                 logError(error)
                 resolve(null)
@@ -265,10 +289,13 @@ export class ExtensionRepository {
                 const artifacts = await this.githubService.fetchArtifacts(owner, repo, pagination)
 
                 if (simpleMode) {
-                    resolve({
+                    const repoObject = {
                         runs,
                         artifacts,
-                    })
+                    }
+
+                    CacheRepository.updateRepo(owner, repo, repoObject)
+                    resolve(repoObject)
                     return
                 }
 
@@ -285,7 +312,7 @@ export class ExtensionRepository {
                 const labels = await this.githubService.fetchLabels(owner, repo, pagination)
                 const milestones = await this.githubService.fetchMilestones(owner, repo, pagination)
 
-                resolve({
+                const repoObject = {
                     runs,
                     artifacts,
 
@@ -301,7 +328,10 @@ export class ExtensionRepository {
                     collaborators,
                     labels,
                     milestones,
-                })
+                }
+
+                CacheRepository.updateRepo(owner, repo, repoObject)
+                resolve(repoObject)
             } catch (error) {
                 logError(error)
                 resolve(null)

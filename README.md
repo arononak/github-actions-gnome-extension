@@ -56,6 +56,8 @@ graph TD
     settings_repository.js-->extension_controller.js
     local_cli_interface.js-->github_service.js
     token_scopes.js-->github_service.js
+    file_controller.js-->cache_repository.js
+    cache_repository.js-->extension_repository.js
     github_service.js-->extension_repository.js
     extension_repository.js-->extension_controller.js
     settings_repository.js-->quick_settings_controller.js
@@ -100,6 +102,8 @@ graph TD
         extension_utils.js
         extension_repository.js
         date_format_controller.js
+        file_controller.js
+        cache_repository.js
     end
 ```
 
