@@ -227,14 +227,6 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
         })
         otherGroup.add(homepageRow)
 
-        const newExtensionRow = createButtonRow({
-            title: `Gold Silver Price - Gnome Extension`,
-            subtitle: `Check out my new extension`,
-            buttonLabel: `Check`,
-            onButtonPressed: () => prefsController.onOpenNewExtensionClicked(),
-        })
-        otherGroup.add(newExtensionRow)
-
         const bugBountyRow = createButtonRow({
             title: `Bug Bounty program`,
             subtitle: `If you find an error and it is corrected in the next version, your login and email will be on the honor list in the extension`,
