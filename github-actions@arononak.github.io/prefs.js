@@ -50,7 +50,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             versionDescription,
         } = prefsController.fetchData()
 
-        window.set_default_size(600, 1730)
+        window.set_default_size(600, 1780)
 
         const enabledRow = createToggleRow({
             title: `Enabled`,
@@ -226,6 +226,15 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
             onButtonPressed: () => prefsController.onOpenHomepageClicked(),
         })
         otherGroup.add(homepageRow)
+
+        const openCacheRow = createButtonRow({
+            title: `Cache directory`,
+            subtitle: `Opens the folder with the data cache`,
+            buttonLabel: `Open`,
+            onButtonPressed: () => prefsController.onOpenCacheFolder(),
+        })
+
+        otherGroup.add(openCacheRow)
 
         const bugBountyRow = createButtonRow({
             title: `Bug Bounty program`,

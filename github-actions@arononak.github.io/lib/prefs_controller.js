@@ -5,6 +5,7 @@ import { ExtensionPreferences } from 'resource:///org/gnome/Shell/Extensions/js/
 import { VERSION } from './version.js'
 import { isEmpty, openUrl, openExtensionGithubIssuesPage } from './prefs_utils.js'
 import { SettingsRepository } from './settings_repository.js'
+import { FileController } from './file_controller.js'
 
 export class PrefsController {
     constructor(settings) {
@@ -113,5 +114,9 @@ export class PrefsController {
 
     onOpenNewExtensionClicked() {
         openUrl(`https://extensions.gnome.org/extension/6643/gold-silver-price/`)
+    }
+
+    onOpenCacheFolder() {
+        openUrl(FileController.extensionDir())
     }
 }
