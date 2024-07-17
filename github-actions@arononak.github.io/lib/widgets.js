@@ -284,6 +284,7 @@ export class ParentMenuItem extends PopupMenu.PopupSubMenuMenuItem {
         if (accentColor == true) {
             this.style = `background-color: ${getAccentColor()};`
             this.label.style = `margin-left: 4px; color: white;`
+            this._triangle.style = `color: white;`
         }
 
         this.insert_child_at_index(this.label, 0)
