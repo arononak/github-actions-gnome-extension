@@ -91,9 +91,14 @@
 - [x] BUG - Refresh state - Changing repo without actions & with actions
 - [x] BUG - NOT_LOGGED / NOT_INSTALLED_CLI - refresh -> setState()
 - [x] Collaboration list
+- [ ] Fix double status request
+- [ ] Check null safety & memory leaks
+- [ ] Check subprocess optimizations
+- [ ] Extended colored mode change to 9 default system colors
 - [ ] Files count & code line count
 - [ ] Workflow run error message
 - [ ] Notification success / fail more sounds
+- [ ] CI/CD auto deploy
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] NO DATA for empty sections
