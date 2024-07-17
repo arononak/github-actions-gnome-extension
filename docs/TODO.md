@@ -99,6 +99,7 @@
 - [ ] Workflow run error message
 - [ ] Notification success / fail more sounds
 - [ ] CI/CD auto deploy
+- [ ] Minutes in percent
 
 ## 🎯 Version 4 - Multirepo config & WebHooks
 - [ ] NO DATA for empty sections
