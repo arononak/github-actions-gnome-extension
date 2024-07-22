@@ -123,7 +123,7 @@ graph TD
   ```bash
   git clone https://github.com/arononak/github-actions-gnome-extension.git
   cd github-actions-gnome-extension
-  make start
+  make install && make run
   ```
 
   if the extension fails to load in the window:
