@@ -535,7 +535,7 @@ export class ExtensionController {
                     starredGists,
                 } = userObject
 
-                this.indicator.setUser(user)
+                this.indicator.setUser(user, minutes)
                 this.indicator.setUserBilling(minutes, packages, sharedStorage)
                 this.indicator.setUserStarred(starredList)
                 this.indicator.setUserFollowers(followers)

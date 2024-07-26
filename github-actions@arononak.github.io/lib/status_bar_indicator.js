@@ -569,7 +569,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
     // User ------------------------------------------------------------
 
-    setUser(user) {
+    setUser(user, minutes) {
         if (user === null || user === undefined) return
 
         const userEmail = user[`email`]
@@ -586,13 +586,15 @@ export class StatusBarIndicator extends PanelMenu.Button {
         this.userUrl = userUrl
         this.twoFactorEnabled = twoFactorEnabled
 
+        const freeMinutesPercentage = 100 - Math.round((minutes[`total_minutes_used`] / minutes[`included_minutes`]) * 100)
+
         const userLabelText = userName == null || userEmail == null
             ? `No permissions`
-            : `${userName} (${userEmail}) \n\nJoined GitHub on: ${DateFormatController.format(createdAt)} `
+            : `${userName} (${userEmail}) \n\nJoined GitHub on: ${DateFormatController.format(createdAt)}\nFree minutes: ${freeMinutesPercentage}%`
 
         if (this.userMenuItem != null) {
             this.userMenuItem.icon.set_gicon(Gio.icon_new_for_string(avatarUrl))
-            this.userMenuItem.icon.icon_size = 54
+            this.userMenuItem.icon.icon_size = 72
             this.userMenuItem.label.text = userLabelText
         }
 
@@ -621,6 +623,9 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.minutesItem != null) {
             this.minutesItem.label.text = `Minutes`
             this.minutesItem.updateEndButtonText(parsedMinutes == null ? `No permissions` : parsedMinutes)
+
+            const percentage = (minutes[`total_minutes_used`] / minutes[`included_minutes`]) * 100
+            Math.round(percentage)
         }
 
         if (this.bandwidthItem != null) {
