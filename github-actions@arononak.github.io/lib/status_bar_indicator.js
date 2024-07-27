@@ -623,9 +623,6 @@ export class StatusBarIndicator extends PanelMenu.Button {
         if (this.minutesItem != null) {
             this.minutesItem.label.text = `Minutes`
             this.minutesItem.updateEndButtonText(parsedMinutes == null ? `No permissions` : parsedMinutes)
-
-            const percentage = (minutes[`total_minutes_used`] / minutes[`included_minutes`]) * 100
-            Math.round(percentage)
         }
 
         if (this.bandwidthItem != null) {
