@@ -10,10 +10,13 @@
 <details>
 <summary>Table of Contents</summary>
 
-- [GitHub Actions Gnome Extension 🧩 MORE](#github-actions-gnome-extension--more)
+- [GitHub Actions Gnome Extension 🧩](#github-actions-gnome-extension-)
 - [🏞 Preview](#-preview)
 - [🔨 Installation](#-installation)
 - [🖥️ Development](#️-development)
+  - [1. 📜️ Development **rules**](#1-️-development-rules)
+  - [2. 📥 Cloning and running](#2--cloning-and-running)
+  - [3. ⌨️ Makefile commands](#3-️-makefile-commands)
 - [📝 License](#-license)
 
 </details>
@@ -107,7 +110,7 @@ graph TD
     end
 ```
 
-- ### 📜️ Development **rules**
+## 1. 📜️ Development **rules**
 
   This project was built using **Aron Flow** (fuck scrum).
 
@@ -118,7 +121,7 @@ graph TD
   |                              | 🏷️ New tag & release                         |
   |                              | 🛰 Deploy only on Fridays !                  |
 
-- ### 📥 Cloning and running
+## 2. 📥 Cloning and running
 
   ```bash
   git clone https://github.com/arononak/github-actions-gnome-extension.git
@@ -134,7 +137,7 @@ graph TD
   make logs
   ```
 
-- ### ⌨️ Makefile commands
+## 3. ⌨️ Makefile commands
 
   | Steps                                                                | Commands                                                          |
   |:---------------------------------------------------------------------|:------------------------------------------------------------------|
