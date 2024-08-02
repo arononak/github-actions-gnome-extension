@@ -72,9 +72,10 @@ export default class GithubActionsExtension extends Extension {
                 onBuildCompleted: (owner, repo, conclusion) => {
                     NotificationController.showCompletedBuild(owner, repo, conclusion)
                 },
-                onReloadCallback: () => {
+                onReloadCallback: async () => {
                     this.extensionController.stopRefreshing()
                     this.disposeExtension()
+                    await new Promise((resolve) => setTimeout(resolve, 2000))
                     this.initExtension()
                     this.extensionController.startRefreshing()
                 },

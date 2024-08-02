@@ -27,8 +27,10 @@ export class FileController {
         try {
             const [success, content] = GLib.file_get_contents(`${this.extensionDir()}/${filename}`)
 
+
             if (success) {
-                return content.toString()
+                const decoder = new TextDecoder(`utf-8`)
+                return decoder.decode(content)
             }
 
             return null

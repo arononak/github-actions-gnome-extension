@@ -1018,6 +1018,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
                 "text": e[`name`].slice(0, textLengthLimiter),
                 "callback": () => openUrl(repositoryUrl),
                 "endIconName": e[`protected`] ? `changes-prevent-symbolic` : `network-workgroup-symbolic`,
+                "endIconCallback": () => {}
             }
         }
 

@@ -168,7 +168,7 @@ export class ExtensionController {
         }
     }
 
-    refresh() {
+    async refresh() {
         if (this.indicator === null || this.indicator === undefined) {
             return
         }
@@ -176,15 +176,15 @@ export class ExtensionController {
         this.indicator.initMenu()
 
         try {
-            this._checkErrors()
-            this._fetchStatus()
-            this._fetchData()
+            await this._checkErrors()
+            await this._fetchStatus()
+            await this._fetchData()
         } catch (error) {
             logError(error)
         }
     }
 
-    startRefreshing() {
+    async startRefreshing() {
         if (this.isStarted === true) {
             return
         }
@@ -194,11 +194,13 @@ export class ExtensionController {
         this.observeSettings(this.settingsRepository)
 
         try {
-            const settingsRepository = this.settingsRepository
-            this.refresh()
+            await new Promise((resolve) => setTimeout(resolve, 2000))
+            await this.refresh()
+            await new Promise((resolve) => setTimeout(resolve, 5000))
 
+            const settingsRepository = this.settingsRepository
             this.stateRefreshInterval = setInterval(() => this._checkErrors(), 1 * 1000)
-            this.githubActionsRefreshInterval = setInterval(() => this._fetchStatus(), settingsRepository.fetchRefreshTime() * 1000)
+            this.statusRefreshInterval = setInterval(() => this._fetchStatus(), settingsRepository.fetchRefreshTime() * 1000)
             this.dataRefreshInterval = setInterval(() => this._fetchData(), settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000)
         } catch (error) {
             logError(error)
@@ -217,8 +219,8 @@ export class ExtensionController {
         clearInterval(this.stateRefreshInterval)
         this.stateRefreshInterval = null
 
-        clearInterval(this.githubActionsRefreshInterval)
-        this.githubActionsRefreshInterval = null
+        clearInterval(this.statusRefreshInterval)
+        this.statusRefreshInterval = null
 
         clearInterval(this.dataRefreshInterval)
         this.dataRefreshInterval = null
@@ -408,7 +410,7 @@ export class ExtensionController {
         }
     }
 
-    _checkErrors() {
+    async _checkErrors() {
         if (this.indicator == undefined) {
             return
         }
@@ -422,7 +424,7 @@ export class ExtensionController {
             return
         }
 
-        this.extensionRepository.checkErrors({
+        await this.extensionRepository.checkErrors({
             onNotInstalledCli: () => {
                 this.indicator.setState({ state: ExtensionState.NOT_INSTALLED_CLI, forceUpdate: true })
             },
@@ -439,7 +441,7 @@ export class ExtensionController {
         })
     }
 
-    _fetchStatus() {
+    async _fetchStatus() {
         if (this.indicator == undefined) {
             return
         }
@@ -454,7 +456,7 @@ export class ExtensionController {
 
         const { owner, repo } = this.settingsRepository.ownerAndRepo()
 
-        this.extensionRepository.fetchStatus({
+        await this.extensionRepository.fetchStatus({
             owner,
             repo,
             onNoInternet: () => {
@@ -518,7 +520,7 @@ export class ExtensionController {
             this.indicator.initMenu()
         }
 
-        this.extensionRepository.fetchData({
+        await this.extensionRepository.fetchData({
             type,
             settingsRepository: this.settingsRepository,
             onUserDownloaded: (userObject) => {
