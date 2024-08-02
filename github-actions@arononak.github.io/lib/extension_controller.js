@@ -194,14 +194,12 @@ export class ExtensionController {
         this.observeSettings(this.settingsRepository)
 
         try {
-            await new Promise((resolve) => setTimeout(resolve, 2000))
-            await this.refresh()
-            await new Promise((resolve) => setTimeout(resolve, 5000))
-
             const settingsRepository = this.settingsRepository
             this.stateRefreshInterval = setInterval(() => this._checkErrors(), 1 * 1000)
             this.statusRefreshInterval = setInterval(() => this._fetchStatus(), settingsRepository.fetchRefreshTime() * 1000)
             this.dataRefreshInterval = setInterval(() => this._fetchData(), settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000)
+
+            await this.refresh()
         } catch (error) {
             logError(error)
         }
