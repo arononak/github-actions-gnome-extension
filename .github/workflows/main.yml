@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up GNOME Build Dependencies
         run: |
           sudo apt-get update
@@ -30,7 +30,7 @@ jobs:
           unzip github-actions@arononak.github.io.shell-extension.zip -d ./ext
           rm github-actions@arononak.github.io.shell-extension.zip
       - name: Upload Extension
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: github-actions@arononak.github.io.shell-extension
           path: ext/
