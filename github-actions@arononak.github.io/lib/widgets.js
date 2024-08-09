@@ -94,7 +94,7 @@ export function createAppGioIcon(appStatusColor) {
 }
 
 export function createAppGioIconInner() {
-    return Gio.icon_new_for_string(extensionPath() + `/assets/github_white.svg`)
+    return Gio.icon_new_for_string(`${extensionPath()}/assets/github_white.svg`)
 }
 
 export function anvilIcon() {

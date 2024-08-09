@@ -195,7 +195,7 @@ export default class GithubActionsPreferences extends ExtensionPreferences {
 
         const paginationRow = createSpinButtonRow({
             title: `Pagination`,
-            subtitle: `Set to 0 for unlimited data downloads`,
+            subtitle: `Set to 0 for unlimited data downloads.\nVERY IMPORTANT - Do not enable unlimited data for large repositories 5000+ commits.`,
             value: pagination,
             lower: 0,
             upper: 100,
