@@ -19,6 +19,19 @@ import {
     isGnome45,
 } from './extension_utils.js'
 
+const colors = {
+    "bark": `#787859`,
+    "blue": `#0073E5`,
+    "magenta": `#B34CB3`,
+    "olive": `#4B8501`,
+    "prussiangreen": `#308280`,
+    "purple": `#7764D8`,
+    "red": `#DA3450`,
+    "sage": `#657B69`,
+    "viridian": `#03875B`,
+    "default": `#E95420`
+};
+
 export const AppStatusColor = {
     WHITE: {
         icon: `/assets/github_white.svg`,
@@ -26,11 +39,8 @@ export const AppStatusColor = {
         innerIconDark: `/assets/github_black.svg`,
         color: `#FFFFFF`,
         textColor: `#555555`,
-        textColorDark: `#FFFFFF`,
         backgroundColor: `#F0F0F0`,
         borderColor: `#F0F0F0`,
-        backgroundColorDark: `#F0F0F0`,
-        borderColorDark: `#F0F0F0`,
     },
     BLACK: {
         icon: `/assets/github_black.svg`,
@@ -38,59 +48,44 @@ export const AppStatusColor = {
         innerIconDark: `/assets/github_white.svg`,
         color: `#555555`,
         textColor: `#555555`,
-        textColorDark: `#FFFFFF`,
         backgroundColor: `#999999`,
         borderColor: `#F0F0F0`,
-        backgroundColorDark: `#999999`,
-        borderColorDark: `#F0F0F0`,
     },
     GRAY: {
         icon: `/assets/github_white.svg`,
         innerIcon: `/assets/github_black.svg`,
         innerIconDark: `/assets/github_white.svg`,
         color: `#757575`,
-        textColor: `#555555`,
-        textColorDark: `#FFFFFF`,
-        backgroundColor: `#9E9E9E`,
-        borderColor: `#9E9E9E`,
-        backgroundColorDark: `#9E9E9E`,
-        borderColorDark: `#9E9E9E`,
+        textColor: `#FFFFFF`,
+        backgroundColor: `#757575`,
+        borderColor: `#757575`,
     },
     GREEN: {
         icon: `/assets/github_white.svg`,
         innerIcon: `/assets/github_black.svg`,
         innerIconDark: `/assets/github_white.svg`,
-        color: `#00FF66`,
-        textColor: `#555555`,
-        textColorDark: `#FFFFFF`,
-        backgroundColor: `#60D37A`,
-        borderColor: `#2F883A`,
-        backgroundColorDark: `#43A047`,
-        borderColorDark: `#2E7D32`,
+        color: `#55FF55`,
+        textColor: `#FFFFFF`,
+        backgroundColor: `#339933`,
+        borderColor: `#339933`,
     },
     BLUE: {
         icon: `/assets/github_white.svg`,
         innerIcon: `/assets/github_black.svg`,
         innerIconDark: `/assets/github_white.svg`,
-        color: `#64B5F6`,
-        textColor: `#555555`,
-        textColorDark: `#FFFFFF`,
-        backgroundColor: `#64B5F6`,
-        borderColor: `#1565C0`,
-        backgroundColorDark: `#2196F3`,
-        borderColorDark: `#0D47A1`,
+        color: colors[`blue`],
+        textColor: `#FFFFFF`,
+        backgroundColor: colors[`blue`],
+        borderColor: colors[`blue`],
     },
     RED: {
         icon: `/assets/github_white.svg`,
         innerIcon: `/assets/github_black.svg`,
         innerIconDark: `/assets/github_white.svg`,
-        color: `#EF5350`,
-        textColor: `#555555`,
-        textColorDark: `#FFFFFF`,
-        backgroundColor: `#EF6C57`,
-        borderColor: `#E57364`,
-        backgroundColorDark: `#E53935`,
-        borderColorDark: `#C62828`,
+        color: `#AA0000`,
+        textColor: `#FFFFFF`,
+        backgroundColor: `#AA0000`,
+        borderColor: `#AA0000`,
     },
 }
 
@@ -98,12 +93,8 @@ export function createAppGioIcon(appStatusColor) {
     return Gio.icon_new_for_string(extensionPath() + appStatusColor.icon)
 }
 
-export function createAppGioIconInner(appStatusColor) {
-    const darkTheme = isDarkTheme()
-
-    return darkTheme
-        ? Gio.icon_new_for_string(extensionPath() + appStatusColor.innerIconDark)
-        : Gio.icon_new_for_string(extensionPath() + appStatusColor.innerIcon)
+export function createAppGioIconInner() {
+    return Gio.icon_new_for_string(extensionPath() + `/assets/github_white.svg`)
 }
 
 export function anvilIcon() {
@@ -147,25 +138,25 @@ export function getAccentColor() {
 
     switch (true) {
         case theme.includes(`bark`):
-            return `#787859`
+            return colors[`bark`]
         case theme.includes(`blue`):
-            return `#0073E5`
+            return colors[`blue`]
         case theme.includes(`magenta`):
-            return `#B34CB3`
+            return colors[`magenta`]
         case theme.includes(`olive`):
-            return `#4B8501`
+            return colors[`olive`]
         case theme.includes(`prussiangreen`):
-            return `#308280`
+            return colors[`prussiangreen`]
         case theme.includes(`purple`):
-            return `#7764D8`
+            return colors[`purple`]
         case theme.includes(`red`):
-            return `#DA3450`
+            return colors[`red`]
         case theme.includes(`sage`):
-            return `#657B69`
+            return colors[`sage`]
         case theme.includes(`viridian`):
-            return `#03875B`
+            return colors[`viridian`]
         default:
-            return `#E95420`
+            return colors[`default`]
     }
 }
 
