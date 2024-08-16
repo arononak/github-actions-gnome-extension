@@ -195,7 +195,7 @@ export class ExtensionController {
 
         try {
             const settingsRepository = this.settingsRepository
-            this.stateRefreshInterval = setInterval(() => this._checkErrors(), 1 * 1000)
+            this.stateRefreshInterval = setInterval(() => this._checkErrors(), 5 * 1000)
             this.statusRefreshInterval = setInterval(() => this._fetchStatus(), settingsRepository.fetchRefreshTime() * 1000)
             this.dataRefreshInterval = setInterval(() => this._fetchData(), settingsRepository.fetchRefreshFullUpdateTime() * 60 * 1000)
 
