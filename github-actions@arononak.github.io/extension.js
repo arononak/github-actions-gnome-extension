@@ -72,12 +72,8 @@ export default class GithubActionsExtension extends Extension {
                 onBuildCompleted: (owner, repo, conclusion) => {
                     NotificationController.showCompletedBuild(owner, repo, conclusion)
                 },
-                onReloadCallback: async () => {
-                    this.extensionController.stopRefreshing()
-                    this.disposeExtension()
-                    await new Promise((resolve) => setTimeout(resolve, 2000))
-                    this.initExtension()
-                    this.extensionController.startRefreshing()
+                onReloadCallback: () => {
+                    this.reload()
                 },
                 onEnableCallback: async () => {
                     this.destroyQuickSettings()
@@ -184,10 +180,24 @@ export default class GithubActionsExtension extends Extension {
     }
 
     removeStatusBarIndicator() {
+        if (this.reloadTimeoutId !== undefined) {
+            clearTimeout(this.reloadTimeoutId)
+            this.reloadTimeoutId = null
+        }
+
         if (this.indicator !== null && this.indicator !== undefined) {
             this.indicator.menu = null
             this.indicator.destroy()
             this.indicator = null
         }
+    }
+
+    reload() {
+        this.extensionController.stopRefreshing()
+        this.disposeExtension()
+        this.reloadTimeoutId = setTimeout(() => {
+            this.initExtension()
+            this.extensionController.startRefreshing()
+        }, 2000)
     }
 }
