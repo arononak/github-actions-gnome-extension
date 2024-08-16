@@ -413,6 +413,10 @@ export class ExtensionController {
             return
         }
 
+        if (this.indicator.isZen == true) {
+            return
+        }
+
         if (this.indicator.isLongOperation()) {
             return
         }
@@ -441,6 +445,10 @@ export class ExtensionController {
 
     async _fetchStatus() {
         if (this.indicator == undefined) {
+            return
+        }
+
+        if (this.indicator.isZen == true) {
             return
         }
 
