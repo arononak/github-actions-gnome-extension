@@ -119,7 +119,6 @@ graph TD
   | ✏️ `make lint-fix`            | 🏞 New screenshots                           |
   |                              | 🦍 [TESTING STEPS](./docs/TESTING_STEPS.md)  |
   |                              | 🏷️ New tag & release                         |
-  |                              | 🛰 Deploy only on Fridays !                  |
 
 ## 2. 📥 Cloning and running
 
