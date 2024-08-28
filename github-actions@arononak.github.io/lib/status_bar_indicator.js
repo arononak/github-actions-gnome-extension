@@ -567,7 +567,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
     setUser(user, minutes) {
         if (user === null || user === undefined) return
 
-        const userEmail = user[`email`] == null && user[`email`] == undefined ? `No email` : user[`email`]
+        const userEmail = user[`email`] == null || user[`email`] == undefined ? `No email` : user[`email`]
         const userName = user[`name`]
         const createdAt = user[`created_at`]
         const userUrl = user[`html_url`]
