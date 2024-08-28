@@ -567,7 +567,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
     setUser(user, minutes) {
         if (user === null || user === undefined) return
 
-        const userEmail = user[`email`]
+        const userEmail = user[`email`] == null && user[`email`] == undefined ? `No email` : user[`email`]
         const userName = user[`name`]
         const createdAt = user[`created_at`]
         const userUrl = user[`html_url`]
@@ -583,7 +583,7 @@ export class StatusBarIndicator extends PanelMenu.Button {
 
         const freeMinutesPercentage = 100 - Math.round((minutes[`total_minutes_used`] / minutes[`included_minutes`]) * 100)
 
-        const userLabelText = userName == null || userEmail == null
+        const userLabelText = userName == null
             ? `No permissions`
             : `${userName} (${userEmail}) \n\nJoined GitHub on: ${DateFormatController.format(createdAt)}\nFree minutes: ${freeMinutesPercentage}%`
 
